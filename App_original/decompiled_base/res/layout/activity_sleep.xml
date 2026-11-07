@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:fitsSystemWindows="true" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:background="@color/blue" android:layout_width="fill_parent" android:layout_height="48.0dip">
+        <ImageView android:id="@id/ivBack" android:padding="12.0dip" android:layout_width="48.0dip" android:layout_height="48.0dip" android:src="@mipmap/back_white" />
+        <TextView android:textSize="@dimen/text_title" android:textColor="@color/white" android:gravity="center" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="@string/setting_sleep" android:layout_weight="1.0" />
+        <ImageView android:id="@id/ivSync" android:padding="12.0dip" android:layout_width="48.0dip" android:layout_height="48.0dip" android:src="@mipmap/refresh" />
+    </LinearLayout>
+    <TextView android:textSize="@dimen/text_note" android:textColor="@color/grey" android:background="@color/white" android:paddingTop="4.0dip" android:paddingBottom="4.0dip" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:text="@string/sleep_noon" android:paddingStart="16.0dip" />
+    <RelativeLayout android:gravity="center_vertical" android:background="@color/white" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginTop="1.0dip">
+        <TextView android:text="@string/sedentary_timer_setting_starttime" style="@style/ItemLeft" />
+        <com.balysv.materialripple.MaterialRippleLayout android:layout_width="fill_parent" android:layout_height="fill_parent" app:mrl_rippleColor="@color/grey" app:mrl_rippleOverlay="true">
+            <TextView android:id="@id/tvNoonStart" android:text="13:00" android:drawableRight="@mipmap/right_arrow" style="@style/ItemRight" />
+        </com.balysv.materialripple.MaterialRippleLayout>
+    </RelativeLayout>
+    <RelativeLayout android:gravity="center_vertical" android:background="@color/white" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginTop="1.0dip">
+        <TextView android:text="@string/sedentary_timer_setting_endtime" style="@style/ItemLeft" />
+        <com.balysv.materialripple.MaterialRippleLayout android:layout_width="fill_parent" android:layout_height="fill_parent" app:mrl_rippleColor="@color/grey" app:mrl_rippleOverlay="true">
+            <TextView android:id="@id/tvNoonEnd" android:text="14:00" android:drawableRight="@mipmap/right_arrow" style="@style/ItemRight" />
+        </com.balysv.materialripple.MaterialRippleLayout>
+    </RelativeLayout>
+    <TextView android:textSize="@dimen/text_note" android:textColor="@color/grey" android:background="@color/white" android:paddingTop="4.0dip" android:paddingBottom="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:text="@string/sleep_night" android:paddingStart="16.0dip" />
+    <View style="@style/ViewSplit" />
+    <RelativeLayout android:gravity="center_vertical" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="48.0dip">
+        <TextView android:text="@string/sedentary_timer_setting_starttime" style="@style/ItemLeft" />
+        <com.balysv.materialripple.MaterialRippleLayout android:layout_width="fill_parent" android:layout_height="fill_parent" app:mrl_rippleColor="@color/grey" app:mrl_rippleOverlay="true">
+            <TextView android:id="@id/tvNightStart" android:text="21:00" android:drawableRight="@mipmap/right_arrow" style="@style/ItemRight" />
+        </com.balysv.materialripple.MaterialRippleLayout>
+    </RelativeLayout>
+    <View style="@style/ViewSplit" />
+    <RelativeLayout android:gravity="center_vertical" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="48.0dip">
+        <TextView android:text="@string/sedentary_timer_setting_endtime" style="@style/ItemLeft" />
+        <com.balysv.materialripple.MaterialRippleLayout android:layout_width="fill_parent" android:layout_height="fill_parent" app:mrl_rippleColor="@color/grey" app:mrl_rippleOverlay="true">
+            <TextView android:id="@id/tvNightEnd" android:text="08:00" android:drawableRight="@mipmap/right_arrow" style="@style/ItemRight" />
+        </com.balysv.materialripple.MaterialRippleLayout>
+    </RelativeLayout>
+</LinearLayout>

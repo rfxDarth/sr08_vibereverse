@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.balysv.materialripple.MaterialRippleLayout android:layout_width="fill_parent" android:layout_height="fill_parent" app:mrl_rippleColor="@color/grey" app:mrl_rippleOverlay="true"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <RelativeLayout android:gravity="center_vertical" android:background="@color/white" android:descendantFocusability="blocksDescendants" android:layout_width="fill_parent" android:layout_height="72.0dip">
+        <LinearLayout android:gravity="center_vertical" android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="fill_parent" android:paddingStart="16.0dip">
+            <TextView android:textSize="32.0sp" android:textColor="@color/grey_dark" android:gravity="center_vertical" android:id="@id/tvTitle" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="00:00" android:fontFamily="sans-serif-light" />
+            <TextView android:textSize="@dimen/text_support" android:textColor="@color/grey" android:gravity="center_vertical" android:id="@id/tvStarttime" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Mon" />
+        </LinearLayout>
+        <TextView android:id="@id/tvAlarmId" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="fill_parent" android:text="0" />
+        <Switch android:id="@id/sbEnable" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="32.0dip" android:layout_marginRight="16.0dip" android:layout_centerVertical="true" android:layout_alignParentEnd="true" style="@style/Switch" />
+    </RelativeLayout>
+</com.balysv.materialripple.MaterialRippleLayout>

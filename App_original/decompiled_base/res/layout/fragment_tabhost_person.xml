@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:background="@color/silver" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:orientation="vertical" android:background="@color/silver" android:layout_width="fill_parent" android:layout_height="160.0dip">
+        <LinearLayout android:background="@color/transparent" android:visibility="gone" style="@style/ActionBar">
+            <TextView android:textSize="18.0sp" android:textColor="@color/black" android:gravity="center" android:layout_width="fill_parent" android:layout_height="48.0dip" android:text="@string/dup_main_person" />
+        </LinearLayout>
+        <androidx.cardview.widget.CardView android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:layout_marginTop="20.0dip" android:layout_marginRight="10.0dip" app:cardBackgroundColor="#ffffffff" app:cardCornerRadius="10.0dip" app:cardElevation="0.0dip" app:cardMaxElevation="0.0dip">
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="120.0dip">
+                <RelativeLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="-16.0dip">
+                    <de.hdodenhof.circleimageview.CircleImageView android:id="@id/civAvatar" android:layout_width="72.0dip" android:layout_height="72.0dip" android:src="@mipmap/male_selected" android:layout_centerVertical="true" android:layout_marginStart="16.0dip" app:civ_border_color="@color/white" app:civ_border_width="2.0dip" />
+                    <LinearLayout android:gravity="center_vertical" android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="16.0dip" android:layout_toRightOf="@id/civAvatar" android:layout_centerVertical="true">
+                        <LinearLayout android:orientation="horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1.0">
+                            <TextView android:textSize="@dimen/text_main" android:textColor="@color/grey_dark" android:layout_width="wrap_content" android:layout_height="fill_parent" android:text="@string/nickname" />
+                            <TextView android:textSize="@dimen/text_main" android:textColor="@color/black" android:textColorHint="@color/grey_dark" android:id="@id/tvNickName" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_marginLeft="6.0dip" android:hint="@string/demo_user" />
+                        </LinearLayout>
+                        <LinearLayout android:orientation="horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:layout_weight="1.0">
+                            <TextView android:textSize="@dimen/text_main" android:textColor="@color/grey_dark" android:layout_width="wrap_content" android:layout_height="fill_parent" android:text="@string/account" />
+                            <TextView android:textSize="@dimen/text_main" android:textColor="@color/black" android:textColorHint="@color/grey_dark" android:id="@id/tvUserName" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_marginLeft="6.0dip" android:hint="@string/demo_nickname" />
+                        </LinearLayout>
+                    </LinearLayout>
+                    <LinearLayout android:gravity="end|center" android:id="@id/llUser" android:layout_width="fill_parent" android:layout_height="fill_parent" android:paddingEnd="16.0dip">
+                        <ImageView android:id="@id/ivAltLogo" android:visibility="invisible" android:layout_width="80.0dip" android:layout_height="49.0dip" android:layout_marginRight="36.0dip" android:src="@mipmap/alt_logo" android:scaleType="fitXY" />
+                        <ImageView android:background="@mipmap/right_arrow" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    </LinearLayout>
+                </RelativeLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <LinearLayout android:background="@color/white" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="0.0dip">
+            <LinearLayout android:gravity="center" android:orientation="vertical" android:id="@id/llTargetStep" android:padding="16.0dip" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0">
+                <TextView android:textColor="@color/grey" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/target_steps" />
+                <TextView android:textSize="@dimen/text_title" android:textColor="@color/grey_dark" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:text="4000" />
+            </LinearLayout>
+            <LinearLayout android:gravity="center" android:orientation="vertical" android:id="@id/llTargetSport" android:padding="16.0dip" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0">
+                <TextView android:textColor="@color/grey" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="" />
+                <TextView android:textSize="@dimen/text_title" android:textColor="@color/grey_dark" android:id="@id/tvTargetSport" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:text="04:00" />
+            </LinearLayout>
+        </LinearLayout>
+        <androidx.cardview.widget.CardView android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:layout_marginRight="10.0dip" app:cardBackgroundColor="#ffffffff" app:cardCornerRadius="10.0dip" app:cardElevation="0.0dip" app:cardMaxElevation="0.0dip">
+            <RelativeLayout android:background="@color/white" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginTop="8.0dip" android:layout_marginBottom="8.0dip">
+                <TextView android:text="@string/target_steps" android:drawableStart="@mipmap/icon_step" style="@style/ItemLeft" />
+                <FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent">
+                    <TextView android:id="@id/tvTargetStep" android:text="4000" android:drawableEnd="@mipmap/right_arrow" style="@style/ItemRight" />
+                </FrameLayout>
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:layout_marginTop="16.0dip" android:layout_marginRight="10.0dip" app:cardBackgroundColor="#ffffffff" app:cardCornerRadius="10.0dip" app:cardElevation="0.0dip" app:cardMaxElevation="0.0dip">
+            <RelativeLayout android:background="@color/white" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginTop="8.0dip" android:layout_marginBottom="8.0dip">
+                <TextView android:text="@string/setting_user_info_unit_tip1" android:drawableStart="@mipmap/icon_unit" style="@style/ItemLeft" />
+                <FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent">
+                    <TextView android:id="@id/tvUnit" android:text="@string/setting_user_info_unit_metric" android:drawableRight="@mipmap/right_arrow" style="@style/ItemRight" />
+                </FrameLayout>
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView android:id="@id/cvFemaleReminder" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:layout_marginTop="16.0dip" android:layout_marginRight="10.0dip" app:cardBackgroundColor="#ffffffff" app:cardCornerRadius="10.0dip" app:cardElevation="0.0dip" app:cardMaxElevation="0.0dip">
+            <RelativeLayout android:id="@id/rlFemaleReminder" android:background="@color/white" android:clickable="true" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginTop="8.0dip" android:layout_marginBottom="8.0dip">
+                <TextView android:text="@string/Female_reminder" android:drawableStart="@drawable/female_reminder" style="@style/ItemLeft" />
+                <FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent">
+                    <TextView android:id="@id/tvFemailState" android:drawableRight="@mipmap/right_arrow" style="@style/ItemRight" />
+                </FrameLayout>
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:layout_marginTop="16.0dip" android:layout_marginRight="10.0dip" app:cardBackgroundColor="#ffffffff" app:cardCornerRadius="10.0dip">
+            <com.balysv.materialripple.MaterialRippleLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" app:mrl_rippleColor="@color/grey" app:mrl_rippleOverlay="true">
+                <LinearLayout android:background="@color/white" android:layout_width="fill_parent" android:layout_height="48.0dip">
+                    <TextView android:text="@string/action_google_fit" android:drawableStart="@mipmap/icon_gfit_64dp" style="@style/ItemLeft" />
+                    <Switch android:id="@id/sFit" android:layout_alignParentRight="true" android:layout_centerVertical="true" style="@style/Switch" />
+                </LinearLayout>
+            </com.balysv.materialripple.MaterialRippleLayout>
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:layout_marginTop="16.0dip" android:layout_marginRight="10.0dip" app:cardBackgroundColor="#ffffffff" app:cardCornerRadius="10.0dip">
+            <RelativeLayout android:background="@color/white" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginTop="8.0dip" android:layout_marginBottom="8.0dip">
+                <TextView android:text="@string/action_google_fit" android:drawableStart="@mipmap/icon_google" style="@style/ItemLeft" />
+                <com.balysv.materialripple.MaterialRippleLayout android:layout_width="fill_parent" android:layout_height="fill_parent" app:mrl_rippleColor="@color/grey" app:mrl_rippleOverlay="true">
+                    <TextView android:id="@id/tvGoogleFit" android:drawableRight="@mipmap/right_arrow" style="@style/ItemRight" />
+                </com.balysv.materialripple.MaterialRippleLayout>
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView android:id="@id/cvWearMode" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:layout_marginTop="16.0dip" android:layout_marginRight="10.0dip" app:cardBackgroundColor="#ffffffff" app:cardCornerRadius="10.0dip" app:cardElevation="0.0dip" app:cardMaxElevation="0.0dip">
+            <RelativeLayout android:background="@color/white" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginTop="8.0dip" android:layout_marginBottom="8.0dip">
+                <TextView android:text="@string/setting_wear_mode" android:drawableStart="@mipmap/icon_wearmode" style="@style/ItemLeft" />
+                <com.balysv.materialripple.MaterialRippleLayout android:layout_width="fill_parent" android:layout_height="fill_parent" app:mrl_rippleColor="@color/grey" app:mrl_rippleOverlay="true">
+                    <TextView android:id="@id/tvWearMode" android:drawableRight="@mipmap/right_arrow" style="@style/ItemRight" />
+                </com.balysv.materialripple.MaterialRippleLayout>
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:layout_marginTop="16.0dip" android:layout_marginRight="10.0dip" app:cardBackgroundColor="#ffffffff" app:cardCornerRadius="10.0dip" app:cardElevation="0.0dip" app:cardMaxElevation="0.0dip">
+            <RelativeLayout android:background="@color/white" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginTop="8.0dip" android:layout_marginBottom="8.0dip">
+                <TextView android:text="@string/user_manual" android:drawableStart="@mipmap/icon_help" style="@style/ItemLeft" />
+                <com.balysv.materialripple.MaterialRippleLayout android:layout_width="fill_parent" android:layout_height="fill_parent" app:mrl_rippleColor="@color/grey" app:mrl_rippleOverlay="true">
+                    <TextView android:id="@id/tvManual" android:drawableRight="@mipmap/right_arrow" style="@style/ItemRight" />
+                </com.balysv.materialripple.MaterialRippleLayout>
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:layout_marginTop="16.0dip" android:layout_marginRight="10.0dip" app:cardBackgroundColor="#ffffffff" app:cardCornerRadius="10.0dip" app:cardElevation="0.0dip" app:cardMaxElevation="0.0dip">
+            <RelativeLayout android:background="@color/white" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginTop="8.0dip" android:layout_marginBottom="8.0dip">
+                <TextView android:text="@string/person_feedback" android:drawableStart="@mipmap/icon_feedback" style="@style/ItemLeft" />
+                <com.balysv.materialripple.MaterialRippleLayout android:layout_width="fill_parent" android:layout_height="fill_parent" app:mrl_rippleColor="@color/grey" app:mrl_rippleOverlay="true">
+                    <TextView android:id="@id/tvFeedback" android:drawableRight="@mipmap/right_arrow" style="@style/ItemRight" />
+                </com.balysv.materialripple.MaterialRippleLayout>
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:layout_marginTop="16.0dip" android:layout_marginRight="10.0dip" app:cardBackgroundColor="#ffffffff" app:cardCornerRadius="10.0dip" app:cardElevation="0.0dip" app:cardMaxElevation="0.0dip">
+            <RelativeLayout android:background="@color/white" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginTop="8.0dip" android:layout_marginBottom="8.0dip">
+                <TextView android:text="@string/action_about" android:drawableStart="@mipmap/icon_about" style="@style/ItemLeft" />
+                <com.balysv.materialripple.MaterialRippleLayout android:layout_width="fill_parent" android:layout_height="fill_parent" app:mrl_rippleColor="@color/grey" app:mrl_rippleOverlay="true">
+                    <TextView android:id="@id/tvAbout" android:drawableRight="@mipmap/right_arrow" style="@style/ItemRight" />
+                </com.balysv.materialripple.MaterialRippleLayout>
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+        <RelativeLayout android:gravity="bottom" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_weight="1.0">
+            <LinearLayout android:gravity="center" android:orientation="horizontal" android:id="@id/llAgreementPrivacy" android:visibility="invisible" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip" android:layout_alignParentBottom="true">
+                <TextView android:textSize="16.0sp" android:textColor="@color/blue_all" android:id="@id/tvAgreement" android:paddingRight="10.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/user_agreement" />
+                <TextView android:textSize="16.0sp" android:textColor="@color/blue_all" android:id="@id/tvPrivacy" android:paddingLeft="10.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/user_privacy" />
+            </LinearLayout>
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>

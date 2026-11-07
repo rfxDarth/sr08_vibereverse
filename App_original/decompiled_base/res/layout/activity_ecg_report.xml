@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:fitsSystemWindows="true" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:orientation="vertical" android:id="@id/llShare" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <LinearLayout android:background="@color/green" android:layout_width="fill_parent" android:layout_height="48.0dip">
+            <ImageView android:id="@id/ivBack" android:padding="12.0dip" android:layout_width="48.0dip" android:layout_height="48.0dip" android:src="@mipmap/back_white" />
+            <TextView android:textSize="@dimen/text_title" android:textColor="@color/white" android:gravity="center" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="@string/ecg_report" android:layout_weight="1.0" />
+            <ImageView android:id="@id/ivShare" android:padding="12.0dip" android:layout_width="48.0dip" android:layout_height="48.0dip" android:src="@mipmap/icon_share" />
+        </LinearLayout>
+        <LinearLayout android:gravity="center_horizontal" android:orientation="vertical" android:id="@id/llScore" android:background="@color/green" android:padding="8.0dip" android:visibility="visible" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <TextView android:textSize="16.0sp" android:textColor="@color/white" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/ecg_hrv_health" />
+            <TextView android:textSize="36.0sp" android:textColor="@color/white" android:id="@id/tvHealthScore" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" />
+            <SeekBar android:id="@id/sbHealthScore" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:max="100" android:progress="0" android:progressDrawable="@color/transparent" android:thumb="@mipmap/arrow_down" style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
+            <ProgressBar android:layout_width="fill_parent" android:layout_height="8.0dip" android:layout_marginBottom="8.0dip" android:max="100" android:progress="50" android:secondaryProgress="80" android:progressDrawable="@drawable/progress_health" style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <TextView android:textColor="@color/white" android:gravity="center" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/ecg_bad" android:layout_weight="5.0" />
+                <TextView android:textColor="@color/white" android:gravity="center" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/ecg_normal" android:layout_weight="3.0" />
+                <TextView android:textColor="@color/white" android:gravity="center" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/ecg_good" android:layout_weight="2.0" />
+            </LinearLayout>
+        </LinearLayout>
+        <ScrollView android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <LinearLayout android:orientation="vertical" android:id="@id/llReport" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <TextView android:textSize="12.0sp" android:padding="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/ecg_indicator" />
+                <LinearLayout android:orientation="vertical" android:id="@id/llIndicator" android:background="@color/white" android:paddingBottom="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                    <LinearLayout android:paddingTop="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                        <TextView android:textSize="14.0sp" android:gravity="center" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/ecg_hrv_0" android:layout_weight="1.0" />
+                        <TextView android:textSize="14.0sp" android:gravity="center" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/ecg_hrv_1" android:layout_weight="1.0" />
+                        <TextView android:textSize="14.0sp" android:gravity="center" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/ecg_hrv_2" android:layout_weight="1.0" />
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+                        <TextView android:textSize="30.0sp" android:textStyle="bold" android:textColor="@color/green" android:gravity="center" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="0" android:layout_weight="1.0" />
+                        <TextView android:textSize="30.0sp" android:textStyle="bold" android:textColor="@color/green" android:gravity="center" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="0" android:layout_weight="1.0" />
+                        <TextView android:textSize="30.0sp" android:textStyle="bold" android:textColor="@color/green" android:gravity="center" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="0" android:layout_weight="1.0" />
+                    </LinearLayout>
+                    <LinearLayout android:paddingTop="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                        <TextView android:textSize="14.0sp" android:gravity="center" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/ecg_hrv_3" android:layout_weight="1.0" />
+                        <TextView android:textSize="14.0sp" android:gravity="center" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/ecg_hrv_4" android:layout_weight="1.0" />
+                        <TextView android:textSize="14.0sp" android:gravity="center" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/ecg_hrv_5" android:layout_weight="1.0" />
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+                        <TextView android:textSize="30.0sp" android:textStyle="bold" android:textColor="@color/green" android:gravity="center" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="0" android:layout_weight="1.0" />
+                        <TextView android:textSize="30.0sp" android:textStyle="bold" android:textColor="@color/green" android:gravity="center" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="0" android:layout_weight="1.0" />
+                        <TextView android:textSize="30.0sp" android:textStyle="bold" android:gravity="center" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="0" android:layout_weight="1.0" />
+                    </LinearLayout>
+                </LinearLayout>
+                <LinearLayout android:padding="8.0dip" android:visibility="visible" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                    <TextView android:textSize="12.0sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/ecg_symptom" />
+                    <TextView android:textColor="@color/red" android:id="@id/tvHeartAvg" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:layout_marginStart="8.0dip" android:layout_marginEnd="8.0dip" />
+                    <TextView android:textSize="12.0sp" android:gravity="right" android:id="@id/tvHeartSymptom" android:visibility="visible" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/ecg_heart_normal" />
+                </LinearLayout>
+                <LinearLayout android:id="@id/llHeart0" android:background="@color/white" android:padding="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                    <LinearLayout android:gravity="center" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0">
+                        <TextView android:textSize="16.0sp" android:textColor="@color/grey" android:gravity="center" android:background="@drawable/button_stroken_white" android:padding="4.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minWidth="80.0dip" android:text="@string/ecg_heart_0" />
+                    </LinearLayout>
+                    <LinearLayout android:gravity="center" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0">
+                        <TextView android:textSize="16.0sp" android:textColor="@color/grey" android:gravity="center" android:background="@drawable/button_stroken_white" android:padding="4.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minWidth="80.0dip" android:text="@string/ecg_heart_1" />
+                    </LinearLayout>
+                    <LinearLayout android:gravity="center" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0">
+                        <TextView android:textSize="16.0sp" android:textColor="@color/grey" android:gravity="center" android:background="@drawable/button_stroken_white" android:padding="4.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minWidth="80.0dip" android:text="@string/ecg_heart_2" />
+                    </LinearLayout>
+                </LinearLayout>
+                <LinearLayout android:id="@id/llHeart1" android:background="@color/white" android:padding="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                    <LinearLayout android:gravity="center" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0">
+                        <TextView android:textSize="16.0sp" android:textColor="@color/grey" android:gravity="center" android:background="@drawable/button_stroken_white" android:padding="4.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minWidth="80.0dip" android:text="@string/ecg_heart_3" />
+                    </LinearLayout>
+                    <LinearLayout android:gravity="center" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0">
+                        <TextView android:textSize="16.0sp" android:textColor="@color/grey" android:gravity="center" android:background="@drawable/button_stroken_white" android:padding="4.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minWidth="80.0dip" android:text="@string/ecg_heart_4" />
+                    </LinearLayout>
+                    <LinearLayout android:gravity="center" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0">
+                        <TextView android:textSize="16.0sp" android:textColor="@color/grey" android:gravity="center" android:background="@drawable/button_stroken_white" android:padding="4.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minWidth="80.0dip" android:text="@string/ecg_heart_5" />
+                    </LinearLayout>
+                </LinearLayout>
+                <TextView android:textSize="12.0sp" android:padding="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/ecg_suggest" />
+                <TextView android:id="@id/tvSuggest" android:background="@color/white" android:padding="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+                <LinearLayout android:background="@color/green" android:padding="8.0dip" android:visibility="visible" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                    <TextView android:textSize="12.0sp" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/ecg_playback" />
+                    <Space android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0" />
+                </LinearLayout>
+                <RelativeLayout android:background="@color/white" android:layout_width="fill_parent" android:layout_height="200.0dip">
+                    <com.jaga.ibraceletplus.jyring.widget.EcgGrid android:layout_width="fill_parent" android:layout_height="fill_parent" />
+                    <com.jaga.ibraceletplus.jyring.widget.MyEcgSurfaceView android:id="@id/svEcg" android:layout_width="fill_parent" android:layout_height="fill_parent" />
+                    <TextView android:textSize="16.0sp" android:textColor="@color/white" android:id="@id/ivPlay" android:background="@color/green" android:padding="8.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="8.0dip" android:text="@string/ecg_playback" android:layout_alignParentEnd="true" />
+                </RelativeLayout>
+                <ProgressBar android:id="@id/pbEcg" android:layout_width="fill_parent" android:layout_height="8.0dip" android:max="100" android:progressDrawable="@drawable/progress_ecg" style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
+                <TextView android:gravity="center" android:id="@id/tvChart" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="48.0dip" android:text="@string/ecg_report_chart" />
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</LinearLayout>

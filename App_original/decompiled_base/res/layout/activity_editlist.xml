@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:fitsSystemWindows="true" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:dslv="http://schemas.android.com/apk/res-auto">
+    <Toolbar android:id="@id/my_awesome_toolbar" android:background="@color/accent_material_light" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="?actionBarSize">
+        <RelativeLayout android:gravity="center_vertical" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginRight="@dimen/abc_action_bar_content_inset_material">
+            <ImageView android:id="@id/backBtn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@mipmap/icon_back_black" android:layout_centerVertical="true" />
+            <TextView android:textSize="18.0sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/setting_contact" android:layout_centerInParent="true" />
+        </RelativeLayout>
+    </Toolbar>
+    <RelativeLayout android:id="@id/editport_bottomlayout" android:background="@color/bright_foreground_disabled_material_dark" android:paddingLeft="16.0dip" android:layout_width="fill_parent" android:layout_height="60.0dip" android:layout_alignParentBottom="true">
+        <CheckBox android:textSize="16.0sp" android:id="@id/allDeleteBtn" android:background="@null" android:paddingLeft="10.0dip" android:paddingTop="10.0dip" android:paddingRight="20.0dip" android:paddingBottom="10.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="全选" android:layout_alignParentLeft="true" android:layout_centerVertical="true" style="?checkboxStyle" />
+        <TextView android:textSize="16.0sp" android:textColor="@color/primary_text_default_material_light" android:id="@id/saveEditBtn" android:paddingLeft="16.0dip" android:paddingTop="10.0dip" android:paddingRight="16.0dip" android:paddingBottom="10.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="保存" android:layout_alignParentRight="true" android:layout_centerVertical="true" />
+        <TextView android:textSize="16.0sp" android:textColor="@color/primary_text_default_material_light" android:id="@id/ensureDeleteBtn" android:paddingLeft="16.0dip" android:paddingTop="10.0dip" android:paddingRight="16.0dip" android:paddingBottom="10.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="删除选中" android:layout_toLeftOf="@id/saveEditBtn" android:layout_centerVertical="true" />
+    </RelativeLayout>
+    <com.jaga.ibraceletplus.jyring.dslv.DragSortListView android:gravity="bottom" android:id="@id/editListView" android:layout_width="fill_parent" android:layout_height="fill_parent" android:divider="@color/secondary_text_disabled_material_light" android:dividerHeight="0.5dip" android:choiceMode="multipleChoice" android:layout_above="@id/editport_bottomlayout" android:layout_below="@id/my_awesome_toolbar" dslv:click_remove_id="@id/deleteBtn" dslv:collapsed_height="1.0px" dslv:drag_handle_id="@id/ivMenu" dslv:float_alpha="0.6" dslv:float_background_color="@color/primary_text_disabled_material_dark" />
+</RelativeLayout>

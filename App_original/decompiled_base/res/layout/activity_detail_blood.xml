@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:fitsSystemWindows="true" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:orientation="vertical" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="5.0">
+        <LinearLayout android:background="@android:color/transparent" android:layout_width="fill_parent" android:layout_height="48.0dip">
+            <ImageView android:id="@id/ivBack" android:padding="12.0dip" android:layout_width="48.0dip" android:layout_height="48.0dip" android:src="@mipmap/icon_back_black" />
+            <TextView android:textSize="@dimen/text_title" android:textColor="@color/black" android:gravity="center" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="@string/Home_BloodPress" android:layout_weight="1.0" />
+            <ImageView android:padding="12.0dip" android:layout_width="48.0dip" android:layout_height="48.0dip" />
+        </LinearLayout>
+        <LinearLayout android:orientation="horizontal" android:id="@id/llRange" android:layout_width="fill_parent" android:layout_height="48.0dip">
+            <TextView android:textSize="@dimen/text_main" android:textColor="@android:color/black" android:gravity="center" android:layout_width="0.0dip" android:layout_height="48.0dip" android:text="@string/time_day" android:layout_weight="1.0" />
+            <TextView android:textSize="@dimen/text_main" android:textColor="@color/date_indicator_color" android:gravity="center" android:layout_width="0.0dip" android:layout_height="48.0dip" android:text="@string/time_week" android:layout_weight="1.0" android:layout_marginStart="1.0dip" android:layout_marginEnd="1.0dip" />
+            <TextView android:textSize="@dimen/text_main" android:textColor="@color/date_indicator_color" android:gravity="center" android:layout_width="0.0dip" android:layout_height="48.0dip" android:text="@string/time_month" android:layout_weight="1.0" />
+        </LinearLayout>
+        <LinearLayout android:orientation="horizontal" android:id="@id/llRangeIndicator" android:background="@color/detal_range_indicator_bg" android:layout_width="fill_parent" android:layout_height="6.0dip">
+            <LinearLayout android:gravity="center" android:orientation="horizontal" android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_weight="1.0">
+                <TextView android:background="@color/detail_pressure_bg" android:layout_width="64.0dip" android:layout_height="fill_parent" />
+            </LinearLayout>
+            <LinearLayout android:gravity="center" android:orientation="horizontal" android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_weight="1.0">
+                <TextView android:background="@color/detal_range_indicator_bg" android:layout_width="64.0dip" android:layout_height="fill_parent" />
+            </LinearLayout>
+            <LinearLayout android:gravity="center" android:orientation="horizontal" android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_weight="1.0">
+                <TextView android:background="@color/detal_range_indicator_bg" android:layout_width="64.0dip" android:layout_height="fill_parent" />
+            </LinearLayout>
+        </LinearLayout>
+        <com.jaga.ibraceletplus.jyring.widget.RecycleAlignView android:id="@id/rvDate" android:background="@mipmap/detail_shadow" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="64.0dip" />
+        <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="32.0dip">
+            <LinearLayout android:gravity="center" android:orientation="horizontal" android:layout_width="64.0dip" android:layout_height="32.0dip">
+                <ImageView android:id="@id/ivDatePrev" android:layout_width="24.0dip" android:layout_height="24.0dip" android:src="@mipmap/icon_date_prev" />
+            </LinearLayout>
+            <LinearLayout android:orientation="horizontal" android:layout_width="0.0dip" android:layout_height="32.0dip" android:layout_weight="1.0">
+                <TextView android:textSize="16.0sp" android:textColor="@android:color/black" android:gravity="center" android:id="@id/tvDate" android:layout_width="fill_parent" android:layout_height="32.0dip" android:text="2000-01-01" />
+            </LinearLayout>
+            <LinearLayout android:gravity="center" android:orientation="horizontal" android:layout_width="64.0dip" android:layout_height="32.0dip">
+                <ImageView android:id="@id/ivDateNext" android:layout_width="24.0dip" android:layout_height="24.0dip" android:src="@mipmap/icon_date_next" />
+            </LinearLayout>
+        </LinearLayout>
+        <RelativeLayout android:id="@id/rlHeart" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginBottom="8.0dip">
+            <com.jaga.ibraceletplus.jyring.widget.BloodPressureChart android:id="@id/chart" android:visibility="visible" android:layout_width="fill_parent" android:layout_height="fill_parent" app:chart_axis_text_color="#ff333333" app:chart_border_color="#ffcccccc" app:chart_border_width="2.0dip" app:chart_day_bar_color="@color/detail_pressure_bg" app:chart_day_bar_width="8.0dip" app:chart_day_gradient_start="#ff2cda3d" app:chart_day_line_color="#ff2cda3d" app:chart_grid_color="#ffcccccc" app:chart_line_width="6.0dip" app:chart_month_bar_width="8.0dip" app:chart_padding_bottom="20.0dip" app:chart_padding_left="20.0dip" app:chart_padding_right="25.0dip" app:chart_padding_top="10.0dip" app:chart_single_point_color="#ff2cda3d" app:chart_unit_position="suffix" app:chart_week_bar_width="8.0dip" app:chart_week_month_bar_color="@color/detail_pressure_bg" app:chart_week_month_circle_color="@color/detail_pressure_bg" app:chart_y_axis_max="200.0" app:chart_y_axis_min="20.0" app:chart_y_axis_unit="" app:chart_y_axis_values="20,40,60,80,100,120,140,160,180,200" />
+            <TextView android:textSize="@dimen/text_title" android:textColor="@color/black" android:gravity="center" android:id="@id/tvEmpty" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/sleep_empty" android:drawableTop="@mipmap/detail_empty" android:layout_centerInParent="true" />
+        </RelativeLayout>
+    </LinearLayout>
+    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="4.0">
+        <ScrollView android:scrollbars="vertical" android:fadingEdge="vertical" android:descendantFocusability="blocksDescendants" android:layout_width="fill_parent" android:layout_height="fill_parent">
+            <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
+                <androidx.cardview.widget.CardView android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:layout_marginTop="16.0dip" android:layout_marginRight="10.0dip" android:layout_marginBottom="8.0dip" app:cardBackgroundColor="#ffffffff" app:cardCornerRadius="10.0dip" app:cardElevation="0.0dip" app:cardMaxElevation="0.0dip">
+                    <LinearLayout android:gravity="center_vertical" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_margin="8.0dip">
+                        <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:layout_marginStart="16.0dip">
+                            <LinearLayout android:orientation="vertical" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0">
+                                <ImageView android:layout_gravity="center" android:layout_width="32.0dip" android:layout_height="32.0dip" android:src="@mipmap/blood_pressure_min" />
+                                <TextView android:textSize="@dimen/text_tip" android:layout_gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/History_BloodPress_Min" />
+                                <TextView android:textSize="@dimen/text_support" android:layout_gravity="center" android:id="@id/minValue" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--/--" />
+                                <TextView android:textSize="@dimen/text_tip" android:layout_gravity="center" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/UNIT_MMHG" />
+                            </LinearLayout>
+                            <LinearLayout android:orientation="vertical" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0">
+                                <ImageView android:layout_gravity="center" android:layout_width="32.0dip" android:layout_height="32.0dip" android:src="@mipmap/blood_pressure_avg" />
+                                <TextView android:textSize="@dimen/text_tip" android:layout_gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/History_BloodPress_Avg" />
+                                <TextView android:textSize="@dimen/text_support" android:layout_gravity="center" android:id="@id/avgValue" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--/--" />
+                                <TextView android:textSize="@dimen/text_tip" android:layout_gravity="center" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/UNIT_MMHG" />
+                            </LinearLayout>
+                            <LinearLayout android:orientation="vertical" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0">
+                                <ImageView android:layout_gravity="center" android:layout_width="32.0dip" android:layout_height="32.0dip" android:src="@mipmap/blood_pressure_max" />
+                                <TextView android:textSize="@dimen/text_tip" android:layout_gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/History_BloodPress_Max" />
+                                <TextView android:textSize="@dimen/text_support" android:layout_gravity="center" android:id="@id/maxValue" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--/--" />
+                                <TextView android:textSize="@dimen/text_tip" android:layout_gravity="center" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/UNIT_MMHG" />
+                            </LinearLayout>
+                        </LinearLayout>
+                        <TextView android:textSize="@dimen/text_tip" android:gravity="center" android:layout_gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:text="@string/History_BloodPress_Tip" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+                <androidx.cardview.widget.CardView android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:layout_marginTop="8.0dip" android:layout_marginRight="10.0dip" android:layout_marginBottom="8.0dip" app:cardBackgroundColor="#ffffffff" app:cardCornerRadius="10.0dip" app:cardElevation="0.0dip" app:cardMaxElevation="0.0dip">
+                    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="10.0dip">
+                        <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="4.0dip">
+                            <TextView android:textSize="16.0sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/History_BloodPress_Intro" />
+                        </LinearLayout>
+                        <ImageView android:layout_width="fill_parent" android:layout_height="2.0dip" android:layout_marginTop="8.0dip" android:src="@color/detail_pressure_bg" />
+                        <LinearLayout android:orientation="horizontal" android:background="@drawable/bg_capsule_parent" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:layout_marginBottom="4.0dip">
+                            <TextView android:textSize="@dimen/text_note" android:textColor="@color/detail_pressure_t1" android:gravity="center" android:background="@drawable/bg_capsule_left1" android:layout_width="96.0dip" android:layout_height="fill_parent" android:text="@string/History_BloodPress_Normal" android:paddingStart="20.0dip" android:paddingEnd="20.0dip" />
+                            <TextView android:textSize="@dimen/text_note" android:textColor="@color/detail_pressure_t2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4.0dip" android:layout_marginBottom="4.0dip" android:text="@string/History_BloodPress_Normal_Intro" android:paddingStart="20.0dip" android:paddingEnd="20.0dip" />
+                        </LinearLayout>
+                        <LinearLayout android:orientation="horizontal" android:background="@drawable/bg_capsule_parent" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:layout_marginBottom="4.0dip">
+                            <TextView android:textSize="@dimen/text_note" android:textColor="@color/detail_pressure_t1" android:gravity="center" android:background="@drawable/bg_capsule_left2" android:layout_width="96.0dip" android:layout_height="fill_parent" android:text="@string/History_BloodPress_Good" android:paddingStart="20.0dip" android:paddingEnd="20.0dip" />
+                            <TextView android:textSize="@dimen/text_note" android:textColor="@color/detail_pressure_t2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4.0dip" android:layout_marginBottom="4.0dip" android:text="@string/History_BloodPress_Good_Intro" android:paddingStart="20.0dip" android:paddingEnd="20.0dip" />
+                        </LinearLayout>
+                        <LinearLayout android:orientation="horizontal" android:background="@drawable/bg_capsule_parent" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:layout_marginBottom="4.0dip">
+                            <TextView android:textSize="@dimen/text_note" android:textColor="@color/detail_pressure_t1" android:gravity="center" android:background="@drawable/bg_capsule_left3" android:layout_width="96.0dip" android:layout_height="fill_parent" android:text="@string/History_BloodPress_Abnormal" android:paddingStart="20.0dip" android:paddingEnd="20.0dip" />
+                            <TextView android:textSize="@dimen/text_note" android:textColor="@color/detail_pressure_t2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4.0dip" android:layout_marginBottom="4.0dip" android:text="@string/History_BloodPress_Abnormal_Intro" android:paddingStart="20.0dip" android:paddingEnd="20.0dip" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</LinearLayout>

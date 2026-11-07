@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:fitsSystemWindows="true" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:gravity="center_vertical" style="@style/ActionBar">
+        <ImageView android:id="@id/ivBack" android:padding="12.0dip" android:layout_width="48.0dip" android:layout_height="48.0dip" android:src="@mipmap/icon_back_black" />
+        <TextView android:textSize="@dimen/text_title" android:textColor="@color/black" android:gravity="center" android:id="@id/tvTitle" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="@string/person_feedback" android:layout_weight="1.0" />
+        <ImageView android:id="@id/ivBefore" android:padding="12.0dip" android:layout_width="48.0dip" android:layout_height="48.0dip" android:src="@mipmap/arrow_white_up" />
+    </LinearLayout>
+    <ScrollView android:padding="16.0dip" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <TextView android:textSize="16.0sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:text="@string/feedback_model" />
+            <EditText android:enabled="false" android:textSize="16.0sp" android:id="@id/et_device_model" android:background="@null" android:padding="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:inputType="text" />
+            <TextView android:textSize="16.0sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/feedback_app" />
+            <EditText android:enabled="false" android:textSize="16.0sp" android:id="@id/et_app_version" android:background="@null" android:padding="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:inputType="text" />
+            <TextView android:textSize="16.0sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/feedback_desc" />
+            <EditText android:gravity="top" android:id="@id/et_description" android:background="@drawable/bg_edittext_border" android:padding="8.0dip" android:layout_width="fill_parent" android:layout_height="120.0dip" android:hint="@string/feedback_no_desc" android:inputType="textMultiLine" />
+            <TextView android:textSize="16.0sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/feedback_mediaupload" />
+            <LinearLayout android:orientation="horizontal" android:id="@id/ll_media_container" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" />
+            <ImageView android:id="@id/iv_add_media" android:layout_width="48.0dip" android:layout_height="48.0dip" android:layout_marginTop="8.0dip" android:src="@mipmap/icon_add_smsrsp" android:contentDescription="添加媒体" />
+            <TextView android:textSize="16.0sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/feedback_email" />
+            <EditText android:id="@id/et_contact" android:background="@drawable/bg_edittext_border" android:padding="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:hint="@string/feedback_placeholder" android:inputType="text" />
+            <Button android:textColor="@android:color/white" android:layout_gravity="center" android:id="@id/btn_submit" android:padding="12.0dip" android:layout_width="200.0dip" android:layout_height="wrap_content" android:layout_marginTop="24.0dip" android:text="@string/feedback_btn" android:backgroundTint="@color/btn_submit_color" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

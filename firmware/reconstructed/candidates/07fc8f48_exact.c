@@ -1,0 +1,43 @@
+/* Clear cached sensor fields, refresh calibration, then update four readings. */
+__attribute__((used, naked, section(".text.FUN_07fc8f48")))
+void FUN_07fc8f48(void)
+{
+    __asm__ volatile (
+        "push {r4, r5, r6, lr}\n"
+        "mov r4, r0\n"
+        "ldr r5, [pc, #80]\n"
+        "strb r1, [r5, #18]\n"
+        "movs r6, #0\n"
+        "strb r6, [r5, #24]\n"
+        "strb r6, [r5, #23]\n"
+        "strh r6, [r5, #20]\n"
+        "bl FUN_07fcd8a0\n"
+        "strh r6, [r5, #30]\n"
+        "bl FUN_07fcebc4\n"
+        "bl FUN_07fc7f94\n"
+        "movs r0, #71\n"
+        "bl FUN_07fc8584\n"
+        "cmp r0, #63\n"
+        "bhi .Lfinish\n"
+        "ldr r0, [pc, #48]\n"
+        "bl FUN_07fc8680\n"
+        "movs r0, #69\n"
+        "ldr r6, [pc, #44]\n"
+        "blx r6\n"
+        "ldr r5, [pc, #44]\n"
+        "strb r0, [r5, #3]\n"
+        "movs r0, #70\n"
+        "blx r6\n"
+        "strb r0, [r5, #5]\n"
+        "movs r0, #71\n"
+        "blx r6\n"
+        "strb r0, [r5, #7]\n"
+        "movs r0, #72\n"
+        "blx r6\n"
+        "strb r0, [r5, #9]\n"
+        "mov r0, r5\n"
+        "bl FUN_07fc8680\n"
+        ".Lfinish: mov r0, r4\n"
+        "bl FUN_07fc8134\n"
+        "pop {r4, r5, r6, pc}\n");
+}

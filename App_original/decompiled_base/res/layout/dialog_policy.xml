@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <RelativeLayout android:background="#00ffffff" android:layout_width="fill_parent" android:layout_height="fill_parent"
+      xmlns:android="http://schemas.android.com/apk/res/android">
+        <RelativeLayout android:background="@drawable/dialog_policy_bg" android:layout_width="400.0dip" android:layout_height="400.0dip" android:layout_centerInParent="true">
+            <ScrollView android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_above="@id/button_container" android:layout_alignParentTop="true">
+                <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                    <TextView android:textSize="18.0sp" android:gravity="center" android:id="@id/dialog_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="30.0dip" android:text="JRing隐私政策" />
+                    <TextView android:textSize="14.0sp" android:id="@id/dialog_content" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="30.0dip" android:layout_marginTop="20.0dip" android:layout_marginRight="30.0dip" android:text="欢迎使用“JRing”,我们非常重视您的个人信息和隐私保护。在您使用“JRing”服务之前，请仔细阅读" android:layout_below="@id/dialog_title" />
+                    <TextView android:textSize="16.0sp" android:textColor="@color/blue_middle" android:id="@id/dialog_content_privacy" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="30.0dip" android:layout_marginTop="10.0dip" android:layout_marginRight="30.0dip" android:text="《用户隐私政策》" android:layout_below="@id/dialog_content" />
+                    <TextView android:textSize="16.0sp" android:textColor="@color/blue_middle" android:id="@id/dialog_content_useragreement" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="30.0dip" android:layout_marginTop="10.0dip" android:layout_marginRight="30.0dip" android:text="《用户协议》" android:layout_below="@id/dialog_content_privacy" />
+                    <TextView android:textSize="16.0sp" android:textColor="@color/blue_middle" android:id="@id/dialog_content_privacy_children" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="30.0dip" android:layout_marginTop="10.0dip" android:layout_marginRight="30.0dip" android:text="《儿童隐私政策》" android:layout_below="@id/dialog_content_useragreement" />
+                    <TextView android:textSize="12.0sp" android:id="@id/dialog_content_desc" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="30.0dip" android:layout_marginTop="20.0dip" android:layout_marginRight="30.0dip" android:text="如您同意此政策，请点击“同意”并开始使用我们的产品和服务，我们尽全力保护您的个人信息安全。" android:layout_below="@id/dialog_content_privacy_children" />
+                </LinearLayout>
+            </ScrollView>
+            <LinearLayout android:orientation="horizontal" android:id="@id/button_container" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_alignParentBottom="true">
+                <Button android:textSize="14.0sp" android:textColor="#ffaaaaaa" android:id="@id/dialog_btn_cancel" android:background="@null" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="退出" android:layout_weight="1.0" />
+                <Button android:textSize="14.0sp" android:id="@id/dialog_btn_sure" android:background="@null" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="同意" android:layout_weight="1.0" />
+            </LinearLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

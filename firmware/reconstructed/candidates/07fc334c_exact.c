@@ -1,0 +1,40 @@
+/* Load a per-slot record and emit the one-time initialization notification. */
+__attribute__((used, naked, section(".text.FUN_07fc334c")))
+void FUN_07fc334c(void)
+{
+    __asm__ volatile (
+        "push {r4, r5, r6, lr}\n"
+        "mov r5, r0\n"
+        "movs r0, #122\n"
+        "mov r1, r0\n"
+        "muls r1, r5\n"
+        "ldr r2, [pc, #68]\n"
+        "adds r6, r2, r1\n"
+        "ldrb r1, [r6, r0]\n"
+        "mov r0, r5\n"
+        "bl FUN_07fc31f8\n"
+        "mov r0, r5\n"
+        "bl FUN_07fc5f38\n"
+        "movs r4, #1\n"
+        "strb r4, [r0, #0]\n"
+        "ldrb r1, [r6, #30]\n"
+        "strb r1, [r0, #17]\n"
+        "adds r1, r6, #4\n"
+        "adds r0, r0, #1\n"
+        "movs r2, #16\n"
+        "bl func_0x07f1e0ac\n"
+        "mov r0, r5\n"
+        "bl FUN_07fc33a4\n"
+        "movs r5, #100\n"
+        "ldr r6, [pc, #92]\n"
+        "ldrb r0, [r6, r5]\n"
+        "cmp r0, #0\n"
+        "beq 1f\n"
+        "pop {r4, r5, r6, pc}\n"
+        "1: movs r0, #11\n"
+        "ldr r2, [pc, #16]\n"
+        "mov r1, r4\n"
+        "bl FUN_07fccf38\n"
+        "strb r4, [r6, r5]\n"
+        "pop {r4, r5, r6, pc}\n");
+}

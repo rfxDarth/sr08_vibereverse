@@ -1,0 +1,3 @@
+status=mismatch
+widths=2-4-0-0-0-0
+bit_distance=789

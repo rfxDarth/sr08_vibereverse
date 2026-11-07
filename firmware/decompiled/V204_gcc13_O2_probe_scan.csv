@@ -1,0 +1,6 @@
+address,function,target_size,status,compiled_hex,target_hex,bit_distance,diagnostic,source_file
+0x07fc1cdc,FUN_07fc1cdc,10,mismatch,10b50a2000f030f810bdc046,80b50a2000f030f880bd,-1,,07fc1cdc.c
+0x07fc5694,FUN_07fc5694,10,mismatch,10b50220fef75efa10bdc046,80b50220fef75efa80bd,-1,,07fc5694.c
+0x07fc8838,FUN_07fc8838,24,mismatch,010510b5090f0400632000f005f8ff216220214000f000f810bdc046,10b504460005010f632000f005f8e1b2622000f001f810bd,-1,,07fc8838.c
+0x07fcd990,FUN_07fcd990,10,mismatch,10b5fff7b9ff012010bdc046,00b5fff7b9ff012000bd,-1,,07fcd990.c
+0x07fcee44,FUN_07fcee44,8,exact,10b5fff7f1fe10bd,10b5fff7f1fe10bd,0,,07fcee44.c

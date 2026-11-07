@@ -1,0 +1,241 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0032)https://iot.janyun.net/qt/xy.jsp -->
+<html xmlns="http://www.w3.org/1999/xhtml" data-cbscriptallow="true" data-acxscriptallow="true"><script>(function () {
+  const toBlob = HTMLCanvasElement.prototype.toBlob;
+  const toDataURL = HTMLCanvasElement.prototype.toDataURL;
+  const getImageData = CanvasRenderingContext2D.prototype.getImageData;
+  //
+  var noisify = function (canvas, context) {
+    const shift = {
+      'r': Math.floor(Math.random() * 10) - 5,
+      'g': Math.floor(Math.random() * 10) - 5,
+      'b': Math.floor(Math.random() * 10) - 5,
+      'a': Math.floor(Math.random() * 10) - 5
+    };
+    //
+    const width = canvas.width, height = canvas.height;
+    const imageData = getImageData.apply(context, [0, 0, width, height]);
+    for (let i = 0; i < height; i++) {
+      for (let j = 0; j < width; j++) {
+        const n = ((i * (width * 4)) + (j * 4));
+        imageData.data[n + 0] = imageData.data[n + 0] + shift.r;
+        imageData.data[n + 1] = imageData.data[n + 1] + shift.g;
+        imageData.data[n + 2] = imageData.data[n + 2] + shift.b;
+        imageData.data[n + 3] = imageData.data[n + 3] + shift.a;
+      }
+    }
+    //
+    window.top.postMessage("canvas-fingerprint-defender-alert", '*');
+    context.putImageData(imageData, 0, 0);
+  };
+  //
+  Object.defineProperty(HTMLCanvasElement.prototype, "toBlob", {
+    "value": function () {
+      noisify(this, this.getContext("2d"));
+      return toBlob.apply(this, arguments);
+    }
+  });
+  //
+  Object.defineProperty(HTMLCanvasElement.prototype, "toDataURL", {
+    "value": function () {
+      noisify(this, this.getContext("2d"));
+      return toDataURL.apply(this, arguments);
+    }
+  });
+  //
+  Object.defineProperty(CanvasRenderingContext2D.prototype, "getImageData", {
+    "value": function () {
+      noisify(this.canvas, this);
+      return getImageData.apply(this, arguments);
+    }
+  });
+  //
+  document.documentElement.dataset.cbscriptallow = true;
+})()</script><script>(function () {
+  const context = {
+    "BUFFER": null,
+    "getChannelData": function (e) {
+      const getChannelData = e.prototype.getChannelData;
+      Object.defineProperty(e.prototype, "getChannelData", {
+        "value": function () {
+          const results_1 = getChannelData.apply(this, arguments);
+          if (context.BUFFER !== results_1) {
+            context.BUFFER = results_1;
+            window.top.postMessage("audiocontext-fingerprint-defender-alert", '*');
+            for (var i = 0; i < results_1.length; i += 100) {
+              let index = Math.floor(Math.random() * i);
+              results_1[index] = results_1[index] + Math.random() * 0.0000001;
+            }
+          }
+          //
+          return results_1;
+        }
+      });
+    },
+    "createAnalyser": function (e) {
+      const createAnalyser = e.prototype.__proto__.createAnalyser;
+      Object.defineProperty(e.prototype.__proto__, "createAnalyser", {
+        "value": function () {
+          const results_2 = createAnalyser.apply(this, arguments);
+          const getFloatFrequencyData = results_2.__proto__.getFloatFrequencyData;
+          Object.defineProperty(results_2.__proto__, "getFloatFrequencyData", {
+            "value": function () {
+              window.top.postMessage("audiocontext-fingerprint-defender-alert", '*');
+              const results_3 = getFloatFrequencyData.apply(this, arguments);
+              for (var i = 0; i < arguments[0].length; i += 100) {
+                let index = Math.floor(Math.random() * i);
+                arguments[0][index] = arguments[0][index] + Math.random() * 0.1;
+              }
+              //
+              return results_3;
+            }
+          });
+          //
+          return results_2;
+        }
+      });
+    }
+  };
+  //
+  context.getChannelData(AudioBuffer);
+  context.createAnalyser(AudioContext);
+  context.getChannelData(OfflineAudioContext);
+  context.createAnalyser(OfflineAudioContext);
+  document.documentElement.dataset.acxscriptallow = true;
+})()</script><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		
+		<style type="text/css">
+<!--
+body {
+	margin: auto;
+	font-size: 14px;
+	line-height: 20px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	margin-left: 0px;
+	margin-right: 0px;
+}
+
+.content {
+	border: 3px;
+	border-color: #000000;
+}
+
+.t {
+	font-size: 16px;
+	font-style: normal;
+	font-weight: 800;
+	text-decoration: underline;
+}
+
+.STYLE1 {
+	font-size: 36px
+}
+
+.STYLE2 {
+	color: #FFFFFF;
+	font-size: 36px;
+	color: #CCCCCC
+}
+</style>
+	</head>
+
+	<body>
+		<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td>
+					<div class="content">
+						<p class="t">
+							提示条款
+						</p>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;温馨提醒您：在使用软件提供方（下称：“我们”）提供的各项服务前，请务必仔细阅读并透彻理解本声明。如果您不同意本申明或者其中任何内容，您应该立即停止使用我们提供的各项服务。如果你继续使用我们提供的服务，即意味着您认可并接受本声明的全部内容。
+						</p>
+						<p class="t">
+							权利归属
+						</p>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;我们的所有产品，软件，数据以及其他信息的的所有权都归属我们所有，未经我们书面授权许可，任何人不得非法侵权使用。
+						</p>
+						<p class="t">
+							保密承诺
+						</p>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;为了保护您个人信息的安全性，我们将依照个人信息保密相关的法律规定来处理业务，我们希望下述的策略概述将有助于您理解我们可能收集哪些信息、我们怎样使用和保护这些信息以及我们将与谁共享这些信息。
+						</p>
+						<span class="t">个人信息</span>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1，什么是个人信息
+						</p>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;个人信息是指能够识别出自然人身份的数据。身份识别包括能够通过独立数据判断，也包括和其他信息数据一起结合识别自然人身份的数据。
+						</p>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2，我们收集的个人信息
+						</p>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;您在应用程序里注册账号时提供个人信息，包括账号，邮箱等，账号用于登录应用程序，邮箱用于个人信息认证，找回密码，接收平台发送的相关邮件通知信息。
+						</p>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;您在应用程序里提供的身高，体重，年龄等用户个人信息将用于计算用户步长，能量消耗的参数。
+						</p>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;应用程序会要求访问通讯录权限，此功能是将您手机来电时电话号码对应的联系人名发送给设备显示，用于提示您是谁打来电话，从通讯录读取的内容不会当作其他用途。
+						</p>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;应用程序会要求读取短信权限，此功能是将您手机接收到的新消息发送给设备显示，用于提示您新消息内容，从短信里读取的内容不会当作其他用途。
+						</p>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;应用程序会要求读取其他应用消息的权限，此功能是将你手机接收到的其他应用的新消息发送给设备显示，用于提示您新消息内容，从其他应用里读取的内容不会当作其他用途。
+						</p>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;应用程序会要求读取和管理手机状态设备的权限，获取IMEI，DeviceId，Brand，MODEL等信息，此功能是获取手机设备的特征信息生成游客账号，当用户在登录界面选择“跳过登录”按钮时，系统会自动使用游客账号登录。
+						</p>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3，我们持有您个人信息多久
+						</p>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;我们保留您的个人信息的时间将不超过您注销账号的时间。如果您不想再使用我们的服务，请您及时注销您的个人账号。
+						</p>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4，《一般数据保护条例》用户
+						</p>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;如果您是《一般数据保护条例》（GDPR）规定范围内的用户，您将有权删除您的个人数据。如果您不想再使用我们的服务时，请您及时注销您的个人账号。
+						</p>
+						<span class="t">分享限制</span>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1，我们最低限度向您获取个人信息，应用程序仅在向您说明的目的范围内使用您的个人信息。
+						</p>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2，我们在涉及合并，收购或破产清算时，如涉及到个人信息转让，我们会要求新的持有您个人信息的公司，或者组织继续受此隐私政策的约束，否则我们将要求该公司，或者组织重新向您征求授权同意。
+						</p>
+						<span class="t">公开限制</span>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1，如果需要公开您的个人信息，我们在获得您的明确同意后才会公开。
+						</p>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2，如果是基于法律法规强制性要求、法院命令或政府主管要求的情况下，我们会在未经您的明确同意的情况下公开披露您的个人信息。
+						</p>
+						<span class="t">免责声明</span>
+						<p>
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1、由于网络之特殊性，我们郑重提醒您，在使用我们提供的任何服务时，均须自觉保护好个人隐私，并不得侵犯他人隐私以及其他权利。由此引起的权利纠纷我们将不承担任何责任。
+							<br>
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、由于您将用户密码告知他人或与他人共享注册帐户，由此导致的任何个人资料泄露,我们将不承担任何责任。
+							
+							<br>
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3、任何由于计算机问题、黑客政击、计算机病毒侵入造成的个人资料泄露、丢失、被盗用或被窜改等我们将不承担任何责任，并保留诉讼权利。
+							
+							<br>
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4、如果您对自己的个人信息保密有严格要求，请不要注册，或者不要使用自己的真实信息注册。如果意外泄漏我们将不承担任何责任。
+							
+						</p>
+					</div>
+				</td>
+			</tr>
+		</tbody></table>
+		<p>
+			&nbsp;
+		</p>
+	
+    </div></body></html>

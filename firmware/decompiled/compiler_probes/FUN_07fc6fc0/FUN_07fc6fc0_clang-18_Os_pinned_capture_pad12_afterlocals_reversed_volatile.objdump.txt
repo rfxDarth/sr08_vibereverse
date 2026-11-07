@@ -1,0 +1,338 @@
+
+/tmp/v204-switch-codegen-2v6_bz9v/switch.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+07fc6fc0 <FUN_07fc6fc0>:
+ 7fc6fc0:	b5f0      	push	{r4, r5, r6, r7, lr}
+ 7fc6fc2:	b08d      	sub	sp, #52	@ 0x34
+ 7fc6fc4:	461d      	mov	r5, r3
+ 7fc6fc6:	4617      	mov	r7, r2
+ 7fc6fc8:	460e      	mov	r6, r1
+ 7fc6fca:	a806      	add	r0, sp, #24
+ 7fc6fcc:	4610      	mov	r0, r2
+ 7fc6fce:	f754 ffa4 	bl	7f1bf1a <func_0x07f1bf1a>
+ 7fc6fd2:	900c      	str	r0, [sp, #48]	@ 0x30
+ 7fc6fd4:	980c      	ldr	r0, [sp, #48]	@ 0x30
+ 7fc6fd6:	0780      	lsls	r0, r0, #30
+ 7fc6fd8:	d420      	bmi.n	7fc701c <FUN_07fc6fc0+0x5c>
+ 7fc6fda:	9705      	str	r7, [sp, #20]
+ 7fc6fdc:	2026      	movs	r0, #38	@ 0x26
+ 7fc6fde:	f004 f84f 	bl	7fcb080 <FUN_07fcb080>
+ 7fc6fe2:	2700      	movs	r7, #0
+ 7fc6fe4:	5ff1      	ldrsh	r1, [r6, r7]
+ 7fc6fe6:	aa09      	add	r2, sp, #36	@ 0x24
+ 7fc6fe8:	9200      	str	r2, [sp, #0]
+ 7fc6fea:	aa0b      	add	r2, sp, #44	@ 0x2c
+ 7fc6fec:	ab0a      	add	r3, sp, #40	@ 0x28
+ 7fc6fee:	f000 fb57 	bl	7fc76a0 <FUN_07fc76a0>
+ 7fc6ff2:	4622      	mov	r2, r4
+ 7fc6ff4:	4604      	mov	r4, r0
+ 7fc6ff6:	7757      	strb	r7, [r2, #29]
+ 7fc6ff8:	0a29      	lsrs	r1, r5, #8
+ 7fc6ffa:	7711      	strb	r1, [r2, #28]
+ 7fc6ffc:	8830      	ldrh	r0, [r6, #0]
+ 7fc6ffe:	83d0      	strh	r0, [r2, #30]
+ 7fc7000:	2c00      	cmp	r4, #0
+ 7fc7002:	d00d      	beq.n	7fc7020 <FUN_07fc6fc0+0x60>
+ 7fc7004:	48a6      	ldr	r0, [pc, #664]	@ (7fc72a0 <FUN_07fc6fc0+0x2e0>)
+ 7fc7006:	2304      	movs	r3, #4
+ 7fc7008:	4629      	mov	r1, r5
+ 7fc700a:	9a05      	ldr	r2, [sp, #20]
+ 7fc700c:	f754 fdd0 	bl	7f1bbb0 <func_0x07f1bbb0>
+ 7fc7010:	7084      	strb	r4, [r0, #2]
+ 7fc7012:	8831      	ldrh	r1, [r6, #0]
+ 7fc7014:	8001      	strh	r1, [r0, #0]
+ 7fc7016:	f754 fde4 	bl	7f1bbe2 <func_0x07f1bbe2>
+ 7fc701a:	e131      	b.n	7fc7280 <FUN_07fc6fc0+0x2c0>
+ 7fc701c:	2702      	movs	r7, #2
+ 7fc701e:	e12f      	b.n	7fc7280 <FUN_07fc6fc0+0x2c0>
+ 7fc7020:	a80a      	add	r0, sp, #40	@ 0x28
+ 7fc7022:	7800      	ldrb	r0, [r0, #0]
+ 7fc7024:	1f40      	subs	r0, r0, #5
+ 7fc7026:	2480      	movs	r4, #128	@ 0x80
+ 7fc7028:	2811      	cmp	r0, #17
+ 7fc702a:	d900      	bls.n	7fc702e <FUN_07fc6fc0+0x6e>
+ 7fc702c:	e11e      	b.n	7fc726c <FUN_07fc6fc0+0x2ac>
+ 7fc702e:	9104      	str	r1, [sp, #16]
+ 7fc7030:	9203      	str	r2, [sp, #12]
+ 7fc7032:	0040      	lsls	r0, r0, #1
+ 7fc7034:	4478      	add	r0, pc
+ 7fc7036:	8880      	ldrh	r0, [r0, #4]
+ 7fc7038:	0040      	lsls	r0, r0, #1
+ 7fc703a:	4487      	add	pc, r0
+ 7fc703c:	0117007e 	.word	0x0117007e
+ 7fc7040:	01170117 	.word	0x01170117
+ 7fc7044:	00650117 	.word	0x00650117
+ 7fc7048:	00110117 	.word	0x00110117
+ 7fc704c:	01170053 	.word	0x01170053
+ 7fc7050:	01170011 	.word	0x01170011
+ 7fc7054:	00530011 	.word	0x00530011
+ 7fc7058:	00110117 	.word	0x00110117
+ 7fc705c:	00530117 	.word	0x00530117
+ 7fc7060:	2000      	movs	r0, #0
+ 7fc7062:	9001      	str	r0, [sp, #4]
+ 7fc7064:	5e10      	ldrsh	r0, [r2, r0]
+ 7fc7066:	498a      	ldr	r1, [pc, #552]	@ (7fc7290 <FUN_07fc6fc0+0x2d0>)
+ 7fc7068:	4001      	ands	r1, r0
+ 7fc706a:	0bc0      	lsrs	r0, r0, #15
+ 7fc706c:	4005      	ands	r5, r0
+ 7fc706e:	20ff      	movs	r0, #255	@ 0xff
+ 7fc7070:	4385      	bics	r5, r0
+ 7fc7072:	430d      	orrs	r5, r1
+ 7fc7074:	2004      	movs	r0, #4
+ 7fc7076:	9002      	str	r0, [sp, #8]
+ 7fc7078:	5e33      	ldrsh	r3, [r6, r0]
+ 7fc707a:	3308      	adds	r3, #8
+ 7fc707c:	4885      	ldr	r0, [pc, #532]	@ (7fc7294 <FUN_07fc6fc0+0x2d4>)
+ 7fc707e:	4629      	mov	r1, r5
+ 7fc7080:	9a05      	ldr	r2, [sp, #20]
+ 7fc7082:	f754 fd95 	bl	7f1bbb0 <func_0x07f1bbb0>
+ 7fc7086:	4604      	mov	r4, r0
+ 7fc7088:	2502      	movs	r5, #2
+ 7fc708a:	7045      	strb	r5, [r0, #1]
+ 7fc708c:	9804      	ldr	r0, [sp, #16]
+ 7fc708e:	7020      	strb	r0, [r4, #0]
+ 7fc7090:	88b0      	ldrh	r0, [r6, #4]
+ 7fc7092:	990b      	ldr	r1, [sp, #44]	@ 0x2c
+ 7fc7094:	70a1      	strb	r1, [r4, #2]
+ 7fc7096:	80a0      	strh	r0, [r4, #4]
+ 7fc7098:	9809      	ldr	r0, [sp, #36]	@ 0x24
+ 7fc709a:	71a0      	strb	r0, [r4, #6]
+ 7fc709c:	1de0      	adds	r0, r4, #7
+ 7fc709e:	9902      	ldr	r1, [sp, #8]
+ 7fc70a0:	5e72      	ldrsh	r2, [r6, r1]
+ 7fc70a2:	1db1      	adds	r1, r6, #6
+ 7fc70a4:	f757 f802 	bl	7f1e0ac <func_0x07f1e0ac>
+ 7fc70a8:	a80a      	add	r0, sp, #40	@ 0x28
+ 7fc70aa:	7800      	ldrb	r0, [r0, #0]
+ 7fc70ac:	380c      	subs	r0, #12
+ 7fc70ae:	2808      	cmp	r0, #8
+ 7fc70b0:	d863      	bhi.n	7fc717a <FUN_07fc6fc0+0x1ba>
+ 7fc70b2:	0080      	lsls	r0, r0, #2
+ 7fc70b4:	a101      	add	r1, pc, #4	@ (adr r1, 7fc70bc <FUN_07fc6fc0+0xfc>)
+ 7fc70b6:	5809      	ldr	r1, [r1, r0]
+ 7fc70b8:	4628      	mov	r0, r5
+ 7fc70ba:	468f      	mov	pc, r1
+ 7fc70bc:	07fc716d 	.word	0x07fc716d
+ 7fc70c0:	07fc717b 	.word	0x07fc717b
+ 7fc70c4:	07fc717b 	.word	0x07fc717b
+ 7fc70c8:	07fc70e1 	.word	0x07fc70e1
+ 7fc70cc:	07fc717b 	.word	0x07fc717b
+ 7fc70d0:	07fc7167 	.word	0x07fc7167
+ 7fc70d4:	07fc717b 	.word	0x07fc717b
+ 7fc70d8:	07fc717b 	.word	0x07fc717b
+ 7fc70dc:	07fc716b 	.word	0x07fc716b
+ 7fc70e0:	2003      	movs	r0, #3
+ 7fc70e2:	e043      	b.n	7fc716c <FUN_07fc6fc0+0x1ac>
+ 7fc70e4:	79f0      	ldrb	r0, [r6, #7]
+ 7fc70e6:	9001      	str	r0, [sp, #4]
+ 7fc70e8:	79b4      	ldrb	r4, [r6, #6]
+ 7fc70ea:	2026      	movs	r0, #38	@ 0x26
+ 7fc70ec:	f003 ffc8 	bl	7fcb080 <FUN_07fcb080>
+ 7fc70f0:	a90a      	add	r1, sp, #40	@ 0x28
+ 7fc70f2:	7809      	ldrb	r1, [r1, #0]
+ 7fc70f4:	290d      	cmp	r1, #13
+ 7fc70f6:	9002      	str	r0, [sp, #8]
+ 7fc70f8:	d04b      	beq.n	7fc7192 <FUN_07fc6fc0+0x1d2>
+ 7fc70fa:	2916      	cmp	r1, #22
+ 7fc70fc:	9b04      	ldr	r3, [sp, #16]
+ 7fc70fe:	d043      	beq.n	7fc7188 <FUN_07fc6fc0+0x1c8>
+ 7fc7100:	2912      	cmp	r1, #18
+ 7fc7102:	d16f      	bne.n	7fc71e4 <FUN_07fc6fc0+0x224>
+ 7fc7104:	2002      	movs	r0, #2
+ 7fc7106:	e046      	b.n	7fc7196 <FUN_07fc6fc0+0x1d6>
+ 7fc7108:	2000      	movs	r0, #0
+ 7fc710a:	5e10      	ldrsh	r0, [r2, r0]
+ 7fc710c:	4960      	ldr	r1, [pc, #384]	@ (7fc7290 <FUN_07fc6fc0+0x2d0>)
+ 7fc710e:	4001      	ands	r1, r0
+ 7fc7110:	0bc0      	lsrs	r0, r0, #15
+ 7fc7112:	4005      	ands	r5, r0
+ 7fc7114:	20ff      	movs	r0, #255	@ 0xff
+ 7fc7116:	4385      	bics	r5, r0
+ 7fc7118:	430d      	orrs	r5, r1
+ 7fc711a:	485e      	ldr	r0, [pc, #376]	@ (7fc7294 <FUN_07fc6fc0+0x2d4>)
+ 7fc711c:	1c80      	adds	r0, r0, #2
+ 7fc711e:	2304      	movs	r3, #4
+ 7fc7120:	4629      	mov	r1, r5
+ 7fc7122:	9a05      	ldr	r2, [sp, #20]
+ 7fc7124:	f754 fd44 	bl	7f1bbb0 <func_0x07f1bbb0>
+ 7fc7128:	4604      	mov	r4, r0
+ 7fc712a:	2503      	movs	r5, #3
+ 7fc712c:	7045      	strb	r5, [r0, #1]
+ 7fc712e:	9804      	ldr	r0, [sp, #16]
+ 7fc7130:	7020      	strb	r0, [r4, #0]
+ 7fc7132:	980b      	ldr	r0, [sp, #44]	@ 0x2c
+ 7fc7134:	70a0      	strb	r0, [r4, #2]
+ 7fc7136:	79b0      	ldrb	r0, [r6, #6]
+ 7fc7138:	e018      	b.n	7fc716c <FUN_07fc6fc0+0x1ac>
+ 7fc713a:	2400      	movs	r4, #0
+ 7fc713c:	5f10      	ldrsh	r0, [r2, r4]
+ 7fc713e:	4a54      	ldr	r2, [pc, #336]	@ (7fc7290 <FUN_07fc6fc0+0x2d0>)
+ 7fc7140:	4002      	ands	r2, r0
+ 7fc7142:	0bc1      	lsrs	r1, r0, #15
+ 7fc7144:	4029      	ands	r1, r5
+ 7fc7146:	20ff      	movs	r0, #255	@ 0xff
+ 7fc7148:	4381      	bics	r1, r0
+ 7fc714a:	4311      	orrs	r1, r2
+ 7fc714c:	4851      	ldr	r0, [pc, #324]	@ (7fc7294 <FUN_07fc6fc0+0x2d4>)
+ 7fc714e:	1d40      	adds	r0, r0, #5
+ 7fc7150:	2303      	movs	r3, #3
+ 7fc7152:	9a05      	ldr	r2, [sp, #20]
+ 7fc7154:	f754 fd2c 	bl	7f1bbb0 <func_0x07f1bbb0>
+ 7fc7158:	9904      	ldr	r1, [sp, #16]
+ 7fc715a:	7001      	strb	r1, [r0, #0]
+ 7fc715c:	990b      	ldr	r1, [sp, #44]	@ 0x2c
+ 7fc715e:	7041      	strb	r1, [r0, #1]
+ 7fc7160:	79b1      	ldrb	r1, [r6, #6]
+ 7fc7162:	7081      	strb	r1, [r0, #2]
+ 7fc7164:	e07f      	b.n	7fc7266 <FUN_07fc6fc0+0x2a6>
+ 7fc7166:	9802      	ldr	r0, [sp, #8]
+ 7fc7168:	e000      	b.n	7fc716c <FUN_07fc6fc0+0x1ac>
+ 7fc716a:	9801      	ldr	r0, [sp, #4]
+ 7fc716c:	70e0      	strb	r0, [r4, #3]
+ 7fc716e:	4620      	mov	r0, r4
+ 7fc7170:	f754 fd37 	bl	7f1bbe2 <func_0x07f1bbe2>
+ 7fc7174:	9803      	ldr	r0, [sp, #12]
+ 7fc7176:	7745      	strb	r5, [r0, #29]
+ 7fc7178:	e07c      	b.n	7fc7274 <FUN_07fc6fc0+0x2b4>
+ 7fc717a:	4847      	ldr	r0, [pc, #284]	@ (7fc7298 <FUN_07fc6fc0+0x2d8>)
+ 7fc717c:	21c8      	movs	r1, #200	@ 0xc8
+ 7fc717e:	6001      	str	r1, [r0, #0]
+ 7fc7180:	4846      	ldr	r0, [pc, #280]	@ (7fc729c <FUN_07fc6fc0+0x2dc>)
+ 7fc7182:	2108      	movs	r1, #8
+ 7fc7184:	6001      	str	r1, [r0, #0]
+ 7fc7186:	e7fe      	b.n	7fc7186 <FUN_07fc6fc0+0x1c6>
+ 7fc7188:	a809      	add	r0, sp, #36	@ 0x24
+ 7fc718a:	7801      	ldrb	r1, [r0, #0]
+ 7fc718c:	2040      	movs	r0, #64	@ 0x40
+ 7fc718e:	4088      	lsls	r0, r1
+ 7fc7190:	e001      	b.n	7fc7196 <FUN_07fc6fc0+0x1d6>
+ 7fc7192:	2001      	movs	r0, #1
+ 7fc7194:	9b04      	ldr	r3, [sp, #16]
+ 7fc7196:	9901      	ldr	r1, [sp, #4]
+ 7fc7198:	0209      	lsls	r1, r1, #8
+ 7fc719a:	1909      	adds	r1, r1, r4
+ 7fc719c:	2901      	cmp	r1, #1
+ 7fc719e:	d00d      	beq.n	7fc71bc <FUN_07fc6fc0+0x1fc>
+ 7fc71a0:	2900      	cmp	r1, #0
+ 7fc71a2:	d126      	bne.n	7fc71f2 <FUN_07fc6fc0+0x232>
+ 7fc71a4:	a90b      	add	r1, sp, #44	@ 0x2c
+ 7fc71a6:	780a      	ldrb	r2, [r1, #0]
+ 7fc71a8:	210b      	movs	r1, #11
+ 7fc71aa:	4351      	muls	r1, r2
+ 7fc71ac:	004a      	lsls	r2, r1, #1
+ 7fc71ae:	9c02      	ldr	r4, [sp, #8]
+ 7fc71b0:	18a2      	adds	r2, r4, r2
+ 7fc71b2:	005b      	lsls	r3, r3, #1
+ 7fc71b4:	18d2      	adds	r2, r2, r3
+ 7fc71b6:	88d2      	ldrh	r2, [r2, #6]
+ 7fc71b8:	4382      	bics	r2, r0
+ 7fc71ba:	e00a      	b.n	7fc71d2 <FUN_07fc6fc0+0x212>
+ 7fc71bc:	a90b      	add	r1, sp, #44	@ 0x2c
+ 7fc71be:	780a      	ldrb	r2, [r1, #0]
+ 7fc71c0:	210b      	movs	r1, #11
+ 7fc71c2:	4351      	muls	r1, r2
+ 7fc71c4:	004a      	lsls	r2, r1, #1
+ 7fc71c6:	9c02      	ldr	r4, [sp, #8]
+ 7fc71c8:	18a2      	adds	r2, r4, r2
+ 7fc71ca:	005b      	lsls	r3, r3, #1
+ 7fc71cc:	18d2      	adds	r2, r2, r3
+ 7fc71ce:	88d2      	ldrh	r2, [r2, #6]
+ 7fc71d0:	4302      	orrs	r2, r0
+ 7fc71d2:	0048      	lsls	r0, r1, #1
+ 7fc71d4:	1820      	adds	r0, r4, r0
+ 7fc71d6:	9b04      	ldr	r3, [sp, #16]
+ 7fc71d8:	0059      	lsls	r1, r3, #1
+ 7fc71da:	1840      	adds	r0, r0, r1
+ 7fc71dc:	80c2      	strh	r2, [r0, #6]
+ 7fc71de:	2400      	movs	r4, #0
+ 7fc71e0:	2001      	movs	r0, #1
+ 7fc71e2:	e008      	b.n	7fc71f6 <FUN_07fc6fc0+0x236>
+ 7fc71e4:	482c      	ldr	r0, [pc, #176]	@ (7fc7298 <FUN_07fc6fc0+0x2d8>)
+ 7fc71e6:	21c8      	movs	r1, #200	@ 0xc8
+ 7fc71e8:	6001      	str	r1, [r0, #0]
+ 7fc71ea:	482c      	ldr	r0, [pc, #176]	@ (7fc729c <FUN_07fc6fc0+0x2dc>)
+ 7fc71ec:	2108      	movs	r1, #8
+ 7fc71ee:	6001      	str	r1, [r0, #0]
+ 7fc71f0:	e7fe      	b.n	7fc71f0 <FUN_07fc6fc0+0x230>
+ 7fc71f2:	2480      	movs	r4, #128	@ 0x80
+ 7fc71f4:	2000      	movs	r0, #0
+ 7fc71f6:	210e      	movs	r1, #14
+ 7fc71f8:	4359      	muls	r1, r3
+ 7fc71fa:	4a23      	ldr	r2, [pc, #140]	@ (7fc7288 <FUN_07fc6fc0+0x2c8>)
+ 7fc71fc:	5c8b      	ldrb	r3, [r1, r2]
+ 7fc71fe:	2b00      	cmp	r3, #0
+ 7fc7200:	9401      	str	r4, [sp, #4]
+ 7fc7202:	d003      	beq.n	7fc720c <FUN_07fc6fc0+0x24c>
+ 7fc7204:	1851      	adds	r1, r2, r1
+ 7fc7206:	7a0a      	ldrb	r2, [r1, #8]
+ 7fc7208:	2a00      	cmp	r2, #0
+ 7fc720a:	d004      	beq.n	7fc7216 <FUN_07fc6fc0+0x256>
+ 7fc720c:	2800      	cmp	r0, #0
+ 7fc720e:	9a03      	ldr	r2, [sp, #12]
+ 7fc7210:	d10b      	bne.n	7fc722a <FUN_07fc6fc0+0x26a>
+ 7fc7212:	9c01      	ldr	r4, [sp, #4]
+ 7fc7214:	e02a      	b.n	7fc726c <FUN_07fc6fc0+0x2ac>
+ 7fc7216:	7a4a      	ldrb	r2, [r1, #9]
+ 7fc7218:	1e53      	subs	r3, r2, #1
+ 7fc721a:	4611      	mov	r1, r2
+ 7fc721c:	4199      	sbcs	r1, r3
+ 7fc721e:	2a00      	cmp	r2, #0
+ 7fc7220:	d100      	bne.n	7fc7224 <FUN_07fc6fc0+0x264>
+ 7fc7222:	2405      	movs	r4, #5
+ 7fc7224:	4208      	tst	r0, r1
+ 7fc7226:	9a03      	ldr	r2, [sp, #12]
+ 7fc7228:	d020      	beq.n	7fc726c <FUN_07fc6fc0+0x2ac>
+ 7fc722a:	4818      	ldr	r0, [pc, #96]	@ (7fc728c <FUN_07fc6fc0+0x2cc>)
+ 7fc722c:	4028      	ands	r0, r5
+ 7fc722e:	2100      	movs	r1, #0
+ 7fc7230:	9a02      	ldr	r2, [sp, #8]
+ 7fc7232:	5e51      	ldrsh	r1, [r2, r1]
+ 7fc7234:	4614      	mov	r4, r2
+ 7fc7236:	0bca      	lsrs	r2, r1, #15
+ 7fc7238:	4002      	ands	r2, r0
+ 7fc723a:	4b15      	ldr	r3, [pc, #84]	@ (7fc7290 <FUN_07fc6fc0+0x2d0>)
+ 7fc723c:	4019      	ands	r1, r3
+ 7fc723e:	4311      	orrs	r1, r2
+ 7fc7240:	2202      	movs	r2, #2
+ 7fc7242:	5ea2      	ldrsh	r2, [r4, r2]
+ 7fc7244:	0bd4      	lsrs	r4, r2, #15
+ 7fc7246:	4004      	ands	r4, r0
+ 7fc7248:	401a      	ands	r2, r3
+ 7fc724a:	4322      	orrs	r2, r4
+ 7fc724c:	4811      	ldr	r0, [pc, #68]	@ (7fc7294 <FUN_07fc6fc0+0x2d4>)
+ 7fc724e:	1d00      	adds	r0, r0, #4
+ 7fc7250:	2304      	movs	r3, #4
+ 7fc7252:	f754 fcad 	bl	7f1bbb0 <func_0x07f1bbb0>
+ 7fc7256:	9904      	ldr	r1, [sp, #16]
+ 7fc7258:	7001      	strb	r1, [r0, #0]
+ 7fc725a:	0049      	lsls	r1, r1, #1
+ 7fc725c:	9a02      	ldr	r2, [sp, #8]
+ 7fc725e:	1851      	adds	r1, r2, r1
+ 7fc7260:	88c9      	ldrh	r1, [r1, #6]
+ 7fc7262:	8041      	strh	r1, [r0, #2]
+ 7fc7264:	9c01      	ldr	r4, [sp, #4]
+ 7fc7266:	f754 fcbc 	bl	7f1bbe2 <func_0x07f1bbe2>
+ 7fc726a:	9a03      	ldr	r2, [sp, #12]
+ 7fc726c:	7f50      	ldrb	r0, [r2, #29]
+ 7fc726e:	2800      	cmp	r0, #0
+ 7fc7270:	d100      	bne.n	7fc7274 <FUN_07fc6fc0+0x2b4>
+ 7fc7272:	e6c7      	b.n	7fc7004 <FUN_07fc6fc0+0x44>
+ 7fc7274:	2002      	movs	r0, #2
+ 7fc7276:	990c      	ldr	r1, [sp, #48]	@ 0x30
+ 7fc7278:	4301      	orrs	r1, r0
+ 7fc727a:	9805      	ldr	r0, [sp, #20]
+ 7fc727c:	f754 fe1b 	bl	7f1beb6 <func_0x07f1beb6>
+ 7fc7280:	4638      	mov	r0, r7
+ 7fc7282:	b00d      	add	sp, #52	@ 0x34
+ 7fc7284:	bdf0      	pop	{r4, r5, r6, r7, pc}
+ 7fc7286:	46c0      	nop			@ (mov r8, r8)
+ 7fc7288:	07fd572b 	.word	0x07fd572b
+ 7fc728c:	0001ff00 	.word	0x0001ff00
+ 7fc7290:	00007fff 	.word	0x00007fff
+ 7fc7294:	00002604 	.word	0x00002604
+ 7fc7298:	50003100 	.word	0x50003100
+ 7fc729c:	50003302 	.word	0x50003302
+ 7fc72a0:	00000c16 	.word	0x00000c16

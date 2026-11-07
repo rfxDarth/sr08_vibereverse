@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:orientation="vertical" android:fitsSystemWindows="true" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <LinearLayout style="@style/ActionBar">
+            <ImageView android:padding="12.0dip" android:layout_width="48.0dip" android:layout_height="48.0dip" />
+            <TextView android:textSize="@dimen/text_title" android:textColor="@color/black" android:gravity="center" android:id="@id/tvSportName" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="@string/dup_main_sport" android:layout_weight="1.0" />
+            <ImageView android:padding="12.0dip" android:visibility="invisible" android:layout_width="48.0dip" android:layout_height="48.0dip" android:src="@mipmap/icon_setting" />
+        </LinearLayout>
+        <RelativeLayout android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0">
+            <fragment android:name="com.google.android.gms.maps.SupportMapFragment" android:id="@id/fGoogle" android:layout_width="fill_parent" android:layout_height="fill_parent" />
+            <ImageView android:id="@id/ivGps" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="8.0dip" android:src="@mipmap/map_gps_0" />
+            <ImageView android:id="@id/ivLocate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="8.0dip" android:src="@mipmap/map_locate_on" android:layout_alignParentRight="true" />
+            <TextView android:id="@id/tvLocationInit" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:layout_centerHorizontal="true" />
+            <TextView android:id="@id/tvLocation" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:layout_below="@id/tvLocationInit" android:layout_centerHorizontal="true" />
+        </RelativeLayout>
+        <LinearLayout android:orientation="vertical" android:background="@color/white" android:paddingBottom="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_above="@id/llButton" android:layout_alignParentStart="true">
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <TextView android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0" />
+                <TextView android:textSize="72.0sp" android:gravity="center" android:id="@id/tvDistance" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0.00" />
+                <TextView android:id="@id/tvUnit" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/unit_km" android:layout_weight="1.0" />
+            </LinearLayout>
+            <ImageView android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="16.0dip" android:src="@mipmap/map_split" />
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <LinearLayout android:gravity="center" android:orientation="vertical" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0">
+                    <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@mipmap/sport_pace" />
+                    <TextView android:textSize="24.0sp" android:gravity="center" android:id="@id/tvPace" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="00'00" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/sport_pace" />
+                </LinearLayout>
+                <LinearLayout android:gravity="center" android:orientation="vertical" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0">
+                    <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@mipmap/sport_time" />
+                    <TextView android:textSize="24.0sp" android:gravity="center" android:id="@id/tvTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="00:00" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/sport_time" />
+                </LinearLayout>
+                <LinearLayout android:gravity="center" android:orientation="vertical" android:id="@id/llCalorie" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0">
+                    <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@mipmap/sport_calor" />
+                    <TextView android:textSize="24.0sp" android:gravity="center" android:id="@id/tvCalor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/sport_calorie" />
+                </LinearLayout>
+                <LinearLayout android:gravity="center" android:orientation="vertical" android:id="@id/llHeartrate" android:visibility="gone" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0">
+                    <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@mipmap/sport_heartrate2" />
+                    <TextView android:textSize="24.0sp" android:gravity="center" android:id="@id/tvHeartrate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/heartrate" />
+                </LinearLayout>
+                <LinearLayout android:gravity="center" android:orientation="vertical" android:id="@id/llStep" android:visibility="gone" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0">
+                    <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@mipmap/sport_step" />
+                    <TextView android:textSize="24.0sp" android:gravity="center" android:id="@id/tvStep" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--" />
+                    <TextView android:id="@id/tvStepDesc" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/unit_step" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout android:gravity="center_horizontal" android:orientation="horizontal" android:id="@id/llButton" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="56.0dip">
+            <com.jaga.ibraceletplus.jyring.widget.SlideUnlockView android:id="@id/suvPause" android:visibility="visible" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginStart="16.0dip" android:layout_marginEnd="16.0dip" app:slideUnlockBackground="@mipmap/slide_background" app:slideUnlockButton="@mipmap/slide_button" app:slideUnlockText="@string/action_pause" />
+            <Button android:textSize="@dimen/text_title" android:textColor="@color/white" android:id="@id/bPause" android:background="@color/purple_light" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent" android:text="@string/action_pause" />
+            <Button android:textSize="@dimen/text_title" android:textColor="@color/blue" android:id="@id/bResume" android:background="@drawable/button_stroken_blue" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="40.0dip" android:layout_marginLeft="24.0dip" android:layout_marginRight="24.0dip" android:text="@string/action_resume" android:layout_weight="1.0" />
+            <Button android:textSize="@dimen/text_title" android:textColor="@color/red" android:id="@id/bStop" android:background="@drawable/button_stroken_red" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="40.0dip" android:layout_marginLeft="24.0dip" android:layout_marginRight="24.0dip" android:text="@string/action_stop" android:layout_weight="1.0" />
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout android:gravity="center" android:id="@id/llCountDown" android:background="@color/blue" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <TextView android:textSize="144.0sp" android:textColor="@color/white" android:id="@id/tvCountDown" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+    </LinearLayout>
+</RelativeLayout>

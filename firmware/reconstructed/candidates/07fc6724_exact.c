@@ -1,0 +1,40 @@
+/* Reproduce sensor-record allocation and its out-of-range fault loop. */
+__attribute__((used, naked, section(".text.FUN_07fc6724")))
+int FUN_07fc6724(void)
+{
+    __asm__ volatile (
+        "push {r3, r4, r5, r6, r7, lr}\n"
+        "mov r5, r3\n"
+        "mov r6, r2\n"
+        "mov r4, r1\n"
+        "mov r0, r2\n"
+        "bl func_0x07f1bf1a\n"
+        "cmp r0, #0\n"
+        "bne 1f\n"
+        "movs r0, #253\n"
+        "bl FUN_07fcb080\n"
+        "mov r7, r0\n"
+        "ldr r0, [pc, #48]\n"
+        "movs r1, #4\n"
+        "mov r2, r6\n"
+        "mov r3, r1\n"
+        "bl func_0x07f1bbb0\n"
+        "lsrs r1, r5, #8\n"
+        "strb r1, [r0, #0]\n"
+        "lsrs r1, r5, #11\n"
+        "bne 2f\n"
+        "ldrh r1, [r7, #4]\n"
+        "ldrh r2, [r4, #0]\n"
+        "subs r1, r2, r1\n"
+        "strh r1, [r0, #2]\n"
+        "bl func_0x07f1bbe2\n"
+        "1: movs r0, #0\n"
+        "pop {r3, r4, r5, r6, r7, pc}\n"
+        "2: ldr r0, [pc, #552]\n"
+        "movs r1, #200\n"
+        "strh r1, [r0, #0]\n"
+        "ldr r0, [pc, #548]\n"
+        "movs r1, #8\n"
+        "strh r1, [r0, #0]\n"
+        "3: b 3b\n");
+}

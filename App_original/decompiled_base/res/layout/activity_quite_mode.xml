@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:background="@color/silver" android:fitsSystemWindows="true" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:background="@color/blue" android:layout_width="fill_parent" android:layout_height="48.0dip">
+        <ImageView android:id="@id/ivBack" android:padding="12.0dip" android:layout_width="48.0dip" android:layout_height="48.0dip" android:src="@mipmap/back_white" />
+        <TextView android:textSize="@dimen/text_title" android:textColor="@color/white" android:gravity="center" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="@string/setting_quite" android:layout_weight="1.0" />
+        <ImageView android:id="@id/ivSync" android:padding="12.0dip" android:layout_width="48.0dip" android:layout_height="48.0dip" android:src="@mipmap/refresh" />
+    </LinearLayout>
+    <com.balysv.materialripple.MaterialRippleLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" app:mrl_rippleColor="@color/grey" app:mrl_rippleOverlay="true">
+        <RelativeLayout android:background="@color/white" android:layout_width="fill_parent" android:layout_height="48.0dip">
+            <TextView android:text="@string/setting_quite" style="@style/ItemLeft" />
+            <Switch android:id="@id/sbDnd" android:layout_alignParentRight="true" android:layout_centerVertical="true" style="@style/Switch" />
+        </RelativeLayout>
+    </com.balysv.materialripple.MaterialRippleLayout>
+    <RelativeLayout android:gravity="center_vertical" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginTop="8.0dip">
+        <TextView android:text="@string/sedentary_timer_setting_starttime" style="@style/ItemLeft" />
+        <com.balysv.materialripple.MaterialRippleLayout android:layout_width="fill_parent" android:layout_height="fill_parent" app:mrl_rippleColor="@color/grey" app:mrl_rippleOverlay="true">
+            <TextView android:id="@id/tvAlarmStartTime" android:text="22:00" android:drawableRight="@mipmap/right_arrow" style="@style/ItemRight" />
+        </com.balysv.materialripple.MaterialRippleLayout>
+    </RelativeLayout>
+    <View style="@style/ViewSplit" />
+    <RelativeLayout android:gravity="center_vertical" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="48.0dip">
+        <TextView android:text="@string/sedentary_timer_setting_endtime" style="@style/ItemLeft" />
+        <com.balysv.materialripple.MaterialRippleLayout android:layout_width="fill_parent" android:layout_height="fill_parent" app:mrl_rippleColor="@color/grey" app:mrl_rippleOverlay="true">
+            <TextView android:id="@id/tvAlarmEndTime" android:text="08:00" android:drawableRight="@mipmap/right_arrow" style="@style/ItemRight" />
+        </com.balysv.materialripple.MaterialRippleLayout>
+    </RelativeLayout>
+    <RelativeLayout android:gravity="center_vertical" android:background="@color/white" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginTop="8.0dip">
+        <TextView android:text="@string/setting_notify_alarm_period" style="@style/ItemLeft" />
+        <com.balysv.materialripple.MaterialRippleLayout android:layout_width="fill_parent" android:layout_height="fill_parent" app:mrl_rippleColor="@color/grey" app:mrl_rippleOverlay="true">
+            <TextView android:id="@id/tvPeriod" android:drawableRight="@mipmap/right_arrow" style="@style/ItemRight" />
+        </com.balysv.materialripple.MaterialRippleLayout>
+    </RelativeLayout>
+    <com.balysv.materialripple.MaterialRippleLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" app:mrl_rippleColor="@color/grey" app:mrl_rippleOverlay="true">
+        <RelativeLayout android:id="@id/rlVibrate" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="48.0dip">
+            <TextView android:text="@string/setting_vibrate" style="@style/ItemLeft" />
+            <Switch android:id="@id/sbVibrate" android:layout_alignParentRight="true" android:layout_centerVertical="true" style="@style/Switch" />
+        </RelativeLayout>
+    </com.balysv.materialripple.MaterialRippleLayout>
+    <View style="@style/ViewSplit" />
+    <com.balysv.materialripple.MaterialRippleLayout android:layout_width="fill_parent" android:layout_height="wrap_content" app:mrl_rippleColor="@color/grey" app:mrl_rippleOverlay="true">
+        <RelativeLayout android:background="@color/white" android:layout_width="fill_parent" android:layout_height="48.0dip">
+            <TextView android:text="@string/setting_light" android:paddingEnd="64.0dip" style="@style/ItemLeft" />
+            <Switch android:id="@id/sbLight" android:layout_alignParentRight="true" android:layout_centerVertical="true" style="@style/Switch" />
+        </RelativeLayout>
+    </com.balysv.materialripple.MaterialRippleLayout>
+    <TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="16.0dip" android:hint="@string/setting_power_hint" />
+</LinearLayout>

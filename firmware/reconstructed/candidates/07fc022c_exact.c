@@ -1,0 +1,42 @@
+/* Evaluate the two mode-dependent record readiness conditions. */
+__attribute__((used, naked, section(".text.FUN_07fc022c")))
+int FUN_07fc022c(void)
+{
+    __asm__ volatile (
+        "push {r4, r5, lr}\n"
+        "lsls r3, r2, #2\n"
+        "ldr r2, [pc, #948]\n"
+        "movs r0, #1\n"
+        "ldr r2, [r2, r3]\n"
+        "ldr r2, [r2, #16]\n"
+        "ldrb r3, [r2, #20]\n"
+        "ldrb r4, [r2, #27]\n"
+        "ldrb r5, [r2, #28]\n"
+        "ands r3, r4\n"
+        "ldrb r4, [r2, #21]\n"
+        "ands r4, r5\n"
+        "cmp r1, #1\n"
+        "beq 1f\n"
+        "cmp r1, #2\n"
+        "bne 2f\n"
+        "1: ldrb r5, [r2, #18]\n"
+        "ldrb r2, [r2, #25]\n"
+        "ands r5, r2\n"
+        "lsls r2, r5, #28\n"
+        "bmi 2f\n"
+        "mov r2, r3\n"
+        "orrs r2, r4\n"
+        "lsls r2, r2, #31\n"
+        "bne 2f\n"
+        "movs r0, #0\n"
+        "2: cmp r1, #3\n"
+        "beq 3f\n"
+        "cmp r1, #4\n"
+        "bne 4f\n"
+        "3: lsls r1, r3, #29\n"
+        "bmi 4f\n"
+        "lsls r1, r4, #29\n"
+        "bmi 4f\n"
+        "movs r0, #0\n"
+        "4: pop {r4, r5, pc}\n");
+}

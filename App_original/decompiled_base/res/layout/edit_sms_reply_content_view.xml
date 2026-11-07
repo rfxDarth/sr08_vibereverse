@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="300.0dip" android:layout_height="180.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView android:textSize="18.0sp" android:gravity="center" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="15.0dip" android:text="@string/action_sms_rsp" />
+    <View android:background="#fff5f5f5" android:layout_width="fill_parent" android:layout_height="2.0dip" android:layout_marginLeft="20.0dip" android:layout_marginTop="10.0dip" android:layout_marginRight="20.0dip" />
+    <EditText android:id="@id/etContent" android:focusable="true" android:focusableInTouchMode="true" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="20.0dip" android:layout_marginTop="10.0dip" android:layout_marginRight="20.0dip" android:hint="@string/action_sms_rsp_tips" />
+    <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="10.0dip">
+        <Button android:textSize="16.0sp" android:textColor="#ff1965db" android:id="@id/btn_cancel" android:background="@null" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/action_cancel" android:layout_weight="1.0" />
+        <Button android:textSize="16.0sp" android:textColor="#ff1965db" android:id="@id/btn_ok" android:background="@null" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/action_ok" android:layout_weight="1.0" />
+    </LinearLayout>
+</LinearLayout>

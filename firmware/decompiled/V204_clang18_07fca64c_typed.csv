@@ -1,0 +1,2 @@
+address,function,range_size,pointer_globals,status,pointer_widths,compiled_hex,payload_hex,bit_distance,diagnostic,source_file
+0x07fca64c,FUN_07fca64c,304,6,compile-error,0-0-0-0-1-1,,,-1,/tmp/v204-data-literals-03zjwyo1/07fca64c-0-0-0-0-1-1.c:89:32: error: cannot take the address of an rvalue of type 'unsigned int',07fca64c.c

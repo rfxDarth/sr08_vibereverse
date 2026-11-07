@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.jaga.ibraceletplus.jyring.dslv.CheckableRelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent" app:mrl_rippleColor="@color/grey" app:mrl_rippleOverlay="true"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <CheckedTextView android:textAppearance="?android:textAppearanceMedium" android:gravity="center_vertical" android:id="@id/deleteBtn" android:paddingLeft="16.0dip" android:paddingRight="16.0dip" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="61.0dip" android:checkMark="?android:listChoiceIndicatorMultiple" android:layout_centerVertical="true" />
+    <RelativeLayout android:gravity="center_vertical" android:background="@color/white" android:descendantFocusability="blocksDescendants" android:layout_width="fill_parent" android:layout_height="72.0dip">
+        <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_marginRight="64.0dip" android:paddingStart="16.0dip">
+            <ImageView android:id="@id/ivDelete" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@mipmap/icon_contact_delete" />
+            <LinearLayout android:gravity="center_vertical" android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="fill_parent" android:paddingStart="16.0dip">
+                <TextView android:textSize="18.0sp" android:textColor="@color/grey_dark" android:gravity="center_vertical" android:id="@id/tvName" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="" android:maxLines="2" android:singleLine="false" android:fontFamily="sans-serif-light" />
+                <TextView android:textSize="@dimen/text_support" android:textColor="@color/grey" android:gravity="center_vertical" android:id="@id/tvPhoneNum" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="" />
+            </LinearLayout>
+        </LinearLayout>
+        <TextView android:id="@id/tvAlarmId" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="fill_parent" android:text="0" />
+        <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_marginRight="16.0dip" android:layout_centerVertical="true" android:paddingStart="16.0dip" android:layout_alignParentEnd="true">
+            <ImageView android:id="@id/ivSos" android:padding="16.0dip" android:visibility="invisible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@mipmap/icon_contact_sos" />
+            <ImageView android:id="@id/ivMenu" android:padding="16.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:src="@mipmap/icon_contact_menu" />
+        </LinearLayout>
+    </RelativeLayout>
+</com.jaga.ibraceletplus.jyring.dslv.CheckableRelativeLayout>

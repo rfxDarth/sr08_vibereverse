@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:background="@color/main_gray" android:fitsSystemWindows="true" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:background="@color/female_reminder_forecast_menstrual_day" android:layout_width="fill_parent" android:layout_height="48.0dip" android:baselineAligned="false">
+        <LinearLayout android:gravity="center_vertical" android:id="@id/llBack" android:clickable="true" android:layout_width="100.0dip" android:layout_height="fill_parent">
+            <ImageView android:paddingLeft="10.0dip" android:layout_width="wrap_content" android:layout_height="fill_parent" android:src="@drawable/back_white" />
+            <TextView android:textSize="14.0sp" android:textColor="@color/white" android:id="@id/tvMenu" android:paddingLeft="10.0dip" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/back" />
+        </LinearLayout>
+        <LinearLayout android:gravity="center" android:layout_gravity="center" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="-100.0dip">
+            <TextView android:textAppearance="?android:textAppearanceMedium" android:textColor="@color/white" android:id="@id/title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/female_reminder_menstruation_title" />
+        </LinearLayout>
+        <LinearLayout android:gravity="center|right" android:id="@id/menstruation_title" android:visibility="visible" android:layout_width="100.0dip" android:layout_height="fill_parent" android:layout_marginLeft="-100.0dip">
+            <ImageView android:id="@id/type_image" android:background="@drawable/menstruation" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="10.0dip" />
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout android:orientation="vertical" android:id="@id/child_message_layout" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="10.0dip">
+        <TextView android:textSize="12.0sp" android:textColor="@color/main_gray_text" android:background="@color/white" android:paddingLeft="10.0dip" android:paddingTop="4.0dip" android:paddingBottom="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="10.0dip" android:text="@string/female_reminder_mummy_child_message" />
+        <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/child_sex_layout" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="50.0dip" android:layout_marginTop="1.0dip">
+            <TextView android:textSize="16.0sp" android:textColor="@color/black" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:text="@string/setting_user_info_gender" />
+            <LinearLayout android:gravity="center|right" android:layout_width="fill_parent" android:layout_height="fill_parent">
+                <TextView android:textColor="@color/main_gray_text" android:id="@id/child_sex_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="10.0dip" android:text="男" />
+                <ImageView android:background="@drawable/hc_right" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="10.0dip" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/child_birthday_layout" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="50.0dip" android:layout_marginTop="1.0dip">
+            <TextView android:textSize="16.0sp" android:textColor="@color/black" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:text="@string/setting_user_info_birthday" />
+            <LinearLayout android:gravity="center|right" android:layout_width="fill_parent" android:layout_height="fill_parent">
+                <TextView android:textColor="@color/main_gray_text" android:id="@id/child_birthday_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="10.0dip" android:text="2017-11-06" />
+                <ImageView android:background="@drawable/hc_right" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="10.0dip" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+    <TextView android:textSize="12.0sp" android:textColor="@color/main_gray_text" android:background="@color/white" android:paddingLeft="10.0dip" android:paddingTop="4.0dip" android:paddingBottom="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="10.0dip" android:text="@string/female_reminder_menstruation_lasts" />
+    <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/menstruation_length" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="50.0dip" android:layout_marginTop="1.0dip">
+        <TextView android:textSize="16.0sp" android:textColor="@color/black" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:text="@string/female_reminder_menstruation_length" />
+        <LinearLayout android:gravity="center|right" android:layout_width="fill_parent" android:layout_height="fill_parent">
+            <TextView android:textColor="@color/main_gray_text" android:id="@id/menstruation_length_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="10.0dip" android:text="1" />
+            <ImageView android:background="@drawable/hc_right" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="10.0dip" />
+        </LinearLayout>
+    </LinearLayout>
+    <TextView android:textSize="12.0sp" android:textColor="@color/main_gray_text" android:background="@color/white" android:paddingLeft="10.0dip" android:paddingTop="4.0dip" android:paddingBottom="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="10.0dip" android:text="@string/female_reminder_menstruation_interval" />
+    <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/menstruation_period" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="50.0dip" android:layout_marginTop="1.0dip">
+        <TextView android:textSize="16.0sp" android:textColor="@color/black" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:text="@string/female_reminder_menstruation_period" />
+        <LinearLayout android:gravity="center|right" android:layout_width="fill_parent" android:layout_height="fill_parent">
+            <TextView android:textColor="@color/main_gray_text" android:id="@id/menstruation_period_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="10.0dip" android:text="20" />
+            <ImageView android:background="@drawable/hc_right" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="10.0dip" />
+        </LinearLayout>
+    </LinearLayout>
+    <TextView android:textSize="12.0sp" android:textColor="@color/main_gray_text" android:background="@color/white" android:paddingLeft="10.0dip" android:paddingTop="4.0dip" android:paddingBottom="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="10.0dip" android:text="@string/female_reminder_menstruation_recent" />
+    <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/menstruation_start" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="50.0dip" android:layout_marginTop="1.0dip">
+        <TextView android:textSize="16.0sp" android:textColor="@color/black" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:layout_marginRight="10.0dip" android:text="@string/female_reminder_menstruation_start" android:maxLines="2" android:singleLine="false" android:layout_weight="1.0" />
+        <LinearLayout android:gravity="center|right" android:layout_width="wrap_content" android:layout_height="fill_parent">
+            <TextView android:textColor="@color/main_gray_text" android:id="@id/menstruation_start_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="10.0dip" android:text="2017-11-06" />
+            <ImageView android:background="@drawable/hc_right" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="10.0dip" />
+        </LinearLayout>
+    </LinearLayout>
+    <RelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <LinearLayout android:gravity="center" android:id="@id/save_layout" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="50.0dip" android:layout_alignParentBottom="true">
+            <TextView android:textSize="16.0sp" android:textColor="@color/female_reminder_forecast_menstrual_day" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/save" />
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>

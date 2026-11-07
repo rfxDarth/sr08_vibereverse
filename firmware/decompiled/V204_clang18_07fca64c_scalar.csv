@@ -1,0 +1,2 @@
+address,function,range_size,pointer_globals,status,pointer_widths,compiled_hex,payload_hex,bit_distance,diagnostic,source_file
+0x07fca64c,FUN_07fca64c,304,6,compile-error,0-0-0-0-0-0,,,-1,/tmp/v204-data-literals-kfa10fok/07fca64c-0-0-0-0-0-0.c:65:13: error: indirection requires pointer operand ('unsigned int' invalid),07fca64c.c

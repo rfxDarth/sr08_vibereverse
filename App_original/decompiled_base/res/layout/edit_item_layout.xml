@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.jaga.ibraceletplus.jyring.dslv.CheckableRelativeLayout android:orientation="horizontal" android:background="@color/bright_foreground_disabled_material_dark" android:layout_width="fill_parent" android:layout_height="61.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckedTextView android:textAppearance="?android:textAppearanceMedium" android:gravity="center_vertical" android:id="@id/deleteBtn" android:paddingLeft="16.0dip" android:paddingRight="16.0dip" android:layout_width="wrap_content" android:layout_height="61.0dip" android:checkMark="?android:listChoiceIndicatorMultiple" android:layout_centerVertical="true" />
+    <RelativeLayout android:id="@id/my_optional_layout" android:paddingRight="16.0dip" android:layout_width="fill_parent" android:layout_height="60.0dip" android:layout_toRightOf="@id/deleteBtn">
+        <TextView android:textSize="15.0sp" android:id="@id/itemContent" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@null" android:layout_centerVertical="true" />
+        <RelativeLayout android:id="@id/locationChangeImg" android:layout_width="64.0dip" android:layout_height="fill_parent" android:layout_alignParentRight="true">
+            <ImageView android:id="@id/ivMenu" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@mipmap/icon_contact_menu" android:layout_alignParentRight="true" android:layout_centerVertical="true" />
+        </RelativeLayout>
+    </RelativeLayout>
+</com.jaga.ibraceletplus.jyring.dslv.CheckableRelativeLayout>

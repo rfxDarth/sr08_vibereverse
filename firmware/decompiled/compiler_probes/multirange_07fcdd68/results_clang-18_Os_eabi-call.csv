@@ -1,0 +1,2 @@
+compiler,status,emitted_bytes,target_bytes,overlap_diff_bits,overlap_equal_bytes,longest_exact_run,artifact_or_diagnostic
+clang-18,length-mismatch,3860,3592,13149,66,2,07fcdd68_clang-18_Os_eabi-call.bin

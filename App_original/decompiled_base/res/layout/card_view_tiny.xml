@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:background="@color/main_gray" android:layout_width="fill_parent" android:layout_height="wrap_content" style="@style/CalendarCard.Root"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <ScrollView android:gravity="center" android:orientation="horizontal" android:id="@id/svCardDayGrid" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <LinearLayout android:gravity="center" android:orientation="vertical" android:id="@id/cardGrid" android:layout_width="fill_parent" android:layout_height="wrap_content" style="@style/CalendarCard.Grid">
+            <include layout="@layout/card_row_tiny" />
+            <include layout="@layout/card_row_tiny" />
+            <include layout="@layout/card_row_tiny" />
+            <include layout="@layout/card_row_tiny" />
+            <include layout="@layout/card_row_tiny" />
+            <include layout="@layout/card_row_tiny" />
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

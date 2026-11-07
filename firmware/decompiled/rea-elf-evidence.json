@@ -1,0 +1,308 @@
+{
+  "artifacts": [
+    {
+      "architecture": null,
+      "digest": {
+        "sha256": "002c996497366c3653dcdb54d916bcac709272df6ed79db18a39c189b0e14c7e"
+      },
+      "format": "elf"
+    }
+  ],
+  "captures": [],
+  "environments": [],
+  "providers": [
+    {
+      "id": "rea-artifact-graph",
+      "name": "REA safe artifact graph provider",
+      "version": "1"
+    }
+  ],
+  "records": [
+    {
+      "analysis_profile": null,
+      "authority": "shipped-artifact",
+      "confidence": "observed",
+      "environment": null,
+      "evidence_id": "ev_6efd4a5a4410aeeb493d3b2160bd7808920b203e2285004c2ee60f80192f3580",
+      "evidence_links": [],
+      "limitations": [
+        "Inventory covers root bytes only; child container entries were not examined."
+      ],
+      "locations": [],
+      "normalized_result": {
+        "coverage": {
+          "scope": "root",
+          "status": "complete"
+        },
+        "edges": [],
+        "integrity_contradictions": [],
+        "limitations": [
+          "Inventory covers root bytes only; child container entries were not examined."
+        ],
+        "manifest": {
+          "edge_count": 0,
+          "graph_sha256": "4b3e45dd5b9d8c168016be9b618147ffbf1a5b523aba9d23b2ef9e67d974624e",
+          "manifest_id": "agm_e191e449e4cce6a8bacad3cf9384bfb42f95f94f9140d9b3b72cb3fef7db2ed6",
+          "node_count": 1,
+          "occurrence_count": 1,
+          "root_artifact_id": "art_78a0424dc58dff7c54352fa7629989578dd180766f777bd2d1cbda2ec093ddce",
+          "root_format": "elf",
+          "root_sha256": "002c996497366c3653dcdb54d916bcac709272df6ed79db18a39c189b0e14c7e"
+        },
+        "nodes": [
+          {
+            "architecture": null,
+            "artifact_id": "art_78a0424dc58dff7c54352fa7629989578dd180766f777bd2d1cbda2ec093ddce",
+            "content_state": "materialized",
+            "format": "elf",
+            "limitations": [],
+            "media_type": null,
+            "sha256": "002c996497366c3653dcdb54d916bcac709272df6ed79db18a39c189b0e14c7e",
+            "size": 67576
+          }
+        ],
+        "occurrences": [
+          {
+            "artifact_format": "elf",
+            "artifact_id": "art_78a0424dc58dff7c54352fa7629989578dd180766f777bd2d1cbda2ec093ddce",
+            "artifact_kind": "executable",
+            "compressed_size": null,
+            "declared_size": 67576,
+            "encrypted": false,
+            "entry_kind": "file",
+            "executable": false,
+            "hash_status": "verified",
+            "limitations": [],
+            "logical_path": ".",
+            "occurrence_id": "occ_a695b0e4ec6d53902dc17d8e16a46f02798c33c681d73c186cd131dc539a34ac",
+            "parent_occurrence_id": null,
+            "source_location": null
+          }
+        ],
+        "provenance": []
+      },
+      "operation": "inventory_artifact",
+      "parameters": {
+        "integrity_policy": "fail"
+      },
+      "predicate_type": "rea.analysis",
+      "provider": {
+        "id": "rea-artifact-graph",
+        "name": "REA safe artifact graph provider",
+        "version": "1"
+      },
+      "raw_result": null,
+      "relationship_coverage": null,
+      "subject": {
+        "architecture": null,
+        "digest": {
+          "sha256": "002c996497366c3653dcdb54d916bcac709272df6ed79db18a39c189b0e14c7e"
+        },
+        "format": "elf",
+        "local_path": "/home/drath/Projects/personal/code/test/firmware/decompiled/V204.elf",
+        "name": "V204.elf"
+      }
+    },
+    {
+      "analysis_profile": null,
+      "authority": "shipped-artifact",
+      "caller_input_path": "../firmware/decompiled/V204.elf",
+      "confidence": "observed",
+      "environment": null,
+      "evidence_id": "ev_88a033a9e47a8adfef8cdf9cdc5d2b439ca1069a3d0c8b4bf5087b5b603a0ceb",
+      "evidence_links": [
+        "ev_6efd4a5a4410aeeb493d3b2160bd7808920b203e2285004c2ee60f80192f3580"
+      ],
+      "limitations": [
+        "Inspection derives bounded static hypotheses and next probes; it does not execute the artifact or claim format-specific semantics.",
+        "Inventory covers root bytes only; child container entries were not examined."
+      ],
+      "locations": [],
+      "normalized_result": {
+        "contradictions": [],
+        "coverage": {
+          "hypotheses_omitted": 0,
+          "hypotheses_retained": 0,
+          "next_probes_omitted": 0,
+          "next_probes_retained": 1,
+          "observations_omitted": 0,
+          "observations_retained": 1,
+          "status": "complete-within-substeps",
+          "substeps_completed": 1,
+          "unexplored_branches_omitted": 0,
+          "unexplored_branches_retained": 1
+        },
+        "evidence_links": [
+          "ev_6efd4a5a4410aeeb493d3b2160bd7808920b203e2285004c2ee60f80192f3580"
+        ],
+        "hypotheses": [],
+        "inspection_id": "ai_58d2042419a92c95f4f4a12b34ca0a3a142f6db1296403a4426cbedc1fe3df6c",
+        "limitations": [
+          "Inspection derives bounded static hypotheses and next probes; it does not execute the artifact or claim format-specific semantics.",
+          "Inventory covers root bytes only; child container entries were not examined."
+        ],
+        "next_probes": [
+          {
+            "authority": "native-analysis-provider",
+            "operation": "open_binary",
+            "rationale": "Bind one deep native provider before function-level analysis."
+          }
+        ],
+        "observations": [
+          {
+            "evidence_id": "ev_6efd4a5a4410aeeb493d3b2160bd7808920b203e2285004c2ee60f80192f3580",
+            "kind": "root-manifest",
+            "observation_id": "aio_d3bdcc236fdfa026ac94acaca0814f504f50111a0a49638e5e921bb25eb51eef",
+            "subject": "art_78a0424dc58dff7c54352fa7629989578dd180766f777bd2d1cbda2ec093ddce",
+            "value": {
+              "edge_count": 0,
+              "graph_sha256": "4b3e45dd5b9d8c168016be9b618147ffbf1a5b523aba9d23b2ef9e67d974624e",
+              "manifest_id": "agm_e191e449e4cce6a8bacad3cf9384bfb42f95f94f9140d9b3b72cb3fef7db2ed6",
+              "node_count": 1,
+              "occurrence_count": 1,
+              "root_artifact_id": "art_78a0424dc58dff7c54352fa7629989578dd180766f777bd2d1cbda2ec093ddce",
+              "root_format": "elf",
+              "root_sha256": "002c996497366c3653dcdb54d916bcac709272df6ed79db18a39c189b0e14c7e"
+            }
+          }
+        ],
+        "subject": {
+          "manifest_id": "agm_e191e449e4cce6a8bacad3cf9384bfb42f95f94f9140d9b3b72cb3fef7db2ed6",
+          "root_artifact_id": "art_78a0424dc58dff7c54352fa7629989578dd180766f777bd2d1cbda2ec093ddce",
+          "root_format": "elf",
+          "root_sha256": "002c996497366c3653dcdb54d916bcac709272df6ed79db18a39c189b0e14c7e"
+        },
+        "substeps": [
+          {
+            "evidence": {
+              "analysis_profile": null,
+              "authority": "shipped-artifact",
+              "confidence": "observed",
+              "environment": null,
+              "evidence_id": "ev_6efd4a5a4410aeeb493d3b2160bd7808920b203e2285004c2ee60f80192f3580",
+              "evidence_links": [],
+              "limitations": [
+                "Inventory covers root bytes only; child container entries were not examined."
+              ],
+              "locations": [],
+              "normalized_result": {
+                "coverage": {
+                  "scope": "root",
+                  "status": "complete"
+                },
+                "edges": [],
+                "integrity_contradictions": [],
+                "limitations": [
+                  "Inventory covers root bytes only; child container entries were not examined."
+                ],
+                "manifest": {
+                  "edge_count": 0,
+                  "graph_sha256": "4b3e45dd5b9d8c168016be9b618147ffbf1a5b523aba9d23b2ef9e67d974624e",
+                  "manifest_id": "agm_e191e449e4cce6a8bacad3cf9384bfb42f95f94f9140d9b3b72cb3fef7db2ed6",
+                  "node_count": 1,
+                  "occurrence_count": 1,
+                  "root_artifact_id": "art_78a0424dc58dff7c54352fa7629989578dd180766f777bd2d1cbda2ec093ddce",
+                  "root_format": "elf",
+                  "root_sha256": "002c996497366c3653dcdb54d916bcac709272df6ed79db18a39c189b0e14c7e"
+                },
+                "nodes": [
+                  {
+                    "architecture": null,
+                    "artifact_id": "art_78a0424dc58dff7c54352fa7629989578dd180766f777bd2d1cbda2ec093ddce",
+                    "content_state": "materialized",
+                    "format": "elf",
+                    "limitations": [],
+                    "media_type": null,
+                    "sha256": "002c996497366c3653dcdb54d916bcac709272df6ed79db18a39c189b0e14c7e",
+                    "size": 67576
+                  }
+                ],
+                "occurrences": [
+                  {
+                    "artifact_format": "elf",
+                    "artifact_id": "art_78a0424dc58dff7c54352fa7629989578dd180766f777bd2d1cbda2ec093ddce",
+                    "artifact_kind": "executable",
+                    "compressed_size": null,
+                    "declared_size": 67576,
+                    "encrypted": false,
+                    "entry_kind": "file",
+                    "executable": false,
+                    "hash_status": "verified",
+                    "limitations": [],
+                    "logical_path": ".",
+                    "occurrence_id": "occ_a695b0e4ec6d53902dc17d8e16a46f02798c33c681d73c186cd131dc539a34ac",
+                    "parent_occurrence_id": null,
+                    "source_location": null
+                  }
+                ],
+                "provenance": []
+              },
+              "operation": "inventory_artifact",
+              "parameters": {
+                "integrity_policy": "fail"
+              },
+              "predicate_type": "rea.analysis",
+              "provider": {
+                "id": "rea-artifact-graph",
+                "name": "REA safe artifact graph provider",
+                "version": "1"
+              },
+              "raw_result": null,
+              "relationship_coverage": null,
+              "subject": {
+                "architecture": null,
+                "digest": {
+                  "sha256": "002c996497366c3653dcdb54d916bcac709272df6ed79db18a39c189b0e14c7e"
+                },
+                "format": "elf",
+                "local_path": "/home/drath/Projects/personal/code/test/firmware/decompiled/V204.elf",
+                "name": "V204.elf"
+              }
+            },
+            "evidence_id": "ev_6efd4a5a4410aeeb493d3b2160bd7808920b203e2285004c2ee60f80192f3580",
+            "operation": "inventory_artifact",
+            "status": "completed",
+            "substep_id": "ais_60739532d681d43840761d30f6f69621ab8a6c630c5da9140f231e7766200578"
+          }
+        ],
+        "unexplored_branches": [
+          {
+            "branch_id": "aib_bb4de92aa62bf917b924352eb2fad3d2d2abfa80e0c8a6ff9a4138c4ea2c757f",
+            "detail": "open_binary was not run by provider-neutral artifact inspection.",
+            "evidence_id": "ev_6efd4a5a4410aeeb493d3b2160bd7808920b203e2285004c2ee60f80192f3580",
+            "next_probe": {
+              "authority": "native-analysis-provider",
+              "operation": "open_binary",
+              "rationale": "Bind one deep native provider before function-level analysis."
+            },
+            "reason": "format-specific-analysis-required"
+          }
+        ]
+      },
+      "operation": "inspect_artifact",
+      "parameters": {
+        "input_path": "../firmware/decompiled/V204.elf",
+        "integrity_policy": "fail"
+      },
+      "predicate_type": "rea.analysis",
+      "provider": {
+        "id": "rea-artifact-graph",
+        "name": "REA safe artifact graph provider",
+        "version": "1"
+      },
+      "raw_result": null,
+      "relationship_coverage": null,
+      "subject": {
+        "architecture": null,
+        "digest": {
+          "sha256": "002c996497366c3653dcdb54d916bcac709272df6ed79db18a39c189b0e14c7e"
+        },
+        "format": "elf",
+        "local_path": "/home/drath/Projects/personal/code/test/firmware/decompiled/V204.elf",
+        "name": "V204.elf"
+      }
+    }
+  ],
+  "scenarios": [],
+  "unknowns": []
+}

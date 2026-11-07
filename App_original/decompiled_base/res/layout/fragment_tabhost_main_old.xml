@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:orientation="vertical" android:id="@id/llBackground" android:background="@mipmap/main_bg_step" android:layout_width="fill_parent" android:layout_height="348.0dip">
+        <LinearLayout android:gravity="center" android:orientation="horizontal" android:visibility="visible" android:layout_width="fill_parent" android:layout_height="48.0dip">
+            <LinearLayout android:id="@id/llBattery" android:background="@mipmap/icon_battery" android:paddingLeft="5.0dip" android:paddingTop="3.0dip" android:paddingRight="5.0dip" android:paddingBottom="3.0dip" android:visibility="gone" android:layout_width="30.0dip" android:layout_height="16.0dip" android:layout_marginRight="9.0dip" android:layout_marginStart="9.0dip">
+                <View android:id="@id/vBattery" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="fill_parent" />
+            </LinearLayout>
+            <ImageView android:id="@id/ivShare" android:padding="12.0dip" android:visibility="visible" android:layout_width="48.0dip" android:layout_height="48.0dip" android:src="@mipmap/icon_share" />
+            <LinearLayout android:gravity="center" android:padding="4.0dip" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0">
+                <ImageView android:id="@id/ivPre" android:visibility="invisible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@mipmap/icon_prev64_white" />
+                <TextView android:textSize="@dimen/text_title" android:textColor="@color/white" android:gravity="center" android:id="@id/tvToday" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="2000-01-01" android:layout_weight="1.0" />
+                <ImageView android:id="@id/ivNext" android:visibility="invisible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@mipmap/icon_next64_white" />
+            </LinearLayout>
+            <ImageView android:id="@id/ivState" android:padding="12.0dip" android:visibility="visible" android:layout_width="48.0dip" android:layout_height="48.0dip" android:src="@mipmap/sync" />
+        </LinearLayout>
+        <RelativeLayout android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0">
+            <com.jaga.ibraceletplus.jyring.widget.ProgressView android:id="@id/sport_tasks_view" android:layout_width="fill_parent" android:layout_height="fill_parent" app:progress_radius="92.0dip" />
+            <TextView android:textColor="@color/white" android:gravity="right" android:id="@id/tvBPAdjust" android:padding="8.0dip" android:visibility="invisible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/BloodAdjust_Text" android:layout_alignParentTop="true" android:layout_alignParentRight="true" />
+            <ImageView android:id="@id/ivAnimate" android:layout_width="48.0dip" android:layout_height="48.0dip" android:layout_marginTop="48.0dip" android:layout_centerHorizontal="true" />
+            <Button android:textSize="@dimen/text_support" android:textColor="@android:color/white" android:gravity="center" android:id="@id/bTest" android:background="@drawable/button_stroken_white" android:layout_width="wrap_content" android:layout_height="24.0dip" android:layout_marginBottom="48.0dip" android:text="@string/action_start" android:layout_alignParentBottom="true" android:layout_centerHorizontal="true" android:paddingStart="8.0dip" android:paddingEnd="8.0dip" />
+        </RelativeLayout>
+        <GridView android:id="@id/gvMain" android:layout_width="fill_parent" android:layout_height="48.0dip" android:listSelector="@color/transparent" />
+    </LinearLayout>
+    <LinearLayout android:orientation="vertical" android:id="@id/llDetail" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0">
+        <LinearLayout android:orientation="vertical" android:id="@id/llWalk" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent">
+            <LinearLayout android:gravity="center" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0" android:paddingStart="16.0dip" android:paddingEnd="16.0dip">
+                <ImageView android:layout_marginRight="10.0dip" android:src="@mipmap/walk_calor" style="@style/IconLittle" />
+                <RelativeLayout android:layout_width="fill_parent" android:layout_height="40.0dip">
+                    <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+                        <TextView android:textColor="@color/orange" android:gravity="center_vertical" android:layout_width="259.0dip" android:layout_height="fill_parent" android:text="@string/sport_calorie" android:layout_weight="1.0" />
+                        <TextView android:textSize="24.0sp" android:textColor="@color/blue" android:id="@id/tvCalor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="-4.0dip" android:text="0" />
+                        <TextView android:textSize="12.0sp" android:textColor="@color/orange" android:gravity="center" android:layout_width="wrap_content" android:layout_height="fill_parent" android:text="@string/unit_kcal" android:layout_marginStart="4.0dip" />
+                    </LinearLayout>
+                    <ProgressBar android:id="@id/pbCalor" android:layout_width="fill_parent" android:layout_height="12.0dip" android:max="360" android:progress="0" android:progressDrawable="@drawable/progress_step" android:layout_alignParentBottom="true" style="?android:progressBarStyleHorizontal" />
+                </RelativeLayout>
+            </LinearLayout>
+            <View style="@style/ViewSplit" />
+            <LinearLayout android:gravity="center" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0" android:paddingStart="16.0dip" android:paddingEnd="16.0dip">
+                <ImageView android:layout_marginRight="10.0dip" android:src="@mipmap/walk_distance" style="@style/IconLittle" />
+                <RelativeLayout android:layout_width="fill_parent" android:layout_height="40.0dip">
+                    <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+                        <TextView android:textColor="@color/orange" android:gravity="center_vertical" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="@string/sport_distance" android:layout_weight="1.0" />
+                        <TextView android:textSize="24.0sp" android:textColor="@color/blue" android:id="@id/tvDistance" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="-4.0dip" android:text="0" />
+                        <TextView android:textSize="12.0sp" android:textColor="@color/orange" android:gravity="center" android:id="@id/tvUnitDistance" android:layout_width="wrap_content" android:layout_height="fill_parent" android:text="@string/unit_km" android:layout_marginStart="4.0dip" />
+                    </LinearLayout>
+                    <ProgressBar android:id="@id/pbDistance" android:layout_width="fill_parent" android:layout_height="12.0dip" android:layout_marginTop="-8.0dip" android:max="360" android:progress="0" android:progressDrawable="@drawable/progress_step" android:layout_alignParentBottom="true" style="?android:progressBarStyleHorizontal" />
+                </RelativeLayout>
+            </LinearLayout>
+            <View style="@style/ViewSplit" />
+            <LinearLayout android:gravity="center" android:visibility="visible" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0" android:paddingStart="16.0dip" android:paddingEnd="16.0dip">
+                <ImageView android:layout_marginRight="10.0dip" android:src="@mipmap/walk_time" style="@style/IconLittle" />
+                <RelativeLayout android:layout_width="fill_parent" android:layout_height="40.0dip">
+                    <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+                        <TextView android:textColor="@color/orange" android:gravity="center_vertical" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="@string/sport_time" android:layout_weight="1.0" />
+                        <TextView android:textSize="24.0sp" android:textColor="@color/blue" android:gravity="bottom" android:id="@id/tvTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="-4.0dip" android:text="00:00" />
+                    </LinearLayout>
+                    <ProgressBar android:id="@id/pbTime" android:layout_width="fill_parent" android:layout_height="12.0dip" android:max="120" android:progressDrawable="@drawable/progress_step" android:layout_alignParentBottom="true" style="?android:progressBarStyleHorizontal" />
+                </RelativeLayout>
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout android:orientation="vertical" android:id="@id/llSleep" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent">
+            <LinearLayout android:gravity="center_horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip">
+                <LinearLayout android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="4.0dip">
+                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
+                        <ImageView android:id="@id/ivColorDeep" android:layout_width="24.0dip" android:layout_height="16.0dip" android:src="@color/blue_deep" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxWidth="96.0dip" android:text="@string/sleep_deep" android:layout_marginStart="8.0dip" />
+                    </LinearLayout>
+                    <TextView android:textSize="20.0sp" android:layout_gravity="center" android:id="@id/ctvCountDeep" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="00:00" />
+                </LinearLayout>
+                <LinearLayout android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16.0dip" android:layout_marginEnd="16.0dip">
+                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
+                        <ImageView android:id="@id/ivColorLight" android:layout_width="24.0dip" android:layout_height="16.0dip" android:src="@color/blue_light" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxWidth="96.0dip" android:text="@string/sleep_light" android:layout_marginStart="8.0dip" />
+                    </LinearLayout>
+                    <TextView android:textSize="20.0sp" android:layout_gravity="center" android:id="@id/ctvCountLight" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="00:00" />
+                </LinearLayout>
+                <LinearLayout android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginEnd="4.0dip">
+                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
+                        <ImageView android:id="@id/ivColorWake" android:layout_width="24.0dip" android:layout_height="16.0dip" android:src="@color/yellow" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxWidth="96.0dip" android:text="@string/sleep_wake" android:layout_marginStart="8.0dip" />
+                    </LinearLayout>
+                    <TextView android:textSize="20.0sp" android:layout_gravity="center" android:id="@id/ctvCountWake" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="00:00" />
+                </LinearLayout>
+            </LinearLayout>
+            <lecho.lib.hellocharts.view.ColumnChartView android:id="@id/ccvSleep" android:paddingLeft="24.0dip" android:paddingTop="8.0dip" android:paddingRight="24.0dip" android:paddingBottom="8.0dip" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0" />
+            <TextView android:textSize="@dimen/text_title" android:gravity="center" android:id="@id/tvEmpty" android:background="@mipmap/sleep_empty" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_marginTop="24.0dip" android:layout_marginBottom="8.0dip" android:text="@string/sleep_empty" android:layout_weight="1.0" android:layout_marginStart="8.0dip" android:layout_marginEnd="8.0dip" />
+        </LinearLayout>
+        <LinearLayout android:orientation="vertical" android:id="@id/llHealth" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent">
+            <LinearLayout android:gravity="center" android:id="@id/llHealthSelect" android:visibility="visible" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip">
+                <CheckedTextView android:textSize="16.0sp" android:id="@id/tvHealthHeart" android:background="@color/grey_light" android:paddingTop="8.0dip" android:paddingBottom="8.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checked="true" android:text="@string/heartrate" android:layout_weight="1.0" android:paddingStart="8.0dip" android:paddingEnd="8.0dip" />
+                <CheckedTextView android:textSize="16.0sp" android:id="@id/tvHealthBlood" android:background="@color/grey_light" android:paddingTop="8.0dip" android:paddingBottom="8.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/blood_pressure" android:layout_weight="1.0" android:paddingStart="8.0dip" android:paddingEnd="8.0dip" />
+                <CheckedTextView android:textSize="16.0sp" android:id="@id/tvHealthOxygen" android:background="@color/grey_light" android:paddingTop="8.0dip" android:paddingBottom="8.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/blood_oxygen" android:layout_weight="1.0" android:paddingStart="8.0dip" android:paddingEnd="8.0dip" />
+                <CheckedTextView android:textSize="16.0sp" android:id="@id/tvHealthEcg" android:background="@color/grey_light" android:paddingTop="8.0dip" android:paddingBottom="8.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/ecg" android:layout_weight="1.0" android:paddingStart="8.0dip" android:paddingEnd="8.0dip" />
+                <CheckedTextView android:textSize="16.0sp" android:id="@id/tvHealthTemperature" android:background="@color/grey_light" android:paddingTop="8.0dip" android:paddingBottom="8.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/temperature" android:layout_weight="1.0" android:paddingStart="8.0dip" android:paddingEnd="8.0dip" />
+            </LinearLayout>
+            <LinearLayout android:id="@id/llHeart" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent">
+                <LinearLayout android:gravity="center" android:orientation="vertical" android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_weight="1.0">
+                    <ImageView android:src="@mipmap/heart_min" style="@style/IconMiddle" />
+                    <TextView android:textColor="@color/red" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="8.0dip" android:text="@string/heartrate_min" />
+                    <LinearLayout android:gravity="bottom" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                        <TextView android:textSize="24.0sp" android:textColor="@color/red" android:id="@id/tvHeartMin" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" />
+                        <TextView android:textSize="@dimen/text_note" android:textColor="@color/red" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/unit_bpm" android:layout_marginStart="4.0dip" />
+                    </LinearLayout>
+                </LinearLayout>
+                <LinearLayout android:gravity="center" android:orientation="vertical" android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_weight="1.0">
+                    <ImageView android:src="@mipmap/heart_avg" style="@style/IconMiddle" />
+                    <TextView android:textColor="@color/red" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="8.0dip" android:text="@string/heartrate_avg" />
+                    <LinearLayout android:gravity="bottom" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                        <TextView android:textSize="24.0sp" android:textColor="@color/red" android:id="@id/tvHeartAvg" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" />
+                        <TextView android:textSize="@dimen/text_note" android:textColor="@color/red" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/unit_bpm" android:layout_marginStart="4.0dip" />
+                    </LinearLayout>
+                </LinearLayout>
+                <LinearLayout android:gravity="center" android:orientation="vertical" android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_weight="1.0">
+                    <ImageView android:src="@mipmap/heart_max" style="@style/IconMiddle" />
+                    <TextView android:textColor="@color/red" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="8.0dip" android:text="@string/heartrate_max" />
+                    <LinearLayout android:gravity="bottom" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                        <TextView android:textSize="24.0sp" android:textColor="@color/red" android:id="@id/tvHeartMax" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" />
+                        <TextView android:textSize="@dimen/text_note" android:textColor="@color/red" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/unit_bpm" android:layout_marginStart="4.0dip" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout android:orientation="horizontal" android:id="@id/llBlood" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent">
+                <LinearLayout android:gravity="center" android:orientation="vertical" android:id="@id/llTvBlood" android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_weight="1.0">
+                    <ImageView android:src="@mipmap/blood_pressure" style="@style/IconMiddle" />
+                    <TextView android:textColor="@color/purple_light" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="8.0dip" android:text="@string/blood_pressure" />
+                    <LinearLayout android:gravity="bottom" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                        <TextView android:textSize="24.0sp" android:textColor="@color/purple_light" android:id="@id/tvBlood" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" />
+                        <TextView android:textSize="@dimen/text_note" android:textColor="@color/purple_light" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/unit_mmhg" android:layout_marginStart="4.0dip" />
+                    </LinearLayout>
+                </LinearLayout>
+                <LinearLayout android:gravity="center" android:orientation="vertical" android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_weight="1.0">
+                    <ImageView android:src="@mipmap/blood_oxygen" style="@style/IconMiddle" />
+                    <TextView android:textColor="@color/purple_light" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="8.0dip" android:text="@string/blood_oxygen" />
+                    <LinearLayout android:gravity="bottom" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                        <TextView android:textSize="24.0sp" android:textColor="@color/purple_light" android:id="@id/tvBloodOxygen" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" />
+                        <TextView android:textSize="@dimen/text_note" android:textColor="@color/purple_light" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="%" android:layout_marginStart="4.0dip" />
+                    </LinearLayout>
+                </LinearLayout>
+                <LinearLayout android:gravity="center" android:orientation="vertical" android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_weight="1.0">
+                    <ImageView android:src="@mipmap/blood_fatigue" style="@style/IconMiddle" />
+                    <TextView android:textColor="@color/purple_light" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="8.0dip" android:text="@string/blood_fatigue" />
+                    <LinearLayout android:gravity="bottom" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                        <TextView android:textSize="20.0sp" android:textColor="@color/purple_light" android:id="@id/tvBloodFatigue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/blood_fatigue_light" />
+                        <TextView android:textSize="@dimen/text_note" android:textColor="@color/purple_light" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="" android:layout_marginStart="4.0dip" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout android:id="@id/llEcg" android:visibility="visible" android:layout_width="fill_parent" android:layout_height="fill_parent">
+                <LinearLayout android:gravity="center" android:orientation="vertical" android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_weight="1.0">
+                    <ImageView android:layout_width="40.0dip" android:layout_height="40.0dip" android:src="@mipmap/home_ecgheart" />
+                    <TextView android:textColor="@color/green" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="8.0dip" android:text="@string/heartrate" />
+                    <LinearLayout android:gravity="bottom" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                        <TextView android:textSize="24.0sp" android:textColor="@color/green" android:id="@id/tvEcgHeart" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" />
+                        <TextView android:textSize="@dimen/text_note" android:textColor="@color/green" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/unit_bpm" android:layout_marginStart="4.0dip" />
+                    </LinearLayout>
+                </LinearLayout>
+                <LinearLayout android:gravity="center" android:orientation="vertical" android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_weight="1.0">
+                    <ImageView android:layout_width="40.0dip" android:layout_height="40.0dip" android:src="@mipmap/home_ecghealth" />
+                    <TextView android:textColor="@color/green" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="8.0dip" android:text="@string/ecg_report" />
+                    <LinearLayout android:gravity="bottom" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                        <TextView android:textSize="24.0sp" android:textColor="@color/red" android:id="@id/tvEcgHealth" android:visibility="invisible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/blood_fatigue_light" />
+                        <TextView android:textSize="@dimen/text_note" android:textColor="@color/red" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="" android:layout_marginStart="4.0dip" />
+                    </LinearLayout>
+                </LinearLayout>
+                <LinearLayout android:gravity="center" android:orientation="vertical" android:id="@id/llEcgXt" android:visibility="gone" android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_weight="1.0">
+                    <ImageView android:layout_width="40.0dip" android:layout_height="40.0dip" android:src="@mipmap/home_ecgchest" />
+                    <TextView android:textColor="@color/green" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="8.0dip" android:text="@string/Chest_Ecg_Text" />
+                    <LinearLayout android:gravity="bottom" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                        <TextView android:textSize="24.0sp" android:textColor="@color/red" android:id="@id/tvEcgXt" android:visibility="invisible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/blood_fatigue_light" />
+                        <TextView android:textSize="@dimen/text_note" android:textColor="@color/red" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="" android:layout_marginStart="4.0dip" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout android:orientation="vertical" android:id="@id/llTemperature" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent">
+                <RelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent">
+                    <LinearLayout android:id="@id/llTemperatureText" android:visibility="visible" android:layout_width="fill_parent" android:layout_height="fill_parent">
+                        <LinearLayout android:gravity="center" android:orientation="vertical" android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_weight="1.0">
+                            <ImageView android:src="@mipmap/temperature_max" style="@style/IconMiddle" />
+                            <TextView android:textColor="@color/black" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="8.0dip" android:text="@string/temperature_body" />
+                            <LinearLayout android:gravity="bottom" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                                <TextView android:textSize="24.0sp" android:textColor="@color/black" android:id="@id/tvTemperatureMax" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--" />
+                                <TextView android:textSize="@dimen/text_note" android:textColor="@color/black" android:id="@id/tvTemperatureMaxUnit" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/unit_temperature" android:layout_marginStart="4.0dip" />
+                            </LinearLayout>
+                        </LinearLayout>
+                        <LinearLayout android:gravity="center" android:orientation="vertical" android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_weight="1.0">
+                            <ImageView android:src="@mipmap/temperature_min" style="@style/IconMiddle" />
+                            <TextView android:textColor="@color/black" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="8.0dip" android:text="@string/temperature_surface" />
+                            <LinearLayout android:gravity="bottom" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                                <TextView android:textSize="24.0sp" android:textColor="@color/black" android:id="@id/tvTemperatureMin" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--" />
+                                <TextView android:textSize="@dimen/text_note" android:textColor="@color/black" android:id="@id/tvTemperatureMinUnit" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/unit_temperature" android:layout_marginStart="4.0dip" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                    <LinearLayout android:orientation="vertical" android:id="@id/llTemperatureChart" android:visibility="invisible" android:layout_width="fill_parent" android:layout_height="fill_parent">
+                        <com.jaga.ibraceletplus.jyring.widget.HeartPolylineView android:id="@id/heartPolylineView" android:layout_width="fill_parent" android:layout_height="fill_parent" />
+                    </LinearLayout>
+                </RelativeLayout>
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout android:gravity="center" android:orientation="vertical" android:id="@id/llSport" android:paddingTop="8.0dip" android:visibility="visible" android:layout_width="fill_parent" android:layout_height="fill_parent">
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingStart="12.0dip" android:paddingEnd="12.0dip">
+                <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/llCalor1" android:visibility="invisible" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0">
+                    <ImageView android:id="@id/ivColor1" android:layout_width="20.0dip" android:layout_height="14.0dip" android:src="@color/blue_middle" />
+                    <TextView android:id="@id/tvName1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxWidth="96.0dip" android:text="@string/walk_name" android:layout_marginStart="8.0dip" />
+                    <TextView android:layout_gravity="center" android:id="@id/tvCount1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0.00" android:layout_marginStart="8.0dip" />
+                </LinearLayout>
+                <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/llCalor2" android:visibility="invisible" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0" android:layout_marginStart="16.0dip">
+                    <ImageView android:id="@id/ivColor2" android:layout_width="20.0dip" android:layout_height="14.0dip" android:src="@color/orange" />
+                    <TextView android:id="@id/tvName2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxWidth="96.0dip" android:text="@string/sport_run" android:layout_marginStart="8.0dip" />
+                    <TextView android:layout_gravity="center" android:id="@id/tvCount2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0.00" android:layout_marginStart="8.0dip" />
+                </LinearLayout>
+                <TextView android:textSize="12.0sp" android:layout_gravity="bottom" android:id="@id/tvCalorUnit" android:visibility="gone" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/unit_kcal" android:layout_weight="1.0" android:drawableStart="@mipmap/icon_calor" />
+                <TextView android:layout_gravity="bottom" android:visibility="gone" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingStart="12.0dip" android:paddingEnd="12.0dip">
+                <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/llCalor3" android:visibility="invisible" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0">
+                    <ImageView android:id="@id/ivColor3" android:layout_width="20.0dip" android:layout_height="14.0dip" android:src="@color/yellow" />
+                    <TextView android:id="@id/tvName3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxWidth="96.0dip" android:text="@string/sport_cycle" android:layout_marginStart="8.0dip" />
+                    <TextView android:layout_gravity="center" android:id="@id/tvCount3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0.00" android:layout_marginStart="8.0dip" />
+                </LinearLayout>
+                <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/llCalor4" android:visibility="invisible" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0" android:layout_marginStart="16.0dip">
+                    <ImageView android:id="@id/ivColor4" android:visibility="visible" android:layout_width="20.0dip" android:layout_height="14.0dip" android:src="@mipmap/icon_other" />
+                    <TextView android:id="@id/tvName4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxWidth="96.0dip" android:text="@string/sport_other" android:layout_marginStart="8.0dip" />
+                    <TextView android:layout_gravity="center" android:id="@id/tvCount4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0.00" android:layout_marginStart="8.0dip" />
+                </LinearLayout>
+            </LinearLayout>
+            <lecho.lib.hellocharts.view.ColumnChartView android:id="@id/ccvSport" android:paddingLeft="24.0dip" android:paddingTop="8.0dip" android:paddingRight="24.0dip" android:paddingBottom="8.0dip" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0" />
+            <TextView android:textSize="@dimen/text_title" android:gravity="center" android:id="@id/tvEmptySport" android:background="@mipmap/sleep_empty" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_marginTop="24.0dip" android:layout_marginBottom="8.0dip" android:text="@string/sleep_empty" android:layout_weight="1.0" android:layout_marginStart="8.0dip" android:layout_marginEnd="8.0dip" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

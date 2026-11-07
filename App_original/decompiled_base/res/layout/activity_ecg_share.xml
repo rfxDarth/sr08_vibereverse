@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:fitsSystemWindows="true" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:background="@color/white" android:layout_width="fill_parent" android:layout_height="48.0dip">
+        <ImageView android:id="@id/ivBack" android:padding="12.0dip" android:layout_width="48.0dip" android:layout_height="48.0dip" android:src="@mipmap/icon_back_black" />
+        <RelativeLayout android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_weight="1.0">
+            <TextView android:textSize="@dimen/text_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/ecg_report_chart" android:layout_centerInParent="true" />
+            <TextView android:textSize="12.0sp" android:padding="4.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:hint="@string/ecg_chart_reference" android:layout_alignParentEnd="true" />
+        </RelativeLayout>
+        <ImageView android:id="@id/ivShare" android:padding="12.0dip" android:layout_width="48.0dip" android:layout_height="48.0dip" android:src="@mipmap/icon_share_black" />
+    </LinearLayout>
+    <LinearLayout android:gravity="center" android:background="@color/white" android:paddingBottom="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="-8.0dip">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/setting_user_info_gender" />
+        <TextView android:id="@id/tvGender" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/unit_male" android:layout_marginStart="8.0dip" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/setting_user_info_age" android:layout_marginStart="16.0dip" />
+        <TextView android:id="@id/tvAge" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:layout_marginStart="8.0dip" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/setting_user_info_height" android:layout_marginStart="16.0dip" />
+        <TextView android:id="@id/tvHeight" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="170cm" android:layout_marginStart="8.0dip" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/setting_user_info_weight" android:layout_marginStart="16.0dip" />
+        <TextView android:id="@id/tvWeight" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="60kg" android:layout_marginStart="8.0dip" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/heartrate" android:layout_marginStart="16.0dip" />
+        <TextView android:id="@id/tvHeart" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0bpm" android:layout_marginStart="8.0dip" />
+    </LinearLayout>
+    <RelativeLayout android:background="@color/white" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <com.jaga.ibraceletplus.jyring.widget.EcgGrid android:id="@id/egBackground" android:layout_width="fill_parent" android:layout_height="fill_parent" app:grid_color_large="#ff990000" app:grid_color_middle="#ffd4616e" app:grid_color_small="#ffffccdd" />
+        <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
+            <com.jaga.ibraceletplus.jyring.widget.MyEcgSurfaceView android:id="@id/svEcg0" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_marginTop="8.0dip" android:layout_weight="1.0" app:line_color="@color/black" app:line_color_scan="@color/transparent" app:line_width="1.0dip" />
+            <com.jaga.ibraceletplus.jyring.widget.MyEcgSurfaceView android:id="@id/svEcg1" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_marginTop="8.0dip" android:layout_weight="1.0" app:line_color="@color/black" app:line_color_scan="@color/transparent" app:line_width="1.0dip" />
+            <com.jaga.ibraceletplus.jyring.widget.MyEcgSurfaceView android:id="@id/svEcg2" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_marginTop="8.0dip" android:layout_weight="1.0" app:line_color="@color/black" app:line_color_scan="@color/transparent" app:line_width="1.0dip" />
+            <LinearLayout android:gravity="end" android:paddingBottom="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingEnd="8.0dip">
+                <TextView android:textSize="12.0sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/ecg_chart_speed" />
+                <TextView android:textSize="12.0sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="25 mm/s" android:layout_marginStart="8.0dip" />
+                <TextView android:textSize="12.0sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/ecg_chart_gain" android:layout_marginStart="16.0dip" />
+                <TextView android:textSize="12.0sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="10 mm/mV" android:layout_marginStart="8.0dip" />
+                <TextView android:textSize="12.0sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/ecg_chart_time" android:layout_marginStart="16.0dip" />
+                <TextView android:textSize="12.0sp" android:id="@id/tvTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1970-01-01 00:00:00" android:layout_marginStart="8.0dip" />
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>

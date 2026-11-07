@@ -1,0 +1,2 @@
+address,function,range_size,pointer_globals,status,pointer_widths,compiled_hex,payload_hex,bit_distance,diagnostic,source_file
+0x07fc3b78,FUN_07fc3b78,418,7,compile-error,0-0-0-0-0-1-1,,,-1,/tmp/v204-data-literals-zy1l3b64/07fc3b78-0-0-0-0-0-1-1.c:37:3: error: use of undeclared identifier 'code',07fc3b78.c

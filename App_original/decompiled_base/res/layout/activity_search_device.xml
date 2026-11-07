@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:fitsSystemWindows="true" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout style="@style/ActionBar">
+        <ImageView android:id="@id/ivBack" android:padding="12.0dip" android:layout_width="48.0dip" android:layout_height="48.0dip" android:src="@mipmap/icon_back_black" />
+        <TextView android:textSize="@dimen/text_title" android:textColor="@color/black" android:gravity="center" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="@string/action_find" android:layout_weight="1.0" />
+        <ImageView android:id="@id/ivShare" android:padding="12.0dip" android:layout_width="48.0dip" android:layout_height="48.0dip" />
+    </LinearLayout>
+    <LinearLayout android:gravity="center_horizontal" android:orientation="vertical" android:background="@color/main_test_button_bg" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <ImageView android:id="@id/ivDevice" android:padding="12.0dip" android:layout_width="256.0dip" android:layout_height="256.0dip" android:src="@mipmap/alt_device" />
+        <TextView android:textSize="@dimen/text_title" android:textColor="@color/black" android:gravity="center" android:id="@id/tvSearchTips" android:layout_width="300.0dip" android:layout_height="wrap_content" android:text="@string/search_device_desc" />
+        <TextView android:textSize="@dimen/text_main" android:textColor="@color/blue" android:gravity="center" android:id="@id/tvSearch" android:background="@drawable/button_stroken_orange" android:paddingTop="8.0dip" android:paddingBottom="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dip" android:text="@string/action_find" android:layout_marginStart="64.0dip" android:layout_marginEnd="64.0dip" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:duration="100" android:drawable="@drawable/gif_01" />
+    <item android:duration="100" android:drawable="@drawable/gif_02" />
+    <item android:duration="100" android:drawable="@drawable/gif_03" />
+    <item android:duration="100" android:drawable="@drawable/gif_04" />
+    <item android:duration="100" android:drawable="@drawable/gif_05" />
+    <item android:duration="100" android:drawable="@drawable/gif_06" />
+    <item android:duration="100" android:drawable="@drawable/gif_07" />
+    <item android:duration="100" android:drawable="@drawable/gif_08" />
+    <item android:duration="100" android:drawable="@drawable/gif_09" />
+    <item android:duration="100" android:drawable="@drawable/gif_10" />
+    <item android:duration="100" android:drawable="@drawable/gif_11" />
+    <item android:duration="100" android:drawable="@drawable/gif_12" />
+    <item android:duration="100" android:drawable="@drawable/gif_13" />
+    <item android:duration="100" android:drawable="@drawable/gif_14" />
+    <item android:duration="100" android:drawable="@drawable/gif_15" />
+    <item android:duration="100" android:drawable="@drawable/gif_16" />
+    <item android:duration="100" android:drawable="@drawable/gif_17" />
+    <item android:duration="100" android:drawable="@drawable/gif_18" />
+</animation-list>

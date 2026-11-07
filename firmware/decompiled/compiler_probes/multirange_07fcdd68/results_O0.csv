@@ -1,0 +1,3 @@
+compiler,status,emitted_bytes,target_bytes,overlap_diff_bits,overlap_equal_bytes,longest_exact_run,artifact_or_diagnostic
+gcc,length-mismatch,8052,3674,14067,44,1,07fcdd68_gcc_O0.bin
+clang-18,length-mismatch,6788,3674,13572,60,3,07fcdd68_clang-18_O0.bin

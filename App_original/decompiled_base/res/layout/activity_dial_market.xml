@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:gravity="top" android:orientation="vertical" android:background="@color/silver" android:fitsSystemWindows="true" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:gravity="center_vertical" android:background="@color/blue" android:layout_width="fill_parent" android:layout_height="48.0dip">
+        <ImageView android:id="@id/ivBack" android:padding="12.0dip" android:layout_width="48.0dip" android:layout_height="48.0dip" android:src="@mipmap/back_white" />
+        <TextView android:textSize="@dimen/text_title" android:textColor="@color/white" android:gravity="center" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="@string/Custom_Screen" android:layout_weight="1.0" />
+        <ImageView android:padding="12.0dip" android:layout_width="48.0dip" android:layout_height="48.0dip" />
+    </LinearLayout>
+    <GridView android:id="@id/gvDialMarket" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_marginTop="40.0dip" android:verticalSpacing="24.0dip" android:numColumns="3" android:layout_weight="1.0" />
+</LinearLayout>

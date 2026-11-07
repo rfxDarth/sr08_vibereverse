@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:id="@id/bottom_sheet_background" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:layout_gravity="bottom" android:orientation="vertical" android:id="@id/sheetContentLayout" android:background="@android:color/white" android:layout_width="fill_parent" android:layout_height="wrap_content" android:elevation="4.0dip">
+        <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="50.0dip">
+            <Button android:textColor="@color/double_date_picker_button_text_selector_ios" android:id="@id/buttonTab0" android:background="@drawable/double_date_picker_button_background_selector_ios" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="0" android:layout_weight="1.0" />
+            <Button android:textColor="@color/double_date_picker_button_text_selector_ios" android:id="@id/buttonTab1" android:background="@drawable/double_date_picker_button_background_selector_ios" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="1" android:layout_weight="1.0" />
+        </LinearLayout>
+        <FrameLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <FrameLayout android:id="@id/tab0" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <com.github.florent37.singledateandtimepicker.SingleDateAndTimePicker android:id="@id/picker_tab_0" android:layout_width="fill_parent" android:layout_height="230.0dip" android:layout_weight="1.0" app:picker_curved="true" app:picker_cyclic="true" app:picker_selectedTextColor="@color/picker_button_background_selected" app:picker_textSize="20.0sp" app:picker_visibleItemCount="7" />
+            </FrameLayout>
+            <FrameLayout android:id="@id/tab1" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <com.github.florent37.singledateandtimepicker.SingleDateAndTimePicker android:id="@id/picker_tab_1" android:layout_width="fill_parent" android:layout_height="230.0dip" app:picker_curved="true" app:picker_cyclic="true" app:picker_selectedTextColor="@color/picker_button_background_selected" app:picker_textSize="20.0sp" app:picker_visibleItemCount="7" />
+            </FrameLayout>
+        </FrameLayout>
+        <Button android:textColor="@color/picker_button_background_selected" android:layout_gravity="center_horizontal" android:id="@id/buttonOk" android:background="?android:selectableItemBackground" android:layout_width="fill_parent" android:layout_height="50.0dip" android:text="@android:string/ok" android:layout_weight="1.0" />
+    </LinearLayout>
+</FrameLayout>

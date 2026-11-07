@@ -1,0 +1,3 @@
+[submodule "ATC_SR08_Ring_source"]
+	path = ATC_SR08_Ring_source
+	url = https://github.com/atc1441/ATC_SR08_Ring.git

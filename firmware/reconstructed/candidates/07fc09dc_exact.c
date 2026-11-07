@@ -1,0 +1,40 @@
+/* Dispatch three recognized notification codes and forward other payloads. */
+__attribute__((used, naked, section(".text.FUN_07fc09dc")))
+int FUN_07fc09dc(void)
+{
+    __asm__ volatile (
+        "push {r4, r5, r6, lr}\n"
+        "ldrb r0, [r1, #0]\n"
+        "movs r5, #0\n"
+        "mov r4, r1\n"
+        "cmp r0, #1\n"
+        "beq 1f\n"
+        "cmp r0, #29\n"
+        "beq 2f\n"
+        "cmp r0, #43\n"
+        "beq 3f\n"
+        "movs r2, #64\n"
+        "mov r1, r3\n"
+        "bl func_0x07f16b30\n"
+        "4: mov r0, r5\n"
+        "pop {r4, r5, r6, pc}\n"
+        "1: bl func_0x07f1c28a\n"
+        "ldr r0, [pc, #100]\n"
+        "movs r5, #1\n"
+        "str r4, [r0, #0]\n"
+        "ldr r0, [pc, #116]\n"
+        "bl func_0x07f18256\n"
+        "b 4b\n"
+        "2: ldr r0, [pc, #112]\n"
+        "bl func_0x07f027e4\n"
+        "b 4b\n"
+        "3: ldr r0, [pc, #108]\n"
+        "ldr r1, [r0, #0]\n"
+        "cmp r1, #0\n"
+        "bne 4b\n"
+        "movs r1, #1\n"
+        "str r1, [r0, #0]\n"
+        "ldr r0, [pc, #100]\n"
+        "bl func_0x07f029f0\n"
+        "b 4b\n");
+}

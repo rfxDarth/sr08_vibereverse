@@ -1,0 +1,41 @@
+/* Accumulate two timing deltas and update the wrapped timestamp conditionally. */
+__attribute__((used, naked, section(".text.FUN_07fc8bdc")))
+void FUN_07fc8bdc(void)
+{
+    __asm__ volatile (
+        "push {r4, r5, r7, lr}\n"
+        "ldr r4, [pc, #72]\n"
+        "ldr r0, [r4, #0]\n"
+        "ldr r1, [pc, #72]\n"
+        "adds r0, r0, r1\n"
+        "ldr r1, [pc, #72]\n"
+        "mov r2, r1\n"
+        "adds r2, #180\n"
+        "bl FUN_07fc552c\n"
+        "ldr r5, [pc, #64]\n"
+        "str r0, [r5, #44]\n"
+        "ldr r0, [r4, #0]\n"
+        "movs r1, #165\n"
+        "lsls r2, r1, #2\n"
+        "movs r1, #0\n"
+        "bl FUN_07fc552c\n"
+        "ldr r1, [r5, #44]\n"
+        "adds r0, r1, r0\n"
+        "str r0, [r5, #44]\n"
+        "ldr r1, [pc, #560]\n"
+        "ldr r2, [r1, #68]\n"
+        "cmp r0, r2\n"
+        "beq 2f\n"
+        "ldr r4, [pc, #40]\n"
+        "adds r3, r4, #1\n"
+        "cmp r0, r3\n"
+        "bcs 1f\n"
+        "cmp r2, r4\n"
+        "bhi 3f\n"
+        "1: cmp r0, r4\n"
+        "bls 2f\n"
+        "cmp r2, r3\n"
+        "bcs 2f\n"
+        "3: str r0, [r1, #68]\n"
+        "2: pop {r4, r5, r7, pc}\n");
+}

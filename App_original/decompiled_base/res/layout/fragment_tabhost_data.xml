@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:background="@color/silver" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout style="@style/ActionBar">
+        <ImageView android:padding="12.0dip" android:layout_width="48.0dip" android:layout_height="48.0dip" />
+        <TextView android:textSize="@dimen/text_title" android:textColor="@color/white" android:gravity="center" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="@string/dup_main_chart" android:layout_weight="1.0" />
+        <ImageView android:id="@id/ivShare" android:padding="12.0dip" android:layout_width="48.0dip" android:layout_height="48.0dip" android:src="@mipmap/icon_share" />
+    </LinearLayout>
+    <LinearLayout android:id="@id/llDate" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="36.0dip">
+        <TextView android:textSize="@dimen/text_title" android:textColor="@color/grey_dark" android:gravity="center" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="@string/time_day" android:layout_weight="1.0" />
+        <TextView android:textSize="@dimen/text_support" android:textColor="@color/grey_dark" android:gravity="center" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="@string/time_week" android:layout_weight="1.0" android:alpha="0.4" />
+        <TextView android:textSize="@dimen/text_support" android:textColor="@color/grey_dark" android:gravity="center" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="@string/time_month" android:layout_weight="1.0" android:alpha="0.4" />
+        <TextView android:textSize="@dimen/text_support" android:textColor="@color/grey_dark" android:gravity="center" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="@string/time_year" android:layout_weight="1.0" android:alpha="0.4" />
+    </LinearLayout>
+    <ScrollView android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <LinearLayout android:orientation="vertical" android:id="@id/llChart" android:padding="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <LinearLayout android:orientation="vertical" android:background="@drawable/background_chart_step" android:padding="8.0dip" android:visibility="visible" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+                    <TextView android:textColor="@color/white" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/walk_name" android:layout_weight="1.0" />
+                    <TextView android:textColor="@color/white" android:id="@id/tvChartStep" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="8.0dip" android:text="0" />
+                </LinearLayout>
+                <View android:layout_marginTop="8.0dip" style="@style/DashLine" />
+                <lecho.lib.hellocharts.view.LineChartView android:id="@id/lcvStep" android:padding="8.0dip" android:layout_width="fill_parent" android:layout_height="144.0dip" android:layout_marginTop="8.0dip" />
+            </LinearLayout>
+            <LinearLayout android:orientation="vertical" android:background="@drawable/background_chart_sport" android:padding="8.0dip" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip">
+                <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+                    <TextView android:textColor="@color/white" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/dup_main_sport" android:layout_weight="1.0" />
+                    <TextView android:textColor="@color/white" android:id="@id/tvChartSport" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="8.0dip" android:text="0" />
+                </LinearLayout>
+                <View android:layout_marginTop="8.0dip" style="@style/DashLine" />
+                <lecho.lib.hellocharts.view.LineChartView android:id="@id/lcvSport" android:padding="8.0dip" android:layout_width="fill_parent" android:layout_height="144.0dip" android:layout_marginTop="8.0dip" />
+            </LinearLayout>
+            <LinearLayout android:orientation="vertical" android:background="@drawable/background_chart_sleep" android:padding="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip">
+                <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+                    <TextView android:textColor="@color/white" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/sleep_name" android:layout_weight="1.0" />
+                    <TextView android:textColor="@color/white" android:id="@id/tvChartSleep" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="8.0dip" android:text="0" />
+                </LinearLayout>
+                <View android:layout_marginTop="8.0dip" style="@style/DashLine" />
+                <lecho.lib.hellocharts.view.ColumnChartView android:id="@id/ccvSleep" android:padding="8.0dip" android:visibility="visible" android:layout_width="fill_parent" android:layout_height="144.0dip" android:layout_marginTop="8.0dip" />
+            </LinearLayout>
+            <LinearLayout android:orientation="vertical" android:background="@drawable/background_chart_heart" android:padding="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip">
+                <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+                    <TextView android:textColor="@color/white" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/heartrate" android:layout_weight="1.0" />
+                    <TextView android:textColor="@color/white" android:id="@id/tvChartHeart" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="8.0dip" android:text="0BPM" />
+                </LinearLayout>
+                <View android:layout_marginTop="8.0dip" style="@style/DashLine" />
+                <lecho.lib.hellocharts.view.LineChartView android:id="@id/lcvHeart" android:padding="8.0dip" android:layout_width="fill_parent" android:layout_height="144.0dip" android:layout_marginTop="8.0dip" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

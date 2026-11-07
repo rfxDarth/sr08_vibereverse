@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout style="@style/ActionBar">
+        <TextView android:textSize="@dimen/text_title" android:textColor="@color/white" android:gravity="center" android:layout_width="fill_parent" android:layout_height="fill_parent" android:text="@string/setting_user_info_height" />
+    </LinearLayout>
+    <LinearLayout android:gravity="center" android:orientation="vertical" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <yanzhikai.ruler.KgNumberLayout android:id="@id/knlWeight" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="24.0dip" app:kgTextColor="@color/grey_dark" app:kgTextSize="24.0sp" app:kgUnitText="@string/height_unit_cm" app:scaleTextColor="@color/blue" app:scaleTextSize="24.0sp" />
+        <yanzhikai.ruler.BooheeRuler android:id="@id/brWeight" android:layout_width="fill_parent" android:layout_height="96.0dip" app:cursorDrawable="@color/blue" app:rulerBackGround="@color/transparent" />
+    </LinearLayout>
+</LinearLayout>

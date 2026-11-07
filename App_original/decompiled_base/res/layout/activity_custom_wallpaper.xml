@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:gravity="top" android:orientation="vertical" android:background="@color/grey_light_ota" android:fitsSystemWindows="true" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:gravity="center_vertical" style="@style/ActionBar">
+        <ImageView android:id="@id/ivBack" android:padding="12.0dip" android:layout_width="48.0dip" android:layout_height="48.0dip" android:src="@mipmap/icon_back_black" />
+        <TextView android:textSize="@dimen/text_title" android:textColor="@color/black" android:gravity="center" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="@string/Custom_Paper" android:layout_weight="1.0" />
+        <ImageView android:padding="12.0dip" android:layout_width="48.0dip" android:layout_height="48.0dip" />
+    </LinearLayout>
+    <ScrollView android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0">
+        <LinearLayout android:orientation="vertical" android:background="@color/grey_light_ota" android:layout_width="fill_parent" android:layout_height="fill_parent">
+            <RelativeLayout android:gravity="center" android:orientation="vertical" android:background="@color/grey_light_ota" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="10.0dip">
+                <de.hdodenhof.circleimageview.CircleImageView android:id="@id/civWallpaper" android:layout_width="160.0dip" android:layout_height="160.0dip" android:src="@color/grey" android:layout_centerInParent="true" app:civ_border_color="#ff000000" app:civ_border_width="1.0dip" />
+                <ImageView android:id="@id/ivWallpaper" android:visibility="invisible" android:layout_width="160.0dip" android:layout_height="160.0dip" android:src="@color/grey" android:layout_centerInParent="true" />
+                <TextView android:textColor="@color/red" android:id="@id/tvClickTip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/Click_tip" android:layout_centerInParent="true" />
+                <RelativeLayout android:orientation="vertical" android:id="@id/rlWallpaperPanel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="0.0dip" android:layout_marginTop="0.0dip" android:layout_alignLeft="@id/civWallpaper">
+                    <ImageView android:id="@id/ivWallpaperTop" android:visibility="invisible" android:layout_width="48.0dip" android:layout_height="wrap_content" android:src="@mipmap/wallpaper_date" />
+                    <ImageView android:id="@id/ivWallpaperTime" android:visibility="invisible" android:layout_width="48.0dip" android:layout_height="wrap_content" android:layout_marginTop="5.0dip" android:src="@mipmap/wallpaper_time" android:layout_below="@id/ivWallpaperTop" android:layout_alignLeft="@id/ivWallpaperTop" />
+                    <ImageView android:id="@id/ivWallpaperBottom" android:visibility="invisible" android:layout_width="48.0dip" android:layout_height="wrap_content" android:layout_marginTop="5.0dip" android:src="@mipmap/wallpaper_step" android:layout_below="@id/ivWallpaperTime" android:layout_alignLeft="@id/ivWallpaperTop" />
+                </RelativeLayout>
+            </RelativeLayout>
+            <LinearLayout android:gravity="center" android:orientation="vertical" android:background="@color/grey_light_ota" android:layout_width="fill_parent" android:layout_height="100.0dip">
+                <TextView android:textColor="@color/blue" android:id="@id/tvMessage" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <ProgressBar android:id="@id/pbOta" android:visibility="visible" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="8.0dip" android:max="100" style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal" />
+            </LinearLayout>
+            <View style="@style/ViewSplit" />
+            <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="48.0dip">
+                <TextView android:id="@id/tvTimePosTip" android:text="@string/Time_ShowDirect" style="@style/ItemLeftFix" />
+                <com.balysv.materialripple.MaterialRippleLayout android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_weight="1.0" android:layout_toRightOf="@id/tvTimePosTip" app:mrl_rippleColor="@color/grey" app:mrl_rippleOverlay="true">
+                    <TextView android:id="@id/tvTimePos" android:text="@string/Time_ShowDirect_LeftUP" android:singleLine="false" android:drawableRight="@mipmap/right_arrow" style="@style/ItemRight" />
+                </com.balysv.materialripple.MaterialRippleLayout>
+            </LinearLayout>
+            <View style="@style/ViewSplit" />
+            <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="48.0dip">
+                <TextView android:text="@string/Time_Up_Show" style="@style/ItemLeftFix" />
+                <com.balysv.materialripple.MaterialRippleLayout android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_weight="1.0" app:mrl_rippleColor="@color/grey" app:mrl_rippleOverlay="true">
+                    <TextView android:id="@id/tvTimeUp" android:text="@string/Time_Show_None" android:singleLine="false" android:drawableRight="@mipmap/right_arrow" style="@style/ItemRight" />
+                </com.balysv.materialripple.MaterialRippleLayout>
+            </LinearLayout>
+            <View style="@style/ViewSplit" />
+            <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="48.0dip">
+                <TextView android:text="@string/Time_Down_Show" style="@style/ItemLeftFix" />
+                <com.balysv.materialripple.MaterialRippleLayout android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_weight="1.0" app:mrl_rippleColor="@color/grey" app:mrl_rippleOverlay="true">
+                    <TextView android:id="@id/tvTimeBottom" android:text="@string/Time_Show_None" android:singleLine="false" android:drawableRight="@mipmap/right_arrow" style="@style/ItemRight" />
+                </com.balysv.materialripple.MaterialRippleLayout>
+            </LinearLayout>
+            <View style="@style/ViewSplit" />
+            <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="48.0dip">
+                <TextView android:text="@string/Text_Color" style="@style/ItemLeftFix" />
+                <com.balysv.materialripple.MaterialRippleLayout android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_weight="1.0" app:mrl_rippleColor="@color/grey" app:mrl_rippleOverlay="true">
+                    <TextView android:id="@id/tvFontColor" android:text="@string/Text_Color_White" android:singleLine="false" android:drawableRight="@mipmap/right_arrow" style="@style/ItemRight" />
+                </com.balysv.materialripple.MaterialRippleLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+    <LinearLayout android:layout_width="fill_parent" android:layout_height="56.0dip">
+        <Button android:enabled="false" android:textColor="@color/grey" android:id="@id/btUpdate" android:text="@string/action_start" style="@style/ButtonBottom" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:background="@color/silver" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:orientation="vertical" android:background="@color/silver" android:layout_width="fill_parent" android:layout_height="288.0dip">
+        <LinearLayout android:background="@color/transparent" style="@style/ActionBar">
+            <ImageView android:id="@id/ivBack" android:padding="12.0dip" android:layout_width="48.0dip" android:layout_height="48.0dip" />
+            <TextView android:textSize="@dimen/text_title" android:textColor="@color/black" android:gravity="center" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="@string/dup_main_sport" android:layout_weight="1.0" />
+            <ImageView android:id="@id/ivHistory" android:padding="12.0dip" android:layout_width="48.0dip" android:layout_height="48.0dip" android:src="@mipmap/sport_data" />
+        </LinearLayout>
+        <RelativeLayout android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="3.0">
+            <TextView android:textSize="64.0sp" android:textColor="@color/black" android:id="@id/tvDistance" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0.00" android:layout_alignParentBottom="true" android:layout_centerHorizontal="true" />
+            <TextView android:textColor="@color/black" android:id="@id/tvUnit" android:paddingBottom="16.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/unit_km" android:layout_toRightOf="@id/tvDistance" android:layout_alignBottom="@id/tvDistance" />
+        </RelativeLayout>
+        <LinearLayout android:gravity="center|top" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="2.0">
+            <TextView android:textSize="@dimen/text_main" android:textColor="@color/black" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/sport_count" />
+            <TextView android:textSize="@dimen/text_main" android:textColor="@color/black" android:id="@id/tvCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="16.0dip" android:text="0" />
+        </LinearLayout>
+        <LinearLayout android:gravity="center" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="2.0">
+            <TextView android:textSize="@dimen/text_support" android:textColor="@color/black" android:paddingLeft="10.0dip" android:paddingRight="10.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/app_sport_tips" />
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout android:orientation="horizontal" android:id="@id/llMode" android:background="@color/silver" android:paddingTop="4.0dip" android:layout_width="fill_parent" android:layout_height="64.0dip">
+        <TextView android:gravity="center" android:visibility="visible" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="@string/Walk_Text2" android:drawableTop="@mipmap/sport_walk" android:layout_weight="1.0" />
+        <TextView android:gravity="center" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="@string/sport_run" android:drawableTop="@mipmap/sport_run" android:layout_weight="1.0" />
+        <TextView android:gravity="center" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="@string/sport_cycle" android:drawableTop="@mipmap/sport_ride" android:layout_weight="1.0" />
+        <TextView android:gravity="center" android:visibility="visible" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="@string/sport_climb" android:drawableTop="@mipmap/sport_climb" android:layout_weight="1.0" android:lineSpacingExtra="-4.0dip" />
+        <TextView android:gravity="center" android:visibility="visible" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="@string/sport_golf" android:drawableTop="@mipmap/sport_golf" android:layout_weight="1.0" android:lineSpacingExtra="-4.0dip" />
+    </LinearLayout>
+    <LinearLayout android:orientation="horizontal" android:id="@id/llArrow" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <ImageView android:background="@color/silver" android:layout_width="0.0dip" android:layout_height="fill_parent" android:src="@mipmap/arrow_blue" android:layout_weight="1.0" />
+        <ImageView android:background="@color/silver" android:layout_width="0.0dip" android:layout_height="fill_parent" android:src="@color/silver" android:layout_weight="1.0" />
+        <ImageView android:background="@color/silver" android:layout_width="0.0dip" android:layout_height="fill_parent" android:src="@color/silver" android:layout_weight="1.0" />
+        <ImageView android:background="@color/silver" android:layout_width="0.0dip" android:layout_height="fill_parent" android:src="@color/silver" android:layout_weight="1.0" />
+        <ImageView android:background="@color/silver" android:visibility="visible" android:layout_width="0.0dip" android:layout_height="fill_parent" android:src="@color/silver" android:layout_weight="1.0" />
+    </LinearLayout>
+    <LinearLayout android:gravity="center" android:orientation="vertical" android:background="@mipmap/map" android:visibility="visible" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_marginTop="1.0dip" android:layout_weight="1.0">
+        <Button android:textSize="20.0sp" android:textColor="@color/white" android:id="@id/bStart" android:background="@mipmap/sport_start" android:layout_width="144.0dip" android:layout_height="144.0dip" />
+    </LinearLayout>
+</LinearLayout>

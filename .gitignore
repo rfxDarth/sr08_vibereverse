@@ -1,0 +1,11 @@
+# Local agent/tool environments
+/.agents/
+/.aws/
+/.codex/
+/.idea/
+/Ghidra/
+/REA/
+
+# Python-generated caches
+**/__pycache__/
+*.py[cod]

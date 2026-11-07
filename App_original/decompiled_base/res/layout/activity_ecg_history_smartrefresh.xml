@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:background="@color/green" android:layout_width="fill_parent" android:layout_height="48.0dip">
+        <ImageView android:id="@id/ivBack" android:padding="12.0dip" android:layout_width="48.0dip" android:layout_height="48.0dip" android:src="@mipmap/back_white" />
+        <TextView android:textSize="@dimen/text_title" android:textColor="@color/white" android:gravity="center" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="@string/ecg_history" android:layout_weight="1.0" />
+        <ImageView android:id="@id/ivSync" android:padding="12.0dip" android:visibility="invisible" android:layout_width="48.0dip" android:layout_height="48.0dip" android:src="@mipmap/sync" />
+    </LinearLayout>
+    <com.scwang.smartrefresh.layout.SmartRefreshLayout android:id="@id/srlSync" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <com.scwang.smartrefresh.layout.header.ClassicsHeader android:id="@id/chProgress" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+        <LinearLayout android:orientation="vertical" android:background="@color/green" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <RelativeLayout android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <TextView android:textSize="18.0sp" android:textColor="@color/white" android:id="@id/tvDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1970-01-01" android:layout_centerInParent="true" />
+                <ImageView android:id="@id/ivLeft" android:padding="8.0dip" android:layout_width="40.0dip" android:layout_height="40.0dip" android:src="@mipmap/icon_prev64_white" android:layout_toStartOf="@id/tvDate" />
+                <ImageView android:id="@id/ivRight" android:padding="8.0dip" android:layout_width="40.0dip" android:layout_height="40.0dip" android:src="@mipmap/icon_next64_white" android:layout_toEndOf="@id/tvDate" />
+                <ImageView android:id="@id/ivCalendar" android:padding="8.0dip" android:layout_width="40.0dip" android:layout_height="40.0dip" android:src="@mipmap/icon_calendar" android:layout_centerVertical="true" android:layout_marginEnd="8.0dip" android:layout_alignParentEnd="true" />
+            </RelativeLayout>
+            <ImageView android:layout_gravity="center_horizontal" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@mipmap/heart_avg" />
+            <LinearLayout android:gravity="center_horizontal" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content" android:baselineAligned="true">
+                <TextView android:textSize="18.0sp" android:textColor="@color/white" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:text="@string/ecg_hrv_health" />
+                <TextView android:textSize="30.0sp" android:textColor="@color/white" android:id="@id/tvHeart" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="8.0dip" android:text="0" />
+            </LinearLayout>
+            <ExpandableListView android:id="@id/elvHeart" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="fill_parent" />
+        </LinearLayout>
+    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+</LinearLayout>
