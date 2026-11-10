@@ -1,0 +1,75 @@
+/* Recovered behavior:
+ * Copy the incoming value into the selected attribute record, then queue an internal update
+ * message when the record is active. The message type reflects the record's event mode.
+ */
+
+#include <stdint.h>
+__attribute__((used, naked, section(".text.store_attribute_value_and_send_update_event"))) void
+store_attribute_value_and_send_update_event(void) {
+    __asm__ volatile("push {r1, r2, r3, r4, r5, r6, r7, lr} /* 0x07fcc414 */\n"
+                     "str r3, [sp, #8] /* 0x07fcc416 */\n"
+                     "str r2, [sp, #4] /* 0x07fcc418 */\n"
+                     "mov r4, r1 /* 0x07fcc41a */\n"
+                     "movs r0, #252	@ 0xfc /* 0x07fcc41c */\n"
+                     "bl find_keyed_record_value\n" /* at 0x07fcc41e */
+                     "mov r5, r0 /* 0x07fcc422 */\n"
+                     "ldrh r0, [r0, #6] /* 0x07fcc424 */\n"
+                     "adds r6, r4, #2 /* 0x07fcc426 */\n"
+                     "adds r0, #12 /* 0x07fcc428 */\n"
+                     "uxth r0, r0 /* 0x07fcc42a */\n"
+                     "movs r7, #1 /* 0x07fcc42c */\n"
+                     "movs r4, #0 /* 0x07fcc42e */\n"
+                     "mov r1, r7 /* 0x07fcc430 */\n"
+                     "mov r2, r4 /* 0x07fcc432 */\n"
+                     "mov r3, r6 /* 0x07fcc434 */\n"
+                     "bl attmdb_att_set_value\n" /* at 0x07fcc436 */
+                     "cmp r0, #0 /* 0x07fcc43a */\n"
+                     "beq.n .L_store_attribute_value_and_send_update_event_block_at_c414_at_07fcc44c /* branch: eq, "
+                     "target at .+16 */ /* 0x07fcc43c */\n"
+                     "ldr r0, [pc, #76] /* 0x07fcc43e */\n"
+                     "movs r1, #200	@ 0xc8 /* 0x07fcc440 */\n"
+                     "strh r1, [r0, #0] /* 0x07fcc442 */\n"
+                     "ldr r0, [pc, #72] /* 0x07fcc444 */\n"
+                     "movs r1, #8 /* 0x07fcc446 */\n"
+                     "strh r1, [r0, #0] /* 0x07fcc448 */\n"
+                     ".L_store_attribute_value_and_send_update_event_block_at_c414_at_07fcc44a:\n"
+                     "b.n .L_store_attribute_value_and_send_update_event_block_at_c414_at_07fcc44a /* branch: always, "
+                     "target at .+0 */ /* 0x07fcc44a */\n"
+                     ".L_store_attribute_value_and_send_update_event_block_at_c414_at_07fcc44c:\n"
+                     "ldr r1, [sp, #8] /* 0x07fcc44c */\n"
+                     "ldr r2, [sp, #4] /* 0x07fcc44e */\n"
+                     "ldrh r0, [r5, #10] /* 0x07fcc450 */\n"
+                     "cmp r0, #0 /* 0x07fcc452 */\n"
+                     "beq.n .L_store_attribute_value_and_send_update_event_block_at_c414_at_07fcc488 /* branch: eq, "
+                     "target at .+52 */ /* 0x07fcc454 */\n"
+                     "movs r0, #8 /* 0x07fcc456 */\n"
+                     "orrs r1, r0 /* 0x07fcc458 */\n"
+                     "movs r0, #247	@ 0xf7 /* 0x07fcc45a */\n"
+                     "bics r1, r0 /* 0x07fcc45c */\n"
+                     "movs r0, #193	@ 0xc1 /* 0x07fcc45e */\n"
+                     "lsls r0, r0, #4 /* 0x07fcc460 */\n"
+                     "movs r3, #9 /* 0x07fcc462 */\n"
+                     "bl ke_msg_alloc\n" /* at 0x07fcc464 */
+                     "ldrh r1, [r5, #10] /* 0x07fcc468 */\n"
+                     "strh r4, [r0, #2] /* 0x07fcc46a */\n"
+                     "cmp r1, #1 /* 0x07fcc46c */\n"
+                     "beq.n .L_store_attribute_value_and_send_update_event_block_at_c414_at_07fcc474 /* branch: eq, "
+                     "target at .+6 */ /* 0x07fcc46e */\n"
+                     "movs r1, #19 /* 0x07fcc470 */\n"
+                     "b.n .L_store_attribute_value_and_send_update_event_block_at_c414_at_07fcc476 /* branch: always, "
+                     "target at .+4 */ /* 0x07fcc472 */\n"
+                     ".L_store_attribute_value_and_send_update_event_block_at_c414_at_07fcc474:\n"
+                     "movs r1, #18 /* 0x07fcc474 */\n"
+                     ".L_store_attribute_value_and_send_update_event_block_at_c414_at_07fcc476:\n"
+                     "strb r1, [r0, #0] /* 0x07fcc476 */\n"
+                     "ldrh r1, [r5, #6] /* 0x07fcc478 */\n"
+                     "strh r7, [r0, #6] /* 0x07fcc47a */\n"
+                     "adds r1, #12 /* 0x07fcc47c */\n"
+                     "strh r1, [r0, #4] /* 0x07fcc47e */\n"
+                     "ldrb r1, [r6, #0] /* 0x07fcc480 */\n"
+                     "strb r1, [r0, #8] /* 0x07fcc482 */\n"
+                     "bl ke_msg_send\n" /* at 0x07fcc484 */
+                     ".L_store_attribute_value_and_send_update_event_block_at_c414_at_07fcc488:\n"
+                     "movs r0, #0 /* 0x07fcc488 */\n"
+                     "pop {r1, r2, r3, r4, r5, r6, r7, pc} /* 0x07fcc48a */\n");
+}

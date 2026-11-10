@@ -1,0 +1,85 @@
+/*
+ * Fixed-address fragment 1 of 2 for encode_record_with_schema.
+ * The catalog groups these sections as one logical routine. Keep each section at its VMA and
+ * preserve cross-section branch destinations; this fragment is not necessarily a standalone entry.
+ *
+ * Routine behavior: In copy mode, append a bounded byte span and update offset/remaining counters;
+ * in schema mode, choose a format table from the record type, expand its field directives into the
+ * output, and return protocol error 0x34 for invalid or incomplete input.
+ */
+#include <stdint.h>
+__attribute__((used, naked, section(".text.encode_record_with_schema_block_at_0e18"))) void
+encode_record_with_schema_block_at_0e18(void) {
+    __asm__ volatile("push {r0, r1, r2, r3, r4, r5, r6, r7, lr} /* 0x07fc0e18 */\n"
+                     "sub sp, #44 /* 0x07fc0e1a */\n"
+                     "mov r6, r0 /* 0x07fc0e1c */\n"
+                     "ldr r0, [sp, #88]	@ 0x58 /* 0x07fc0e1e */\n"
+                     "movs r7, #0 /* 0x07fc0e20 */\n"
+                     "cmp r0, #2 /* 0x07fc0e22 */\n"
+                     "beq.n .L_encode_record_with_schema_block_at_0e18_at_07fc0e6a /* branch: eq, target at .+70 */ /* "
+                     "0x07fc0e24 */\n"
+                     "ldr r0, [sp, #52]	@ 0x34 /* 0x07fc0e26 */\n"
+                     "ldrh r1, [r0, #0] /* 0x07fc0e28 */\n"
+                     "ldr r0, [sp, #80]	@ 0x50 /* 0x07fc0e2a */\n"
+                     "cmp r1, r0 /* 0x07fc0e2c */\n"
+                     "bcc.n V204_TARGET_07fc0f2c /* branch: cc, target at .+254 */ /* 0x07fc0e2e */\n"
+                     "ldrh r1, [r6, #2] /* 0x07fc0e30 */\n"
+                     "mov r0, r1 /* 0x07fc0e32 */\n"
+                     "subs r0, #64	@ 0x40 /* 0x07fc0e34 */\n"
+                     "cmp r0, #63	@ 0x3f /* 0x07fc0e36 */\n"
+                     "bhi.n .L_encode_record_with_schema_block_at_0e18_at_07fc0e40 /* branch: hi, target at .+8 */ /* "
+                     "0x07fc0e38 */\n"
+                     "ldr r0, [sp, #84]	@ 0x54 /* 0x07fc0e3a */\n"
+                     "bl gapc_lecnx_check_rx\n" /* at 0x07fc0e3c */
+                     ".L_encode_record_with_schema_block_at_0e18_at_07fc0e40:\n"
+                     "ldr r0, [sp, #48]	@ 0x30 /* 0x07fc0e40 */\n"
+                     "adds r6, r6, #4 /* 0x07fc0e42 */\n"
+                     "ldrh r0, [r0, #0] /* 0x07fc0e44 */\n"
+                     "ldr r2, [sp, #80]	@ 0x50 /* 0x07fc0e46 */\n"
+                     "adds r0, r0, r6 /* 0x07fc0e48 */\n"
+                     "ldr r1, [sp, #56]	@ 0x38 /* 0x07fc0e4a */\n"
+                     "bl __aeabi_memcpy\n" /* at 0x07fc0e4c */
+                     "ldr r0, [sp, #48]	@ 0x30 /* 0x07fc0e50 */\n"
+                     "ldrh r1, [r0, #0] /* 0x07fc0e52 */\n"
+                     "ldr r0, [sp, #80]	@ 0x50 /* 0x07fc0e54 */\n"
+                     "adds r0, r1, r0 /* 0x07fc0e56 */\n"
+                     "ldr r1, [sp, #48]	@ 0x30 /* 0x07fc0e58 */\n"
+                     "strh r0, [r1, #0] /* 0x07fc0e5a */\n"
+                     "ldr r0, [sp, #52]	@ 0x34 /* 0x07fc0e5c */\n"
+                     "ldrh r1, [r0, #0] /* 0x07fc0e5e */\n"
+                     "ldr r0, [sp, #80]	@ 0x50 /* 0x07fc0e60 */\n"
+                     "subs r0, r1, r0 /* 0x07fc0e62 */\n"
+                     "ldr r1, [sp, #52]	@ 0x34 /* 0x07fc0e64 */\n"
+                     "strh r0, [r1, #0] /* 0x07fc0e66 */\n"
+                     "b.n encode_record_with_schema_block_at_0eb8_branch_at_07fc113e /* branch: always, target at "
+                     ".+726 */ /* 0x07fc0e68 */\n"
+                     ".L_encode_record_with_schema_block_at_0e18_at_07fc0e6a:\n"
+                     "movs r0, #0 /* 0x07fc0e6a */\n"
+                     "ldr r5, [sp, #56]	@ 0x38 /* 0x07fc0e6c */\n"
+                     "str r0, [sp, #28] /* 0x07fc0e6e */\n"
+                     "ldrb r1, [r5, #1] /* 0x07fc0e70 */\n"
+                     "ldrb r4, [r5, #0] /* 0x07fc0e72 */\n"
+                     "lsls r1, r1, #8 /* 0x07fc0e74 */\n"
+                     "orrs r1, r4 /* 0x07fc0e76 */\n"
+                     "strh r1, [r6, #0] /* 0x07fc0e78 */\n"
+                     "ldrb r1, [r5, #3] /* 0x07fc0e7a */\n"
+                     "ldrb r4, [r5, #2] /* 0x07fc0e7c */\n"
+                     "lsls r1, r1, #8 /* 0x07fc0e7e */\n"
+                     "orrs r1, r4 /* 0x07fc0e80 */\n"
+                     "strh r1, [r6, #2] /* 0x07fc0e82 */\n"
+                     "mov ip, r1 /* 0x07fc0e84 */\n"
+                     "subs r1, #64	@ 0x40 /* 0x07fc0e86 */\n"
+                     "movs r4, #4 /* 0x07fc0e88 */\n"
+                     "adds r5, r5, #4 /* 0x07fc0e8a */\n"
+                     "mov r2, r0 /* 0x07fc0e8c */\n"
+                     "mov r3, r0 /* 0x07fc0e8e */\n"
+                     "mov lr, r1 /* 0x07fc0e90 */\n"
+                     "cmp r1, #64	@ 0x40 /* 0x07fc0e92 */\n"
+                     "bcc.n .L_encode_record_with_schema_block_at_0e18_at_07fc0e98 /* branch: cc, target at .+4 */ /* "
+                     "0x07fc0e94 */\n"
+                     "ldrb r0, [r5, #0] /* 0x07fc0e96 */\n"
+                     ".L_encode_record_with_schema_block_at_0e18_at_07fc0e98:\n"
+                     "mov r1, ip /* 0x07fc0e98 */\n"
+                     "b.n encode_record_with_schema_block_at_0eb8_branch_at_07fc0eb8 /* branch: always, target at .+30 "
+                     "*/ /* 0x07fc0e9a */\n");
+}

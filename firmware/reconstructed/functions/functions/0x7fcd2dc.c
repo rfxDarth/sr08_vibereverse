@@ -1,16 +1,15 @@
 // rea decompile_all
-// name: FUN_07fcd2dc
+// name: filter_accelerometer_sample_and_classify_level
 // address: 0x7fcd2dc
 // body: available
 // range: 0x7fcd2dc-0x7fcd4ed inclusive
 // non_contiguous: false
 // provider: Ghidra 12.1.4 (ghidra)
 // analysis_profile: 14dc6cca2dda7ca9b9817d42fff240a120b5286328f7603ab0efca850f661166
-// limitations: The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.; The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.; Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.; Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.; Headerless raw-binary analysis uses the caller-supplied architecture and entry address; file offset 0 is mapped at that address. Headers are not discovered from file bytes.; Little-endian generic Ghidra languages are used for x86, x86_64, arm, arm64, and NMOS 6502; m68k uses the big-endian 68000 default language, which decodes the 68040 superset. Big-endian ARM, Thumb-only, Cortex-M, 65C02, 65816, separate 68020/68030/CPU32/ColdFire variants, and other processor variants are unsupported in this increment.; Static analysis does not emulate reset vectors, memory-mapped I/O, or firmware boot sequences.; Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.; External functions and functions without an analyzable body return null; other decompiler failures remain explicit.
 // pseudocode: provider-specific; not original source
 
 
-undefined1 FUN_07fcd2dc(int param_1,int param_2,int param_3)
+undefined1 filter_accelerometer_sample_and_classify_level(int x_sample,int y_sample,int z_sample)
 
 {
   short sVar1;
@@ -34,10 +33,10 @@ undefined1 FUN_07fcd2dc(int param_1,int param_2,int param_3)
   }
   sVar2 = *(short *)(iVar11 + 0xd84);
   iVar6 = *(int *)(iVar11 + 0xd80);
-  *(int *)(iVar11 + 0xd80) = param_1 >> 3;
+  *(int *)(iVar11 + 0xd80) = x_sample >> 3;
   *(int *)(iVar11 + 0xd84) = iVar6;
   iVar6 = *(int *)(iVar11 + 0xd88);
-  iVar8 = (int)(short)((short)(param_1 >> 3) - sVar2) -
+  iVar8 = (int)(short)((short)(x_sample >> 3) - sVar2) -
           (iVar6 * -0x6d + *(int *)(iVar11 + 0xd8c) * 0x33 >> 6);
   *(int *)(iVar11 + 0xd90) = iVar8;
   *(int *)(iVar11 + 0xd88) = iVar8;
@@ -53,9 +52,9 @@ undefined1 FUN_07fcd2dc(int param_1,int param_2,int param_3)
   *(int *)(iVar11 + 0xd9c) = iVar9;
   sVar2 = *(short *)(iVar11 + 0xdac);
   *(undefined4 *)(iVar11 + 0xdac) = *(undefined4 *)(iVar11 + 0xda8);
-  *(int *)(iVar11 + 0xda8) = param_2 >> 3;
+  *(int *)(iVar11 + 0xda8) = y_sample >> 3;
   iVar6 = *(int *)(iVar11 + 0xdb0);
-  iVar8 = (int)(short)((short)(param_2 >> 3) - sVar2) -
+  iVar8 = (int)(short)((short)(y_sample >> 3) - sVar2) -
           (iVar6 * -0x6d + *(int *)(iVar11 + 0xdb4) * 0x33 >> 6);
   *(int *)(iVar11 + 0xdb8) = iVar8;
   *(int *)(iVar11 + 0xdb0) = iVar8;
@@ -71,10 +70,10 @@ undefined1 FUN_07fcd2dc(int param_1,int param_2,int param_3)
   *(int *)(iVar11 + 0xdc4) = iVar8;
   uVar7 = *(undefined4 *)(iVar11 + 0xdd4);
   uVar3 = *(undefined4 *)(iVar11 + 0xdd0);
-  *(int *)(iVar11 + 0xdd0) = param_3 >> 3;
+  *(int *)(iVar11 + 0xdd0) = z_sample >> 3;
   *(undefined4 *)(iVar11 + 0xdd4) = uVar3;
   iVar6 = *(int *)(iVar11 + 0xdd8);
-  iVar10 = (int)(short)((short)(param_3 >> 3) - (short)uVar7) -
+  iVar10 = (int)(short)((short)(z_sample >> 3) - (short)uVar7) -
            (iVar6 * -0x6d + *(int *)(iVar11 + 0xddc) * 0x33 >> 6);
   *(int *)(iVar11 + 0xde0) = iVar10;
   *(int *)(iVar11 + 0xdd8) = iVar10;
@@ -89,7 +88,7 @@ undefined1 FUN_07fcd2dc(int param_1,int param_2,int param_3)
   *(int *)(iVar11 + 0xdf4) = iVar10;
   *(int *)(iVar11 + 0xdec) = iVar10;
   *(int *)(iVar11 + 0xdf0) = iVar6;
-  sVar2 = FUN_07fcd0c8((iVar9 >> 2) * (iVar9 >> 2) + (iVar8 >> 2) * (iVar8 >> 2) +
+  sVar2 = integer_square_root_newton_iteration((iVar9 >> 2) * (iVar9 >> 2) + (iVar8 >> 2) * (iVar8 >> 2) +
                        (iVar10 >> 2) * (iVar10 >> 2) & 0xffff);
   uVar4 = 4;
   iVar6 = *(int *)(DAT_07fcd4f0 + 0x1c);
@@ -130,11 +129,11 @@ undefined1 FUN_07fcd2dc(int param_1,int param_2,int param_3)
     uVar5 = 2;
   }
   else {
-    if (iVar8 < 500) goto LAB_07fcd4e8;
+    if (iVar8 < 500) goto L_filter_accelerometer_sample_and_classify_level_at_07fcd4e8;
     uVar5 = 3;
   }
   *(undefined1 *)(iVar6 + 0xd6f) = uVar5;
-LAB_07fcd4e8:
+L_filter_accelerometer_sample_and_classify_level_at_07fcd4e8:
   return *(undefined1 *)(iVar6 + 0xd6f);
 }
 

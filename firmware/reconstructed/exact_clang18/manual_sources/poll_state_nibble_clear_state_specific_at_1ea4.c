@@ -1,0 +1,35 @@
+/* Poll the state nibble, clear state-specific flags, and dispatch transitions. */
+__attribute__((used, naked, section(".text.poll_state_nibble_clear_state_specific_at_1ea4"))) void
+poll_state_nibble_clear_state_specific_at_1ea4(void) {
+    /* The literal at 0x07fc1ee4 points to MMIO halfwords at offsets 0 and 4. */
+    __asm__ volatile("push {r4, lr}\n"
+                     "ldr r4, [pc, #60]\n"
+                     ".Lpoll_state: ldrh r1, [r4, #4]\n"
+                     "movs r0, #15\n"
+                     "ands r0, r1\n"
+                     "cmp r0, #2\n"
+                     "beq .Lstate_two\n"
+                     "cmp r0, #4\n"
+                     "beq .Lstate_four\n"
+                     "cmp r0, #12\n"
+                     "beq .Lstate_twelve\n"
+                     "cmp r0, #1\n"
+                     "bne .Lpoll_state\n"
+                     "b .Ldone\n"
+                     ".Lstate_two: ldrh r0, [r4, #0]\n"
+                     "movs r1, #2\n"
+                     "bics r0, r1\n"
+                     "strh r0, [r4, #0]\n"
+                     "ldrh r0, [r4, #0]\n"
+                     "movs r1, #128\n"
+                     "b .Lclear_selected_bit\n"
+                     ".Lstate_four: bl clear_shared_control_bit_zero\n"
+                     "b .Lpoll_state\n"
+                     ".Lstate_twelve: bl clear_shared_control_bit_zero\n"
+                     "ldrh r0, [r4, #0]\n"
+                     "movs r1, #1\n"
+                     ".Lclear_selected_bit: bics r0, r1\n"
+                     "strh r0, [r4, #0]\n"
+                     "b .Lpoll_state\n"
+                     ".Ldone: pop {r4, pc}\n");
+}

@@ -1,0 +1,61 @@
+/* Recovered behavior:
+ * Inspect pending write state and prepare the attribute write response.
+ */
+
+#include <stdint.h>
+__attribute__((used, naked, section(".text.handle_pending_attribute_write_request_at_7c88"))) void
+handle_pending_attribute_write_request_at_7c88(void) {
+    __asm__ volatile("push {r4, r5, r6, r7, lr} /* 0x07fc7c88 */\n"
+                     "sub sp, #20 /* 0x07fc7c8a */\n"
+                     "mov r7, r2 /* 0x07fc7c8c */\n"
+                     "mov r4, r1 /* 0x07fc7c8e */\n"
+                     "mov r0, r2 /* 0x07fc7c90 */\n"
+                     "bl ke_state_get\n" /* at 0x07fc7c92 */
+                     "mov r5, r0 /* 0x07fc7c96 */\n"
+                     "lsls r0, r0, #30 /* 0x07fc7c98 */\n"
+                     "bmi.n .L_handle_pending_attribute_write_request_at_7c88_at_07fc7c9e /* branch: mi, target at .+4 "
+                     "*/ /* 0x07fc7c9a */\n"
+                     "b.n finish_pending_attribute_write_request_at_7d04_branch_at_07fc7da8 /* branch: always, target "
+                     "at .+268 */ /* 0x07fc7c9c */\n"
+                     ".L_handle_pending_attribute_write_request_at_7c88_at_07fc7c9e:\n"
+                     "movs r0, #38	@ 0x26 /* 0x07fc7c9e */\n"
+                     "bl find_keyed_record_value\n" /* at 0x07fc7ca0 */
+                     "mov r6, r0 /* 0x07fc7ca4 */\n"
+                     "ldrb r1, [r4, #2] /* 0x07fc7ca6 */\n"
+                     "cmp r1, #0 /* 0x07fc7ca8 */\n"
+                     "str r4, [sp, #8] /* 0x07fc7caa */\n"
+                     "beq.n .L_handle_pending_attribute_write_request_at_7c88_at_07fc7cb6 /* branch: eq, target at "
+                     ".+10 */ /* 0x07fc7cac */\n"
+                     "ldrb r4, [r6, #29] /* 0x07fc7cae */\n"
+                     "mov r2, r6 /* 0x07fc7cb0 */\n"
+                     "adds r2, #28 /* 0x07fc7cb2 */\n"
+                     "b.n finish_pending_attribute_write_request_at_7d04_branch_at_07fc7d1e /* branch: always, target "
+                     "at .+106 */ /* 0x07fc7cb4 */\n"
+                     ".L_handle_pending_attribute_write_request_at_7c88_at_07fc7cb6:\n"
+                     "ldrb r0, [r6, #29] /* 0x07fc7cb6 */\n"
+                     "mov r2, r6 /* 0x07fc7cb8 */\n"
+                     "adds r2, #28 /* 0x07fc7cba */\n"
+                     "mov r3, r4 /* 0x07fc7cbc */\n"
+                     "ldrb r4, [r4, #1] /* 0x07fc7cbe */\n"
+                     "movs r1, #128	@ 0x80 /* 0x07fc7cc0 */\n"
+                     "cmp r4, r0 /* 0x07fc7cc2 */\n"
+                     "bne.n handle_pending_attribute_write_cases_one_and_two_at_7cee_branch_at_07fc7cee /* branch: ne, "
+                     "target at .+42 */ /* 0x07fc7cc4 */\n"
+                     "str r1, [sp, #4] /* 0x07fc7cc6 */\n"
+                     "ldrb r0, [r2, #0] /* 0x07fc7cc8 */\n"
+                     "ldrb r1, [r3, #0] /* 0x07fc7cca */\n"
+                     "cmp r1, r0 /* 0x07fc7ccc */\n"
+                     "bne.n handle_pending_attribute_write_cases_one_and_two_at_7cee_branch_at_07fc7cf2 /* branch: ne, "
+                     "target at .+36 */ /* 0x07fc7cce */\n"
+                     "str r2, [sp, #16] /* 0x07fc7cd0 */\n"
+                     "ldrb r0, [r3, #5] /* 0x07fc7cd2 */\n"
+                     "movs r2, #0 /* 0x07fc7cd4 */\n"
+                     "cmp r0, #4 /* 0x07fc7cd6 */\n"
+                     "str r2, [sp, #4] /* 0x07fc7cd8 */\n"
+                     "bhi.n finish_pending_attribute_write_request_at_7d04_branch_at_07fc7d04 /* branch: hi, target at "
+                     ".+42 */ /* 0x07fc7cda */\n"
+                     "add r0, pc /* 0x07fc7cdc */\n"
+                     "ldrb r0, [r0, #4] /* 0x07fc7cde */\n"
+                     "lsls r0, r0, #1 /* 0x07fc7ce0 */\n"
+                     "add pc, r0 /* 0x07fc7ce2 */\n");
+}

@@ -18,8 +18,8 @@ static inline uint32_t pack_state(const uint32_t *p) {
            ((uint32_t)*((const uint8_t *)p + 1) << 16) |
            ((uint32_t)*((const uint8_t *)p) << 24);
 }
-__attribute__((used, section(".text.FUN_07fc077e")))
-uint32_t FUN_07fc077e(const uint32_t *input, const uint8_t *key_bytes,
+__attribute__((used, section(".text.sr08_block_transform_wrapper_packs_key_at_077e")))
+uint32_t sr08_block_transform_wrapper_packs_key_at_077e(const uint32_t *input, const uint8_t *key_bytes,
                       uint8_t *output_bytes) {
     register const uint32_t *inreg __asm__("r6") = input;
     register uint8_t *outreg __asm__("r5") = output_bytes;

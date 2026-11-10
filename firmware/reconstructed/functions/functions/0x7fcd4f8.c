@@ -1,18 +1,17 @@
 // rea decompile_all
-// name: FUN_07fcd4f8
+// name: update_sensor_signal_state_from_sample
 // address: 0x7fcd4f8
 // body: available
 // range: 0x7fcd4f8-0x7fcd885 inclusive
 // non_contiguous: false
 // provider: Ghidra 12.1.4 (ghidra)
 // analysis_profile: 14dc6cca2dda7ca9b9817d42fff240a120b5286328f7603ab0efca850f661166
-// limitations: The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.; The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.; Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.; Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.; Headerless raw-binary analysis uses the caller-supplied architecture and entry address; file offset 0 is mapped at that address. Headers are not discovered from file bytes.; Little-endian generic Ghidra languages are used for x86, x86_64, arm, arm64, and NMOS 6502; m68k uses the big-endian 68000 default language, which decodes the 68040 superset. Big-endian ARM, Thumb-only, Cortex-M, 65C02, 65816, separate 68020/68030/CPU32/ColdFire variants, and other processor variants are unsupported in this increment.; Static analysis does not emulate reset vectors, memory-mapped I/O, or firmware boot sequences.; Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.; External functions and functions without an analyzable body return null; other decompiler failures remain explicit.
 // pseudocode: provider-specific; not original source
 
 
 /* WARNING: Type propagation algorithm not settling */
 
-undefined4 FUN_07fcd4f8(int param_1)
+undefined4 update_sensor_signal_state_from_sample(int sample)
 
 {
   char cVar1;
@@ -24,7 +23,7 @@ undefined4 FUN_07fcd4f8(int param_1)
   uint uVar7;
   uint uVar8;
   uint uVar9;
-  int extraout_r1;
+  int division_remainder;
   int iVar10;
   int iVar11;
   uint uVar12;
@@ -47,19 +46,19 @@ undefined4 FUN_07fcd4f8(int param_1)
   local_6c = 0;
   local_68 = 0;
   local_64 = 0;
-  func_0x07f1e0de(local_50 + 1,0x18);
+  __aeabi_memclr(local_50 + 1,0x18);
   puVar13 = *(undefined1 **)(DAT_07fcd888 + 4);
   *(undefined4 *)(puVar13 + 0x40) = *(undefined4 *)(puVar13 + 0x3c);
   iVar10 = *(int *)(puVar13 + 0x38);
   *(int *)(puVar13 + 0x3c) = iVar10;
   iVar5 = *(int *)(puVar13 + 0x34);
-  *(int *)(puVar13 + 0x34) = param_1;
+  *(int *)(puVar13 + 0x34) = sample;
   *(int *)(puVar13 + 0x38) = iVar5;
   uVar6 = *(uint *)(puVar13 + 8);
-  iVar11 = param_1;
+  iVar11 = sample;
   if ((0x26 < uVar6) &&
-     (((DAT_07fcd88c < iVar5 - iVar10 && (DAT_07fcd88c < iVar5 - param_1)) ||
-      ((iVar11 = iVar5, iVar5 - iVar10 < -DAT_07fcd88c && (iVar5 - param_1 < -DAT_07fcd88c)))))) {
+     (((DAT_07fcd88c < iVar5 - iVar10 && (DAT_07fcd88c < iVar5 - sample)) ||
+      ((iVar11 = iVar5, iVar5 - iVar10 < -DAT_07fcd88c && (iVar5 - sample < -DAT_07fcd88c)))))) {
     *(int *)(puVar13 + 0x38) = iVar10;
     iVar11 = iVar10;
   }
@@ -200,9 +199,9 @@ undefined4 FUN_07fcd4f8(int param_1)
     }
   }
   uVar6 = *(uint *)(puVar13 + 8);
-  func_0x07f1dfb8(uVar6,0x19);
+  __aeabi_uidiv(uVar6,0x19);
   puVar3 = DAT_07fcd888;
-  if ((extraout_r1 == 0) && (0xa9 < uVar6)) {
+  if ((division_remainder == 0) && (0xa9 < uVar6)) {
     uVar6 = 0;
     uVar9 = DAT_07fcd894;
     uVar7 = DAT_07fcd898;
@@ -267,7 +266,7 @@ undefined4 FUN_07fcd4f8(int param_1)
     uVar9 = (*(ushort *)(puVar13 + 4) & 0x7ff) >> 3;
     *puVar13 = (char)uVar9;
     if (((400 < uVar6) && (uVar9 != 0)) && (puVar13[0x420] == '\0')) {
-      FUN_07fcd0f0(uVar9,*(undefined4 *)(puVar3 + 8),*(undefined4 *)(puVar3 + 0xc));
+      compute_and_store_display_coordinates(uVar9,*(undefined4 *)(puVar3 + 8),*(undefined4 *)(puVar3 + 0xc));
     }
   }
   *(int *)(*(int *)(DAT_07fcd888 + 4) + 8) = *(int *)(*(int *)(DAT_07fcd888 + 4) + 8) + 1;

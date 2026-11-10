@@ -1,16 +1,7 @@
-/* Ghidra 12.1.4, Thumb-context analysis; V204 payload SHA-256: 5020c236a289544d878196bec3e21b005835237bc2fc34935927533bcd1c8570. Not original source. */
+extern void update_mode_flags_and_transitions(uint32_t flags);
 
-
-/* Equivalent C: FUN_07fc3a38(0x11u << 16). */
-__attribute__((naked)) void FUN_07fc5f64(void)
-
+void clear_mode_flags_0x0011(void)
 {
-  __asm__ volatile (
-    "push {r7, lr}\n"
-    "movs r0, #17\n"
-    ".inst.n 0x0400\n"  /* lsls r0, r0, #16 */
-    "bl FUN_07fc3a38\n"
-    "pop {r7, pc}\n"
-  );
+    update_mode_flags_and_transitions(0x00110000u);
 }
 

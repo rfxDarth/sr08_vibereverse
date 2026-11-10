@@ -1,5 +1,5 @@
 // rea decompile_all
-// name: FUN_07fc48a8
+// name: load_and_update_persistent_measurement_state
 // address: 0x7fc48a8
 // body: available
 // range: 0x7fc48a8-0x7fc4c95 inclusive
@@ -7,11 +7,10 @@
 // non_contiguous: true
 // provider: Ghidra 12.1.4 (ghidra)
 // analysis_profile: 14dc6cca2dda7ca9b9817d42fff240a120b5286328f7603ab0efca850f661166
-// limitations: The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.; The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.; Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.; Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.; Headerless raw-binary analysis uses the caller-supplied architecture and entry address; file offset 0 is mapped at that address. Headers are not discovered from file bytes.; Little-endian generic Ghidra languages are used for x86, x86_64, arm, arm64, and NMOS 6502; m68k uses the big-endian 68000 default language, which decodes the 68040 superset. Big-endian ARM, Thumb-only, Cortex-M, 65C02, 65816, separate 68020/68030/CPU32/ColdFire variants, and other processor variants are unsupported in this increment.; Static analysis does not emulate reset vectors, memory-mapped I/O, or firmware boot sequences.; Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.; External functions and functions without an analyzable body return null; other decompiler failures remain explicit.
 // pseudocode: provider-specific; not original source
 
 
-void FUN_07fc48a8(void)
+void load_and_update_persistent_measurement_state(void)
 
 {
   char cVar1;
@@ -20,11 +19,11 @@ void FUN_07fc48a8(void)
   int iVar4;
   uint uVar5;
   undefined4 uVar6;
-  int extraout_r1;
+  int division_remainder;
   int iVar7;
-  int extraout_r1_00;
+  int division_remainder_00;
   uint uVar8;
-  int extraout_r1_01;
+  int division_remainder_01;
   int iVar9;
   bool bVar10;
   int iVar11;
@@ -62,15 +61,15 @@ void FUN_07fc48a8(void)
   *DAT_07fc4c98 = local_74;
   local_70 = piVar3[7];
   local_6c = 0xf;
-  func_0x07f1dfe4();
+  __aeabi_idiv();
   iVar9 = DAT_07fc4ca0;
   iVar13 = 0x5a;
-  *(undefined1 *)((int)piVar2 + extraout_r1 + 0x5a) = *(undefined1 *)(DAT_07fc4ca0 + 0x10);
+  *(undefined1 *)((int)piVar2 + division_remainder + 0x5a) = *(undefined1 *)(DAT_07fc4ca0 + 0x10);
   local_88 = (uint)*(byte *)(iVar9 + 0xf);
   iVar11 = 0x69;
-  *(byte *)((int)piVar2 + extraout_r1 + 0x69) = *(byte *)(iVar9 + 0xf);
+  *(byte *)((int)piVar2 + division_remainder + 0x69) = *(byte *)(iVar9 + 0xf);
   iVar9 = DAT_07fc4ca4;
-  iVar4 = DAT_07fc4ca4 + extraout_r1;
+  iVar4 = DAT_07fc4ca4 + division_remainder;
   uVar15 = 0;
   *(undefined1 *)(iVar4 + 0x6b) = 0;
   iVar7 = *(int *)(iVar9 + 0x4c);
@@ -83,8 +82,8 @@ void FUN_07fc48a8(void)
   *(char *)(iVar4 + 0x5c) = (char)local_78;
   *(undefined1 *)(DAT_07fc4ca0 + 0x10) = 0;
   local_70 = local_70 + 1;
-  func_0x07f1dfe4(local_70,local_6c);
-  if (extraout_r1_00 != 0) {
+  __aeabi_idiv(local_70,local_6c);
+  if (division_remainder_00 != 0) {
     return;
   }
   local_8c = DAT_07fc4c9c[3] + DAT_07fc4ca8;
@@ -95,13 +94,13 @@ void FUN_07fc48a8(void)
   do {
     if (iVar11 == 0x78) {
       bVar16 = *(char *)(DAT_07fc4d44 + 0x6c) == '\0';
-      goto LAB_07fc4950;
+      goto L_load_and_update_persistent_measurement_state_block_at_48a8_at_07fc4950;
     }
     pcVar12 = (char *)((int)piVar2 + iVar11);
     iVar11 = iVar11 + 1;
   } while (*pcVar12 != '\0');
   bVar16 = false;
-LAB_07fc4950:
+L_load_and_update_persistent_measurement_state_block_at_48a8_at_07fc4950:
   bVar10 = false;
   for (; iVar13 != 0x69; iVar13 = iVar13 + 1) {
     if (0x23 < *(byte *)((int)piVar2 + iVar13)) {
@@ -118,22 +117,22 @@ LAB_07fc4950:
   if (local_6c == 2) {
     if (((((DAT_07fc4d4c <= local_8c) && (uVar15 < 0x5b || !bVar10)) && (uVar5 - uVar8 < 0x24)) &&
         ((*(int *)(DAT_07fc4d44 + 0x6c) != 0 && (!bVar16)))) && (DAT_07fc4d48[10] != '\x02')) {
-      if (10 < uVar14) goto LAB_07fc4a9a;
-LAB_07fc4d2e:
+      if (10 < uVar14) goto load_and_update_persistent_measurement_state_block_at_48a8_branch_at_07fc4a9a;
+load_and_update_persistent_measurement_state_block_at_4cb0_branch_at_07fc4d2e:
       pcVar12 = DAT_07fc50ac;
-      func_0x07f1e0de(DAT_07fc50ac + 0x6b,0xf);
-LAB_07fc4a06:
+      __aeabi_memclr(DAT_07fc50ac + 0x6b,0xf);
+load_and_update_persistent_measurement_state_block_at_48a8_branch_at_07fc4a06:
       for (iVar9 = 0x6b; iVar9 != 0x7a; iVar9 = iVar9 + 1) {
         pcVar12[iVar9] = 'c';
       }
-      goto LAB_07fc4ac0;
+      goto L_load_and_update_persistent_measurement_state_block_at_48a8_at_07fc4ac0;
     }
-LAB_07fc4a42:
+L_load_and_update_persistent_measurement_state_block_at_48a8_at_07fc4a42:
     local_6c = 0;
     *(undefined1 *)(DAT_07fc4d44 + 0xe) = 0;
     pcVar12 = DAT_07fc4d48;
-    func_0x07f1e0de(DAT_07fc4d48 + 0x6b,0xf);
-LAB_07fc4a58:
+    __aeabi_memclr(DAT_07fc4d48 + 0x6b,0xf);
+L_load_and_update_persistent_measurement_state_block_at_48a8_at_07fc4a58:
     for (iVar9 = 0x5a; (iVar9 != 0x69 && (*(char *)((int)piVar2 + iVar9) == '\0'));
         iVar9 = iVar9 + 1) {
       pcVar12[iVar9 + 0x11] = '(';
@@ -143,55 +142,55 @@ LAB_07fc4a58:
     if (local_6c == 1) {
       if (((local_8c < DAT_07fc4d4c) || (bVar10 && 0x5a < uVar15)) ||
          (((0x23 < uVar5 - uVar8 || ((*(int *)(DAT_07fc4d44 + 0x6c) == 0 || (bVar16)))) ||
-          (DAT_07fc4d48[10] == '\x02')))) goto LAB_07fc4a42;
+          (DAT_07fc4d48[10] == '\x02')))) goto L_load_and_update_persistent_measurement_state_block_at_48a8_at_07fc4a42;
       if ((uVar14 < 0xb) && (DAT_07fc4d50 < (uint)(local_74 - piVar2[0xc]))) {
         *(undefined1 *)(DAT_07fc4d44 + 0xe) = 2;
-        goto LAB_07fc4d2e;
+        goto load_and_update_persistent_measurement_state_block_at_4cb0_branch_at_07fc4d2e;
       }
-LAB_07fc4aa4:
+L_load_and_update_persistent_measurement_state_block_at_48a8_at_07fc4aa4:
       pcVar12 = DAT_07fc4d48;
-      func_0x07f1e0de(DAT_07fc4d48 + 0x6b,0xf);
+      __aeabi_memclr(DAT_07fc4d48 + 0x6b,0xf);
     }
     else {
-      if (((DAT_07fc4d54 <= local_90) && (uVar15 = FUN_07fc4164(), uVar5 == uVar8)) &&
+      if (((DAT_07fc4d54 <= local_90) && (uVar15 = map_elapsed_ticks_to_firmware_time_units(), uVar5 == uVar8)) &&
          ((uVar14 < uVar15 &&
           (((DAT_07fc4d48[10] == '\x01' && ((DAT_07fc4d5c & *(uint *)(DAT_07fc4d44 + 0x6c)) != 0))
            && (local_88 == 0 && *(char *)(DAT_07fc4d58 + 0x26) == '\0')))))) {
-LAB_07fc4a9a:
+load_and_update_persistent_measurement_state_block_at_48a8_branch_at_07fc4a9a:
         piVar2[0xc] = local_74;
         *(undefined1 *)(DAT_07fc4d44 + 0xe) = 1;
-        goto LAB_07fc4aa4;
+        goto L_load_and_update_persistent_measurement_state_block_at_48a8_at_07fc4aa4;
       }
       pcVar12 = DAT_07fc4d48;
-      func_0x07f1e0de(DAT_07fc4d48 + 0x6b,0xf);
+      __aeabi_memclr(DAT_07fc4d48 + 0x6b,0xf);
       if (local_6c == 0) {
         local_6c = 0;
-        goto LAB_07fc4acc;
+        goto L_load_and_update_persistent_measurement_state_block_at_48a8_at_07fc4acc;
       }
       if (local_6c != 1) {
-        if (local_6c == 2) goto LAB_07fc4a06;
-        goto LAB_07fc4a58;
+        if (local_6c == 2) goto load_and_update_persistent_measurement_state_block_at_48a8_branch_at_07fc4a06;
+        goto L_load_and_update_persistent_measurement_state_block_at_48a8_at_07fc4a58;
       }
     }
     for (iVar9 = 0x6b; iVar9 != 0x7a; iVar9 = iVar9 + 1) {
       pcVar12[iVar9] = '(';
     }
-LAB_07fc4ac0:
+L_load_and_update_persistent_measurement_state_block_at_48a8_at_07fc4ac0:
     local_6c = 2;
   }
-LAB_07fc4acc:
+L_load_and_update_persistent_measurement_state_block_at_48a8_at_07fc4acc:
   uVar15 = local_84;
   local_90 = 0;
   *(undefined4 *)(DAT_07fc4d44 + 0x70) = 0;
   local_88 = 0xf;
-  func_0x07f1e0de((int)piVar2 + 0x5a);
+  __aeabi_memclr((int)piVar2 + 0x5a);
   *(uint *)(pcVar12 + 0x50) = uVar15;
   uVar5 = *(uint *)(pcVar12 + 0x54);
   uVar8 = *(uint *)(pcVar12 + 0x3c);
   *(uint *)(pcVar12 + 0x54) = uVar8;
   local_8c = DAT_07fc4d40[8];
   local_84 = 0x24;
-  func_0x07f1e0de(&local_68);
+  __aeabi_memclr(&local_68);
   local_64 = (char)local_90;
   local_68 = local_74;
   local_98 = local_90;
@@ -204,7 +203,7 @@ LAB_07fc4acc:
   }
   uVar15 = uVar15 - uVar5;
   local_94 = uVar8;
-  local_70 = func_0x07f1dfe4(local_70 + local_8c * 0x3c,local_88);
+  local_70 = __aeabi_idiv(local_70 + local_8c * 0x3c,local_88);
   iVar4 = local_74;
   iVar9 = DAT_07fc4f28;
   iVar7 = local_7c;
@@ -212,7 +211,7 @@ LAB_07fc4acc:
     for (; iVar7 != 0x6b; iVar7 = iVar7 + 1) {
       auStack_be[iVar7] = *(undefined1 *)(DAT_07fc4f28 + iVar7);
     }
-    if (uVar15 == 0) goto LAB_07fc4cc8;
+    if (uVar15 == 0) goto load_and_update_persistent_measurement_state_block_at_4cb0_branch_at_07fc4cc8;
   }
   else {
     local_64 = '\0';
@@ -236,17 +235,17 @@ LAB_07fc4acc:
     }
     iVar9 = DAT_07fc4f28;
     local_6c = uVar15;
-    if (!bVar16) goto LAB_07fc4cc8;
+    if (!bVar16) goto load_and_update_persistent_measurement_state_block_at_4cb0_branch_at_07fc4cc8;
   }
   local_24[3] = 0;
   local_24[2] = 0;
   local_24[1] = 0;
   local_24[0] = 0;
-  FUN_07fc9004(iVar4,auStack_44);
-  uVar6 = func_0x07f1dfb8(iVar4,DAT_07fc4d60);
-  func_0x07f1dfb8(uVar6,7);
-  iVar9 = extraout_r1_01 * 0x2000 + DAT_07fc4d64;
-  FUN_07fc3ea0(local_24,iVar9,0x10,0);
+  convert_timestamp_to_calendar_fields(iVar4,auStack_44);
+  uVar6 = __aeabi_uidiv(iVar4,DAT_07fc4d60);
+  __aeabi_uidiv(uVar6,7);
+  iVar9 = division_remainder_01 * 0x2000 + DAT_07fc4d64;
+  perform_flash_memory_operation(local_24,iVar9,0x10,0);
   uVar15 = local_70 - 1;
   local_84 = uVar15 * local_84;
   for (iVar4 = 0; iVar4 != 0x10; iVar4 = iVar4 + 4) {
@@ -256,15 +255,15 @@ LAB_07fc4acc:
   uVar8 = uVar15 >> 3 & 0x3fc;
   uVar14 = *(uint *)((int)local_24 + uVar8);
   if ((uVar14 & uVar5) == 0) {
-    iVar7 = extraout_r1_01 * 0x2000 + local_84;
+    iVar7 = division_remainder_01 * 0x2000 + local_84;
     *(uint *)((int)local_24 + uVar8) = uVar14 | uVar5;
     for (iVar4 = 0; iVar4 != 0x10; iVar4 = iVar4 + 4) {
       *(uint *)((int)local_24 + iVar4) = ~*(uint *)((int)local_24 + iVar4);
     }
-    FUN_07fc3ea0(local_24,iVar9,0x10,1);
-    FUN_07fc3ea0(&local_68,iVar7 + 0x2e000,0x24,1);
+    perform_flash_memory_operation(local_24,iVar9,0x10,1);
+    perform_flash_memory_operation(&local_68,iVar7 + 0x2e000,0x24,1);
   }
-  FUN_07fc5600(*DAT_07fc4d40,uVar15 & 0xff,&local_68);
+  validate_stored_sample_against_latest_reading_at_5600(*DAT_07fc4d40,uVar15 & 0xff,&local_68);
   iVar9 = DAT_07fc5020;
   if (local_64 == '\x01') {
     *(int *)(DAT_07fc5020 + 0x44) = *(int *)(DAT_07fc5020 + 0x44) + 900;
@@ -286,16 +285,16 @@ LAB_07fc4acc:
       *(uint *)(iVar9 + 0x38) = uVar15;
     }
   }
-LAB_07fc4cc8:
-  FUN_07fc5200();
-  func_0x07f1e0de(iVar9 + 0x5c,0x1e);
+load_and_update_persistent_measurement_state_block_at_4cb0_branch_at_07fc4cc8:
+  stage_and_program_flash_region_3c000();
+  __aeabi_memclr(iVar9 + 0x5c,0x1e);
   if ((((local_78 == 0) && (DAT_07fc50b0[8] != 0)) &&
       ((DAT_07fc50b0[8] != 0x17 &&
        ((*(char *)(DAT_07fc4fc4 + 0xe) == '\0' && (*(char *)(DAT_07fc4fc4 + 3) != '\x02')))))) &&
      ((*(char *)(DAT_07fc5028 + 0xc) != '\x1e' &&
       ((*DAT_07fc50ac == '\0' && (DAT_07fc4d68 <= *(uint *)(DAT_07fc50ac + 0x24))))))) {
-    FUN_07fc4400(*DAT_07fc50b0,0);
-    FUN_07fc43a4(0);
+    serialize_status_and_global_values_with_word(*DAT_07fc50b0,0);
+    build_mode_status_record_select_corresponding_at_43a4(0);
   }
   return;
 }

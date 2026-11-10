@@ -1,16 +1,15 @@
 // rea decompile_all
-// name: FUN_07fc77fc
+// name: build_measurement_packet_and_handle_reply
 // address: 0x7fc77fc
 // body: available
 // range: 0x7fc77fc-0x7fc7ba9 inclusive
 // non_contiguous: false
 // provider: Ghidra 12.1.4 (ghidra)
 // analysis_profile: 14dc6cca2dda7ca9b9817d42fff240a120b5286328f7603ab0efca850f661166
-// limitations: The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.; The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.; Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.; Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.; Headerless raw-binary analysis uses the caller-supplied architecture and entry address; file offset 0 is mapped at that address. Headers are not discovered from file bytes.; Little-endian generic Ghidra languages are used for x86, x86_64, arm, arm64, and NMOS 6502; m68k uses the big-endian 68000 default language, which decodes the 68040 superset. Big-endian ARM, Thumb-only, Cortex-M, 65C02, 65816, separate 68020/68030/CPU32/ColdFire variants, and other processor variants are unsupported in this increment.; Static analysis does not emulate reset vectors, memory-mapped I/O, or firmware boot sequences.; Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.; External functions and functions without an analyzable body return null; other decompiler failures remain explicit.
 // pseudocode: provider-specific; not original source
 
 
-uint FUN_07fc77fc(int param_1,ushort *param_2,ushort param_3,ushort param_4,byte *param_5)
+uint build_measurement_packet_and_handle_reply(int param_1,ushort *param_2,ushort param_3,ushort param_4,byte *param_5)
 
 {
   ushort uVar1;
@@ -38,9 +37,9 @@ uint FUN_07fc77fc(int param_1,ushort *param_2,ushort param_3,ushort param_4,byte
   ushort local_1c [2];
   uint local_18;
   
-  puVar3 = (ushort *)func_0x07f1b994(0x24);
+  puVar3 = (ushort *)ke_malloc(0x24);
   local_18 = 0;
-  func_0x07f1e0de(puVar3,0x24);
+  __aeabi_memclr(puVar3,0x24);
   uVar4 = (uint)*param_5;
   local_38 = 0;
   if (uVar4 != 1) {
@@ -55,18 +54,18 @@ uint FUN_07fc77fc(int param_1,ushort *param_2,ushort param_3,ushort param_4,byte
     bVar2 = param_5[uVar14 * 0xe + 3];
     if (2 < bVar2) {
       local_38 = 0x81;
-      goto LAB_07fc7a16;
+      goto L_build_measurement_packet_and_handle_reply_at_07fc7a16;
     }
     uVar13 = 0x16;
     puVar3[uVar14 * 0xb + 2] = param_5[uVar14 * 0xe + 2] & 0x3f;
     puVar9 = puVar3 + uVar14 * 0xb + 2;
     *(byte *)((int)puVar9 + 0x13) = bVar2;
-    uVar5 = func_0x07f1b994(0x144,2);
+    uVar5 = ke_malloc(0x144,2);
     *(undefined4 *)(local_1c + uVar14 * 2 + -2) = uVar5;
     *(char *)(puVar9 + 9) = (char)puVar9[9] + '\a';
     uVar16 = 0xfd;
     local_18 = 0xfd;
-    func_0x07f1e0ac(uVar5,DAT_07fc7bb0,0xe4);
+    __aeabi_memcpy(uVar5,DAT_07fc7bb0,0xe4);
     puVar10 = puVar9 + 9;
     bVar2 = param_5[uVar14 * 0xe + 2];
     uVar4 = (uint)bVar2;
@@ -109,7 +108,7 @@ uint FUN_07fc77fc(int param_1,ushort *param_2,ushort param_3,ushort param_4,byte
       uVar16 = local_18 |
                1 << (uVar13 - 1 & 0x1d) | 1 << (uVar13 - 2 & 0x1c) | 1 << (uVar13 - 3 & 0x1f);
       local_18 = uVar16;
-      func_0x07f1e0ac(piVar11 + -4,DAT_07fc7bb0 + 0xe4,0x30);
+      __aeabi_memcpy(piVar11 + -4,DAT_07fc7bb0 + 0xe4,0x30);
       bVar2 = local_2c[uVar4] & 3;
       if (bVar2 == 3) {
         iVar6 = DAT_07fc7bac + 1;
@@ -142,10 +141,10 @@ uint FUN_07fc77fc(int param_1,ushort *param_2,ushort param_3,ushort param_4,byte
     uVar12 = uVar12 + 1;
   }
   if (local_38 * 0x1000000 == 0) {
-    local_38 = func_0x07f10704(param_2,cVar8);
+    local_38 = attmdb_reserve_handle_range(param_2,cVar8);
     uVar4 = (uint)*param_5;
   }
-LAB_07fc7a16:
+L_build_measurement_packet_and_handle_reply_at_07fc7a16:
   *(char *)((int)puVar3 + 0x21) = (char)uVar4;
   uVar12 = 0;
   local_24 = 0;
@@ -163,23 +162,23 @@ LAB_07fc7a16:
         puVar3[1] = uVar1;
         *(ushort **)(param_1 + 8) = puVar3 + 0x10;
         *puVar3 = param_4 << 0xf | param_3;
-        func_0x07f1beb6(uVar1,0);
+        ke_state_set(uVar1,0);
       }
       else {
-        func_0x07f1ba8a(puVar3);
+        ke_free(puVar3);
       }
       if (local_54 != 0) {
-        func_0x07f1ba8a();
+        ke_free();
       }
       return local_38 & 0xff;
     }
     uVar4 = 0;
-    local_38 = func_0x07f105f6(local_1c,DAT_07fc7bc0,&local_18 + uVar12,0x1b,0,
+    local_38 = attm_svc_create_db(local_1c,DAT_07fc7bc0,&local_18 + uVar12,0x1b,0,
                                *(undefined2 *)(param_1 + 0x14),local_54,
                                (param_4 & 0x1e) - 0x80 & 0xff);
     local_1c[0] = local_1c[0] + (byte)puVar3[uVar12 * 0xb + 0xb];
     if (local_38 == 0) {
-      iVar6 = FUN_07fc75d4(puVar3,uVar12 & 0xff,3,0);
+      iVar6 = compute_display_segment_position_from_mode_table(puVar3,uVar12 & 0xff,3,0);
       if (iVar6 == 0) {
         *DAT_07fc7bc4 = 200;
         *DAT_07fc7bc8 = 8;
@@ -187,9 +186,9 @@ LAB_07fc7a16:
                     /* WARNING: Do nothing block with infinite loop */
         } while( true );
       }
-      local_38 = func_0x07f1003a(iVar6,4,0,param_5 + uVar12 * 0xe + 8);
+      local_38 = attmdb_att_set_value(iVar6,4,0,param_5 + uVar12 * 0xe + 8);
       if ((local_38 == 0) && (local_38 = 0, (int)((uint)param_5[uVar12 * 0xe + 2] << 0x1c) < 0)) {
-        iVar6 = FUN_07fc75d4(puVar3,uVar12 & 0xff,8,0);
+        iVar6 = compute_display_segment_position_from_mode_table(puVar3,uVar12 & 0xff,8,0);
         if (iVar6 == 0) {
           *DAT_07fc7bc4 = 200;
           *DAT_07fc7bc8 = 8;
@@ -197,7 +196,7 @@ LAB_07fc7a16:
                     /* WARNING: Do nothing block with infinite loop */
           } while( true );
         }
-        local_38 = func_0x07f1003a(iVar6,2,0,param_5 + uVar12 * 0xe + 0xe);
+        local_38 = attmdb_att_set_value(iVar6,2,0,param_5 + uVar12 * 0xe + 0xe);
       }
     }
     while ((local_38 & 0xff) == 0) {
@@ -207,7 +206,7 @@ LAB_07fc7a16:
       }
       local_24 = pbVar15[uVar4 + 6];
       local_23 = pbVar15[uVar4 + 4] & 3;
-      iVar6 = FUN_07fc75d4(puVar3,uVar12 & 0xff,0x15,uVar4 & 0xff);
+      iVar6 = compute_display_segment_position_from_mode_table(puVar3,uVar12 & 0xff,0x15,uVar4 & 0xff);
       if (iVar6 == 0) {
         *DAT_07fc7bc4 = 200;
         *DAT_07fc7bc8 = 8;
@@ -215,7 +214,7 @@ LAB_07fc7a16:
                     /* WARNING: Do nothing block with infinite loop */
         } while( true );
       }
-      local_38 = func_0x07f1003a(iVar6,2,0,&local_24);
+      local_38 = attmdb_att_set_value(iVar6,2,0,&local_24);
       uVar4 = uVar4 + 1;
     }
     *(undefined1 *)((int)puVar3 + uVar12 * 0x16 + 0x19) = 1;

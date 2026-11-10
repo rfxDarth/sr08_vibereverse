@@ -1,16 +1,15 @@
 // rea decompile_all
-// name: FUN_07fcba98
+// name: polled_mmio_transaction_preserving_original_thumb_at_ba98
 // address: 0x7fcba98
 // body: available
 // range: 0x7fcba98-0x7fcbacf inclusive
 // non_contiguous: false
 // provider: Ghidra 12.1.4 (ghidra)
 // analysis_profile: 14dc6cca2dda7ca9b9817d42fff240a120b5286328f7603ab0efca850f661166
-// limitations: The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.; The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.; Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.; Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.; Headerless raw-binary analysis uses the caller-supplied architecture and entry address; file offset 0 is mapped at that address. Headers are not discovered from file bytes.; Little-endian generic Ghidra languages are used for x86, x86_64, arm, arm64, and NMOS 6502; m68k uses the big-endian 68000 default language, which decodes the 68040 superset. Big-endian ARM, Thumb-only, Cortex-M, 65C02, 65816, separate 68020/68030/CPU32/ColdFire variants, and other processor variants are unsupported in this increment.; Static analysis does not emulate reset vectors, memory-mapped I/O, or firmware boot sequences.; Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.; External functions and functions without an analyzable body return null; other decompiler failures remain explicit.
 // pseudocode: provider-specific; not original source
 
 
-uint FUN_07fcba98(undefined4 param_1)
+uint transfer_flash_controller_word(undefined4 value)
 
 {
   ushort *puVar1;
@@ -19,9 +18,9 @@ uint FUN_07fcba98(undefined4 param_1)
   puVar1 = DAT_07fcbb8c;
   DAT_07fcbb8c[4] = DAT_07fcbb8c[4] & 0xfffe | 2;
   if ((int)((uint)*puVar1 << 0x17) < 0) {
-    puVar1[2] = (ushort)((uint)param_1 >> 0x10);
+    puVar1[2] = (ushort)((uint)value >> 0x10);
   }
-  puVar1[1] = (ushort)param_1;
+  puVar1[1] = (ushort)value;
   do {
   } while (-1 < (int)((uint)*puVar1 << 0x12));
   puVar1[3] = 1;

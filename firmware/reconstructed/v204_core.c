@@ -15,7 +15,7 @@ const uint8_t v204_digit_segments[16] = {
 };
 
 /* Register writes recovered from the two terminated tables used by
- * FUN_07fc1da8 after it identifies the motion sensor (WHO_AM_I == 0x11).
+ * handle_matched_device_state_send_corresponding_at_1da8 after it identifies the motion sensor (WHO_AM_I == 0x11).
  * The second table is followed by the optional 0x1e=0x05 variant write. */
 const v204_reg_write_t v204_accel_common_init[2] = {
     {0x68, 0xa5}, {0x24, 0x80}
@@ -73,7 +73,7 @@ uint8_t v204_hr_candidate_rate(uint16_t sample_sum, uint8_t sensor_floor)
 {
     uint32_t curve = sample_sum;
 
-    /* FUN_07fc3584 applies this lookup-like piecewise mapping when its mode
+    /* process_sensor_mode_and_update_display applies this lookup-like piecewise mapping when its mode
      * field equals 2, then takes the greater of the result and sensor_floor. */
     if (sample_sum < 0x82u)
         curve = (uint32_t)sample_sum * 10u / 0x41u + 0x50u;

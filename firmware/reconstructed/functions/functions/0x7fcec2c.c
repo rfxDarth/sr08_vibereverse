@@ -1,20 +1,19 @@
 // rea decompile_all
-// name: FUN_07fcec2c
+// name: initialize_sensor_processing_state
 // address: 0x7fcec2c
 // body: available
 // range: 0x7fcec2c-0x7fcee31 inclusive
 // non_contiguous: false
 // provider: Ghidra 12.1.4 (ghidra)
 // analysis_profile: 14dc6cca2dda7ca9b9817d42fff240a120b5286328f7603ab0efca850f661166
-// limitations: The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.; The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.; Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.; Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.; Headerless raw-binary analysis uses the caller-supplied architecture and entry address; file offset 0 is mapped at that address. Headers are not discovered from file bytes.; Little-endian generic Ghidra languages are used for x86, x86_64, arm, arm64, and NMOS 6502; m68k uses the big-endian 68000 default language, which decodes the 68040 superset. Big-endian ARM, Thumb-only, Cortex-M, 65C02, 65816, separate 68020/68030/CPU32/ColdFire variants, and other processor variants are unsupported in this increment.; Static analysis does not emulate reset vectors, memory-mapped I/O, or firmware boot sequences.; Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.; External functions and functions without an analyzable body return null; other decompiler failures remain explicit.
 // pseudocode: provider-specific; not original source
 
 
-undefined4 FUN_07fcec2c(undefined4 param_1,undefined4 param_2,undefined4 param_3,undefined4 param_4)
+undefined4 initialize_sensor_processing_state(undefined4 param_1,undefined4 param_2,undefined4 param_3,undefined4 param_4)
 
 {
-  short extraout_r1;
-  int extraout_r1_00;
+  short division_remainder;
+  int division_remainder_00;
   int iVar1;
   int iVar2;
   int iVar3;
@@ -31,14 +30,14 @@ undefined4 FUN_07fcec2c(undefined4 param_1,undefined4 param_2,undefined4 param_3
   *(undefined1 *)(iVar2 + 10) = 0;
   *(undefined1 *)(iVar2 + 0xca0) = 4;
   *(undefined1 *)(iVar2 + 0xca1) = 0;
-  func_0x07f1dfb8(*(undefined4 *)(iVar3 + 8),3,param_3,param_4,param_4);
+  __aeabi_uidiv(*(undefined4 *)(iVar3 + 8),3,param_3,param_4,param_4);
   do {
     iVar1 = uVar5 * 4 + iVar2;
     *(undefined4 *)(iVar1 + 0x288) = 0;
     *(undefined4 *)(iVar1 + 0x2d4) = 0;
     iVar1 = uVar5 * 2;
     uVar5 = uVar5 + 1 & 0xffff;
-    *(short *)(iVar1 + iVar2 + 0xc74) = extraout_r1 + 0x61;
+    *(short *)(iVar1 + iVar2 + 0xc74) = division_remainder + 0x61;
   } while (uVar5 < 8);
   iVar2 = *(int *)(iVar3 + 0x1c);
   uVar5 = 0;
@@ -101,8 +100,8 @@ undefined4 FUN_07fcec2c(undefined4 param_1,undefined4 param_2,undefined4 param_3
   *(undefined4 *)(iVar4 + 0x37c) = 0;
   iVar2 = DAT_07fcee38;
   *(undefined4 *)(iVar4 + 0x380) = 0;
-  func_0x07f1dfb8(*(undefined4 *)(iVar2 + 8),3,iVar3 + 0x200,iVar1 + 0x280,param_4);
-  *(int *)(iVar4 + 900) = extraout_r1_00 + 0x61;
+  __aeabi_uidiv(*(undefined4 *)(iVar2 + 8),3,iVar3 + 0x200,iVar1 + 0x280,param_4);
+  *(int *)(iVar4 + 900) = division_remainder_00 + 0x61;
   *(undefined1 *)(iVar4 + 9) = 99;
   *(undefined4 *)(iVar4 + 0x388) = 0x1880;
   iVar2 = DAT_07fcee3c;
@@ -179,7 +178,7 @@ undefined4 FUN_07fcec2c(undefined4 param_1,undefined4 param_2,undefined4 param_3
   iVar2 = DAT_07fcee40;
   *(undefined4 *)(iVar1 + 0xc9c) = 0;
   *(int *)(iVar1 + 0xc98) = iVar3 + iVar2;
-  FUN_07fceef8();
+  clear_sensor_processing_history_tables();
   return 1;
 }
 

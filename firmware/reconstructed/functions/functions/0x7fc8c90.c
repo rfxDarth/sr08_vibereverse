@@ -1,16 +1,15 @@
 // rea decompile_all
-// name: FUN_07fc8c90
+// name: dispatch_timed_state_callbacks
 // address: 0x7fc8c90
 // body: available
 // range: 0x7fc8c90-0x7fc8e37 inclusive
 // non_contiguous: false
 // provider: Ghidra 12.1.4 (ghidra)
 // analysis_profile: 14dc6cca2dda7ca9b9817d42fff240a120b5286328f7603ab0efca850f661166
-// limitations: The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.; The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.; Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.; Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.; Headerless raw-binary analysis uses the caller-supplied architecture and entry address; file offset 0 is mapped at that address. Headers are not discovered from file bytes.; Little-endian generic Ghidra languages are used for x86, x86_64, arm, arm64, and NMOS 6502; m68k uses the big-endian 68000 default language, which decodes the 68040 superset. Big-endian ARM, Thumb-only, Cortex-M, 65C02, 65816, separate 68020/68030/CPU32/ColdFire variants, and other processor variants are unsupported in this increment.; Static analysis does not emulate reset vectors, memory-mapped I/O, or firmware boot sequences.; Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.; External functions and functions without an analyzable body return null; other decompiler failures remain explicit.
 // pseudocode: provider-specific; not original source
 
 
-void FUN_07fc8c90(void)
+void dispatch_timed_state_callbacks(void)
 
 {
   undefined4 *puVar1;
@@ -19,7 +18,7 @@ void FUN_07fc8c90(void)
   undefined2 *puVar4;
   undefined2 uVar5;
   uint uVar6;
-  uint extraout_r1;
+  uint division_remainder;
   int iVar7;
   int iVar8;
   code *pcVar9;
@@ -31,7 +30,7 @@ void FUN_07fc8c90(void)
   
   cVar2 = *(char *)(DAT_07fc8e38 + 0x95);
   local_18[0] = 500;
-  uVar6 = FUN_07fc4440();
+  uVar6 = request_sensor_sample_then_scale_result();
   if (*(char *)(DAT_07fc8e3c + 0x34) == '\x01') {
     bVar3 = *(byte *)(DAT_07fc8e3c + 0x2c);
     if (-1 < (char)bVar3) {
@@ -47,12 +46,12 @@ void FUN_07fc8c90(void)
              (short)(1 << pbVar12[iVar8 + 1]);
       }
     }
-    func_0x07f1dfe4((int)(char)(bVar3 + 1),6);
+    __aeabi_idiv((int)(char)(bVar3 + 1),6);
     iVar8 = DAT_07fc8e3c;
-    *(char *)(DAT_07fc8e3c + 0x2c) = (char)extraout_r1;
+    *(char *)(DAT_07fc8e3c + 0x2c) = (char)division_remainder;
     iVar7 = DAT_07fc8e50;
-    uVar13 = extraout_r1;
-    if ((extraout_r1 & 0xff) == 0) {
+    uVar13 = division_remainder;
+    if ((division_remainder & 0xff) == 0) {
       uVar13 = uVar6;
       if (uVar6 < *(uint *)(DAT_07fc8e50 + 0x3c)) {
         uVar13 = uVar6 + 0x5000000;
@@ -67,7 +66,7 @@ void FUN_07fc8c90(void)
       iVar7 = DAT_07fc8e3c;
       iVar11 = 0;
       do {
-        if (iVar11 + 4 == 0x90) goto LAB_07fc8d28;
+        if (iVar11 + 4 == 0x90) goto L_dispatch_timed_state_callbacks_at_07fc8d28;
         puVar1 = (undefined4 *)(DAT_07fc8e54 + iVar11);
         iVar11 = iVar11 + 4;
       } while (*(ushort *)*puVar1 != (ushort)*(byte *)(iVar8 + 0xc));
@@ -77,7 +76,7 @@ void FUN_07fc8c90(void)
         uVar13 = (uint)*(byte *)(iVar7 + 0x2c);
       }
     }
-LAB_07fc8d28:
+L_dispatch_timed_state_callbacks_at_07fc8d28:
     iVar8 = DAT_07fc8e40;
     bVar3 = *(byte *)(DAT_07fc8e50 + (char)uVar13 + 0x40);
     cVar10 = *(char *)(DAT_07fc8e38 + 0x95);
@@ -114,7 +113,7 @@ LAB_07fc8d28:
       cVar10 = 'b';
     }
     *(byte *)(iVar8 + 0x23) = 100U - cVar10;
-    uVar5 = func_0x07f1dfb8((uint)(byte)(100U - cVar10) * ((ushort)puVar4[2] + 1));
+    uVar5 = __aeabi_uidiv((uint)(byte)(100U - cVar10) * ((ushort)puVar4[2] + 1));
     *puVar4 = uVar5;
     puVar4[3] = puVar4[3] & 0xfffd;
   }

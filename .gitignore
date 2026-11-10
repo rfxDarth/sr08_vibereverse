@@ -6,6 +6,9 @@
 /Ghidra/
 /REA/
 
+# Local output from the historical pseudocode compilation experiment
+/firmware/reconstructed/build/
+
 # Python-generated caches
 **/__pycache__/
 *.py[cod]

@@ -1,24 +1,27 @@
-/* Ghidra 12.1.4, Thumb-context analysis; V204 payload SHA-256: 5020c236a289544d878196bec3e21b005835237bc2fc34935927533bcd1c8570. Not original source. */
+/* Match an input index against the current measurement range. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_measurement_range.h"
 
+extern uint32_t find_key_bounded_table_return_preceding_at_b080(uint32_t key);
 
-undefined4 FUN_07fc5a88(uint param_1,char *param_2)
-
+uint32_t match_measurement_index_and_write_offset(
+    uint32_t candidate_index, int8_t *relative_index)
 {
-  ushort uVar1;
-  int iVar2;
-  undefined4 uVar3;
-  
-  iVar2 = FUN_07fcb080(0xfd);
-  uVar1 = *(ushort *)(iVar2 + 4);
-  uVar3 = 0x80;
-  /* Match the stock unsigned lower-bound branch: cmp r2,r5; bhi fail. */
+  const struct sr08_measurement_range *range =
+      (const struct sr08_measurement_range *)(uintptr_t)
+          find_key_bounded_table_return_preceding_at_b080(0xfd);
+  uint16_t range_start = range->range_start;
+  uint32_t result = 0x80;
+
+  /* Keep the original unsigned lower-bound branch encoding. */
   __asm__ goto volatile ("cmp %0, %1\n\tbhi %l[range_fail]"
-                         : : "l"(uVar1), "l"(param_1) : "cc" : range_fail);
-  if (param_1 < (uint)*(byte *)(iVar2 + 6) + (uint)uVar1) {
-    *param_2 = (char)param_1 - (char)uVar1;
-    uVar3 = 0;
+                         : : "l"(range_start), "l"(candidate_index)
+                         : "cc" : range_fail);
+  if (candidate_index < (uint32_t)range->entry_count + range_start) {
+    *relative_index = (int8_t)candidate_index - (int8_t)range_start;
+    result = 0;
   }
 range_fail:
-  return uVar3;
+  return result;
 }
 

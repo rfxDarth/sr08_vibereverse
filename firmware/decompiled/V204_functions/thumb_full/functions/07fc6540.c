@@ -1,16 +1,20 @@
-/* Ghidra 12.1.4, Thumb-context analysis; V204 payload SHA-256: 5020c236a289544d878196bec3e21b005835237bc2fc34935927533bcd1c8570. Not original source. */
+/* Allocate and publish a type-1 record with two zeroed halfwords. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_measurement_record.h"
 
+extern void *func_0x07f1bbb0(uint32_t, uint32_t, uint32_t, uint32_t);
+extern void func_0x07f1bbe2(void);
 
-undefined4 FUN_07fc6540(undefined4 param_1,undefined4 param_2,undefined4 param_3,undefined4 param_4)
-
+__attribute__((used, section(".text.FUN_07fc6540")))
+uint32_t create_empty_measurement_record(uint32_t unused0, uint32_t unused1,
+                                         uint32_t record_source, uint32_t slot)
 {
-  undefined1 *puVar1;
-  
-  puVar1 = (undefined1 *)func_0x07f1bbb0(0xe10,param_4,param_3,6);
-  *(undefined2 *)(puVar1 + 4) = 0;
-  *(undefined2 *)(puVar1 + 2) = 0;
-  *puVar1 = 1;
-  func_0x07f1bbe2();
-  return 0;
+    struct sr08_measurement_record *record =
+        func_0x07f1bbb0(0xe10, slot, record_source, 6);
+    record->word_at_4 = 0;
+    record->word_at_2 = 0;
+    record->type = 1;
+    func_0x07f1bbe2();
+    return 0;
 }
 

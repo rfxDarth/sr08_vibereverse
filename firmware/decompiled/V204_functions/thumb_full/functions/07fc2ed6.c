@@ -1,13 +1,21 @@
-/* Ghidra 12.1.4, Thumb-context analysis; V204 payload SHA-256: 5020c236a289544d878196bec3e21b005835237bc2fc34935927533bcd1c8570. Not original source. */
+/* Drop the oldest record if the queue is full, then enqueue the new record. */
+#include "firmware/reconstructed/include/sr08_ring_buffer.h"
 
-
-void FUN_07fc2ed6(uint *param_1,undefined4 param_2)
-
+__attribute__((used, section(".text.FUN_07fc2ed6")))
+void enqueue_ring_record_overwriting_oldest(
+    struct sr08_ring_buffer *queue, const void *source_record)
 {
-  if (((param_1[1] + ~*param_1) & (param_1[2] - 1)) == 0) {
-    FUN_07fc2f8c(param_1);
-  }
-  FUN_07fc2ea8(param_1,param_2);
-  return;
+    register uint32_t next_tail __asm__("r0") = queue->tail + ~queue->head;
+    register uint32_t capacity_mask __asm__("r1") = queue->capacity - 1;
+
+    __asm__ goto volatile (
+        "tst r1, r0\n\t"
+        "bne %l[queue_has_space]"
+        : : "r" (next_tail), "r" (capacity_mask) : "cc" : queue_has_space);
+    advance_queue_tail_if_nonempty(queue);
+
+queue_has_space:
+
+    enqueue_ring_record_if_space(queue, source_record);
 }
 

@@ -1,17 +1,21 @@
-/* Ghidra 12.1.4, Thumb-context analysis; V204 payload SHA-256: 5020c236a289544d878196bec3e21b005835237bc2fc34935927533bcd1c8570. Not original source. */
+/* Return byte six from the current record-value object, when one exists. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_releasable_object.h"
 
+extern uint32_t find_key_bounded_table_return_preceding_at_b080(uint32_t key);
 
-undefined1 FUN_07fcba7c(void)
-
+uint8_t read_current_record_value_byte(void)
 {
-  undefined1 uVar1;
-  int iVar2;
-  
-  iVar2 = FUN_07fcb080(0xfd);
-  uVar1 = 0;
-  if ((iVar2 != 0) && (*(int *)(iVar2 + 0x10) != 0)) {
-    uVar1 = *(undefined1 *)(*(int *)(iVar2 + 0x10) + 6);
-  }
-  return uVar1;
+    const struct sr08_releasable_object *record =
+        (const struct sr08_releasable_object *)(uintptr_t)
+        find_key_bounded_table_return_preceding_at_b080(0xfd);
+    uint8_t result = 0;
+
+    if (record != 0) {
+        const uint8_t *value = (const uint8_t *)(uintptr_t)record->handle;
+        if (value != 0)
+            result = value[6];
+    }
+    return result;
 }
 

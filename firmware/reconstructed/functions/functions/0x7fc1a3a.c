@@ -1,16 +1,15 @@
 // rea decompile_all
-// name: FUN_07fc1a3a
+// name: v204_software_float_multiply_preserve_split_at_1a3a
 // address: 0x7fc1a3a
 // body: available
 // range: 0x7fc1a3a-0x7fc1ab3 inclusive
 // non_contiguous: false
 // provider: Ghidra 12.1.4 (ghidra)
 // analysis_profile: 14dc6cca2dda7ca9b9817d42fff240a120b5286328f7603ab0efca850f661166
-// limitations: The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.; The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.; Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.; Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.; Headerless raw-binary analysis uses the caller-supplied architecture and entry address; file offset 0 is mapped at that address. Headers are not discovered from file bytes.; Little-endian generic Ghidra languages are used for x86, x86_64, arm, arm64, and NMOS 6502; m68k uses the big-endian 68000 default language, which decodes the 68040 superset. Big-endian ARM, Thumb-only, Cortex-M, 65C02, 65816, separate 68020/68030/CPU32/ColdFire variants, and other processor variants are unsupported in this increment.; Static analysis does not emulate reset vectors, memory-mapped I/O, or firmware boot sequences.; Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.; External functions and functions without an analyzable body return null; other decompiler failures remain explicit.
 // pseudocode: provider-specific; not original source
 
 
-uint FUN_07fc1a3a(uint param_1,uint param_2)
+uint multiply_v204_software_float_values(uint left,uint right)
 
 {
   uint uVar1;
@@ -20,10 +19,10 @@ uint FUN_07fc1a3a(uint param_1,uint param_2)
   uint uVar5;
   uint uVar6;
   
-  if (((param_1 & 0x7fffffff) != 0) && ((param_2 & 0x7fffffff) != 0)) {
-    iVar3 = ((param_1 & 0x7fffffff) >> 0x17) + ((param_2 & 0x7fffffff) >> 0x17);
-    uVar1 = param_1 & 0x7fffff;
-    uVar5 = param_2 & 0x7fffff;
+  if (((left & 0x7fffffff) != 0) && ((right & 0x7fffffff) != 0)) {
+    iVar3 = ((left & 0x7fffffff) >> 0x17) + ((right & 0x7fffffff) >> 0x17);
+    uVar1 = left & 0x7fffff;
+    uVar5 = right & 0x7fffff;
     uVar2 = uVar5 * uVar1 + (uVar1 + uVar5) * 0x800000 >> 0x10;
     uVar6 = ((~uVar2 + (uVar5 >> 8) * (uVar1 >> 8) + (uVar1 + uVar5) * 0x80 >> 0x10) + 0x4001) *
             0x10000;
@@ -44,7 +43,7 @@ uint FUN_07fc1a3a(uint param_1,uint param_2)
     if (iVar4 < 0) {
       uVar5 = 0;
     }
-    return uVar5 | (param_1 ^ param_2) & 0x80000000;
+    return uVar5 | (left ^ right) & 0x80000000;
   }
   return 0;
 }

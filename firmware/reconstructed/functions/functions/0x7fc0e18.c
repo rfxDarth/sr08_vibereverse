@@ -1,5 +1,5 @@
 // rea decompile_all
-// name: FUN_07fc0e18
+// name: encode_record_with_schema
 // address: 0x7fc0e18
 // body: available
 // range: 0x7fc0e18-0x7fc0e9b inclusive
@@ -7,11 +7,10 @@
 // non_contiguous: true
 // provider: Ghidra 12.1.4 (ghidra)
 // analysis_profile: 14dc6cca2dda7ca9b9817d42fff240a120b5286328f7603ab0efca850f661166
-// limitations: The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.; The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.; Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.; Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.; Headerless raw-binary analysis uses the caller-supplied architecture and entry address; file offset 0 is mapped at that address. Headers are not discovered from file bytes.; Little-endian generic Ghidra languages are used for x86, x86_64, arm, arm64, and NMOS 6502; m68k uses the big-endian 68000 default language, which decodes the 68040 superset. Big-endian ARM, Thumb-only, Cortex-M, 65C02, 65816, separate 68020/68030/CPU32/ColdFire variants, and other processor variants are unsupported in this increment.; Static analysis does not emulate reset vectors, memory-mapped I/O, or firmware boot sequences.; Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.; External functions and functions without an analyzable body return null; other decompiler failures remain explicit.
 // pseudocode: provider-specific; not original source
 
 
-int FUN_07fc0e18(ushort *param_1,ushort *param_2,ushort *param_3,ushort *param_4,uint param_5,
+int encode_record_with_schema(ushort *param_1,ushort *param_2,ushort *param_3,ushort *param_4,uint param_5,
                 undefined4 param_6,int param_7)
 
 {
@@ -36,9 +35,9 @@ int FUN_07fc0e18(ushort *param_1,ushort *param_2,ushort *param_3,ushort *param_4
   if (param_7 != 2) {
     if (param_5 <= *param_3) {
       if (param_1[1] - 0x40 < 0x40) {
-        func_0x07f14f92(param_6);
+        gapc_lecnx_check_rx(param_6);
       }
-      func_0x07f1e0ac((int)param_1 + *param_2 + 4,param_4,param_5);
+      __aeabi_memcpy((int)param_1 + *param_2 + 4,param_4,param_5);
       *param_2 = *param_2 + (short)param_5;
       *param_3 = *param_3 - (short)param_5;
       return 0;
@@ -80,12 +79,12 @@ int FUN_07fc0e18(ushort *param_1,ushort *param_2,ushort *param_3,ushort *param_4
   else {
     if (0x3f < uVar7 - 0x40) {
       iVar13 = 0x33;
-      goto LAB_07fc1124;
+      goto L_encode_record_with_schema_block_at_0eb8_at_07fc1124;
     }
-    cVar5 = func_0x07f14f92(param_6);
+    cVar5 = gapc_lecnx_check_rx(param_6);
     if ((cVar5 != '\0') && (-1 < (int)((uint)*(ushort *)(DAT_07fc12c8 + 0x28) << 0x18))) {
       iVar13 = 0x30;
-      goto LAB_07fc1124;
+      goto L_encode_record_with_schema_block_at_0eb8_at_07fc1124;
     }
     uVar10 = 2;
     uVar6 = 1;
@@ -94,7 +93,7 @@ int FUN_07fc0e18(ushort *param_1,ushort *param_2,ushort *param_3,ushort *param_4
   iVar13 = 0;
   bVar14 = iVar9 == 0;
   do {
-    if ((bVar14) || (uVar10 <= uVar6)) goto LAB_07fc1106;
+    if ((bVar14) || (uVar10 <= uVar6)) goto L_encode_record_with_schema_block_at_0eb8_at_07fc1106;
     local_40 = *(byte **)(iVar9 + uVar6 * 4);
     bVar14 = true;
     uVar6 = 0;
@@ -109,27 +108,27 @@ int FUN_07fc0e18(ushort *param_1,ushort *param_2,ushort *param_3,ushort *param_4
   local_50 = (ushort *)((int)param_1 + 5);
   while (((bVar1 = *local_40, bVar1 != 0 && (iVar13 == 0)) && (uVar11 <= *param_3))) {
     if (bVar1 == 0x52) {
-      func_0x07f1e0ac(local_50,puVar12,8);
+      __aeabi_memcpy(local_50,puVar12,8);
       local_50 = local_50 + 4;
       uVar11 = uVar11 + 8 & 0xffff;
       puVar12 = puVar12 + 4;
     }
     else if (bVar1 < 0x53) {
       if (bVar1 == 0x4b) {
-        func_0x07f1e0ac(local_50,puVar12,0x10);
+        __aeabi_memcpy(local_50,puVar12,0x10);
         local_50 = local_50 + 8;
         uVar11 = uVar11 + 0x10 & 0xffff;
         puVar12 = puVar12 + 8;
       }
       else if (bVar1 < 0x4c) {
         if (bVar1 == 0x41) {
-          func_0x07f1e0ac(local_50,puVar12,6);
+          __aeabi_memcpy(local_50,puVar12,6);
           local_50 = local_50 + 3;
           uVar11 = uVar11 + 6 & 0xffff;
           puVar12 = puVar12 + 3;
         }
         else {
-          if (bVar1 != 0x42) goto LAB_07fc1016;
+          if (bVar1 != 0x42) goto L_encode_record_with_schema_block_at_0eb8_at_07fc1016;
           *(byte *)local_50 = (byte)*puVar12;
           local_50 = (ushort *)((int)local_50 + 1);
           uVar11 = uVar11 + 1 & 0xffff;
@@ -137,9 +136,9 @@ int FUN_07fc0e18(ushort *param_1,ushort *param_2,ushort *param_3,ushort *param_4
         }
       }
       else {
-        if (bVar1 == 0x4c) goto LAB_07fc0fa8;
-        if ((bVar1 != 0x50) || (param_5 < uVar11 + 0x40)) goto LAB_07fc1016;
-        func_0x07f1e0ac(local_50,puVar12,0x40);
+        if (bVar1 == 0x4c) goto L_encode_record_with_schema_block_at_0eb8_at_07fc0fa8;
+        if ((bVar1 != 0x50) || (param_5 < uVar11 + 0x40)) goto L_encode_record_with_schema_block_at_0eb8_at_07fc1016;
+        __aeabi_memcpy(local_50,puVar12,0x40);
         local_50 = local_50 + 0x20;
         uVar11 = uVar11 + 0x40 & 0xffff;
         puVar12 = puVar12 + 0x20;
@@ -150,7 +149,7 @@ int FUN_07fc0e18(ushort *param_1,ushort *param_2,ushort *param_3,ushort *param_4
     }
     else if (bVar1 < 100) {
       if (bVar1 == 0x57) {
-LAB_07fc0fa8:
+L_encode_record_with_schema_block_at_0eb8_at_07fc0fa8:
         puVar8 = (ushort *)((uint)((int)local_50 + 1) & 0xfffffffe);
         local_50 = puVar8 + 1;
         uVar3 = *puVar12;
@@ -163,12 +162,12 @@ LAB_07fc0fa8:
         }
       }
       else {
-        if (bVar1 != 0x61) goto LAB_07fc1016;
+        if (bVar1 != 0x61) goto L_encode_record_with_schema_block_at_0eb8_at_07fc1016;
         local_44 = param_5 - uVar11 & 0xffff;
         uVar6 = (uint)((int)local_50 + 1) & 0xfffffffe;
-        func_0x07f1e0ac(uVar6,puVar12,local_44);
+        __aeabi_memcpy(uVar6,puVar12,local_44);
         local_50 = (ushort *)(uVar6 + local_44);
-LAB_07fc109c:
+L_encode_record_with_schema_block_at_0eb8_at_07fc109c:
         bVar4 = true;
         uVar11 = uVar11 + local_44 & 0xffff;
       }
@@ -183,19 +182,19 @@ LAB_07fc109c:
         if (*local_40 == 0x57) {
           uVar6 = uVar6 >> 1;
         }
-        else if (*local_40 != 0x42) goto LAB_07fc1016;
+        else if (*local_40 != 0x42) goto L_encode_record_with_schema_block_at_0eb8_at_07fc1016;
         *(byte *)local_50 = (byte)uVar6;
         *(byte *)((int)local_50 + 1) = (byte)(uVar6 >> 8);
-        func_0x07f1e0ac(local_50 + 1,puVar12,local_44);
+        __aeabi_memcpy(local_50 + 1,puVar12,local_44);
         local_50 = (ushort *)((int)(local_50 + 1) + local_44);
-        goto LAB_07fc109c;
+        goto L_encode_record_with_schema_block_at_0eb8_at_07fc109c;
       }
       if (bVar1 == 0x77) {
         local_40 = local_40 + 1;
-        if (*local_40 == uVar2) goto LAB_07fc0fa8;
+        if (*local_40 == uVar2) goto L_encode_record_with_schema_block_at_0eb8_at_07fc0fa8;
       }
       else {
-LAB_07fc1016:
+L_encode_record_with_schema_block_at_0eb8_at_07fc1016:
         iVar13 = 0x34;
       }
     }
@@ -203,7 +202,7 @@ LAB_07fc1016:
   }
   uVar2 = *param_3;
   if (((uVar2 < uVar11) || (*local_40 != 0)) || ((!bVar4 && (uVar2 != uVar11)))) {
-LAB_07fc1106:
+L_encode_record_with_schema_block_at_0eb8_at_07fc1106:
     iVar13 = 0x34;
   }
   else {
@@ -213,7 +212,7 @@ LAB_07fc1106:
       return 0;
     }
   }
-LAB_07fc1124:
+L_encode_record_with_schema_block_at_0eb8_at_07fc1124:
   uVar6 = (uint)param_1[1];
   if (((uVar6 != 4) && (uVar6 != 6)) && (0x3f < uVar6 - 0x40)) {
     *(undefined1 *)((int)param_1 + 5) = *(undefined1 *)((int)param_4 + 5);

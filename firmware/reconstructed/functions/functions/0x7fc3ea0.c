@@ -1,16 +1,15 @@
 // rea decompile_all
-// name: FUN_07fc3ea0
+// name: perform_flash_memory_operation
 // address: 0x7fc3ea0
 // body: available
 // range: 0x7fc3ea0-0x7fc408f inclusive
 // non_contiguous: false
 // provider: Ghidra 12.1.4 (ghidra)
 // analysis_profile: 14dc6cca2dda7ca9b9817d42fff240a120b5286328f7603ab0efca850f661166
-// limitations: The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.; The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.; Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.; Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.; Headerless raw-binary analysis uses the caller-supplied architecture and entry address; file offset 0 is mapped at that address. Headers are not discovered from file bytes.; Little-endian generic Ghidra languages are used for x86, x86_64, arm, arm64, and NMOS 6502; m68k uses the big-endian 68000 default language, which decodes the 68040 superset. Big-endian ARM, Thumb-only, Cortex-M, 65C02, 65816, separate 68020/68030/CPU32/ColdFire variants, and other processor variants are unsupported in this increment.; Static analysis does not emulate reset vectors, memory-mapped I/O, or firmware boot sequences.; Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.; External functions and functions without an analyzable body return null; other decompiler failures remain explicit.
 // pseudocode: provider-specific; not original source
 
 
-int FUN_07fc3ea0(undefined1 *param_1,uint param_2,uint param_3,int param_4)
+int perform_flash_memory_operation(undefined1 *buffer,uint flash_address,uint byte_count,int operation)
 
 {
   undefined2 *puVar1;
@@ -39,47 +38,47 @@ int FUN_07fc3ea0(undefined1 *param_1,uint param_2,uint param_3,int param_4)
   DAT_07fc4094[1] = uVar3;
   *puVar1 = uVar3;
   local_18 = 0;
-  FUN_07fcbb6c();
-  FUN_07fcbb94(0xab);
-  if (param_4 == 1) {
-    if ((*(char *)(DAT_07fc4090 + 0xe) == '\x01') && (iVar5 = FUN_07fcc494(), iVar5 == 0)) {
-LAB_07fc4032:
-      FUN_07fcbae2();
+  set_ring_s_output_mode_and_enable();
+  update_mode_dependent_output_state_during_flash_transfer(0xab);
+  if (operation == 1) {
+    if ((*(char *)(DAT_07fc4090 + 0xe) == '\x01') && (iVar5 = read_record_flag_bit_zero(), iVar5 == 0)) {
+L_perform_flash_memory_operation_at_07fc4032:
+      initialize_shared_state_when_status_clear();
       cVar10 = -1;
-      goto LAB_07fc408a;
+      goto L_perform_flash_memory_operation_at_07fc408a;
     }
-    FUN_07fcbb6c(0);
-    uVar9 = 0x800000 - param_2;
-    if (param_3 <= 0x800000 - param_2) {
-      uVar9 = param_3;
+    set_ring_s_output_mode_and_enable(0);
+    uVar9 = 0x800000 - flash_address;
+    if (byte_count <= 0x800000 - flash_address) {
+      uVar9 = byte_count;
     }
     local_24 = 1;
     local_18 = 0x100;
     local_2c = 0;
     uVar8 = 0;
-    uVar6 = (param_2 + 0x100 & 0xffffff00) - 1;
+    uVar6 = (flash_address + 0x100 & 0xffffff00) - 1;
     uVar7 = uVar9;
     while (uVar4 = local_2c, uVar8 < uVar9) {
-      if (uVar6 < uVar7 + param_2) {
-        uVar7 = (uVar6 - param_2) + 1;
+      if (uVar6 < uVar7 + flash_address) {
+        uVar7 = (uVar6 - flash_address) + 1;
       }
-      uVar4 = FUN_07fcbad0();
-      if ((uVar4 != 0) || (uVar4 = FUN_07fcbb38(), uVar4 != 0)) break;
-      FUN_07fcbb6c(2);
+      uVar4 = map_record_flag_to_status_mask();
+      if ((uVar4 != 0) || (uVar4 = drive_ring_s_output_state_machine(), uVar4 != 0)) break;
+      set_ring_s_output_mode_and_enable(2);
       uVar3 = local_24;
       if (*(char *)(DAT_07fc4090 + 2) != '\0') {
         uVar3 = 8;
       }
       DAT_07fc4094[1] = uVar3;
-      FUN_07fcba98(param_2 | 0x2000000);
-      FUN_07fcbb6c(0);
+      transfer_flash_controller_word(flash_address | 0x2000000);
+      set_ring_s_output_mode_and_enable(0);
       uVar4 = uVar7;
       if (0xff < (uVar7 & 0xffff)) {
         uVar4 = local_18;
       }
-      puVar11 = param_1 + uVar8;
+      puVar11 = buffer + uVar8;
       for (; (uVar4 & 0xffff) != 0; uVar4 = uVar4 - 1) {
-        FUN_07fcba98(*puVar11);
+        transfer_flash_controller_word(*puVar11);
         puVar11 = puVar11 + 1;
       }
       if (*(char *)(DAT_07fc4090 + 2) == '\0') {
@@ -89,18 +88,18 @@ LAB_07fc4032:
         uVar3 = 8;
       }
       *DAT_07fc4094 = uVar3;
-      uVar4 = FUN_07fcbb10();
+      uVar4 = poll_output_state_table_and_report_count_advance();
       if (uVar4 != 0) break;
       uVar8 = uVar7 + uVar8;
       uVar7 = uVar9 - uVar8;
-      param_2 = uVar6 + 1;
+      flash_address = uVar6 + 1;
       uVar6 = uVar6 + 0x100;
     }
   }
-  else if (param_4 == 0) {
-    uVar4 = FUN_07fcbad0();
+  else if (operation == 0) {
+    uVar4 = map_record_flag_to_status_mask();
     if (uVar4 == 0) {
-      FUN_07fcbb6c(2);
+      set_ring_s_output_mode_and_enable(2);
       if (*(char *)(DAT_07fc4090 + 2) == '\0') {
         uVar3 = 1;
       }
@@ -108,15 +107,15 @@ LAB_07fc4032:
         uVar3 = 8;
       }
       DAT_07fc4094[1] = uVar3;
-      FUN_07fcba98(param_2 | 0x3000000);
-      FUN_07fcbb6c(0);
-      if (0x800000 < param_3 + param_2) {
-        param_3 = 0x800000 - param_2;
+      transfer_flash_controller_word(flash_address | 0x3000000);
+      set_ring_s_output_mode_and_enable(0);
+      if (0x800000 < byte_count + flash_address) {
+        byte_count = 0x800000 - flash_address;
       }
-      for (; param_3 != 0; param_3 = param_3 - 1) {
-        uVar2 = FUN_07fcba98(0);
-        *param_1 = uVar2;
-        param_1 = param_1 + 1;
+      for (; byte_count != 0; byte_count = byte_count - 1) {
+        uVar2 = transfer_flash_controller_word(0);
+        *buffer = uVar2;
+        buffer = buffer + 1;
       }
       if (*(char *)(DAT_07fc439c + 2) == '\0') {
         uVar3 = 1;
@@ -129,29 +128,29 @@ LAB_07fc4032:
     }
   }
   else {
-    if ((*(char *)(DAT_07fc439c + 0xe) == '\x01') && (iVar5 = FUN_07fcc494(), iVar5 == 0))
-    goto LAB_07fc4032;
-    uVar9 = param_3 + DAT_07fc409c >> 0xc;
+    if ((*(char *)(DAT_07fc439c + 0xe) == '\x01') && (iVar5 = read_record_flag_bit_zero(), iVar5 == 0))
+    goto L_perform_flash_memory_operation_at_07fc4032;
+    uVar9 = byte_count + DAT_07fc409c >> 0xc;
     if (uVar9 == 0) {
       uVar9 = 1;
     }
-    param_2 = param_2 & DAT_07fc4098;
+    flash_address = flash_address & DAT_07fc4098;
     uVar4 = 0xff;
     for (; uVar9 != 0; uVar9 = uVar9 - 1) {
       *DAT_07fc4108 = 200;
-      uVar4 = FUN_07fcbad0();
-      if ((uVar4 != 0) || (uVar4 = FUN_07fcbb38(), uVar4 != 0)) break;
-      FUN_07fcbb6c(2);
-      FUN_07fcbb94(param_2 | 0x20000000);
-      uVar4 = FUN_07fcbb10();
+      uVar4 = map_record_flag_to_status_mask();
+      if ((uVar4 != 0) || (uVar4 = drive_ring_s_output_state_machine(), uVar4 != 0)) break;
+      set_ring_s_output_mode_and_enable(2);
+      update_mode_dependent_output_state_during_flash_transfer(flash_address | 0x20000000);
+      uVar4 = poll_output_state_table_and_report_count_advance();
       if (uVar4 != 0) break;
-      param_2 = DAT_07fc409c + param_2 + 1;
+      flash_address = DAT_07fc409c + flash_address + 1;
       uVar4 = local_18;
     }
   }
   cVar10 = (char)uVar4;
-  FUN_07fcbae2();
-LAB_07fc408a:
+  initialize_shared_state_when_status_clear();
+L_perform_flash_memory_operation_at_07fc408a:
   return (int)cVar10;
 }
 

@@ -1,0 +1,31 @@
+/* Apply the fixed-point sensor calibration while preserving the high byte. */
+__attribute__((used, naked, section(".text.apply_fixed_point_sensor_calibration_while_at_17bc"))) void
+apply_fixed_point_sensor_calibration_while_at_17bc(void) {
+    __asm__ volatile("push {r4, lr}\n"
+                     "ldr r4, [pc, #68]\n"
+                     "ldrh r1, [r4, #22]\n"
+                     "ldr r2, [pc, #68]\n"
+                     "uxtb r3, r1\n"
+                     "ldrh r1, [r2, #8]\n"
+                     "ldrh r4, [r4, #24]\n"
+                     "lsls r1, r1, #19\n"
+                     "lsrs r1, r1, #26\n"
+                     "lsls r4, r4, #17\n"
+                     "lsrs r4, r4, #25\n"
+                     "subs r0, r0, r4\n"
+                     "adds r1, #9\n"
+                     "muls r1, r0\n"
+                     "movs r0, #1\n"
+                     "lsls r0, r0, #11\n"
+                     "subs r0, r0, r1\n"
+                     "uxth r0, r0\n"
+                     "muls r0, r3\n"
+                     "lsls r0, r0, #13\n"
+                     "ldrh r1, [r2, #8]\n"
+                     "lsrs r0, r0, #24\n"
+                     "lsrs r1, r1, #8\n"
+                     "lsls r1, r1, #8\n"
+                     "orrs r1, r0\n"
+                     "strh r1, [r2, #8]\n"
+                     "pop {r4, pc}\n");
+}

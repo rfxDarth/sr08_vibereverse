@@ -1,30 +1,29 @@
 // rea decompile_all
-// name: FUN_07fc2488
+// name: feature_state_gate_recovered_v204_thumb_at_2488
 // address: 0x7fc2488
 // body: available
 // range: 0x7fc2488-0x7fc24c5 inclusive
 // non_contiguous: false
 // provider: Ghidra 12.1.4 (ghidra)
 // analysis_profile: 14dc6cca2dda7ca9b9817d42fff240a120b5286328f7603ab0efca850f661166
-// limitations: The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.; The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.; Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.; Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.; Headerless raw-binary analysis uses the caller-supplied architecture and entry address; file offset 0 is mapped at that address. Headers are not discovered from file bytes.; Little-endian generic Ghidra languages are used for x86, x86_64, arm, arm64, and NMOS 6502; m68k uses the big-endian 68000 default language, which decodes the 68040 superset. Big-endian ARM, Thumb-only, Cortex-M, 65C02, 65816, separate 68020/68030/CPU32/ColdFire variants, and other processor variants are unsupported in this increment.; Static analysis does not emulate reset vectors, memory-mapped I/O, or firmware boot sequences.; Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.; External functions and functions without an analyzable body return null; other decompiler failures remain explicit.
 // pseudocode: provider-specific; not original source
 
 
-void FUN_07fc2488(int param_1)
+void gate_mode_activation_on_sensor_flags(int mode)
 
 {
   uint uVar1;
   uint uVar2;
   
-  uVar1 = FUN_07fc8584(0x2a);
-  uVar2 = FUN_07fc8584(0x2b);
-  if (param_1 == 2) {
-    if (((uVar1 & 1) != 0) && ((uVar2 & 0x40) == 0)) goto LAB_07fc24b6;
+  uVar1 = ensure_radio_profile_then_exchange_word(0x2a);
+  uVar2 = ensure_radio_profile_then_exchange_word(0x2b);
+  if (mode == 2) {
+    if (((uVar1 & 1) != 0) && ((uVar2 & 0x40) == 0)) goto gate_mode_activation_on_sensor_flags_label_at_07fc24b6;
   }
-  else if ((param_1 == 1) && (((uVar1 & 1) == 0 && ((int)(uVar2 << 0x19) < 0)))) {
-LAB_07fc24b6:
-    FUN_07fc3a38(0x8000000);
-    FUN_07fc3a38(0x4000000);
+  else if ((mode == 1) && (((uVar1 & 1) == 0 && ((int)(uVar2 << 0x19) < 0)))) {
+gate_mode_activation_on_sensor_flags_label_at_07fc24b6:
+    update_mode_flags_and_transitions(0x8000000);
+    update_mode_flags_and_transitions(0x4000000);
     return;
   }
   return;

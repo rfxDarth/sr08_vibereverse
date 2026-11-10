@@ -1,26 +1,25 @@
 // rea decompile_all
-// name: FUN_07fcbae2
+// name: initialize_shared_state_when_status_clear
 // address: 0x7fcbae2
 // body: available
 // range: 0x7fcbae2-0x7fcbafb inclusive
 // non_contiguous: false
 // provider: Ghidra 12.1.4 (ghidra)
 // analysis_profile: 14dc6cca2dda7ca9b9817d42fff240a120b5286328f7603ab0efca850f661166
-// limitations: The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.; The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.; Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.; Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.; Headerless raw-binary analysis uses the caller-supplied architecture and entry address; file offset 0 is mapped at that address. Headers are not discovered from file bytes.; Little-endian generic Ghidra languages are used for x86, x86_64, arm, arm64, and NMOS 6502; m68k uses the big-endian 68000 default language, which decodes the 68040 superset. Big-endian ARM, Thumb-only, Cortex-M, 65C02, 65816, separate 68020/68030/CPU32/ColdFire variants, and other processor variants are unsupported in this increment.; Static analysis does not emulate reset vectors, memory-mapped I/O, or firmware boot sequences.; Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.; External functions and functions without an analyzable body return null; other decompiler failures remain explicit.
 // pseudocode: provider-specific; not original source
 
 
-void FUN_07fcbae2(void)
+void initialize_shared_state_when_status_clear(void)
 
 {
   int iVar1;
   
-  iVar1 = FUN_07fcbad0();
+  iVar1 = map_record_flag_to_status_mask();
   if (iVar1 != 0) {
     return;
   }
-  FUN_07fcbb6c(0);
-  FUN_07fcbb94(0xb9);
+  set_ring_s_output_mode_and_enable(0);
+  update_mode_dependent_output_state_during_flash_transfer(0xb9);
   return;
 }
 

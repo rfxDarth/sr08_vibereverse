@@ -1,15 +1,16 @@
-/* Ghidra 12.1.4, Thumb-context analysis; V204 payload SHA-256: 5020c236a289544d878196bec3e21b005835237bc2fc34935927533bcd1c8570. Not original source. */
+/* Return bit zero of field ten in the selected record, or zero if absent. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_flagged_record.h"
 
+extern uint32_t find_key_bounded_table_return_preceding_at_b080(uint32_t key);
 
-ushort FUN_07fcc494(void)
-
+uint16_t read_record_flag_bit_zero(void)
 {
-  int iVar1;
-  
-  iVar1 = FUN_07fcb080(0xfc);
-  if (iVar1 != 0) {
-    return *(ushort *)(iVar1 + 10) & 1;
-  }
-  return 0;
+    const struct sr08_flagged_record *record =
+        (const struct sr08_flagged_record *)(uintptr_t)
+        find_key_bounded_table_return_preceding_at_b080(0xfc);
+    if (record == 0)
+        return 0;
+    return record->flags & 1;
 }
 

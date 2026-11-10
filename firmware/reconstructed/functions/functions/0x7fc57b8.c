@@ -1,30 +1,29 @@
 // rea decompile_all
-// name: FUN_07fc57b8
+// name: helper_walks_linked_list_returns_matching_at_57b8
 // address: 0x7fc57b8
 // body: available
 // range: 0x7fc57b8-0x7fc5807 inclusive
 // non_contiguous: false
 // provider: Ghidra 12.1.4 (ghidra)
 // analysis_profile: 14dc6cca2dda7ca9b9817d42fff240a120b5286328f7603ab0efca850f661166
-// limitations: The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.; The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.; Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.; Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.; Headerless raw-binary analysis uses the caller-supplied architecture and entry address; file offset 0 is mapped at that address. Headers are not discovered from file bytes.; Little-endian generic Ghidra languages are used for x86, x86_64, arm, arm64, and NMOS 6502; m68k uses the big-endian 68000 default language, which decodes the 68040 superset. Big-endian ARM, Thumb-only, Cortex-M, 65C02, 65816, separate 68020/68030/CPU32/ColdFire variants, and other processor variants are unsupported in this increment.; Static analysis does not emulate reset vectors, memory-mapped I/O, or firmware boot sequences.; Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.; External functions and functions without an analyzable body return null; other decompiler failures remain explicit.
 // pseudocode: provider-specific; not original source
 
 
-void FUN_07fc57b8(uint param_1,ushort *param_2,int *param_3)
+void find_measurement_record_by_id(uint record_id,ushort *value_length_out,int *value_bytes_out)
 
 {
   int iVar1;
   int *piVar2;
   
-  iVar1 = FUN_07fcb080(0xfd);
-  if (param_3 == (int *)0x0) {
+  iVar1 = find_keyed_record_value(0xfd);
+  if (value_bytes_out == (int *)0x0) {
     *DAT_07fc5a5c = 200;
     *DAT_07fc5a60 = 8;
     do {
                     /* WARNING: Do nothing block with infinite loop */
     } while( true );
   }
-  if (param_2 == (ushort *)0x0) {
+  if (value_length_out == (ushort *)0x0) {
     *DAT_07fc5a5c = 200;
     *DAT_07fc5a60 = 8;
     do {
@@ -36,14 +35,14 @@ void FUN_07fc57b8(uint param_1,ushort *param_2,int *param_3)
     piVar2 = (int *)*piVar2;
     if (piVar2 == (int *)0x0) {
       iVar1 = 0;
-      *param_2 = 0;
-      goto LAB_07fc5804;
+      *value_length_out = 0;
+      goto find_measurement_record_by_id_label_at_07fc5804;
     }
-  } while (*(byte *)(piVar2 + 1) != param_1);
-  *param_2 = (ushort)*(byte *)((int)piVar2 + 5);
+  } while (*(byte *)(piVar2 + 1) != record_id);
+  *value_length_out = (ushort)*(byte *)((int)piVar2 + 5);
   iVar1 = (int)piVar2 + 6;
-LAB_07fc5804:
-  *param_3 = iVar1;
+find_measurement_record_by_id_label_at_07fc5804:
+  *value_bytes_out = iVar1;
   return;
 }
 

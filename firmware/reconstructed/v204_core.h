@@ -29,8 +29,8 @@ typedef struct {
     uint16_t year_day;
 } v204_calendar_t;
 
-/* Counter fields mirror offsets read or written by FUN_07fc4f34 and the
- * daily reset helper FUN_07fc4fa0. Unknown counter meanings stay neutral. */
+/* Counter fields mirror offsets read or written by advance_display_timing_serialize_changed_interval_at_4f34 and the
+ * daily reset helper reset_mode_state_clear_associated_flag_at_4fa0. Unknown counter meanings stay neutral. */
 typedef struct {
     uint32_t total;
     uint32_t mode_count;
@@ -70,7 +70,7 @@ void v204_decode_accel(const uint8_t sample[6], v204_accel_t *out);
 uint32_t v204_decode_step_count(const uint8_t payload[4]);
 /* V204 command 0x01 carries a four-byte little-endian Unix timestamp. */
 uint32_t v204_decode_epoch_le(const uint8_t payload[4]);
-/* Ports the mode-2 candidate-rate curve in FUN_07fc3584. `sample_sum` is
+/* Ports the mode-2 candidate-rate curve in process_sensor_mode_and_update_display. `sample_sum` is
  * accumulated from the firmware's internal ring buffer; `sensor_floor` is
  * the contemporaneous value carried in the sensor context. This is one
  * transformation stage, not a standalone heart-rate measurement. */

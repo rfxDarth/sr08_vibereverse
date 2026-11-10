@@ -1,16 +1,15 @@
 // rea decompile_all
-// name: FUN_07fc5070
+// name: emit_event_packet_active_mode_byte_at_5070
 // address: 0x7fc5070
 // body: available
 // range: 0x7fc5070-0x7fc50ab inclusive
 // non_contiguous: false
 // provider: Ghidra 12.1.4 (ghidra)
 // analysis_profile: 14dc6cca2dda7ca9b9817d42fff240a120b5286328f7603ab0efca850f661166
-// limitations: The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.; The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.; Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.; Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.; Headerless raw-binary analysis uses the caller-supplied architecture and entry address; file offset 0 is mapped at that address. Headers are not discovered from file bytes.; Little-endian generic Ghidra languages are used for x86, x86_64, arm, arm64, and NMOS 6502; m68k uses the big-endian 68000 default language, which decodes the 68040 superset. Big-endian ARM, Thumb-only, Cortex-M, 65C02, 65816, separate 68020/68030/CPU32/ColdFire variants, and other processor variants are unsupported in this increment.; Static analysis does not emulate reset vectors, memory-mapped I/O, or firmware boot sequences.; Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.; External functions and functions without an analyzable body return null; other decompiler failures remain explicit.
 // pseudocode: provider-specific; not original source
 
 
-void FUN_07fc5070(uint param_1)
+void emit_event_packet_when_active_mode_changes(uint mode)
 
 {
   undefined4 uVar1;
@@ -22,17 +21,17 @@ void FUN_07fc5070(uint param_1)
   undefined1 local_1f;
   undefined1 auStack_1e [14];
   
-  if (*(byte *)(DAT_07fc522c + 2) != param_1) {
-    *(char *)(DAT_07fc522c + 2) = (char)param_1;
-    func_0x07f1e0de(auStack_1e,0xe);
+  if (*(byte *)(v204_shared_context_bytes_for_step_accumulator + 2) != mode) {
+    *(char *)(v204_shared_context_bytes_for_step_accumulator + 2) = (char)mode;
+    __aeabi_memclr(auStack_1e,0xe);
     local_24 = 0x14;
     uVar1 = *DAT_07fc5228;
     local_23 = (undefined1)uVar1;
     local_20 = (undefined1)((uint)uVar1 >> 0x18);
     local_21 = (undefined1)((uint)uVar1 >> 0x10);
     local_22 = (undefined1)((uint)uVar1 >> 8);
-    local_1f = (char)param_1;
-    FUN_07fc24d0(&local_24);
+    local_1f = (char)mode;
+    search_queue_and_insert_limit_one(&local_24);
   }
   return;
 }

@@ -10,7 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR = Path(__file__).resolve().parent
-SOURCES = (DATA_DIR / "V204_tables.c", DATA_DIR / "V204_ghidra_data.c")
+SOURCES = (DATA_DIR / "V204_tables.c", DATA_DIR / "V204_auto_data.c")
 LINKER_SCRIPT = DATA_DIR / "V204_data_sections.ld"
 PAYLOAD = ROOT / "decompiled" / "V204.payload.bin"
 BASE = 0x7FC0000

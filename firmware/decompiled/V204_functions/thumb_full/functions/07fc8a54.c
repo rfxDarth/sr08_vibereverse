@@ -1,26 +1,36 @@
-/* Ghidra 12.1.4, Thumb-context analysis; V204 payload SHA-256: 5020c236a289544d878196bec3e21b005835237bc2fc34935927533bcd1c8570. Not original source. */
+/* Scan at most 254 pairs, stopping on the 0xff/0xff terminator. */
+extern void process_two_packed_input_bytes_update_at_8ad8(
+    uint8_t first, uint8_t second);
 
-
-/* Scan paired bytes until both lanes are 0xff, with a 254-iteration bound. */
-__attribute__((naked)) void FUN_07fc8a54(byte *param_1)
-
+__attribute__((used, section(".text.FUN_07fc8a54")))
+void scan_paired_bytes_until_lanes_are_at_8a54(uint8_t *pairs)
 {
-  __asm__ volatile (
-      "push {r4, r5, r7, lr}\n\t"
-      ".inst.n 0x4604\n\t"
-      "movs r5, #254\n\t"
-      "1: cmp r5, #0\n\t"
-      "beq 2f\n\t"
-      "ldrb r1, [r4, #1]\n\t"
-      "ldrb r0, [r4, #0]\n\t"
-      ".inst.n 0x4602\n\t"
-      ".inst.n 0x400a\n\t"
-      "cmp r2, #255\n\t"
-      "beq 2f\n\t"
-      "bl FUN_07fc8ad8\n\t"
-      ".inst.n 0x1e6d\n\t"
-      ".inst.n 0x1ca4\n\t"
-      "b 1b\n\t"
-      "2: pop {r4, r5, r7, pc}\n\t");
-}
+  register uint8_t *cursor __asm__("r4") = pairs;
+  __asm__ volatile ("" : "+r" (cursor));
+  register int remaining __asm__("r5") = 254;
+  __asm__ volatile ("" : "+r" (remaining));
 
+  /* Preserve V204's callee-saved set and aligned helper-call stack. */
+  __asm__ volatile ("" ::: "r7");
+
+  for (;;) {
+    __asm__ goto ("cmp %0, #0\n\tbeq %l[done]"
+                  : : "l" (remaining) : "cc" : done);
+
+    register uint32_t second __asm__("r1") = cursor[1];
+    register uint32_t first __asm__("r0") = cursor[0];
+    register uint32_t both __asm__("r2") = first;
+    __asm__ volatile ("" : "+r" (both));
+    both &= second;
+    __asm__ goto ("cmp %0, #255\n\tbeq %l[done]"
+                  : : "l" (both) : "cc" : done);
+
+    process_two_packed_input_bytes_update_at_8ad8(first, second);
+    --remaining;
+    __asm__ volatile ("" : "+r" (remaining) : "r" (cursor));
+    cursor += 2;
+  }
+
+done:
+  return;
+}

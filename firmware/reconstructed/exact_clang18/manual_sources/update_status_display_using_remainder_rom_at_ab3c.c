@@ -1,0 +1,30 @@
+/* Update the status display using the remainder from the ROM divide helper. */
+__attribute__((used, naked, section(".text.update_status_display_using_remainder_rom_at_ab3c"))) void
+update_status_display_using_remainder_rom_at_ab3c(void) {
+    __asm__ volatile("push {r4, lr}\n"
+                     "movs r0, #64\n"
+                     "ldr r4, [pc, #560]\n"
+                     "ldr r1, [pc, #48]\n"
+                     "strh r1, [r4, r0]\n"
+                     "mov r0, r4\n"
+                     "adds r0, #64\n"
+                     "movs r1, #82\n"
+                     "strb r1, [r0, #2]\n"
+                     "movs r0, #48\n"
+                     "ldr r1, [pc, #660]\n"
+                     "ldrb r0, [r1, r0]\n"
+                     "movs r1, #3\n"
+                     "bl __aeabi_uidiv\n"
+                     "cmp r1, #2\n"
+                     "bcc .Lhandle_small_remainder\n"
+                     "movs r0, #68\n"
+                     "movs r1, #8\n"
+                     "strb r1, [r4, r0]\n"
+                     "b .Lset_second_indicator\n"
+                     ".Lhandle_small_remainder: cmp r1, #0\n"
+                     "beq .Ldone\n"
+                     ".Lset_second_indicator: movs r0, #67\n"
+                     "movs r1, #8\n"
+                     "strb r1, [r4, r0]\n"
+                     ".Ldone: pop {r4, pc}\n");
+}

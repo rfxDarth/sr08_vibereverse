@@ -1,5 +1,5 @@
 // rea decompile_all
-// name: FUN_07fc9da0
+// name: run_sensor_measurement_state_cycle
 // address: 0x7fc9da0
 // body: available
 // range: 0x7fc9da0-0x7fca0bd inclusive
@@ -8,11 +8,10 @@
 // non_contiguous: true
 // provider: Ghidra 12.1.4 (ghidra)
 // analysis_profile: 14dc6cca2dda7ca9b9817d42fff240a120b5286328f7603ab0efca850f661166
-// limitations: The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.; The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.; Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.; Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.; Headerless raw-binary analysis uses the caller-supplied architecture and entry address; file offset 0 is mapped at that address. Headers are not discovered from file bytes.; Little-endian generic Ghidra languages are used for x86, x86_64, arm, arm64, and NMOS 6502; m68k uses the big-endian 68000 default language, which decodes the 68040 superset. Big-endian ARM, Thumb-only, Cortex-M, 65C02, 65816, separate 68020/68030/CPU32/ColdFire variants, and other processor variants are unsupported in this increment.; Static analysis does not emulate reset vectors, memory-mapped I/O, or firmware boot sequences.; Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.; External functions and functions without an analyzable body return null; other decompiler failures remain explicit.
 // pseudocode: provider-specific; not original source
 
 
-void FUN_07fc9da0(void)
+void run_sensor_measurement_state_cycle(void)
 
 {
   byte bVar1;
@@ -76,13 +75,13 @@ void FUN_07fc9da0(void)
   while (((uVar9 = (ushort)in_stack_00000054, (int)((uint)unaff_r5[4] << 0x18) < 0 &&
           ((*(uint *)(in_stack_0000006c + 0x30) & in_stack_00000068) == 0)) &&
          ((*DAT_07fca0c0 & 1) == 0))) {
-    func_0x07f1c3da();
+    rwip_schedule();
     iVar18 = DAT_07fca0e0;
     uVar7 = (undefined1)in_stack_00000064;
     if (*(char *)(DAT_07fca0e0 + 3) == '\x04') {
-      FUN_07fcb7d4();
+      wait_sensor_readiness_combine_counter_words_at_b7d4();
       in_stack_00000078 = 0;
-      iVar23 = func_0x07f0cff4(&stack0x00000078,4);
+      iVar23 = ea_sleep_check(&stack0x00000078,4);
       puVar24 = DAT_07fca0f0;
       if (iVar23 != 0) {
         *DAT_07fca0f0 = 1;
@@ -97,23 +96,23 @@ void FUN_07fc9da0(void)
         if (*(char *)(iVar18 + 1) == '\x01') {
           *(uint *)(iVar18 + 0x44) = uVar16;
           *(undefined1 *)(iVar18 + 1) = 0;
-          uVar16 = FUN_07fc7308();
-LAB_07fc9e24:
+          uVar16 = read_sensor_conversion_result();
+L_run_sensor_measurement_state_cycle_block_at_9da0_at_07fc9e24:
           *(short *)(iVar18 + 0x38) = (short)uVar16;
-          iVar23 = FUN_07fc16f8();
+          iVar23 = temporarily_clear_hardware_flags_query_sensor_at_16f8();
           if (iVar23 == 0) {
             *(undefined1 *)(iVar18 + 1) = uVar7;
           }
         }
         else if (DAT_07fca0f4 < uVar16 - uVar20) {
           *(uint *)(iVar18 + 0x44) = uVar16;
-          uVar16 = FUN_07fc7308();
+          uVar16 = read_sensor_conversion_result();
           uVar5 = *(ushort *)(iVar18 + 0x38);
           uVar19 = uVar5 - (short)uVar16;
           if (uVar5 < uVar16) {
             uVar19 = (short)uVar16 - uVar5;
           }
-          if (0x17 < uVar19) goto LAB_07fc9e24;
+          if (0x17 < uVar19) goto L_run_sensor_measurement_state_cycle_block_at_9da0_at_07fc9e24;
         }
       }
     }
@@ -126,7 +125,7 @@ LAB_07fc9e24:
       *(undefined4 *)(iVar23 + 100) = 0x10;
       *(uint *)(iVar23 + 0x68) = in_stack_00000058;
       *(uint **)(iVar23 + 0x6c) = puVar21;
-      FUN_07fc2568();
+      initialize_configuration_record_defaults();
       iVar18 = DAT_07fca100;
       iVar17 = DAT_07fca100 + 0x3c;
       *(uint *)(iVar23 + 0x20) = in_stack_00000060;
@@ -151,12 +150,12 @@ LAB_07fc9e24:
       puVar24[0xc] = in_stack_0000004c;
       puVar24[0xd] = in_stack_00000064;
       puVar24[0xe] = iVar18 + 0x44;
-      FUN_07fc3ea0(puVar24 + 0xf,0x61000,0x14,in_stack_00000060);
-      FUN_07fc8500();
+      perform_flash_memory_operation(puVar24 + 0xf,0x61000,0x14,in_stack_00000060);
+      save_valid_measurement_range_clear_stale_at_8500();
       *(char *)(DAT_07fca110 + 6) = (char)in_stack_00000060;
       *(uint *)(DAT_07fca0e0 + 0x68) = in_stack_00000060;
       iVar18 = DAT_07fca114;
-      func_0x07f1e0de(DAT_07fca114,0xd4);
+      __aeabi_memclr(DAT_07fca114,0xd4);
       *(undefined1 *)(iVar18 + 0x8a) = in_stack_00000024;
       *(undefined1 *)(iVar18 + 0x89) = 0xaa;
       *(undefined2 *)(iVar18 + 0x94) = 0x3200;
@@ -170,9 +169,9 @@ LAB_07fc9e24:
       puVar10[0xb] = 0x7b;
       puVar10[1] = DAT_07fca11c;
       in_stack_00000078 = in_stack_00000060;
-      FUN_07fc3ea0(&stack0x00000078,in_stack_0000001c,in_stack_0000005c,in_stack_00000060);
+      perform_flash_memory_operation(&stack0x00000078,in_stack_0000001c,in_stack_0000005c,in_stack_00000060);
       if (in_stack_00000078 != 0xffffffff) {
-        FUN_07fc3ea0(iVar18 + 0x30,in_stack_0000001c,0x70,0);
+        perform_flash_memory_operation(iVar18 + 0x30,in_stack_0000001c,0x70,0);
         puVar10[1] = *(undefined4 *)(iVar18 + 0x30);
       }
       puVar10 = DAT_07fca118;
@@ -201,7 +200,7 @@ LAB_07fc9e24:
                      (uint)bVar4 + 3;
       }
       puVar10 = DAT_07fca118;
-      FUN_07fc9004(DAT_07fca118[1],DAT_07fca118 + 6);
+      convert_timestamp_to_calendar_fields(DAT_07fca118[1],DAT_07fca118 + 6);
       puVar24 = DAT_07fca0f0;
       *DAT_07fca0f0 = in_stack_00000064;
       *puVar10 = puVar10[1];
@@ -218,14 +217,14 @@ LAB_07fc9e24:
       (*pcVar11)(7,10,DAT_07fca140);
       (*pcVar11)(8,1,DAT_07fca144);
       (*pcVar11)(6,in_stack_0000003c + 0xf4,DAT_07fca148);
-      FUN_07fc3838(1);
-      FUN_07fc3838(in_stack_00000060);
+      start_or_stop_sensor_calibration(1);
+      start_or_stop_sensor_calibration(in_stack_00000060);
       pcVar11 = DAT_07fca158;
       (*DAT_07fca158)(s_version__d_07fca14c,0xcc);
-      FUN_07fc20f0();
+      process_sensor_reading_and_update_state();
       in_stack_0000007c = in_stack_00000060;
       in_stack_00000078 = in_stack_00000060;
-      FUN_07fc3ea0(&stack0x00000078,DAT_07fca15c,6,in_stack_00000060);
+      perform_flash_memory_operation(&stack0x00000078,DAT_07fca15c,6,in_stack_00000060);
       (*pcVar11)(s_nvds_mac_0x_x_0x_x_0x_x_0x_x_0x__07fca160,in_stack_0000007c._1_1_,
                  in_stack_0000007c & 0xff,in_stack_00000078._3_1_);
       iVar18 = DAT_07fca0e0;
@@ -236,7 +235,7 @@ LAB_07fc9e24:
       else {
         cVar15 = (*(char *)(iVar18 + 0xe) == '\x02') * ' ';
       }
-      FUN_07fc3b78(cVar15);
+      switch_display_state_and_run_hooks(cVar15);
       *(undefined1 *)(iVar18 + 0xd) = uVar7;
       unaff_r5 = in_stack_00000020;
     }
@@ -245,44 +244,44 @@ LAB_07fc9e24:
        (uVar16 = in_stack_00000014, *(char *)(iVar18 + 0x28) != '\0')) {
       uVar16 = 0xb;
     }
-    func_0x07f1c054(in_stack_00000044 + 0x13,4,uVar16);
+    ke_timer_set(in_stack_00000044 + 0x13,4,uVar16);
     cVar15 = *(char *)(iVar18 + 0xf);
     if ((int)((uint)*DAT_07fca194 << 0x1a) < 0) {
       uVar16 = in_stack_00000074;
       if (cVar15 != '\x02') {
-        if (cVar15 != '\0') goto LAB_07fca200;
+        if (cVar15 != '\0') goto run_sensor_measurement_state_cycle_block_at_a1a0_branch_at_07fca200;
         *(char *)(iVar18 + 0xf) = (char)in_stack_00000058;
-        piVar12 = DAT_07fca534;
-        *DAT_07fca534 = 1;
+        piVar12 = v204_sensor_conversion_request_register;
+        *v204_sensor_conversion_request_register = 1;
         do {
         } while (*piVar12 != 0);
         *(undefined4 *)(iVar18 + 0x6c) = *(undefined4 *)(in_stack_0000006c + 0x1c);
       }
-      piVar12 = DAT_07fca534;
-      *DAT_07fca534 = 1;
+      piVar12 = v204_sensor_conversion_request_register;
+      *v204_sensor_conversion_request_register = 1;
       do {
       } while (*piVar12 != 0);
       uVar20 = *(uint *)(in_stack_0000006c + 0x1c);
       if (uVar20 < *(uint *)(iVar18 + 0x6c)) {
         uVar20 = uVar20 + in_stack_00000070;
       }
-      if (DAT_07fca5b4 <= uVar20 - *(uint *)(iVar18 + 0x6c)) {
-        FUN_07fc532c(DAT_07fca5b8,DAT_07fca5bc,in_stack_0000003c + 0x45);
+      if (v204_key_diagnostic_format <= uVar20 - *(uint *)(iVar18 + 0x6c)) {
+        format_and_send_uart_message(DAT_07fca5b8,DAT_07fca5bc,in_stack_0000003c + 0x45);
         in_stack_00000078 = in_stack_0000004c;
-        FUN_07fc2ea8(DAT_07fca5c4,&stack0x00000078);
+        enqueue_ring_record_if_space(DAT_07fca5c4,&stack0x00000078);
         *(undefined1 *)(iVar18 + 0xf) = 4;
       }
     }
     else {
       if (cVar15 == '\x02') {
-        FUN_07fc532c(DAT_07fca198,DAT_07fca19c,in_stack_0000003c + 0x4f);
+        format_and_send_uart_message(DAT_07fca198,DAT_07fca19c,in_stack_0000003c + 0x4f);
         in_stack_00000078 = 1;
-        FUN_07fc2ea8(DAT_07fca10c,&stack0x00000078);
+        enqueue_ring_record_if_space(DAT_07fca10c,&stack0x00000078);
       }
       uVar16 = 0;
       *(undefined1 *)(iVar18 + 0xf) = 0;
     }
-LAB_07fca200:
+run_sensor_measurement_state_cycle_block_at_a1a0_branch_at_07fca200:
     unaff_r5[2] = unaff_r5[2] | 0x10;
     *(undefined4 *)(iVar18 + 0x48) = DAT_07fca5c0;
     iVar18 = DAT_07fca5c8;
@@ -304,12 +303,12 @@ LAB_07fca200:
     *DAT_07fca610 = (*DAT_07fca610 | in_stack_00000054) & 0xffffff80;
     *DAT_07fca61c = in_stack_00000050;
     in_stack_00000078 = 0;
-    iVar18 = FUN_07fc2fcc(DAT_07fca600,&stack0x00000078);
+    iVar18 = copy_scaled_payload_slice_on_mask_hit_at_2fcc(DAT_07fca600,&stack0x00000078);
     unaff_r7 = DAT_07fca5cc;
     if (iVar18 == 0) {
-      FUN_07fc2f8c(DAT_07fca600);
+      advance_queue_tail_if_nonempty(DAT_07fca600);
       uVar16 = in_stack_00000078;
-      FUN_07fc532c(s_k__d_07fca620,in_stack_00000078);
+      format_and_send_uart_message(s_k__d_07fca620,in_stack_00000078);
       iVar18 = DAT_07fca5d4;
       if ((uVar16 == 8) || (uVar16 == 1)) {
         *(undefined2 *)(DAT_07fca5d4 + in_stack_00000030) = in_stack_00000010;
@@ -317,7 +316,7 @@ LAB_07fca200:
       iVar17 = 0;
       do {
         unaff_r7 = DAT_07fca5cc;
-        if (iVar17 + 4 == 0x90) goto LAB_07fca28c;
+        if (iVar17 + 4 == 0x90) goto L_run_sensor_measurement_state_cycle_block_at_a1a0_at_07fca28c;
         puVar22 = *(ushort **)(DAT_07fca628 + iVar17);
         iVar17 = iVar17 + 4;
       } while (*puVar22 != (ushort)*(byte *)(iVar18 + 0xc));
@@ -329,7 +328,7 @@ LAB_07fca200:
           }
           unaff_r7 = DAT_07fca5cc;
           if ((ushort)puVar24[1] != DAT_07fca62c) {
-            FUN_07fc3b78();
+            switch_display_state_and_run_hooks();
             unaff_r7 = DAT_07fca5cc;
           }
           break;
@@ -337,10 +336,10 @@ LAB_07fca200:
         puVar24 = puVar24 + 3;
       }
     }
-LAB_07fca28c:
+L_run_sensor_measurement_state_cycle_block_at_a1a0_at_07fca28c:
     for (; unaff_r4 = DAT_07fca5d0, iVar23 != 0xc0; iVar23 = iVar23 + 0x10) {
       if (*(char *)(DAT_07fca618 + iVar23) == '\x01') {
-        uVar20 = FUN_07fc4440();
+        uVar20 = request_sensor_sample_then_scale_result();
         iVar18 = DAT_07fca618 + iVar23;
         uVar16 = uVar20;
         if (uVar20 < *(uint *)(iVar18 + 8)) {
@@ -368,10 +367,10 @@ LAB_07fca28c:
     in_stack_00000078 = *(uint *)(*DAT_07fca5e0 + 0x28);
   }
   uVar8 = (undefined2)in_stack_0000004c;
-  if (((unaff_r4[3] & 1) == 0) && (iVar18 = func_0x07f1b74e(), iVar18 != 0)) {
+  if (((unaff_r4[3] & 1) == 0) && (iVar18 = ke_sleep_check(), iVar18 != 0)) {
     if (*(char *)((int)DAT_07fca5f4 + 3) != '\0') {
       if ((unaff_r5[10] & 1) != 0) {
-LAB_07fca4c4:
+L_run_sensor_measurement_state_cycle_block_at_a1a0_at_07fca4c4:
         unaff_r5[8] = unaff_r5[8] | (ushort)in_stack_0000005c;
         *DAT_07fca614 = *DAT_07fca614 | in_stack_0000005c;
         unaff_r5[9] = unaff_r5[9] & 0xffdf;
@@ -399,7 +398,7 @@ LAB_07fca4c4:
         unaff_r5[8] = unaff_r5[8] | in_stack_00000038;
         unaff_r5[0x11] = unaff_r5[0x11] & (ushort)DAT_07fca648;
         unaff_r5[0x11] = unaff_r5[0x11] | 1;
-        FUN_07fc0194(0xd);
+        c_delay_loop_v204_timing_padding_at_0194(0xd);
         unaff_r5[5] = (unaff_r5[5] | 1) & ~(ushort)in_stack_00000058;
         do {
         } while (-1 < (int)((uint)unaff_r5[5] << 0x19));
@@ -413,15 +412,15 @@ LAB_07fca4c4:
           *puVar13 = uVar8;
         }
         *DAT_07fca614 = *DAT_07fca614 & ~in_stack_0000005c;
-        goto LAB_07fca5a0;
+        goto run_sensor_measurement_state_cycle_block_at_a538_branch_at_07fca5a0;
       }
       if (*DAT_07fca5f4 == 0) {
         if (*(int *)(DAT_07fca630 + 0x28) != 0) {
           in_stack_00000078 = *(uint *)(*DAT_07fca5e0 + 0x28);
         }
-        iVar18 = func_0x07f1c164(&stack0x00000078,(char)DAT_07fca5f4[1]);
+        iVar18 = ke_timer_sleep_check(&stack0x00000078,(char)DAT_07fca5f4[1]);
         if (((iVar18 != 0) && (-1 < *(int *)(in_stack_0000006c + 0x10) << 0x19)) &&
-           (iVar18 = func_0x07f0cff4(&stack0x00000078,(char)DAT_07fca5f4[1]), iVar18 != 0)) {
+           (iVar18 = ea_sleep_check(&stack0x00000078,(char)DAT_07fca5f4[1]), iVar18 != 0)) {
           if (in_stack_00000078 == 0) {
             uStack00000034 = 0;
           }
@@ -433,8 +432,8 @@ LAB_07fca4c4:
             uStack00000034 = in_stack_00000078;
           }
           iVar23 = *(int *)(DAT_07fca5f8 + 8);
-          iVar18 = func_0x07f1dfb8(iVar23 * (DAT_07fca604 + 0x9e) + DAT_07fca608,DAT_07fca634);
-          iVar23 = func_0x07f1dfb8(DAT_07fca638 * iVar23 + DAT_07fca608,DAT_07fca634);
+          iVar18 = __aeabi_uidiv(iVar23 * (DAT_07fca604 + 0x9e) + DAT_07fca608,DAT_07fca634);
+          iVar23 = __aeabi_uidiv(DAT_07fca638 * iVar23 + DAT_07fca608,DAT_07fca634);
           *(uint *)(in_stack_0000006c + 0x3c) =
                *(uint *)(in_stack_0000006c + 0x3c) & DAT_07fca63c | iVar18 - iVar23;
           if (*DAT_07fca5fc == '\x02') {
@@ -448,14 +447,14 @@ LAB_07fca4c4:
                *(uint *)(in_stack_0000006c + 0x3c) & DAT_07fca640 | iVar23 * 0x400;
           *(uint *)(in_stack_0000006c + 0x3c) =
                (*(uint *)(in_stack_0000006c + 0x3c) & DAT_07fca5f0) + iVar18 * 0x200000;
-          if (DAT_07fca634 <= uStack00000034) goto LAB_07fca5a8;
-          uVar25 = func_0x07f1e00c(*(undefined4 *)(DAT_07fca5f8 + 0x50),
+          if (DAT_07fca634 <= uStack00000034) goto run_sensor_measurement_state_cycle_block_at_a538_branch_at_07fca5a8;
+          uVar25 = __aeabi_lmul(*(undefined4 *)(DAT_07fca5f8 + 0x50),
                                    *(undefined4 *)(DAT_07fca5f8 + 0x54),uStack00000034,0);
           iVar18 = ((uint)uVar25 >> 0x14) + (int)((ulonglong)uVar25 >> 0x20) * 0x1000 + -1;
           if (iVar18 != iVar23 + 1) {
             iVar23 = iVar18;
           }
-          func_0x07f08f9e(iVar23,(char)DAT_07fca5f4[2] != '\0');
+          lld_sleep_enter(iVar23,(char)DAT_07fca5f4[2] != '\0');
           (**(code **)(DAT_07fca644 + 0x2c))();
           puVar24 = DAT_07fca5ec;
           do {
@@ -468,23 +467,23 @@ LAB_07fca4c4:
             DAT_07fca5d0[4] = 0x46;
             *(uint *)(DAT_07fca5d4 + 0x50) = 0x46 - (uint)uVar5;
           }
-          func_0x07f02326();
+          ble_regs_push();
           *(uint *)(DAT_07fca5d4 + 0x54) = puVar24[2];
           do {
           } while (-1 < (int)(*puVar24 << 0x18));
           unaff_r5[4] = unaff_r5[4] & ~uVar9;
           unaff_r6 = in_stack_00000048;
-          goto LAB_07fca4c4;
+          goto L_run_sensor_measurement_state_cycle_block_at_a1a0_at_07fca4c4;
         }
       }
     }
     WaitForInterrupt();
   }
-LAB_07fca5a0:
+run_sensor_measurement_state_cycle_block_at_a538_branch_at_07fca5a0:
   enableIRQinterrupts();
   *unaff_r7 = unaff_r6;
-  FUN_07fc9da0();
-LAB_07fca5a8:
+  run_sensor_measurement_state_cycle();
+run_sensor_measurement_state_cycle_block_at_a538_branch_at_07fca5a8:
   *unaff_r7 = in_stack_00000048;
   *DAT_07fca5d0 = uVar8;
   do {

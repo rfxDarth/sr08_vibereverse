@@ -1,16 +1,15 @@
 // rea decompile_all
-// name: FUN_07fc44a8
+// name: update_clock_and_process_events
 // address: 0x7fc44a8
 // body: available
 // range: 0x7fc44a8-0x7fc4855 inclusive
 // non_contiguous: false
 // provider: Ghidra 12.1.4 (ghidra)
 // analysis_profile: 14dc6cca2dda7ca9b9817d42fff240a120b5286328f7603ab0efca850f661166
-// limitations: The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.; The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.; Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.; Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.; Headerless raw-binary analysis uses the caller-supplied architecture and entry address; file offset 0 is mapped at that address. Headers are not discovered from file bytes.; Little-endian generic Ghidra languages are used for x86, x86_64, arm, arm64, and NMOS 6502; m68k uses the big-endian 68000 default language, which decodes the 68040 superset. Big-endian ARM, Thumb-only, Cortex-M, 65C02, 65816, separate 68020/68030/CPU32/ColdFire variants, and other processor variants are unsupported in this increment.; Static analysis does not emulate reset vectors, memory-mapped I/O, or firmware boot sequences.; Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.; External functions and functions without an analyzable body return null; other decompiler failures remain explicit.
 // pseudocode: provider-specific; not original source
 
 
-void FUN_07fc44a8(void)
+void update_clock_and_process_events(void)
 
 {
   undefined4 *puVar1;
@@ -22,12 +21,12 @@ void FUN_07fc44a8(void)
   uint uVar7;
   int iVar8;
   int iVar9;
-  int extraout_r1;
+  int division_remainder;
   undefined4 uVar10;
-  int extraout_r1_00;
+  int division_remainder_00;
   int iVar11;
-  int extraout_r1_01;
-  int extraout_r1_02;
+  int division_remainder_01;
+  int division_remainder_02;
   int iVar12;
   uint uVar13;
   int iVar14;
@@ -46,184 +45,184 @@ void FUN_07fc44a8(void)
   int local_1c;
   int local_18;
   
-  piVar5 = DAT_07fc4858;
-  *DAT_07fc4858 = 1;
-  puVar18 = DAT_07fc4860;
+  piVar5 = v204_clock_literal_pool.view.sensor_conversion_request_register;
+  *v204_clock_literal_pool.view.sensor_conversion_request_register = 1;
+  puVar18 = v204_clock_literal_pool.view.timekeeping_state_words;
   do {
   } while (*piVar5 != 0);
-  uVar7 = *DAT_07fc485c;
-  uVar15 = DAT_07fc4860[4];
+  uVar7 = *v204_clock_literal_pool.view.sensor_conversion_result_register;
+  uVar15 = v204_clock_literal_pool.view.timekeeping_state_words[4];
   if (uVar7 < uVar15) {
     uVar7 = uVar7 + 0x8000000;
   }
   uVar7 = uVar7 - uVar15;
-  iVar8 = func_0x07f1dfb8(uVar7,0x640);
+  iVar8 = __aeabi_uidiv(uVar7,0x640);
   uVar17 = *puVar18;
   uVar13 = puVar18[1] + iVar8;
   *puVar18 = uVar13;
-  puVar18 = DAT_07fc4860;
-  if (DAT_07fc4864 <= uVar7) {
-    DAT_07fc4860[5] = 0;
+  puVar18 = v204_clock_literal_pool.view.timekeeping_state_words;
+  if (v204_clock_literal_pool.view.tick_rebase_threshold <= uVar7) {
+    v204_clock_literal_pool.view.timekeeping_state_words[5] = 0;
     puVar18[1] = uVar13;
-    func_0x07f1dfb8(uVar7 * 5,8000);
-    iVar8 = func_0x07f1dfb8(uVar7 * 5 - extraout_r1,5);
-    DAT_07fc4860[4] = uVar15 + iVar8 & 0x7ffffff;
+    __aeabi_uidiv(uVar7 * 5,8000);
+    iVar8 = __aeabi_uidiv(uVar7 * 5 - division_remainder,5);
+    v204_clock_literal_pool.view.timekeeping_state_words[4] = uVar15 + iVar8 & 0x7ffffff;
   }
-  puVar18 = DAT_07fc4860;
+  puVar18 = v204_clock_literal_pool.view.timekeeping_state_words;
   if (1 < uVar13 - uVar17) {
-    *DAT_07fc4860 = uVar17;
-    FUN_07fc9004(uVar13,local_64);
+    *v204_clock_literal_pool.view.timekeeping_state_words = uVar17;
+    convert_timestamp_to_calendar_fields(uVar13,local_64);
     if (local_64[0] < (int)puVar18[6]) {
-      FUN_07fc48a8();
+      load_and_update_persistent_measurement_state();
     }
     puVar18[2] = uVar13;
     *puVar18 = uVar13;
   }
-  puVar18 = DAT_07fc4860;
+  puVar18 = v204_clock_literal_pool.view.timekeeping_state_words;
   if (uVar13 == uVar17) {
     return;
   }
-  DAT_07fc4860[2] = uVar13;
+  v204_clock_literal_pool.view.timekeeping_state_words[2] = uVar13;
   if ((uVar13 & 3) == 0) {
-    FUN_07fc4400(uVar13,0);
+    serialize_status_and_global_values_with_word(uVar13,0);
     uVar13 = *puVar18;
   }
-  FUN_07fc9004(uVar13,puVar18 + 6);
+  convert_timestamp_to_calendar_fields(uVar13,puVar18 + 6);
   uVar7 = puVar18[6];
   puVar18[3] = puVar18[7] * 0x3c + puVar18[8] * 0xe10 + uVar7;
   if (0x3a < (int)uVar7) {
-    FUN_07fc48a8();
+    load_and_update_persistent_measurement_state();
     uVar7 = puVar18[6];
   }
-  iVar8 = DAT_07fc4868;
+  iVar8 = v204_clock_literal_pool.view.shared_context_bytes;
   if ((uVar7 & 1) == 0) {
-    uVar10 = *(undefined4 *)(DAT_07fc4868 + 4);
-    puVar1 = (undefined4 *)(DAT_07fc4868 + 0x38);
-    *(undefined4 *)(DAT_07fc4868 + 4) = *puVar1;
+    uVar10 = *(undefined4 *)(v204_clock_literal_pool.view.shared_context_bytes + 4);
+    puVar1 = (undefined4 *)(v204_clock_literal_pool.view.shared_context_bytes + 0x38);
+    *(undefined4 *)(v204_clock_literal_pool.view.shared_context_bytes + 4) = *puVar1;
     cVar3 = (char)*puVar1 - (char)uVar10;
     *(char *)(iVar8 + 3) = cVar3;
     local_44 = CONCAT31(local_44._1_3_,cVar3);
-    FUN_07fc2ed6(DAT_07fc486c);
+    enqueue_ring_record_overwriting_oldest(v204_clock_literal_pool.view.time_event_queue_bytes);
   }
   uVar7 = *puVar18;
-  if (0xef < uVar7 - *(int *)(DAT_07fc4870 + 4)) {
-    *(uint *)(DAT_07fc4870 + 4) = uVar7;
-    *(int *)(DAT_07fc4874 + 0x6c) = *(int *)(DAT_07fc4874 + 0x6c) << 1;
+  if (0xef < uVar7 - *(int *)(v204_clock_literal_pool.view.cycle_and_schedule_state_bytes + 4)) {
+    *(uint *)(v204_clock_literal_pool.view.cycle_and_schedule_state_bytes + 4) = uVar7;
+    *(int *)(v204_clock_literal_pool.view.device_control_state_bytes + 0x6c) = *(int *)(v204_clock_literal_pool.view.device_control_state_bytes + 0x6c) << 1;
   }
-  func_0x07f1dfe4(puVar18[7] + 1,0xf);
-  iVar9 = DAT_07fc4874;
-  iVar8 = DAT_07fc4870;
-  if (((0x1d < (int)puVar18[6]) && (extraout_r1_00 == 0)) &&
-     (0x3f < uVar7 - *(int *)(DAT_07fc4870 + 8))) {
-    puVar18 = DAT_07fc4860;
-    if (*(char *)(DAT_07fc4874 + 0xe) == '\0') {
-      iVar12 = *(int *)(DAT_07fc4868 + 0x50);
-      iVar8 = *(int *)(DAT_07fc4868 + 0x38);
+  __aeabi_idiv(puVar18[7] + 1,0xf);
+  iVar9 = v204_clock_literal_pool.view.device_control_state_bytes;
+  iVar8 = v204_clock_literal_pool.view.cycle_and_schedule_state_bytes;
+  if (((0x1d < (int)puVar18[6]) && (division_remainder_00 == 0)) &&
+     (0x3f < uVar7 - *(int *)(v204_clock_literal_pool.view.cycle_and_schedule_state_bytes + 8))) {
+    puVar18 = v204_clock_literal_pool.view.timekeeping_state_words;
+    if (*(char *)(v204_clock_literal_pool.view.device_control_state_bytes + 0xe) == '\0') {
+      iVar12 = *(int *)(v204_clock_literal_pool.view.shared_context_bytes + 0x50);
+      iVar8 = *(int *)(v204_clock_literal_pool.view.shared_context_bytes + 0x38);
       uVar15 = 0;
       for (iVar11 = 0x5a; iVar11 != 0x69; iVar11 = iVar11 + 1) {
-        uVar15 = uVar15 + *(byte *)(DAT_07fc4870 + iVar11);
+        uVar15 = uVar15 + *(byte *)(v204_clock_literal_pool.view.cycle_and_schedule_state_bytes + iVar11);
       }
-      if (((DAT_07fc487c <= DAT_07fc4860[3] + DAT_07fc4878) &&
-          (uVar13 = FUN_07fc4164(), puVar18 = DAT_07fc4860, iVar8 == iVar12)) &&
+      if (((v204_clock_literal_pool.view.schedule_threshold_487c <= v204_clock_literal_pool.view.timekeeping_state_words[3] + v204_clock_literal_pool.view.schedule_threshold_4878) &&
+          (uVar13 = map_elapsed_ticks_to_firmware_time_units(), puVar18 = v204_clock_literal_pool.view.timekeeping_state_words, iVar8 == iVar12)) &&
          ((uVar15 < uVar13 &&
           (((*(ushort *)(iVar9 + 0x6c) & 0x1ff) != 0 &&
-           (*(char *)(iVar9 + 0xf) == '\0' && *(char *)(DAT_07fc4880 + 0x26) == '\0')))))) {
-        *(undefined1 *)(DAT_07fc4868 + 10) = 0;
-        FUN_07fc3a18(1);
+           (*(char *)(iVar9 + 0xf) == '\0' && *(char *)(v204_clock_literal_pool.view.mode_and_display_state_bytes + 0x26) == '\0')))))) {
+        *(undefined1 *)(v204_clock_literal_pool.view.shared_context_bytes + 10) = 0;
+        store_mode_flag_and_copy_configuration_word(1);
         uVar7 = *puVar18;
       }
     }
-    iVar8 = DAT_07fc4870;
-    *(uint *)(DAT_07fc4870 + 8) = uVar7;
+    iVar8 = v204_clock_literal_pool.view.cycle_and_schedule_state_bytes;
+    *(uint *)(v204_clock_literal_pool.view.cycle_and_schedule_state_bytes + 8) = uVar7;
   }
-  iVar9 = DAT_07fc4868;
-  if (((*(char *)(DAT_07fc4868 + 0x7c) != '\0') &&
-      (((bVar2 = *(byte *)(DAT_07fc4868 + 0x7d), bVar2 < 0xf ||
-        (func_0x07f1dfe4(puVar18[7],0xf), iVar8 = DAT_07fc4870, iVar9 = DAT_07fc4868,
-        extraout_r1_01 == 0)) && (iVar9 = DAT_07fc4868, (int)puVar18[6] < 10)))) &&
-     ((uint)bVar2 * 0x3c - 10 <= uVar7 - *(int *)(DAT_07fc4868 + 0x1c))) {
-    uVar15 = *(uint *)(DAT_07fc4868 + 0x84);
+  iVar9 = v204_clock_literal_pool.view.shared_context_bytes;
+  if (((*(char *)(v204_clock_literal_pool.view.shared_context_bytes + 0x7c) != '\0') &&
+      (((bVar2 = *(byte *)(v204_clock_literal_pool.view.shared_context_bytes + 0x7d), bVar2 < 0xf ||
+        (__aeabi_idiv(puVar18[7],0xf), iVar8 = v204_clock_literal_pool.view.cycle_and_schedule_state_bytes, iVar9 = v204_clock_literal_pool.view.shared_context_bytes,
+        division_remainder_01 == 0)) && (iVar9 = v204_clock_literal_pool.view.shared_context_bytes, (int)puVar18[6] < 10)))) &&
+     ((uint)bVar2 * 0x3c - 10 <= uVar7 - *(int *)(v204_clock_literal_pool.view.shared_context_bytes + 0x1c))) {
+    uVar15 = *(uint *)(v204_clock_literal_pool.view.shared_context_bytes + 0x84);
     uVar13 = puVar18[3];
-    if (uVar15 < *(uint *)(DAT_07fc4868 + 0x80)) {
+    if (uVar15 < *(uint *)(v204_clock_literal_pool.view.shared_context_bytes + 0x80)) {
       if (uVar15 < uVar13) {
-LAB_07fc468e:
-        if (uVar13 < *(uint *)(DAT_07fc4868 + 0x80)) goto LAB_07fc469e;
+L_update_clock_and_process_events_at_07fc468e:
+        if (uVar13 < *(uint *)(v204_clock_literal_pool.view.shared_context_bytes + 0x80)) goto L_update_clock_and_process_events_at_07fc469e;
       }
-      FUN_07fc3a18(0);
-      iVar8 = DAT_07fc4870;
+      store_mode_flag_and_copy_configuration_word(0);
+      iVar8 = v204_clock_literal_pool.view.cycle_and_schedule_state_bytes;
       uVar7 = *puVar18;
       *(uint *)(iVar9 + 0x1c) = uVar7;
     }
-    else if (uVar13 <= uVar15) goto LAB_07fc468e;
+    else if (uVar13 <= uVar15) goto L_update_clock_and_process_events_at_07fc468e;
   }
-LAB_07fc469e:
+L_update_clock_and_process_events_at_07fc469e:
   if (((((puVar18[8] == 0x17) && (puVar18[7] == 0x3b)) && (0x3a < (int)puVar18[6])) ||
       (puVar18[7] == 0 && puVar18[8] == 0)) && (0x81 < uVar7 - *(int *)(iVar8 + 0xc))) {
     *(uint *)(iVar8 + 0xc) = uVar7;
-    FUN_07fc54f8(uVar7 + 0x1e);
-    FUN_07fc4fa0();
-    iVar8 = DAT_07fc4870;
+    translate_rom_result_to_display_coordinates(uVar7 + 0x1e);
+    reset_mode_state_clear_associated_flag_at_4fa0();
+    iVar8 = v204_clock_literal_pool.view.cycle_and_schedule_state_bytes;
   }
-  if ((puVar18[3] + DAT_07fc4884 < 0x3d) &&
+  if ((puVar18[3] + v204_clock_literal_pool.view.negative_time_adjustment_4884 < 0x3d) &&
      (uVar7 = *puVar18, 0x77 < uVar7 - *(int *)(iVar8 + 0x10))) {
     *(undefined4 *)(iVar9 + 0x44) = 0;
     *(uint *)(iVar8 + 0x10) = uVar7;
-    *(undefined1 *)(DAT_07fc4874 + 0xe) = 0;
+    *(undefined1 *)(v204_clock_literal_pool.view.device_control_state_bytes + 0xe) = 0;
   }
   if (((((puVar18[7] & 1) == 0) || ((int)puVar18[6] < 0x3a)) ||
       (*puVar18 - *(int *)(iVar8 + 0x14) < 0x33)) || (*(char *)(iVar9 + 9) == '\0'))
-  goto LAB_07fc482c;
+  goto L_update_clock_and_process_events_at_07fc482c;
   iVar12 = (*puVar18 - puVar18[6]) + -0x3c;
-  iVar9 = func_0x07f1dfb8(iVar12,DAT_07fc4888);
-  local_18 = iVar9 * (DAT_07fc488c + 1);
+  iVar9 = __aeabi_uidiv(iVar12,v204_clock_literal_pool.view.seconds_per_day);
+  local_18 = iVar9 * (v204_clock_literal_pool.view.last_second_of_day + 1);
   local_1c = -1;
-  FUN_07fc9004(iVar12,&local_44);
-  func_0x07f1dfb8(iVar9,7);
-  iVar14 = extraout_r1_02 * 0x3000;
-  iVar16 = iVar14 + DAT_07fc4890;
+  convert_timestamp_to_calendar_fields(iVar12,&local_44);
+  __aeabi_uidiv(iVar9,7);
+  iVar14 = division_remainder_02 * 0x3000;
+  iVar16 = iVar14 + v204_clock_literal_pool.view.word_4890;
   iVar11 = local_3c * 4 + iVar16;
-  FUN_07fc3ea0(&local_24,iVar11,4,0);
-  iVar8 = DAT_07fc4894;
+  perform_flash_memory_operation(&local_24,iVar11,4,0);
+  iVar8 = v204_clock_literal_pool.view.persistent_measurement_state_bytes;
   local_20 = local_24 & ~(1 << (local_40 >> 1 & 0xffU));
-  FUN_07fc3ea0(DAT_07fc4894,iVar16,0x60,0);
-  iVar9 = iVar9 * DAT_07fc4898;
+  perform_flash_memory_operation(v204_clock_literal_pool.view.persistent_measurement_state_bytes,iVar16,0x60,0);
+  iVar9 = iVar9 * v204_clock_literal_pool.view.signed_threshold_4898;
   for (iVar19 = 0; iVar19 != 0x60; iVar19 = iVar19 + 4) {
     *(uint *)(iVar8 + iVar19) = ~*(uint *)(iVar8 + iVar19);
   }
-  iVar19 = iVar14 + DAT_07fc489c;
+  iVar19 = iVar14 + v204_clock_literal_pool.view.word_489c;
   iVar20 = 0;
-  FUN_07fc3ea0(&local_1c,iVar19,4,0);
-  iVar9 = func_0x07f1dfb8(iVar9 + iVar12,10);
+  perform_flash_memory_operation(&local_1c,iVar19,4,0);
+  iVar9 = __aeabi_uidiv(iVar9 + iVar12,10);
   if (local_1c == -1) {
-LAB_07fc47d2:
-    FUN_07fc3ea0(&local_18,iVar19,4,1);
+L_update_clock_and_process_events_at_07fc47d2:
+    perform_flash_memory_operation(&local_18,iVar19,4,1);
   }
-  else if (DAT_07fc488c < (uint)(iVar12 - local_1c)) {
-    FUN_07fc3e90(iVar14 + 0x4c000,0x3000);
-    goto LAB_07fc47d2;
+  else if (v204_clock_literal_pool.view.last_second_of_day < (uint)(iVar12 - local_1c)) {
+    erase_flash_range(iVar14 + 0x4c000,0x3000);
+    goto L_update_clock_and_process_events_at_07fc47d2;
   }
-  iVar12 = DAT_07fc4868;
-  (*DAT_07fc48a0)(DAT_07fc4868 + 0xa0,iVar14 + 0x4c000 + iVar9,0xc);
-  pcVar6 = DAT_07fc48a0;
-  (*DAT_07fc48a0)(&local_20,iVar11,4,1);
+  iVar12 = v204_clock_literal_pool.view.shared_context_bytes;
+  (*v204_clock_literal_pool.view.callback_function_48a0)(v204_clock_literal_pool.view.shared_context_bytes + 0xa0,iVar14 + 0x4c000 + iVar9,0xc);
+  pcVar6 = v204_clock_literal_pool.view.callback_function_48a0;
+  (*v204_clock_literal_pool.view.callback_function_48a0)(&local_20,iVar11,4,1);
   (*pcVar6)(iVar8,iVar16,0x60,0);
-  iVar9 = DAT_07fc4870;
-  for (; iVar11 = DAT_07fc4868, iVar20 != 0x60; iVar20 = iVar20 + 4) {
+  iVar9 = v204_clock_literal_pool.view.cycle_and_schedule_state_bytes;
+  for (; iVar11 = v204_clock_literal_pool.view.shared_context_bytes, iVar20 != 0x60; iVar20 = iVar20 + 4) {
     *(uint *)(iVar8 + iVar20) = ~*(uint *)(iVar8 + iVar20);
   }
-  *(undefined4 *)(DAT_07fc4868 + 0xa0) = 0xffffffff;
+  *(undefined4 *)(v204_clock_literal_pool.view.shared_context_bytes + 0xa0) = 0xffffffff;
   *(undefined1 *)(iVar11 + 9) = 0;
-  *(uint *)(iVar9 + 0x14) = *DAT_07fc4860;
+  *(uint *)(iVar9 + 0x14) = *v204_clock_literal_pool.view.timekeeping_state_words;
   *(undefined4 *)(iVar12 + 0xa4) = 0xffffffff;
   *(undefined4 *)(iVar12 + 0xa8) = 0xffffffff;
-LAB_07fc482c:
-  iVar8 = DAT_07fc4880;
-  sVar4 = *(short *)(DAT_07fc4880 + 0x40) + -1;
-  *(short *)(DAT_07fc4880 + 0x40) = sVar4;
+L_update_clock_and_process_events_at_07fc482c:
+  iVar8 = v204_clock_literal_pool.view.mode_and_display_state_bytes;
+  sVar4 = *(short *)(v204_clock_literal_pool.view.mode_and_display_state_bytes + 0x40) + -1;
+  *(short *)(v204_clock_literal_pool.view.mode_and_display_state_bytes + 0x40) = sVar4;
   local_44 = 0x20;
   if (sVar4 < 1) {
     *(undefined2 *)(iVar8 + 0x40) = 6;
-    FUN_07fc2ea8(DAT_07fc48a4,&local_44);
+    enqueue_ring_record_if_space(v204_clock_literal_pool.view.shared_measurement_state_bytes,&local_44);
   }
   return;
 }

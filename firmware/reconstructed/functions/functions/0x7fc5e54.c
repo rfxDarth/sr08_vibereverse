@@ -1,18 +1,17 @@
 // rea decompile_all
-// name: FUN_07fc5e54
+// name: print_exception_context_to_uart
 // address: 0x7fc5e54
 // body: available
 // range: 0x7fc5e54-0x7fc5eed inclusive
 // non_contiguous: false
 // provider: Ghidra 12.1.4 (ghidra)
 // analysis_profile: 14dc6cca2dda7ca9b9817d42fff240a120b5286328f7603ab0efca850f661166
-// limitations: The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.; The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.; Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.; Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.; Headerless raw-binary analysis uses the caller-supplied architecture and entry address; file offset 0 is mapped at that address. Headers are not discovered from file bytes.; Little-endian generic Ghidra languages are used for x86, x86_64, arm, arm64, and NMOS 6502; m68k uses the big-endian 68000 default language, which decodes the 68040 superset. Big-endian ARM, Thumb-only, Cortex-M, 65C02, 65816, separate 68020/68030/CPU32/ColdFire variants, and other processor variants are unsupported in this increment.; Static analysis does not emulate reset vectors, memory-mapped I/O, or firmware boot sequences.; Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.; External functions and functions without an analyzable body return null; other decompiler failures remain explicit.
 // pseudocode: provider-specific; not original source
 
 
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
-void FUN_07fc5e54(int param_1,int param_2)
+void print_exception_context_to_uart(int kind,int exception_context)
 
 {
   int iVar1;
@@ -32,8 +31,8 @@ void FUN_07fc5e54(int param_1,int param_2)
     } while (-1 < (int)((uint)_DAT_07fc5ef0[5] << 0x18));
     *_DAT_07fc5ef0 = *_DAT_07fc5ef0 & 0xfffc;
   }
-  FUN_07fcc4b0();
-  if (param_1 == 0) {
+  quiesce_irq_source_wait_pending_bit_at_c4b0();
+  if (kind == 0) {
     pcVar2 = s_____NMI_STATUS_07fc5f08;
     uVar4 = 0x11;
   }
@@ -41,8 +40,8 @@ void FUN_07fc5e54(int param_1,int param_2)
     pcVar2 = s_P_____HF_STATUS_07fc5ef3 + 1;
     uVar4 = 0x10;
   }
-  FUN_07fccf5c(pcVar2,uVar4);
-  FUN_07fc0194(DAT_07fc5f1c);
+  transmit_uart_buffer(pcVar2,uVar4);
+  c_delay_loop_v204_timing_padding_at_0194(DAT_07fc5f1c);
   uVar4 = DAT_07fc5f24;
   iVar1 = DAT_07fc5f20;
   for (iVar9 = 0; iVar9 != 8; iVar9 = iVar9 + 1) {
@@ -54,7 +53,7 @@ void FUN_07fc5e54(int param_1,int param_2)
     iVar8 = iVar1 + iVar5;
     local_24[2] = *(undefined1 *)(iVar8 + 2);
     local_24[1] = *(undefined1 *)(iVar8 + 1);
-    uVar3 = *(uint *)(param_2 + iVar5);
+    uVar3 = *(uint *)(exception_context + iVar5);
     for (uVar6 = 0xd; 5 < uVar6; uVar6 = uVar6 - 1) {
       cVar7 = (char)(uVar3 & 0xf);
       if ((uVar3 & 0xf) < 10) {
@@ -67,8 +66,8 @@ void FUN_07fc5e54(int param_1,int param_2)
       uVar3 = (int)uVar3 >> 4;
     }
     local_16 = (undefined2)uVar4;
-    FUN_07fccf5c(local_24,0x10);
-    FUN_07fc0194(DAT_07fc5f1c);
+    transmit_uart_buffer(local_24,0x10);
+    c_delay_loop_v204_timing_padding_at_0194(DAT_07fc5f1c);
   }
   return;
 }

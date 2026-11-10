@@ -1,16 +1,15 @@
 // rea decompile_all
-// name: FUN_07fc8f48
+// name: clear_cached_sensor_fields_refresh_calibration_at_8f48
 // address: 0x7fc8f48
 // body: available
 // range: 0x7fc8f48-0x7fc8f9f inclusive
 // non_contiguous: false
 // provider: Ghidra 12.1.4 (ghidra)
 // analysis_profile: 14dc6cca2dda7ca9b9817d42fff240a120b5286328f7603ab0efca850f661166
-// limitations: The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.; The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.; Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.; Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.; Headerless raw-binary analysis uses the caller-supplied architecture and entry address; file offset 0 is mapped at that address. Headers are not discovered from file bytes.; Little-endian generic Ghidra languages are used for x86, x86_64, arm, arm64, and NMOS 6502; m68k uses the big-endian 68000 default language, which decodes the 68040 superset. Big-endian ARM, Thumb-only, Cortex-M, 65C02, 65816, separate 68020/68030/CPU32/ColdFire variants, and other processor variants are unsupported in this increment.; Static analysis does not emulate reset vectors, memory-mapped I/O, or firmware boot sequences.; Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.; External functions and functions without an analyzable body return null; other decompiler failures remain explicit.
 // pseudocode: provider-specific; not original source
 
 
-void FUN_07fc8f48(undefined4 param_1,undefined1 param_2)
+void clear_cached_sensor_fields_refresh_calibration_at_8f48(undefined4 param_1,undefined1 param_2)
 
 {
   int iVar1;
@@ -23,13 +22,13 @@ void FUN_07fc8f48(undefined4 param_1,undefined1 param_2)
   *(undefined1 *)(iVar1 + 0x18) = 0;
   *(undefined1 *)(iVar1 + 0x17) = 0;
   *(undefined2 *)(iVar1 + 0x14) = 0;
-  FUN_07fcd8a0();
+  clear_state_counter_at_offset_four();
   *(undefined2 *)(iVar1 + 0x1e) = 0;
-  FUN_07fcebc4();
-  FUN_07fc7f94();
-  uVar4 = FUN_07fc8584(0x47);
+  clear_state_word_at_offset_1c();
+  retry_radio_command_until_status_0x27();
+  uVar4 = ensure_radio_profile_then_exchange_word(0x47);
   if (uVar4 < 0x40) {
-    FUN_07fc8680(DAT_07fc8fa4);
+    ensure_radio_profile_then_scan_paired_bytes(DAT_07fc8fa4);
     pcVar2 = DAT_07fc8fa8;
     uVar3 = (*DAT_07fc8fa8)(0x45);
     iVar1 = DAT_07fc8fac;
@@ -40,9 +39,9 @@ void FUN_07fc8f48(undefined4 param_1,undefined1 param_2)
     *(undefined1 *)(iVar1 + 7) = uVar3;
     uVar3 = (*pcVar2)(0x48);
     *(undefined1 *)(iVar1 + 9) = uVar3;
-    FUN_07fc8680(iVar1);
+    ensure_radio_profile_then_scan_paired_bytes(iVar1);
   }
-  FUN_07fc8134(param_1);
+  configure_command_record(param_1);
   return;
 }
 

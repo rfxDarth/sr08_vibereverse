@@ -1,21 +1,24 @@
-/* Ghidra 12.1.4, Thumb-context analysis; V204 payload SHA-256: 5020c236a289544d878196bec3e21b005835237bc2fc34935927533bcd1c8570. Not original source. */
+/* Fetch eight bytes from the ROM helper into the caller's output buffer. */
+extern uint8_t func_0x07f02976(void);
 
-
-/* Equivalent C: for (int i = 0; i < 8; ++i)
- *   ((undefined1 *)param_1)[i] = func_0x07f02976(); */
-__attribute__((naked)) void FUN_07fc045a(int param_1)
-
+__attribute__((used, section(".text.FUN_07fc045a")))
+void read_eight_bytes_from_rom_helper(uint8_t *output)
 {
-  __asm__ volatile (
-    ".inst.n 0xb570\n"  /* push {r4, r5, r6, lr} */
-    ".inst.n 0x4605\n"  /* mov r5, r0 */
-    ".inst.n 0x2400\n"  /* movs r4, #0 */
-    "bl func_0x07f02976\n"
-    ".inst.n 0x5528\n"  /* strb r0, [r5, r4] */
-    ".inst.n 0x1c64\n"  /* adds r4, #1 */
-    ".inst.n 0x2c08\n"  /* cmp r4, #8 */
-    ".inst.n 0xdbf9\n"  /* blt loop */
-    ".inst.n 0xbd70\n"  /* pop {r4, r5, r6, pc} */
-  );
-}
+  register uint8_t *cursor __asm__("r5") = output;
+  __asm__ volatile ("" : "+r" (cursor));
+  register int index __asm__("r4") = 0;
+  __asm__ volatile ("" : "+r" (index));
 
+  /* Preserve V204's saved-register set and 8-byte call-stack alignment. */
+  __asm__ volatile ("" ::: "r6");
+
+  for (;;) {
+    cursor[index] = func_0x07f02976();
+    ++index;
+    __asm__ goto ("cmp %0, #8\n\tblt %l[repeat]"
+                  : : "l" (index) : "cc" : repeat);
+    break;
+  repeat:
+    ;
+  }
+}
