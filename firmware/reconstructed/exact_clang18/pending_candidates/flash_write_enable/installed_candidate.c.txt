@@ -1,0 +1,54 @@
+/* spi_flash_set_write_enable with spi_flash_write_enable inlined, from the
+ * Renesas DA145xx SDK 6.0.18.1182.1, sdk/platform/driver/spi_flash/spi_flash.c
+ * (Copyright (C) Dialog Semiconductor / Renesas Electronics Corporation; see
+ * third_party/renesas_sdk_6.0.18.1182.1/dialog_license.txt).
+ * SPI_FLASH_ENABLE_POWER_PIN() is empty in V204's configuration.
+ */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_output_state.h"
+
+#define SPI_FLASH_ERR_OK (0)
+#define SPI_FLASH_ERR_WEL_ERROR (-12)
+#define SPI_FLASH_SR_WEL (0x02)
+#define SPI_FLASH_OP_WREN (0x06)
+#define SPI_MODE_8BIT (0)
+#define SPI_FLASH_ENABLE_POWER_PIN()
+
+static int spi_flash_write_enable(uint8_t command)
+{
+    SPI_FLASH_ENABLE_POWER_PIN();
+
+    // Check if SPI Flash is ready
+    int status = spi_flash_is_busy();
+    if (status != SPI_FLASH_ERR_OK)
+    {
+        return status;
+    }
+
+    // Send command
+    spi_set_bitmode(SPI_MODE_8BIT);
+    update_mode_dependent_output_state_during_flash_transfer(command);
+
+    // Wait until SPI Flash is ready
+    status = spi_flash_wait_till_ready();
+    if (status != SPI_FLASH_ERR_OK)
+    {
+        return status;
+    }
+
+    // Check Status Register
+if (!(spi_flash_read_status_reg() & SPI_FLASH_SR_WEL))
+    {
+        /* Keep this conditional block through optimization; no ARM opcode. */
+        __atomic_signal_fence(__ATOMIC_SEQ_CST);
+        status = SPI_FLASH_ERR_WEL_ERROR;
+    }
+    /* Preserve the shared return instead of duplicating the register restore. */
+    return __builtin_annotation(status, "final status");
+}
+
+__attribute__((used, section(".text.drive_ring_s_output_state_machine")))
+int drive_ring_s_output_state_machine(void)
+{
+    return spi_flash_write_enable(SPI_FLASH_OP_WREN);
+}

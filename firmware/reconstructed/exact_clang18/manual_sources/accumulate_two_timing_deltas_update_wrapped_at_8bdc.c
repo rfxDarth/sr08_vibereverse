@@ -1,39 +1,27 @@
-/* Accumulate two timing deltas and update the wrapped timestamp conditionally. */
-__attribute__((used, naked, section(".text.accumulate_two_timing_deltas_update_wrapped_at_8bdc"))) void
+/* Sum two record-window results and commit only a threshold-crossing change. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_clock_literal_pool.h"
+extern struct sr08_clock_timekeeping_state clock_timekeeping_state;
+#include "firmware/reconstructed/include/sr08_cycle_control_state.h"
+#include "firmware/reconstructed/include/sr08_shared_context.h"
+extern uint32_t find_latest_valid_record_within_bitset(uint32_t time, uint32_t first, uint32_t last);
+struct sr08_window_sum_view { uint8_t reserved[0x2c]; uint32_t total; };
+__attribute__((used, section(".text.accumulate_two_timing_deltas_update_wrapped_at_8bdc"))) void
 accumulate_two_timing_deltas_update_wrapped_at_8bdc(void) {
-    __asm__ volatile("push {r4, r5, r7, lr}\n"
-                     "ldr r4, [pc, #72]\n"
-                     "ldr r0, [r4, #0]\n"
-                     "ldr r1, [pc, #72]\n"
-                     "adds r0, r0, r1\n"
-                     "ldr r1, [pc, #72]\n"
-                     "mov r2, r1\n"
-                     "adds r2, #180\n"
-                     "bl find_latest_valid_record_within_bitset\n"
-                     "ldr r5, [pc, #64]\n"
-                     "str r0, [r5, #44]\n"
-                     "ldr r0, [r4, #0]\n"
-                     "movs r1, #165\n"
-                     "lsls r2, r1, #2\n"
-                     "movs r1, #0\n"
-                     "bl find_latest_valid_record_within_bitset\n"
-                     "ldr r1, [r5, #44]\n"
-                     "adds r0, r1, r0\n"
-                     "str r0, [r5, #44]\n"
-                     "ldr r1, [pc, #560]\n"
-                     "ldr r2, [r1, #68]\n"
-                     "cmp r0, r2\n"
-                     "beq .Ldone\n"
-                     "ldr r4, [pc, #40]\n"
-                     "adds r3, r4, #1\n"
-                     "cmp r0, r3\n"
-                     "bcs .Lcheck_wrap_window\n"
-                     "cmp r2, r4\n"
-                     "bhi .Lcommit_timestamp\n"
-                     ".Lcheck_wrap_window: cmp r0, r4\n"
-                     "bls .Ldone\n"
-                     "cmp r2, r3\n"
-                     "bcs .Ldone\n"
-                     ".Lcommit_timestamp: str r0, [r1, #68]\n"
-                     ".Ldone: pop {r4, r5, r7, pc}\n");
+    volatile uint32_t *now = &clock_timekeeping_state.current_timestamp;
+    volatile struct sr08_window_sum_view *sum = (volatile struct sr08_window_sum_view *)&cycle_control_state;
+    sum->total = find_latest_valid_record_within_bitset(*now - 86400u, 1260, 1440);
+    uint32_t second = find_latest_valid_record_within_bitset(*now, 0, 660);
+    uint32_t total = sum->total + second;
+    sum->total = total;
+    volatile uint32_t *published = (volatile uint32_t *)((uint8_t *)&sr08_shared_context + 0x44);
+    uint32_t previous = *published;
+    if (total == previous)
+        return;
+    if (total < 9001 && previous > 9000) {
+        *published = total;
+    } else if (total > 9000 && previous < 9001) {
+        *published = total;
+    }
+
 }

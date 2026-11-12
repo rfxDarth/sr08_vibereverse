@@ -1,0 +1,15 @@
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+#include "firmware/reconstructed/include/sr08_flash_transfer.h"
+#include "firmware/reconstructed/include/sr08_output_state.h"
+static __attribute__((always_inline)) inline uint16_t mask(uint8_t selected,uint16_t eight,uint16_t one) { if (__builtin_expect(selected, 1)) return eight;
+ __atomic_signal_fence(__ATOMIC_SEQ_CST); return one; }
+uint32_t update_mode_dependent_output_state_during_flash_transfer(uint32_t value) {
+    uint8_t selected = *(const uint8_t *)&merged_globals_5650.spi_flash_cs_select;
+    uint16_t eight = __builtin_annotation(8,"pin 3 mask");
+    uint16_t one = __builtin_annotation(1,"pin 0 mask");
+    *(volatile uint16_t *)0x50003004u = mask(selected,eight,one);
+    uint32_t result = spi_access(value);
+    *(volatile uint16_t *)0x50003002u = mask(*(const uint8_t *)&merged_globals_5650.spi_flash_cs_select,eight,one);
+    return result;
+}

@@ -22,13 +22,13 @@ SOURCE_MANIFEST = EXACT / "V204_source_manifest.json"
 # Names with clear behavior evidence from the decompiler and existing notes.
 OVERRIDES = {
     "FUN_07fc1d10": (
-        "update_status_slots_for_group_bit",
+        "GPIO_ConfigurePin",
         "Select a 32-byte group slot (group three aliases group four). Write a "
         "one-hot bit at offset zero or two according to the alternate flag, "
         "then store low|high at offset 4 + 2*bit.",
         "high"),
     "FUN_07fcc2f0": (
-        "check_status_record_range_and_publish_code",
+        "suotar_patch_len_ind_handler",
         "If the record status byte at offset two is set, inspect the halfword "
         "at offset four. Publish code five when it is zero, code seven at or "
         "above the configured limit, or store an in-range nonzero value at "
@@ -41,12 +41,12 @@ OVERRIDES = {
         "return it.",
         "high"),
     "FUN_07fc2fcc": (
-        "copy_scaled_payload_slice_on_mask_hit",
-        "Compute the descriptor's masked delta. On a nonzero mask hit, copy the "
-        "scaled payload slice and return zero; otherwise return UINT32_MAX.",
-        "medium"),
+        "peek_ring_buffer_entry",
+        "Copy the oldest queued record without advancing tail. Return zero on "
+        "success or UINT32_MAX when empty.",
+        "high"),
     "FUN_07fcb014": (
-        "dispatch_callback_for_record_types_26_fc_fd",
+        "prf_cleanup_func",
         "Scan 32 records, dispatch types 0x26, 0xfc, and 0xfd to their "
         "callback tables, and forward each record with two caller values.",
         "high"),
@@ -70,7 +70,7 @@ OVERRIDES = {
         "Invoke the shared mode-flag updater to clear mask 0x00220000.",
         "high"),
     "FUN_07fc5db4": (
-        "set_attribute_value_from_measurement_record",
+        "custs1_val_set_req_handler",
         "Find the measurement record's base handle, add the record's relative "
         "offset, then write its value bytes to the resulting attribute.",
         "medium"),
@@ -81,7 +81,7 @@ OVERRIDES = {
         "0x40 and the following byte.",
         "high"),
     "FUN_07fcba98": (
-        "transfer_flash_controller_word",
+        "spi_access",
         "Configure the flash controller, write the input low halfword and "
         "conditionally its high halfword, poll for completion, trigger "
         "readback, and return one or two response halfwords.",
@@ -119,7 +119,7 @@ OVERRIDES = {
         "low bit to select the even tie.",
         "high"),
     "FUN_07fc5fb0": (
-        "dispatch_indexed_message_by_id",
+        "gapc_bond_ind_handler",
         "Dispatch message IDs 2 through 7 using the high byte of the fourth "
         "argument as the per-entry index. ID 2 updates its indexed record and, "
         "when the input high bit is set, copies six configuration bytes, "
@@ -151,11 +151,11 @@ OVERRIDES = {
         "Divide the measured value by 1,000 and store it in device state.",
         "high"),
     "FUN_07fc677c": (
-        "build_measurement_message_from_service_record",
+        "hogpd_gattc_att_info_req_ind_handler",
         "Parse a variable-length service record and publish its measurement message.",
         "medium"),
     "FUN_07fcc2f0": (
-        "check_status_record_range_and_publish_code",
+        "suotar_patch_len_ind_handler",
         "If the record status byte at offset two is set, inspect the halfword at offset four. Publish code "
         "five when it is zero, code seven at or above the configured limit, or store an in-range nonzero "
         "value at shared-state offset 24. Return zero.",
@@ -165,7 +165,7 @@ OVERRIDES = {
         "Activate mode flags only when the selected mode and sensor-state flags satisfy their gate.",
         "medium"),
     "FUN_07fc1d10": (
-        "update_status_slots_for_group_bit",
+        "GPIO_ConfigurePin",
         "Select the status slot for a group and bit, update its flag, and store the combined status value.",
         "medium"),
     "FUN_07fca904": (
@@ -239,11 +239,10 @@ OVERRIDES = {
         "Map the current mode byte to both output-state halfwords around a flash-word transfer; return the transfer result.",
         "medium"),
     "FUN_07fc6dbc": (
-        "dispatch_attribute_request_by_opcode",
-        "Validate the request context, classify the request opcode relative to "
-        "the active service, dispatch supported request cases, and return the "
-        "protocol status for unsupported or completed operations.",
-        "medium"),
+        "suotar_gattc_write_req_ind_handler",
+        "Handle SUOTA GATT writes for memory, GPIO, patch length/data, and "
+        "notification configuration.",
+        "high"),
     "FUN_07fc7c88": (
         "complete_pending_attribute_write",
         "Validate the pending write against the active connection and service "
@@ -251,7 +250,7 @@ OVERRIDES = {
         "the pending request fields, and resume link-layer processing.",
         "medium"),
     "FUN_07fc76a0": (
-        "parse_variable_length_service_record",
+        "hogpd_get_att_idx",
         "Walk the service field descriptors to locate the requested record, "
         "validate its encoded length and optional fields, and return the "
         "record parse status and field offset.",
@@ -333,7 +332,7 @@ OVERRIDES = {
         "qualifying record.",
         "medium"),
     "FUN_07fc6998": (
-        "allocate_and_send_typed_message",
+        "suotar_gattc_read_req_ind_handler",
         "Check the response state, select a fixed or encoded payload based on "
         "the request type, allocate the kernel message, copy its header and "
         "payload, and send it. Return the packed response-state result on the "
@@ -347,28 +346,28 @@ OVERRIDES = {
         "freeing the temporary table.",
         "high"),
     "FUN_07fc7538": (
-        "update_profile_values_and_send_status",
+        "hogpd_enable_req_handler",
         "When the source state differs, copy the indexed 16-bit values into "
         "the profile object and update the related state flag. Then allocate "
         "and send the two-byte status message selected from the input type "
         "and state.",
         "medium"),
     "FUN_07fcc148": (
-        "receive_transfer_chunk_and_program_flash",
+        "suotar_patch_data_ind_handler",
         "Append each incoming chunk to the bounded transfer buffer, validate "
         "the completed header and transfer state, erase the target flash "
         "range when starting a new transfer, program header and payload data, "
         "and publish transfer progress or status.",
         "medium"),
     "FUN_07fc1426": (
-        "process_ble_connection_request",
+        "PATCHED_llm_con_req_ind",
         "Validate the received link-layer connection fields, resolve the peer "
         "address, check whitelist and resolving-list policy, initialize the "
         "connection state, start the link-layer connection, and restore the "
         "white list when required.",
         "high"),
     "FUN_07fc6358": (
-        "activate_staged_firmware_image",
+        "gapc_disconnect_ind_handler",
         "For the accepted update state, clear the staging marker, erase the "
         "active image range, copy 0x14000 bytes from the staged flash region "
         "to the active region in 1 KiB blocks, write the 0xaa activation "
@@ -382,20 +381,20 @@ OVERRIDES = {
         "measurement display and transition handler.",
         "medium"),
     "FUN_07fc0374": (
-        "clamp_indexed_state_fields_and_sync_values",
+        "JT_llc_le_length_effective_func",
         "Clamp four 16-bit fields in the indexed state record to paired bounds, "
         "store the normalized values, mirror two fields into a second indexed "
         "table, and return whether any tracked value changed.",
         "medium"),
     "FUN_07fc4d6c": (
-        "dispatch_callback_table_command_and_clear_result",
+        "app_timer_api_process_handler",
         "Handle three command values by validating a callback-table slot, "
         "updating or invoking its entry, and clearing the result byte on "
         "handled paths; return one for command values outside the supported "
         "range. Invalid table indices enter the firmware's fatal loop.",
         "medium"),
     "FUN_07fc34a8": (
-        "zero_prefix_and_fill_random_suffix",
+        "app_fill_random_byte_array",
         "Validate that the requested random suffix fits within the destination, "
         "fill that suffix from the ROM random-word helper, and zero the bytes "
         "before it. An invalid size writes the firmware error fields and enters "
@@ -409,7 +408,7 @@ OVERRIDES = {
         "eight-round helper. A null buffer returns zero.",
         "high"),
     "FUN_07fc5cbc": (
-        "prepare_measurement_record_append_at_5cbc",
+        "custs1_val_ind_req_handler",
         "Check the measurement item status, locate and validate its matching "
         "record, mark the item active, store the pending record pointer and "
         "value, then invoke the measurement append/finalize routine. Return "
@@ -417,7 +416,7 @@ OVERRIDES = {
         "the firmware's fatal loop.",
         "medium"),
     "FUN_07fc5d34": (
-        "prepare_measurement_record_append_at_5d34",
+        "custs1_val_ntf_req_handler",
         "Check the measurement item status, locate and validate its matching "
         "record, mark the item active, store the pending record pointer and "
         "value, then invoke the measurement append/finalize routine. Return "
@@ -425,41 +424,41 @@ OVERRIDES = {
         "the firmware's fatal loop.",
         "medium"),
     "FUN_07fc5c44": (
-        "replace_byte_in_variable_length_record_at_index",
+        "custs1_set_ccc_value",
         "Validate an index below eight, look up the variable-length record, "
         "copy its bytes to a local buffer, replace the selected byte, and "
         "upsert the modified record. Invalid indices or missing record data "
         "enter the firmware's fatal loop.",
         "medium"),
     "FUN_07fc1c18": (
-        "configure_peripheral_and_wait_for_status_flags",
+        "BLE_WAKEUP_LP_Handler",
         "Conditionally run the companion setup routine, program the "
         "memory-mapped peripheral control registers, wait for the reported "
         "status thresholds, and finish by copying the peripheral result into "
         "shared state.",
         "medium"),
     "FUN_07fc32bc": (
-        "get_or_initialize_cached_text_record",
+        "app_easy_gap_undirected_advertise_start_create_msg",
         "Return the existing cached-text record when present; otherwise "
         "allocate and initialize the record, copy a fixed shared-data block, "
         "append the text and length returned by the cache helper, and retain "
         "the updated record pointer in shared state.",
         "medium"),
     "FUN_07fc64a8": (
-        "build_and_submit_record_for_selector_type",
+        "gapc_get_dev_info_req_ind_handler",
         "Use the first input byte to select a record variant: emit fixed fields "
         "for type 2, a shared 16-bit value for type 1, or a variable-length "
         "shared payload for type 0. Return without emitting for other types.",
         "medium"),
     "FUN_07fcb0f8": (
-        "initialize_or_release_indexed_objects",
+        "prf_init_func",
         "When the input is zero, initialize slots 0x10 through 0x2f and register "
         "each slot. Otherwise, run type-specific cleanup callbacks where "
         "required, clear all 32 slots, restore their empty marker, and release "
         "each slot's associated resource.",
         "medium"),
     "FUN_07fc0274": (
-        "update_slot_event_state_and_dispatch",
+        "PATCHED_llcp_length_req_handler",
         "Decode the packed status and slot, set the slot's event flag, and "
         "handle statuses 0x13 through 0x15 specially. For other statuses, use "
         "the slot's state bits to choose the event callback or the paired "
@@ -472,7 +471,7 @@ OVERRIDES = {
         "timed operation, and other nonzero modes dispatch to their handler.",
         "medium"),
     "FUN_07fc02ec": (
-        "dispatch_packed_event_to_indexed_record",
+        "PATCHED_llcp_length_rsp_handler",
         "Ignore event statuses 0, 0x13, and 0x14; mark the indexed record and "
         "return 2 for status 0x15; otherwise log the event and apply its "
         "configured follow-up transition.",
@@ -492,7 +491,7 @@ OVERRIDES = {
         "invalid.",
         "medium"),
     "FUN_07fcc578": (
-        "dispatch_service_event_and_update_shared_state",
+        "user_catch_rest_hndl",
         "Dispatch service event identifiers: log and store type-two records, "
         "build response messages for state events, clear transfer state for "
         "the reset event, and log and submit numeric status updates.",
@@ -504,14 +503,14 @@ OVERRIDES = {
         "interrupt enable state while preserving its prior setting.",
         "medium"),
     "FUN_07fc686c": (
-        "build_and_send_measurement_item_response",
+        "custs1_gattc_read_req_ind_handler",
         "Check the connection state, match the requested measurement index, "
         "and allocate and send the corresponding response message. For indexed "
         "records, validate the selected slot and copy its measurement byte; "
         "invalid record metadata enters the firmware's fatal loop.",
         "medium"),
     "FUN_07fc7db4": (
-        "validate_and_queue_attribute_request",
+        "hogpd_report_upd_req_handler",
         "Check the connection and request type, validate the selected "
         "attribute slot and payload length, and queue a message for accepted "
         "requests. Rejected requests are returned with the corresponding "
@@ -524,19 +523,19 @@ OVERRIDES = {
         "set activity flags when movement crosses the firmware thresholds.",
         "medium"),
     "FUN_07fcb080": (
-        "find_keyed_record_value",
+        "prf_env_get",
         "Search up to 32 fixed 24-byte records for a 16-bit key at offset 22; "
         "return the 32-bit value at offset 16 of the matching record, or zero.",
         "high"),
     "FUN_07fc57b8": (
-        "find_measurement_record_by_id",
+        "custs1_att_get_value",
         "Walk the measurement record list and match the ID byte at offset four. "
         "Return its length byte and value pointer through the output arguments; "
         "write zero outputs when no record matches. Null output pointers enter "
         "the firmware's fatal wait.",
         "high"),
     "FUN_07fc66c0": (
-        "send_type_9_message_if_task_state_zero",
+        "gapm_device_ready_ind_handler",
         "Check the supplied kernel task ID. If its state is nonzero, write the "
         "timeout/error MMIO values and wait forever. If its state is zero, "
         "allocate a four-byte type-9 message, set its first byte to one, send "
@@ -549,7 +548,7 @@ OVERRIDES = {
         "Return one when status 0x27 arrives, otherwise zero after ten tries.",
         "high"),
     "FUN_07fc532c": (
-        "format_and_send_uart_message",
+        "arch_printf",
         "Format into a 96-byte bounded buffer and send it through the UART. The supported conversions are %c, %s, "
         "%d, %i, %u, %x, and %X, with an optional h modifier and one-digit zero-prefixed width. An unsupported "
         "conversion emits the firmware's fatal-format diagnostic.",
@@ -566,7 +565,7 @@ OVERRIDES = {
         "and return the character count.",
         "high"),
     "FUN_07fc0758": (
-        "find_variable_record_value_by_marker",
+        "PATCHED_gapm_get_ad_type_flag",
         "Walk length-prefixed records up to the byte limit. Return the byte at record offset two for the first record "
         "whose marker byte at offset one is one; return zero if no marker matches.",
         "high"),
@@ -576,25 +575,25 @@ OVERRIDES = {
         "bit, conditionally subtract it and update the root, then shift the bit by two until zero.",
         "high"),
     "FUN_07fc7bcc": (
-        "complete_pending_attribute_operation",
+        "hogpd_proto_mode_cfm_handler",
         "Validate the pending attribute-operation state and request fields, "
         "update the selected record when accepted, send a completion message "
         "with the result code, then clear the pending operation fields.",
         "medium"),
     "FUN_07fcc31c": (
-        "handle_service_control_command_and_publish_status",
+        "suotar_patch_mem_dev_ind_handler",
         "Decode the service event command, dispatch reset, stop, and periodic "
         "measurement actions, clear the associated transfer counters, and "
         "publish the resulting status code.",
         "medium"),
     "FUN_07fcc414": (
-        "store_attribute_value_and_send_update_event",
+        "suotar_status_update_req_handler",
         "Copy the incoming value into the selected attribute record, then "
         "queue an internal update message when the record is active. The "
         "message type reflects the record's event mode.",
         "medium"),
     "FUN_07fcb82c": (
-        "initialize_sensor_peripheral_and_sample_state",
+        "rf_init_func",
         "Apply peripheral control settings, populate the supplied callback "
         "configuration, seed a 40-byte sequence table, run the companion "
         "initialization routine, convert the initial sensor value, and start "
@@ -607,37 +606,37 @@ OVERRIDES = {
         "memory-mapped registers, and wait for the operation to complete.",
         "medium"),
     "FUN_07fcaf9c": (
-        "lookup_or_register_request_handler",
+        "prf_add_profile_func",
         "Select a handler for one of three supported request identifiers and "
         "search the 33-entry record table for an existing entry. If no entry "
         "exists and a slot is available, invoke the selected handler and store "
         "the request identifier; return the corresponding status and record.",
         "medium"),
-    "FUN_07fc017c": ("nonreturning_spin_loop_at_017c",
+    "FUN_07fc017c": ("SVC_Handler",
                      "Loop forever without changing device state."),
-    "FUN_07fc017e": ("nonreturning_spin_loop_at_017e",
+    "FUN_07fc017e": ("PendSV_Handler",
                      "Loop forever without changing device state."),
-    "FUN_07fc0180": ("nonreturning_spin_loop_at_0180",
+    "FUN_07fc0180": ("SysTick_Handler",
                      "Loop forever without changing device state."),
-    "FUN_07fc0182": ("nonreturning_spin_loop_at_0182",
+    "FUN_07fc0182": ("Default_Handler",
                      "Loop forever without changing device state."),
-    "FUN_07fc16c6": ("return_without_action_at_16c6",
+    "FUN_07fc16c6": ("patch_global_vars_init",
                      "Return immediately without changing device state."),
     "FUN_07fc2ed6": ("enqueue_ring_record_overwriting_oldest",
                      "Advance the tail when full, then enqueue the new record and advance the head."),
     "FUN_07fc2ea8": ("enqueue_ring_record_if_space",
                      "Copy a source record into the head slot and advance the head when space remains."),
-    "FUN_07fc3028": ("return_constant_one_at_3028",
+    "FUN_07fc3028": ("app_custs1_process_handler",
                      "Return the constant value one."),
     "FUN_07fc1fa8": ("append_bounded_bytes_and_terminate",
                      "Copy a bounded byte range into the output buffer and append a zero byte."),
-    "FUN_07fc3e90": ("erase_flash_range",
-                     "Erase the requested flash range through the shared flash operation routine."),
+    "FUN_07fc3e90": ("erase_flash_range_status",
+                     "Erase the requested flash range and return the flash driver status."),
     "FUN_07fc3e60": ("update_state_bits_and_publish_empty_status",
                      "Set or clear selected state bits, then publish whether the resulting state word is empty."),
     "FUN_07fc3ea0": ("perform_flash_memory_operation",
                      "Read, program, or erase flash memory; operations use 256-byte write chunks and the device's erase unit."),
-    "FUN_07fc5484": ("fill_buffer_with_32_random_bytes",
+    "FUN_07fc5484": ("ba431_get_rand_func",
                      "Write 32 bytes from the DA14585 ROM random-number routine into the destination and return zero."),
     "FUN_07fc2e80": ("conditionally_initialize_peripheral_and_schedule_service",
                      "Check the peripheral status, conditionally initialize it, set the pending flag, and schedule ROM service 0x413."),
@@ -653,19 +652,19 @@ OVERRIDES = {
                      "Apply the radio register profile unless status contains mask 0x44, then perform a one-word radio exchange."),
     "FUN_07fc3ab0": ("allocate_ble_data_record_and_send",
                      "Allocate a variable-length BLE data record, copy the payload, log and format its bytes, then submit it; log allocation failure when no record is available."),
-    "FUN_07fc625c": ("store_indexed_measurement_status_record",
+    "FUN_07fc625c": ("gapc_connection_req_ind_handler",
                      "Validate the incoming status, select the indexed state entry, copy its measurement fields, update the per-slot state, and publish the resulting status."),
     "FUN_07fc9004": ("convert_timestamp_to_calendar_fields",
                      "Convert the supplied time value into calendar fields, including month and leap-year adjustments, and write the result to the output array."),
-    "FUN_07fcb980": ("dispatch_pending_peripheral_operations",
+    "FUN_07fcb980": ("rwble_isr",
                      "Process each set bit in the pending-operation word by writing its operation code and invoking the corresponding peripheral service."),
-    "FUN_07fc5968": ("append_or_finalize_measurement_record_chunk",
+    "FUN_07fc5968": ("custs1_exe_operation",
                      "Append a chunk to the selected variable-length measurement record, or allocate and submit its completed record before releasing the pending buffer."),
     "FUN_07fc8354": ("read_three_byte_samples_and_update_history",
                      "Read three-byte records with device command 0x41, decode them into the shared 32-bit sample history, shift retained samples to make room, and request a refresh when the requested window is 64."),
     "FUN_07fc833c": ("read_callback_pair_for_mode_window_39_3a",
                      "Multiply the mode by three, subtract byte offsets 0x39 and 0x3a modulo 256, then read the callback values for that pair."),
-    "FUN_07fc045a": ("read_eight_bytes_from_rom_helper",
+    "FUN_07fc045a": ("PATCHED_llc_util_gen_skdx",
                      "Call ROM helper 0x07f02976 eight times and store each returned byte in the output buffer."),
     "FUN_07fc18f4": ("nul_terminated_string_length",
                      "Return the number of bytes before the terminating NUL."),
@@ -677,7 +676,7 @@ OVERRIDES = {
                      "Write 0x1f to byte offset 0x44 and a fixed 32-bit data word to offset 0x40 of the shared state object."),
     "FUN_07fcacb8": ("write_shared_state_byte_45_and_word_40",
                      "Write 0x10 to byte offset 0x45 and a fixed 32-bit data word to offset 0x40 of the shared state object."),
-    "FUN_07fc31f8": ("publish_per_slot_state_byte",
+    "FUN_07fc31f8": ("app_easy_gap_confirm",
                      "Allocate a 44-byte per-slot record, store its state byte at offset 0x28, set the flag at 0x29, and submit it."),
     "FUN_07fca8ec": ("format_signed_state_byte_as_three_display_digits",
                      "Read the signed byte at state offset 0x95 and format it into three display digits at buffer offset 0x42."),
@@ -686,19 +685,19 @@ OVERRIDES = {
     "FUN_07fc2e50": ("replace_state_timer_with_600_delay_entry",
                      "Release the timer slot at state offset nine, allocate a new registration with delay value 600, and store its slot ID."),
     "FUN_07fc4440": (
-        "request_sensor_sample_then_scale_result",
+        "get_ble_base_time_ms",
         "Write one to the conversion-request register at 0x400000fc and wait for it to clear. Read the result at "
         "0x4000001c and return raw_value times five, shifted right by three.",
         "high"),
-    "FUN_07fc5a6c": ("lookup_measurement_value_by_index",
+    "FUN_07fc5a6c": ("custs1_get_att_handle",
                      "Return the indexed measurement value when the index is within the record count."),
-    "FUN_07fc6540": ("create_empty_measurement_record",
+    "FUN_07fc6540": ("gapc_param_update_req_ind_handler",
                      "Allocate and submit an initialized measurement record."),
-    "FUN_07fc66f8": ("initialize_measurement_for_enabled_slot",
+    "FUN_07fc66f8": ("gapm_profile_added_ind_handler",
                      "Initialize measurement state when the selected slot is enabled."),
-    "FUN_07fc67f0": ("dispatch_measurement_record_type",
+    "FUN_07fc67f0": ("custs1_gattc_cmp_evt_handler",
                      "Dispatch the record handler when the first record byte is 0x12 or 0x13."),
-    "FUN_07fc7526": ("release_and_clear_object_handle",
+    "FUN_07fc7526": ("hogpd_destroy",
                      "Clear the object handle field and release its previous value."),
     "FUN_07fc8838": ("write_two_bytes_from_packed_value",
                      "Write the high and low bytes of a packed 12-bit value through the shared writer."),
@@ -706,7 +705,7 @@ OVERRIDES = {
                      "Run the cache update and service calls, then clear the 32-bit table entry at the supplied index."),
     "FUN_07fc33c0": ("clear_cache_entry_and_publish_sensor_request",
                      "Clear the cached byte, refresh the indexed cache entry, publish the compact sensor request, then clear the sensor state byte at offset 100."),
-    "FUN_07fc1fd0": ("wait_for_state_flag_bit_one_to_clear_and_read_result",
+    "FUN_07fc1fd0": ("adc_get_sample",
                      "Set state bit one, wait for it to clear, clear the halfword at state offset eight, and return the halfword at offset ten."),
     "FUN_07fc869c": ("initialize_radio_scan_and_mark_state_ready_entry",
                      "Clear the radio state byte at offset 27, scan the paired-byte data after ensuring the radio profile, send command 0x6a, and set state byte 17."),
@@ -724,9 +723,9 @@ OVERRIDES = {
                      "Find the list for selector 253, replace a matching record when its length changes, then write the selector, length, and payload bytes."),
     "FUN_07fccf38": ("write_indexed_timing_record",
                      "Write the tagged record at index times 16, storing the caller's timing value, a helper-derived interval, and the supplied data word."),
-    "FUN_07fcf11c": ("initialize_control_registers_and_enable_irqs",
+    "FUN_07fcf11c": ("SystemInit",
                      "Write value six to MMIO address 0x50003400, clear three interrupt masks through NVIC address 0xe000e180 with barriers, clear address 0x50000000, and enable interrupts."),
-    "FUN_07fcc118": ("set_attribute_value_and_halt_on_failure",
+    "FUN_07fcc118": ("suotar_mem_info_update_req_handler",
                      "Use the key 0xfc attribute entry's value offset plus six to set a four-byte value from the caller's buffer. On failure, set the MMIO timeout/status values and spin forever; otherwise return zero."),
     "FUN_07fc31d4": ("reset_transition_state_and_store_scaled_value",
                      "Wait for and scale the shared timer value, clear the transition-state byte at offset 48, set offset 44 to 0xff, and store the scaled result at shared-state word offset 15."),
@@ -766,21 +765,23 @@ OVERRIDES = {
                      "Derive two display coordinates from the supplied measurement values and store them in the shared display state."),
     "FUN_07fc7380": ("update_measurement_display_and_mode_state",
                      "Handle a measurement result mode, update display-related state, retain computed values, and trigger state transitions when their timing conditions are met."),
-    "FUN_07fc0664": ("validate_record_stream_fields",
+    "FUN_07fc0664": ("PATCHED_gapm_adv_sanity",
                      "Walk one or two bounded record streams, reject duplicate tracked field tags, and stop processing on malformed field data."),
-    "FUN_07fc302c": ("initialize_display_config_or_run_handler",
+    "FUN_07fc302c": ("app_db_init_next",
                      "On first entry, create and submit the display configuration record; on later entries, invoke the selected handler and clear the initialization state when its sequence completes."),
     "FUN_07fcd0c8": ("integer_square_root_newton_iteration",
                      "Compute an integer square root by iterating floor((input / estimate + estimate) / 2) until the estimate stabilizes, using the firmware ROM division helper."),
     "FUN_07fcc8b0": ("advance_sensor_cycle_and_toggle_mode_flags",
-                     "Advance the sensor-cycle counters, toggle the shared mode flag on alternating cycles, and invoke the enabled follow-up handler."),
-    "FUN_07fc0a98": ("process_indexed_response_and_release_buffer",
+                     "Advance sensor-cycle counters, toggle the alternating mode flag, and queue the enabled 20-byte 0x50 snapshot with seven values and connection RSSI."),
+    "FUN_07fc519c": ("build_sensor_command_packet_acquiring_shared_at_519c",
+                     "Sample the BLE base-time counter and queue a 20-byte 0x0c profile command with a 15-byte CRC-32 payload."),
+    "FUN_07fc0a98": ("l2cc_handle_invalid_pdu",
                      "Handle the indexed pending response, construct or update its result record when needed, release temporary storage, and clear the slot's buffer pointer."),
     "FUN_07fceef8": ("clear_sensor_processing_history_tables",
                      "Clear the sensor processor's indexed history tables and working fields, set its 30-unit default, and return one."),
-    "FUN_07fc180c": ("build_type_27_packet_or_set_fallback_state",
+    "FUN_07fc180c": ("PATCHED_smpc_dhkey_calc_start",
                      "Build a type-0x27 packet from two reversed 32-byte slices of the indexed record, validate it, and set fallback state when validation fails."),
-    "FUN_07fc174c": ("configure_interrupt_registers_and_optional_mode",
+    "FUN_07fc174c": ("enable_rf_diag_irq",
                      "Write the fixed interrupt-control registers with memory barriers, update the peripheral control halfword, and apply extra mode bits when the argument equals one."),
     "FUN_07fc2da8": ("read_state_word_at_10_with_record_flag_clamp_entry",
                      "Return the halfword at state offset 10, clamping values below 21 to 20 when record flag bit zero is clear."),
@@ -788,11 +789,11 @@ OVERRIDES = {
                      "Switch display state to 0x1b when the 32-bit state field at byte offset 44 equals 100."),
     "FUN_07fcd990": ("initialize_state_then_return_success",
                      "Call the state initializer at 0x07fcd908 and return one."),
-    "FUN_07fc20d4": ("register_thumb_handler_and_store_slot_index",
+    "FUN_07fc20d4": ("adv_data_update_timer_cb",
                      "Register the Thumb handler at 0x07fc20d5 in the 0x0bb8 table and store its returned slot index at state offset 11."),
     "FUN_07fc8c64": ("disable_interrupt_mask_0x8000_and_publish_control_state",
                      "Write mask 0x8000 to the interrupt clear-enable register, clear control bit zero, then publish state values 1 and 2."),
-    "FUN_07fc5a88": ("match_measurement_index_and_write_offset",
+    "FUN_07fc5a88": ("custs1_get_att_idx",
                      "If the candidate lies in [range_start, range_start + entry_count), write its relative offset and return zero; otherwise return 0x80."),
     "FUN_07fc2fa4": ("copy_ring_buffer_entry_if_index_available",
                      "Copy the indexed queued record when its index is below the masked queue occupancy."),
@@ -800,7 +801,7 @@ OVERRIDES = {
                      "Write zero to each 32-bit destination word, reducing the remaining byte count by four until it reaches zero."),
     "FUN_07fcb924": ("configure_ring_s_display_sensor_control_registers",
                      "Update the ring display/sensor control registers and initialize their shared configuration."),
-    "FUN_07fcbb6c": ("set_ring_s_output_mode_and_enable",
+    "FUN_07fcbb6c": ("spi_set_bitmode",
                      "Clear output-control bit zero, apply the shifted mode through mask 0xfe7f, then set bit zero."),
     "FUN_07fc8a54": ("scan_pair_table_until_terminator",
                      "Scan at most 254 two-byte entries, stopping when both bytes are 0xff and processing each earlier pair."),
@@ -808,11 +809,11 @@ OVERRIDES = {
                      "Apply the radio register profile unless the observed status contains required mask 0x44, then scan the supplied byte pairs."),
     "FUN_07fcba7c": ("read_current_record_value_byte",
                      "Return the byte at offset six of the current record value when present."),
-    "FUN_07fcbad0": ("map_record_flag_to_status_mask",
+    "FUN_07fcbad0": ("spi_flash_is_busy",
                      "Map the low bit of the record flag to either zero or the fixed negative mask."),
     "FUN_07fcbae2": ("initialize_shared_state_when_status_clear",
                      "Initialize shared output state when the status helper returns zero."),
-    "FUN_07fcbafc": ("initialize_output_state_for_mode_five_hundred",
+    "FUN_07fcbafc": ("spi_flash_read_status_reg",
                      "Set output mode one and initialize shared state with 0x500."),
     "FUN_07fcbc2a": ("clear_secondary_object_handle_and_release_value",
                      "Clear the secondary object handle field and release its previous value."),
@@ -852,47 +853,47 @@ OVERRIDES = {
                      "Clear mode flag bits 0 and 4 through the shared flag updater."),
     "FUN_07fc5f70": ("clear_mode_flags_0x0022_entry",
                      "Clear mode flag bits 1 and 5 through the shared flag updater."),
-    "FUN_07fcb962": ("decode_halved_offset_minus_112",
+    "FUN_07fcb962": ("rf_rssi_convert",
                      "Return the low byte of the input shifted right one and reduced by 112."),
     "FUN_07fc1b30": ("convert_unsigned_integer_to_float_bits",
                      "Convert an unsigned integer to its IEEE-754 single-precision bit pattern."),
     "FUN_07fc1b66": ("shift_unsigned_64_right",
                      "Shift the 64-bit value formed by the high and low words right by the requested bit count."),
-    "FUN_07fc4144": ("dispatch_callback_table_profile_4",
+    "FUN_07fc4144": ("app_suotar_process_handler",
                      "Call the shared table dispatcher using the profile at 0x07fc4160 and four entries."),
-    "FUN_07fc3564": ("dispatch_callback_table_profile_14",
+    "FUN_07fc3564": ("app_gap_process_handler",
                      "Forward the callback arguments through the shared dispatcher with profile 14."),
-    "FUN_07fc3e40": ("dispatch_callback_table_profile_7",
+    "FUN_07fc3e40": ("app_sec_process_handler",
                      "Forward the callback arguments through the shared dispatcher with profile 7."),
     "FUN_07fc1f00": ("wait_for_status_mask_0x04_set_minimum_32",
                      "Wait for status mask 0x04 to become set, with a 32-tick minimum elapsed interval."),
     "FUN_07fc1f10": ("wait_for_status_mask_0x20_clear_minimum_8_entry",
                      "Wait for status mask 0x20 to become clear, with an eight-tick minimum elapsed interval."),
-    "FUN_07fc1ee8": ("wait_for_any_status_bit_or_elapsed_200",
-                     "Poll the 16-bit status register at 0x50001378 until any bit is set or 200 timer units elapse."),
-    "FUN_07fc1d88": ("report_hardfault_context_and_halt",
+    "FUN_07fc1ee8": ("wait_i2c_rx_fifo_or_timeout",
+                     "Wait for a nonempty I2C receive FIFO or a 200-count BLE-clock timeout."),
+    "FUN_07fc1d88": ("HardFault_HandlerC",
                      "Report the HardFault status and supplied exception context, set hardware status codes, and halt."),
-    "FUN_07fc4110": ("submit_display_code_status_record",
+    "FUN_07fc4110": ("app_suotar_create_db",
                      "Create and submit a type-0x1b record containing lookup data for display code 0xfc."),
-    "FUN_07fc2ff4": ("submit_display_code_record_for_fd",
+    "FUN_07fc2ff4": ("app_custs1_create_db",
                      "Create and submit a type-0x1b record for display code 0xfd with zeroed trailing fields."),
-    "FUN_07fc1df8": ("handle_nmi_and_report_context",
+    "FUN_07fc1df8": ("NMI_HandlerC",
                      "Update the interrupt-control registers, wait for the NMI status flag, report its context, and resume."),
-    "FUN_07fc566c": ("initialize_peripheral_control_state",
+    "FUN_07fc566c": ("calibrate_rcx20",
                      "Set peripheral control word fields, enable bits zero through two, and set the shared enabled byte."),
-    "FUN_07fc9830": ("clear_shared_state_and_mmio_flag",
+    "FUN_07fc9830": ("lld_sleep_init_func",
                      "Clear the shared state word, call the fixed ROM service, and clear bit 31 of the control register."),
     "FUN_07fc7f68": ("read_device_bytes_into_buffer",
                      "Check the radio profile, issue the command, and copy the requested response bytes into the caller's buffer."),
     "FUN_07fc8850": ("send_device_command_pair",
                      "Check the radio profile, then transmit the two supplied command bytes through the packed-input helper."),
-    "FUN_07fc7308": ("read_sensor_conversion_result",
+    "FUN_07fc7308": ("get_rc16m_count",
                      "Start a peripheral conversion, wait for completion, return its result, and restore the prior control settings."),
-    "FUN_07fcaf60": ("set_control_bit_15_clear_bits_0_1",
+    "FUN_07fcaf60": ("platform_reset_func",
                      "Set bit 15, clear bits zero and one, and preserve bits 2 through 14 in the control word."),
-    "FUN_07fcc3cc": ("publish_transfer_progress",
+    "FUN_07fcc3cc": ("suotar_send_mem_info_update_req",
                      "Allocate and submit a type-0xfc04 record containing the current 32-bit transfer progress."),
-    "FUN_07fcc3f0": ("publish_transfer_status_code",
+    "FUN_07fcc3f0": ("suotar_send_status_update_req",
                      "Allocate and submit a type-0xfc05 record containing the one-byte transfer status code."),
     "FUN_07fc3a38": ("update_mode_flags_and_transitions",
                      "Apply mode flag changes and run the associated transition handlers."),
@@ -908,7 +909,7 @@ OVERRIDES = {
                      "Build a mode-status record selecting operation zero."),
     "FUN_07fc1c0c": ("write_one_to_peripheral_status_register",
                      "Write the value one to peripheral status register 0x50001508."),
-    "FUN_07fc1e50": ("apply_device_state_radio_profile",
+    "FUN_07fc1e50": ("i2c_eeprom_initialize",
                      "Apply the radio register profile used while processing device and motion state."),
     "FUN_07fc1f20": ("wait_for_status_mask_0x02_set_minimum_8",
                      "Wait until status mask 0x02 is set or eight timer units elapse."),
@@ -916,9 +917,9 @@ OVERRIDES = {
                      "Apply the radio register profile used to restore readiness before radio commands."),
     "FUN_07fc82a0": ("configure_radio_state_from_profile",
                      "Configure radio state using the referenced profile."),
-    "FUN_07fcb96c": ("set_shared_flags_0x07",
+    "FUN_07fcb96c": ("rf_sleep",
                      "Set bits zero through two in the selected shared flags word."),
-    "FUN_07fcc528": ("clear_shared_control_bit_zero",
+    "FUN_07fcc528": ("uart_rx_isr",
                      "Clear bit zero in the shared control register at 0x50001104."),
     "FUN_07fcd8a0": ("clear_state_counter_at_offset_four",
                      "Clear the state counter at offset four when it is nonzero."),
@@ -928,7 +929,7 @@ OVERRIDES = {
                      "Run the radio-state handler when the state field at offset 0x4c is active."),
     "FUN_07fc8004": ("clear_radio_flag_and_configure_state",
                      "Clear the state byte at offset 0x1b and apply the selected radio profile."),
-    "FUN_07fc6440": ("store_byte_in_table_by_high_index",
+    "FUN_07fc6440": ("gapc_encrypt_ind_handler",
                      "Store the input byte in the table slot selected by the high index byte."),
     "FUN_07fc72f0": ("copy_six_profile_bytes_from_offsets_two_to_seven",
                      "Copy six bytes from profile offsets two through seven."),
@@ -938,15 +939,15 @@ OVERRIDES = {
                      "Switch to display state zero when the state flag is not one."),
     "FUN_07fc5654": ("increment_character_by_ten_wrap_at_d",
                      "Add ten to the selected character, wrapping to line feed past 'd'."),
-    "FUN_07fc1cdc": ("update_selected_hot_bit_10",
+    "FUN_07fc1cdc": ("GPIO0_Handler",
                      "Call the shared selected-bit updater with bit index 10."),
-    "FUN_07fc1ce6": ("update_selected_hot_bit_11",
+    "FUN_07fc1ce6": ("GPIO1_Handler",
                      "Call the shared selected-bit updater with bit index 11."),
-    "FUN_07fc1cf0": ("update_selected_hot_bit_12",
+    "FUN_07fc1cf0": ("GPIO2_Handler",
                      "Call the shared selected-bit updater with bit index 12."),
-    "FUN_07fc1cfa": ("update_selected_hot_bit_13",
+    "FUN_07fc1cfa": ("GPIO3_Handler",
                      "Call the shared selected-bit updater with bit index 13."),
-    "FUN_07fc1d04": ("update_selected_hot_bit_14",
+    "FUN_07fc1d04": ("GPIO4_Handler",
                      "Call the shared selected-bit updater with bit index 14."),
     "FUN_07fc24c6": ("search_queue_and_insert_limit_twenty",
                      "Search the circular record queue and insert with limit 0x14."),
@@ -958,7 +959,7 @@ OVERRIDES = {
                      "Switch to display state three when flag bit zero is clear."),
     "FUN_07fc97d8": ("switch_to_display_state_four_if_flag_clear",
                      "Switch to display state four when flag bit one is clear."),
-    "FUN_07fc9880": ("call_divider_for_indexed_record",
+    "FUN_07fc9880": ("lld_sleep_us_2_lpcycles_rcx_func",
                      "Compute the indexed record address and call the ROM unsigned divider."),
     "FUN_07fca904": ("copy_literal_to_shared_state_halfword",
                      "Copy the adjacent literal halfword into shared state at offset 0x40."),
@@ -974,29 +975,29 @@ OVERRIDES = {
                      "Advance the ring queue tail modulo capacity when the queue is nonempty."),
     "FUN_07fc5808": ("populate_measurement_slot_when_empty",
                      "Fill the selected measurement record when its state is empty."),
-    "FUN_07fc5ab0": ("build_service_information_record",
+    "FUN_07fc5ab0": ("custs1_init",
                      "Build and submit the service-information record."),
     "FUN_07fc6a40": ("parse_service_record_and_update_state",
                      "Dispatch parsed service-record types to response/state updates."),
-    "FUN_07fc6bf4": ("handle_incoming_service_record",
-                     "Validate an incoming record, search history when needed, and build a reply."),
+    "FUN_07fc6bf4": ("custs1_gattc_write_req_ind_handler",
+                     "Handle custom-service GATT writes, CCC configuration, and application write indications."),
     "FUN_07fc6fc0": ("handle_incoming_packet",
                      "Parse packet records and dispatch the matching handler."),
     "FUN_07fc8134": ("configure_command_record",
                      "Build the shared command record and dispatch the selected mode."),
-    "FUN_07fc77fc": ("build_measurement_packet_and_handle_reply",
+    "FUN_07fc77fc": ("hogpd_init",
                      "Build per-record sensor requests, collect results, and submit the response."),
     "FUN_07fc44a8": ("update_clock_and_process_events",
                      "Update clock state and process timed device events."),
     "FUN_07fcdd68": ("process_sensor_frame_and_update_state",
                      "Process the incoming sensor frame and update shared measurement state."),
-    "FUN_07fc0bac": ("process_incoming_data_fragment",
+    "FUN_07fc0bac": ("PATCHED_hci_acl_data_rx_handler",
                      "Accumulate incoming data fragments in per-channel buffers, maintain their offsets, and dispatch completed records."),
     "FUN_07fc1b88": ("round_v204_float_value_from_status",
                      "Leave nonnegative status unchanged; increment negative results and clear the low bit at the INT32_MIN tie."),
-    "FUN_07fc08ba": ("process_ble_link_layer_event_payload",
+    "FUN_07fc08ba": ("llm_p256_req_handler_func",
                      "Check link-layer event and session state, then build the selected message record from reversed payload blocks or 0xff fill."),
-    "FUN_07fc60ec": ("handle_per_slot_ble_data_record",
+    "FUN_07fc60ec": ("gapc_bond_req_ind_handler",
                      "Use the slot index from the request to update its 0x7a-byte record, copy a type-7 payload, or create the type-0 notification."),
     "FUN_07fc50b4": ("queue_computed_status_records",
                      "Build and enqueue a type-3 record with computed state values, then a type-0x13 record from shared status fields."),
@@ -1021,13 +1022,13 @@ SECTION_OVERRIDES = {
         "process_sensor_frame_and_update_state",
         "high"),
     "07fc046e": (
-        "decode_packet_into_output_record_entry",
+        "PATCHED_llm_adv_report_set",
         "Initialize the output record, derive the callback result and status "
         "nibble, then branch to the continuation block.",
         "decode_packet_into_output_record",
         "high"),
     "07fc04bc": (
-        "decode_packet_into_output_record_continuation",
+        "PATCHED_llm_adv_report_set_at_04bc",
         "Clamp the encoded payload length to 31, copy the fixed prefix and "
         "variable payload, store the status flag, and return.",
         "decode_packet_into_output_record",
@@ -1049,10 +1050,10 @@ SECTION_OVERRIDES = {
 
 EXTRA_SECTIONS = (
     ("0x07fc6060", "FUN_07fc5fb0_default", "dispatch_switch_default_case_from_5fb0",
-     "firmware/reconstructed/exact_clang18/manual_sources/dispatch_indexed_message_by_id.c",
+     "firmware/reconstructed/exact_clang18/manual_sources/gapc_bond_ind_handler.c",
      "Default branch block for the switch dispatcher."),
     ("0x07fc60da", "FUN_07fc5fb0_return", "return_from_switch_dispatch_5fb0",
-     "firmware/reconstructed/exact_clang18/manual_sources/dispatch_indexed_message_by_id.c",
+     "firmware/reconstructed/exact_clang18/manual_sources/gapc_bond_ind_handler.c",
      "Return block shared by the switch dispatcher."),
     ("0x07fc65fc", "FUN_07fc65d0_return", "return_from_switch_dispatch_65d0",
      "firmware/reconstructed/exact_clang18/manual_sources/07fc65d0_multirange.c",

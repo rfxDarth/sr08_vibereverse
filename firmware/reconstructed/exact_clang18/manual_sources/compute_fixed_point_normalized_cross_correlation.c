@@ -1,151 +1,55 @@
-/* Recovered behavior:
- * Fixed-point normalized cross-correlation used by the sensor pipeline.
- */
 #include <stdint.h>
 #include "firmware/reconstructed/include/sr08_arm_eabi.h"
 
-/*
- * Build a 2 * count byte result from two fixed-point sample arrays.
- *
- * First accumulate each input's energy after shifting samples right by 10.
- * If either energy is zero, fill the result with zero. Otherwise, sweep the
- * overlapping sample windows across the two arrays. Each window accumulates
- * products of samples shifted right by 9 (then right by 2), scales the sum by
- * 64, and applies the firmware's two integer divisions using the input
- * energies before storing the low byte. The first sweep grows the overlap;
- * the second shrinks it. The final output byte is explicitly zero.
- *
- * The instruction transcription is retained because a C rewrite does not fit
- * this fixed-size slot with V204's exact code generation.
+/* Products and sums wrap to 32 bits, matching the target MUL/ADD operations.
+ * Arithmetic right shifts and unsigned-to-signed conversions use the ARM
+ * compiler's two's-complement semantics. Do not replace the two divisions
+ * by a combined division: the first result is truncated before multiplying.
  */
-__attribute__((used, naked, section(".text.compute_fixed_point_normalized_cross_correlation"))) uint32_t
-compute_fixed_point_normalized_cross_correlation(const int32_t *left, const int32_t *right, uint8_t *output,
-                                                 uint32_t count) {
-    __asm__ volatile("push {r0, r1, r2, r3, r4, r5, r6, r7, lr}\n"
-                     "sub sp, #12\n"
-                     "movs r0, #0\n"
-                     "mov r5, r3\n"
-                     "str r0, [sp, #4]\n"
-                     "str r0, [sp, #0]\n"
-                     "b .Lcheck_energy_count\n"
-                     ".Laccumulate_input_energy: ldr r1, [sp, #12]\n"
-                     "lsls r2, r0, #2\n"
-                     "ldr r1, [r1, r2]\n"
-                     "ldr r3, [sp, #16]\n"
-                     "asrs r1, r1, #10\n"
-                     "ldr r2, [r3, r2]\n"
-                     "ldr r3, [sp, #4]\n"
-                     "muls r1, r1\n"
-                     "adds r1, r1, r3\n"
-                     "str r1, [sp, #4]\n"
-                     "asrs r2, r2, #10\n"
-                     "ldr r1, [sp, #0]\n"
-                     "muls r2, r2\n"
-                     "adds r1, r2, r1\n"
-                     "adds r0, r0, #1\n"
-                     "str r1, [sp, #0]\n"
-                     ".Lcheck_energy_count: cmp r0, r5\n"
-                     "blt .Laccumulate_input_energy\n"
-                     "ldr r0, [sp, #4]\n"
-                     "lsls r6, r5, #1\n"
-                     "cmp r0, #0\n"
-                     "beq .Lzero_result_buffer\n"
-                     "ldr r0, [sp, #0]\n"
-                     "cmp r0, #0\n"
-                     "beq .Lzero_result_buffer\n"
-                     "movs r4, #0\n"
-                     "b .Lcheck_overlap_count\n"
-                     ".Lgrow_overlap_window: cmp r4, r5\n"
-                     "bge .Lshrink_overlap_window\n"
-                     "movs r7, #0\n"
-                     "subs r1, r5, r4\n"
-                     "mov lr, r1\n"
-                     "adds r1, r4, #1\n"
-                     "mov r0, r7\n"
-                     "mov ip, r1\n"
-                     "b .Lcheck_growing_window\n"
-                     ".Laccumulate_growing_window: mov r1, lr\n"
-                     "adds r1, r1, r0\n"
-                     "lsls r2, r1, #2\n"
-                     "ldr r1, [sp, #16]\n"
-                     "lsls r3, r0, #2\n"
-                     "adds r1, r2, r1\n"
-                     "ldr r2, [sp, #12]\n"
-                     "subs r1, #128\n"
-                     "ldr r1, [r1, #124]\n"
-                     "ldr r2, [r2, r3]\n"
-                     "asrs r1, r1, #9\n"
-                     "asrs r2, r2, #9\n"
-                     "muls r1, r2\n"
-                     "asrs r1, r1, #2\n"
-                     "adds r7, r1, r7\n"
-                     "adds r0, r0, #1\n"
-                     ".Lcheck_growing_window: cmp r0, ip\n"
-                     "blt .Laccumulate_growing_window\n"
-                     "lsls r0, r7, #6\n"
-                     "ldr r1, [sp, #4]\n"
-                     "bl __aeabi_idiv\n"
-                     "muls r0, r7\n"
-                     "ldr r1, [sp, #0]\n"
-                     "bl __aeabi_idiv\n"
-                     "ldr r1, [sp, #20]\n"
-                     "strb r0, [r1, r4]\n"
-                     ".Lshrink_overlap_window: cmp r4, r5\n"
-                     "blt .Ladvance_overlap\n"
-                     "subs r0, r6, #1\n"
-                     "cmp r0, r4\n"
-                     "bne .Lprepare_shrinking_window\n"
-                     "movs r0, #0\n"
-                     "b .Lstore_correlation\n"
-                     ".Lprepare_shrinking_window: subs r1, r4, r5\n"
-                     "movs r0, #0\n"
-                     "mov ip, r1\n"
-                     "subs r1, r6, r4\n"
-                     "subs r1, r1, #1\n"
-                     "str r0, [sp, #8]\n"
-                     "b .Lcheck_shrinking_window\n"
-                     ".Laccumulate_shrinking_window: ldr r2, [sp, #16]\n"
-                     "lsls r3, r0, #2\n"
-                     "ldr r2, [r2, r3]\n"
-                     "mov r3, ip\n"
-                     "adds r3, r3, r0\n"
-                     "lsls r7, r3, #2\n"
-                     "ldr r3, [sp, #12]\n"
-                     "asrs r2, r2, #9\n"
-                     "adds r3, r7, r3\n"
-                     "ldr r3, [r3, #4]\n"
-                     "asrs r3, r3, #9\n"
-                     "muls r2, r3\n"
-                     "ldr r3, [sp, #8]\n"
-                     "asrs r2, r2, #2\n"
-                     "adds r2, r2, r3\n"
-                     "adds r0, r0, #1\n"
-                     "str r2, [sp, #8]\n"
-                     ".Lcheck_shrinking_window: cmp r1, r0\n"
-                     "bgt .Laccumulate_shrinking_window\n"
-                     "ldr r0, [sp, #8]\n"
-                     "ldr r1, [sp, #4]\n"
-                     "lsls r0, r0, #6\n"
-                     "bl __aeabi_idiv\n"
-                     "ldr r1, [sp, #8]\n"
-                     "muls r0, r1\n"
-                     "ldr r1, [sp, #0]\n"
-                     "bl __aeabi_idiv\n"
-                     ".Lstore_correlation: ldr r1, [sp, #20]\n"
-                     "strb r0, [r1, r4]\n"
-                     ".Ladvance_overlap: adds r4, r4, #1\n"
-                     ".Lcheck_overlap_count: cmp r6, r4\n"
-                     "bgt .Lgrow_overlap_window\n"
-                     "b .Lreturn\n"
-                     ".Lzero_result_buffer: movs r0, #0\n"
-                     "mov r1, r0\n"
-                     "b .Lcheck_zero_fill\n"
-                     ".Lwrite_zero_byte: ldr r2, [sp, #20]\n"
-                     "strb r1, [r2, r0]\n"
-                     "adds r0, r0, #1\n"
-                     ".Lcheck_zero_fill: cmp r6, r0\n"
-                     "bgt .Lwrite_zero_byte\n"
-                     ".Lreturn: movs r0, #0\n"
-                     "add sp, #28\n"
-                     "pop {r4, r5, r6, r7, pc}\n");
+#define WRAP_PRODUCT32(a, b) ((int32_t)((uint32_t)(a) * (uint32_t)(b)))
+#define WRAP_ADD32(a, b) ((int32_t)((uint32_t)(a) + (uint32_t)(b)))
+
+__attribute__((used,section(".text.compute_fixed_point_normalized_cross_correlation")))
+uint32_t compute_fixed_point_normalized_cross_correlation(const int32_t *left,
+    const int32_t *right, uint8_t *output, int32_t count)
+{
+    int32_t left_energy = 0, right_energy = 0;
+    int32_t i, j;
+    for (i = 0; i < count; ++i) {
+        int32_t a = left[i];
+        int32_t b = right[i];
+        a >>= 10;
+        b >>= 10;
+        left_energy = WRAP_ADD32(left_energy, WRAP_PRODUCT32(a, a));
+        right_energy = WRAP_ADD32(right_energy, WRAP_PRODUCT32(b, b));
+    }
+    int32_t length = (int32_t)((uint32_t)count * 2u);
+    if (left_energy != 0 && right_energy != 0) {
+        for (i = 0; length > i; ++i) {
+            if (i < count) {
+                int32_t sum = 0;
+                for (j = 0; j < i + 1; ++j)
+                    sum = WRAP_ADD32(sum, WRAP_PRODUCT32(right[count - i + j - 1] >> 9, left[j] >> 9) >> 2);
+                int32_t scaled = (int32_t)((uint32_t)sum << 6);
+                output[i] = (uint8_t)__aeabi_idiv(WRAP_PRODUCT32(__aeabi_idiv(scaled, left_energy), sum), right_energy);
+            }
+            if (i >= count) {
+                if (length - 1 == i) {
+                    output[i] = 0;
+                } else {
+                    int32_t sum = 0;
+                    for (j = 0; j < length - i - 1; ++j) {
+                        int32_t term = WRAP_PRODUCT32(right[j] >> 9, left[i - count + j + 1] >> 9);
+                        term >>= 2;
+                        sum = WRAP_ADD32(term, sum);
+                    }
+                    int32_t scaled = (int32_t)((uint32_t)sum << 6);
+                    output[i] = (uint8_t)__aeabi_idiv(WRAP_PRODUCT32(__aeabi_idiv(scaled, left_energy), sum), right_energy);
+                }
+            }
+        }
+    } else {
+        for (i = 0; length > i; ++i) output[i] = 0;
+    }
+    return 0;
 }

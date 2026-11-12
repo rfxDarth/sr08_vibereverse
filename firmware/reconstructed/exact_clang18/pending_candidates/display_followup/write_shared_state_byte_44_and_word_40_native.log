@@ -1,0 +1,10 @@
+group 0x07fcacd0-0x07fcace8 (24 bytes)
+MISMATCH: 1 differing bytes
+--- V204
++++ candidate
+@@ -1,4 +1,4 @@
+ 7fcacd0:	2044      	movs	r0, #68	@ 0x44
+-7fcacd2:	4928      	ldr	r1, [pc, #160]	@ (0x7fcad74)
++7fcacd2:	4903      	ldr	r1, [pc, #12]	@ (0x7fcace0)
+ 7fcacd4:	221f      	movs	r2, #31
+ 7fcacd6:	540a      	strb	r2, [r1, r0]

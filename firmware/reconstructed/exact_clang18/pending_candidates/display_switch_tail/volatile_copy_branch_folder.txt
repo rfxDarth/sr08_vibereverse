@@ -1,0 +1,881 @@
+# *** IR Dump Before Control Flow Optimizer ***:
+# Machine code for function switch_display_state_and_run_hooks: NoPHIs, TracksLiveness, NoVRegs, TiedOpsRewritten
+Frame Objects:
+  fi#0: size=4, align=4, at location [SP-24]
+  fi#1: size=4, align=4, at location [SP-28]
+  fi#2: size=4, align=4, at location [SP-32]
+  fi#3: size=4, align=4, at location [SP-36]
+  fi#4: size=4, align=4, at location [SP-4]
+  fi#5: size=4, align=4, at location [SP-8]
+  fi#6: size=4, align=4, at location [SP-12]
+  fi#7: size=4, align=4, at location [SP-16]
+  fi#8: size=4, align=4, at location [SP-20]
+Constant Pool:
+  cp#0: @merged_globals_5650, align=4
+  cp#1: @display_state_descriptors, align=4
+  cp#2: @display_low_pins, align=4
+  cp#3: @display_high_pins, align=4
+  cp#4: @merged_globals_56d0, align=4
+  cp#5: -536813312, align=4
+  cp#6: 1342190592, align=4
+  cp#7: , align=4
+  cp#8: , align=4
+Function Live Ins: $r0
+
+bb.0 (%ir-block.1):
+  successors: %bb.1(0x40000000), %bb.2(0x40000000); %bb.1(50.00%), %bb.2(50.00%)
+  liveins: $r0, $r4, $r5, $r6, $r7, $lr
+  frame-setup tPUSH 14, $noreg, killed $r4, killed $r5, killed $r6, killed $r7, killed $lr, implicit-def $sp, implicit $sp
+  frame-setup CFI_INSTRUCTION def_cfa_offset 20
+  frame-setup CFI_INSTRUCTION offset $lr, -4
+  frame-setup CFI_INSTRUCTION offset $r7, -8
+  frame-setup CFI_INSTRUCTION offset $r6, -12
+  frame-setup CFI_INSTRUCTION offset $r5, -16
+  frame-setup CFI_INSTRUCTION offset $r4, -20
+  $sp = frame-setup tSUBspi $sp(tied-def 0), 5, 14, $noreg
+  frame-setup CFI_INSTRUCTION def_cfa_offset 40
+  renamable $r5 = COPY $r0
+  tCMPi8 $r0, 36, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.2, 3, killed $cpsr
+  tB %bb.1, 14, $noreg
+
+bb.1 (%ir-block.4):
+; predecessors: %bb.0
+  successors: %bb.39(0x80000000); %bb.39(100.00%)
+  liveins: $r5
+  renamable $r0 = tLEApcrel %const.8, 14, $noreg
+  renamable $r2, dead $cpsr = tMOVi8 36, 14, $noreg
+  $r1 = COPY killed renamable $r5
+  tBL 14, $noreg, @arch_printf, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit $r1, implicit $r2, implicit-def $sp
+  tB %bb.39, 14, $noreg
+
+bb.2 (%ir-block.5):
+; predecessors: %bb.0
+  successors: %bb.39(0x40000000), %bb.3(0x40000000); %bb.39(50.00%), %bb.3(50.00%)
+  liveins: $r5
+  renamable $r7 = tLDRpci %const.0, 14, $noreg :: (load 4 from constant-pool)
+  renamable $r0 = tLDRBi renamable $r7, 12, 14, $noreg :: (dereferenceable load 1 from `i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 7, i32 0, i32 0)`, align 4, !tbaa !8)
+  tCMPi8 renamable $r0, 30, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.39, 0, killed $cpsr
+  tB %bb.3, 14, $noreg
+
+bb.3 (%ir-block.9):
+; predecessors: %bb.2
+  successors: %bb.4(0x80000000); %bb.4(100.00%)
+  liveins: $r0, $r5, $r7
+  renamable $r6, dead $cpsr = tMOVi8 0, 14, $noreg
+  renamable $r1 = tLDRpci %const.1, 14, $noreg :: (load 4 from constant-pool)
+  renamable $r2 = COPY renamable $r6
+
+bb.4 (%ir-block.10):
+; predecessors: %bb.3, %bb.5
+  successors: %bb.40(0x04000000), %bb.5(0x7c000000); %bb.40(3.12%), %bb.5(96.88%)
+  liveins: $r0, $r1, $r2, $r5, $r6, $r7
+  renamable $r3, dead $cpsr = nuw nsw tADDi3 renamable $r2, 4, 14, $noreg
+  tCMPi8 renamable $r3, 144, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.5, 1, killed $cpsr
+
+bb.40:
+; predecessors: %bb.4
+  successors: %bb.7(0x80000000); %bb.7(100.00%)
+  liveins: $r0, $r1, $r5, $r6, $r7
+  renamable $r2 = COPY renamable $r6
+  tB %bb.7, 14, $noreg
+
+bb.5 (%ir-block.14):
+; predecessors: %bb.4
+  successors: %bb.6(0x04000000), %bb.4(0x7c000000); %bb.6(3.12%), %bb.4(96.88%)
+  liveins: $r0, $r1, $r2, $r3, $r5, $r6, $r7
+  renamable $r4 = tLDRr renamable $r1, killed renamable $r2, 14, $noreg :: (load 4 from %ir.16, !tbaa !11)
+  renamable $r2 = tLDRHi renamable $r4, 0, 14, $noreg :: (load 2 from %ir.18, align 4, !tbaa !13)
+  tCMPr killed renamable $r2, renamable $r5, 14, $noreg, implicit-def $cpsr
+  renamable $r2 = COPY killed renamable $r3
+  tBcc %bb.4, 1, killed $cpsr
+  tB %bb.6, 14, $noreg
+
+bb.6 (%ir-block.22):
+; predecessors: %bb.5
+  successors: %bb.7(0x80000000); %bb.7(100.00%)
+  liveins: $r0, $r1, $r4, $r5, $r6, $r7
+  renamable $r2 = tLDRi killed renamable $r4, 1, 14, $noreg :: (load 4 from %ir.23, !tbaa !18)
+
+bb.7 (%ir-block.25):
+; predecessors: %bb.6, %bb.40
+  successors: %bb.8(0x80000000); %bb.8(100.00%)
+  liveins: $r0, $r1, $r2, $r5, $r6, $r7
+  tSTRspi killed renamable $r2, $sp, 4, 14, $noreg :: (volatile store 4 into %ir.2, !tbaa !11)
+  renamable $r2 = COPY renamable $r6
+
+bb.8 (%ir-block.29):
+; predecessors: %bb.7, %bb.9
+  successors: %bb.41(0x04000000), %bb.9(0x7c000000); %bb.41(3.12%), %bb.9(96.88%)
+  liveins: $r0, $r1, $r2, $r5, $r6, $r7
+  renamable $r3, dead $cpsr = nuw nsw tADDi3 renamable $r2, 4, 14, $noreg
+  tCMPi8 renamable $r3, 144, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.9, 1, killed $cpsr
+
+bb.41:
+; predecessors: %bb.8
+  successors: %bb.11(0x80000000); %bb.11(100.00%)
+  liveins: $r0, $r5, $r6, $r7
+  tB %bb.11, 14, $noreg
+
+bb.9 (%ir-block.33):
+; predecessors: %bb.8
+  successors: %bb.10(0x04000000), %bb.8(0x7c000000); %bb.10(3.12%), %bb.8(96.88%)
+  liveins: $r0, $r1, $r2, $r3, $r5, $r6, $r7
+  renamable $r4 = tLDRr renamable $r1, killed renamable $r2, 14, $noreg :: (load 4 from %ir.35, !tbaa !11)
+  renamable $r2 = tLDRHi renamable $r4, 0, 14, $noreg :: (load 2 from %ir.37, align 4, !tbaa !13)
+  tCMPr killed renamable $r2, renamable $r0, 14, $noreg, implicit-def $cpsr
+  renamable $r2 = COPY killed renamable $r3
+  tBcc %bb.8, 1, killed $cpsr
+  tB %bb.10, 14, $noreg
+
+bb.10 (%ir-block.40):
+; predecessors: %bb.9
+  successors: %bb.11(0x80000000); %bb.11(100.00%)
+  liveins: $r0, $r4, $r5, $r7
+  renamable $r6 = tLDRi killed renamable $r4, 2, 14, $noreg :: (load 4 from %ir.41, !tbaa !20)
+
+bb.11 (%ir-block.43):
+; predecessors: %bb.10, %bb.41
+  successors: %bb.13(0x40000000), %bb.12(0x40000000); %bb.13(50.00%), %bb.12(50.00%)
+  liveins: $r0, $r5, $r6, $r7
+  tCMPr killed renamable $r0, renamable $r5, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.13, 0, killed $cpsr
+  tB %bb.12, 14, $noreg
+
+bb.12 (%ir-block.46):
+; predecessors: %bb.11
+  successors: %bb.13(0x80000000); %bb.13(100.00%)
+  liveins: $r5, $r6, $r7
+  renamable $r0, dead $cpsr = tMOVi8 48, 14, $noreg
+  renamable $r1, dead $cpsr = tMOVi8 0, 14, $noreg
+  tSTRBr killed renamable $r1, renamable $r7, killed renamable $r0, 14, $noreg :: (store 1 into `i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 13, i32 9)`, align 4, !tbaa !8)
+
+bb.13 (%ir-block.47):
+; predecessors: %bb.11, %bb.12
+  successors: %bb.14(0x40000000), %bb.23(0x40000000); %bb.14(50.00%), %bb.23(50.00%)
+  liveins: $r5, $r6, $r7
+  tCMPi8 renamable $r5, 21, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.23, 8, killed $cpsr
+  tB %bb.14, 14, $noreg
+
+bb.14 (%ir-block.49):
+; predecessors: %bb.13
+  successors: %bb.15(0x30000000), %bb.16(0x50000000); %bb.15(37.50%), %bb.16(62.50%)
+  liveins: $r5, $r6, $r7
+  tSTRspi killed renamable $r6, $sp, 2, 14, $noreg :: (store 4 into %stack.2)
+  tSTRspi killed renamable $r5, $sp, 3, 14, $noreg :: (store 4 into %stack.1)
+  tBL 14, $noreg, @reset_transition_state_and_store_scaled_value, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit-def $sp
+  renamable $r4, dead $cpsr = tMOVi8 52, 14, $noreg
+  renamable $r0 = tLDRBr renamable $r7, renamable $r4, 14, $noreg :: (dereferenceable load 1 from `i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 13, i32 13)`, align 4, !tbaa !8)
+  renamable $r6, dead $cpsr = tMOVi8 1, 14, $noreg
+  tCMPi8 killed renamable $r0, 0, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.16, 1, killed $cpsr
+  tB %bb.15, 14, $noreg
+
+bb.15 (%ir-block.53):
+; predecessors: %bb.14
+  successors: %bb.16(0x80000000); %bb.16(100.00%)
+  liveins: $r4, $r6, $r7
+  renamable $r0, dead $cpsr = tMOVi8 0, 14, $noreg
+  renamable $r1, dead $cpsr = tMOVi8 8, 14, $noreg
+  tBL 14, $noreg, @update_state_bits_and_publish_empty_status, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit $r1, implicit-def $sp
+  tSTRBr renamable $r6, killed renamable $r7, killed renamable $r4, 14, $noreg :: (store 1 into `i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 13, i32 13)`, align 4, !tbaa !8)
+
+bb.16 (%ir-block.55):
+; predecessors: %bb.14, %bb.15
+  successors: %bb.17(0x80000000); %bb.17(100.00%)
+  liveins: $r6
+  tBL 14, $noreg, @disable_interrupt_mask_0x8000_and_publish_control_state, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit-def $sp
+  renamable $r0, dead $cpsr = tMOVi8 68, 14, $noreg
+  renamable $r1 = tLDRpci %const.4, 14, $noreg :: (load 4 from constant-pool)
+  renamable $r7, dead $cpsr = tMOVi8 0, 14, $noreg
+  tSTRHr renamable $r7, renamable $r1, killed renamable $r0, 14, $noreg :: (store 2 into `i16* bitcast (i8* getelementptr inbounds (%struct.sr08_merged_globals_56d0, %struct.sr08_merged_globals_56d0* @merged_globals_56d0, i32 0, i32 11, i32 20) to i16*)`, align 4, !tbaa !21)
+  tSTRi renamable $r7, killed renamable $r1, 16, 14, $noreg :: (store 4 into `i32* bitcast (i8* getelementptr inbounds (%struct.sr08_merged_globals_56d0, %struct.sr08_merged_globals_56d0* @merged_globals_56d0, i32 0, i32 11, i32 16) to i32*)`, !tbaa !22)
+  renamable $r0, dead $cpsr = tMOVi8 3, 14, $noreg
+  renamable $r5, dead $cpsr = tLSLri killed renamable $r0, 8, 14, $noreg
+  renamable $r4 = tLDRpci %const.2, 14, $noreg :: (load 4 from constant-pool)
+
+bb.17 (%ir-block.57):
+; predecessors: %bb.16, %bb.19
+  successors: %bb.18(0x04000000), %bb.19(0x7c000000); %bb.18(3.12%), %bb.19(96.88%)
+  liveins: $r4, $r5, $r6, $r7
+  tCMPi8 renamable $r7, 14, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.19, 1, killed $cpsr
+  tB %bb.18, 14, $noreg
+
+bb.18 (%ir-block.60):
+; predecessors: %bb.17
+  successors: %bb.20(0x80000000); %bb.20(100.00%)
+  liveins: $r5, $r6
+  renamable $r7, dead $cpsr = tMOVi8 0, 14, $noreg
+  renamable $r4 = tLDRpci %const.3, 14, $noreg :: (load 4 from constant-pool)
+  tB %bb.20, 14, $noreg
+
+bb.19 (%ir-block.61):
+; predecessors: %bb.17
+  successors: %bb.17(0x80000000); %bb.17(100.00%)
+  liveins: $r4, $r5, $r6, $r7
+  renamable $r3, dead $cpsr = tMOVi8 0, 14, $noreg
+  tSTRspi renamable $r3, $sp, 0, 14, $noreg :: (store 4 into stack)
+  renamable $r0 = tLDRBr renamable $r4, renamable $r7, 14, $noreg :: (load 1 from %ir.62, !tbaa !24)
+  renamable $r1, dead $cpsr = tADDrr renamable $r4, renamable $r7, 14, $noreg
+  renamable $r1 = tLDRBi killed renamable $r1, 1, 14, $noreg :: (load 1 from %ir.65, !tbaa !26)
+  $r2 = COPY renamable $r5
+  tBL 14, $noreg, @GPIO_ConfigurePin, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit $r1, implicit $r2, implicit $r3, implicit-def $sp
+  renamable $r7, dead $cpsr = nuw nsw tADDi3 killed renamable $r7, 2, 14, $noreg
+  tB %bb.17, 14, $noreg
+
+bb.20 (%ir-block.69):
+; predecessors: %bb.18, %bb.22
+  successors: %bb.21(0x04000000), %bb.22(0x7c000000); %bb.21(3.12%), %bb.22(96.88%)
+  liveins: $r4, $r5, $r6, $r7
+  tCMPi8 renamable $r7, 12, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.22, 1, killed $cpsr
+  tB %bb.21, 14, $noreg
+
+bb.21 (%ir-block.72):
+; predecessors: %bb.20
+  successors: %bb.34(0x80000000); %bb.34(100.00%)
+  liveins: $r6
+  tBL 14, $noreg, @reset_transition_state_and_store_scaled_value, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit-def $sp
+  renamable $r0, dead $cpsr = tMOVi8 44, 14, $noreg
+  renamable $r1, dead $cpsr = tMOVi8 255, 14, $noreg
+  renamable $r7 = tLDRpci %const.0, 14, $noreg :: (load 4 from constant-pool)
+  tSTRBr killed renamable $r1, renamable $r7, killed renamable $r0, 14, $noreg :: (store 1 into `i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 13, i32 5)`, align 4, !tbaa !8)
+  renamable $r0, dead $cpsr = tLSLri renamable $r6, 15, 14, $noreg
+  renamable $r1 = tLDRpci %const.5, 14, $noreg :: (load 4 from constant-pool)
+  tSTRi killed renamable $r0, killed renamable $r1, 0, 14, $noreg :: (volatile store 4 into `i32* inttoptr (i32 -536813312 to i32*)`, align 256, !tbaa !22)
+  renamable $r0 = tLDRpci %const.6, 14, $noreg :: (load 4 from constant-pool)
+  renamable $r1 = tLDRHi renamable $r0, 0, 14, $noreg :: (volatile load 2 from %ir.75, align 1024, !tbaa !21)
+  renamable $r1, dead $cpsr = tORR killed renamable $r1(tied-def 0), killed renamable $r6, 14, $noreg
+  tSTRHi killed renamable $r1, killed renamable $r0, 0, 14, $noreg :: (volatile store 2 into %ir.79, align 1024, !tbaa !21)
+  renamable $r0, dead $cpsr = tMOVi8 0, 14, $noreg
+  renamable $r1, dead $cpsr = tMOVi8 2, 14, $noreg
+  tBL 14, $noreg, @update_state_bits_and_publish_empty_status, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit $r1, implicit-def $sp
+  renamable $r5 = tLDRspi $sp, 3, 14, $noreg :: (load 4 from %stack.1)
+  renamable $r6 = tLDRspi $sp, 2, 14, $noreg :: (load 4 from %stack.2)
+  tB %bb.34, 14, $noreg
+
+bb.22 (%ir-block.80):
+; predecessors: %bb.20
+  successors: %bb.20(0x80000000); %bb.20(100.00%)
+  liveins: $r4, $r5, $r6, $r7
+  tSTRspi renamable $r6, $sp, 0, 14, $noreg :: (store 4 into stack)
+  renamable $r0 = tLDRBr renamable $r4, renamable $r7, 14, $noreg :: (load 1 from %ir.82, !tbaa !24)
+  renamable $r1, dead $cpsr = tADDrr renamable $r4, renamable $r7, 14, $noreg
+  renamable $r1 = tLDRBi killed renamable $r1, 1, 14, $noreg :: (load 1 from %ir.85, !tbaa !26)
+  renamable $r3, dead $cpsr = tMOVi8 0, 14, $noreg
+  $r2 = COPY renamable $r5
+  tBL 14, $noreg, @GPIO_ConfigurePin, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit $r1, implicit $r2, implicit $r3, implicit-def $sp
+  renamable $r7, dead $cpsr = nuw nsw tADDi3 killed renamable $r7, 2, 14, $noreg
+  tB %bb.20, 14, $noreg
+
+bb.23 (%ir-block.89):
+; predecessors: %bb.13
+  successors: %bb.24(0x40000000), %bb.31(0x40000000); %bb.24(50.00%), %bb.31(50.00%)
+  liveins: $r5, $r6, $r7
+  renamable $r1, dead $cpsr = tMOVi8 52, 14, $noreg
+  renamable $r0 = tLDRBr renamable $r7, renamable $r1, 14, $noreg :: (dereferenceable load 1 from `i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 13, i32 13)`, align 4, !tbaa !8)
+  tCMPi8 killed renamable $r0, 1, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.31, 1, killed $cpsr
+  tB %bb.24, 14, $noreg
+
+bb.24 (%ir-block.92):
+; predecessors: %bb.23
+  successors: %bb.25(0x80000000); %bb.25(100.00%)
+  liveins: $r1, $r5, $r6
+  tSTRspi killed renamable $r1, $sp, 1, 14, $noreg :: (store 4 into %stack.3)
+  tSTRspi killed renamable $r6, $sp, 2, 14, $noreg :: (store 4 into %stack.2)
+  tSTRspi killed renamable $r5, $sp, 3, 14, $noreg :: (store 4 into %stack.1)
+  tBL 14, $noreg, @disable_interrupt_mask_0x8000_and_publish_control_state, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit-def $sp
+  renamable $r6, dead $cpsr = tMOVi8 1, 14, $noreg
+  renamable $r5, dead $cpsr = tLSLri renamable $r6, 9, 14, $noreg
+  renamable $r4, dead $cpsr = tMOVi8 0, 14, $noreg
+  renamable $r7 = tLDRpci %const.2, 14, $noreg :: (load 4 from constant-pool)
+
+bb.25 (%ir-block.94):
+; predecessors: %bb.24, %bb.27
+  successors: %bb.26(0x04000000), %bb.27(0x7c000000); %bb.26(3.12%), %bb.27(96.88%)
+  liveins: $r4, $r5, $r6, $r7
+  tCMPi8 renamable $r4, 14, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.27, 1, killed $cpsr
+  tB %bb.26, 14, $noreg
+
+bb.26 (%ir-block.97):
+; predecessors: %bb.25
+  successors: %bb.28(0x80000000); %bb.28(100.00%)
+  liveins: $r5, $r6
+  renamable $r7, dead $cpsr = tMOVi8 0, 14, $noreg
+  renamable $r4 = tLDRpci %const.3, 14, $noreg :: (load 4 from constant-pool)
+  tB %bb.28, 14, $noreg
+
+bb.27 (%ir-block.98):
+; predecessors: %bb.25
+  successors: %bb.25(0x80000000); %bb.25(100.00%)
+  liveins: $r4, $r5, $r6, $r7
+  renamable $r3, dead $cpsr = tMOVi8 0, 14, $noreg
+  tSTRspi renamable $r3, $sp, 0, 14, $noreg :: (store 4 into stack)
+  renamable $r0 = tLDRBr renamable $r7, renamable $r4, 14, $noreg :: (load 1 from %ir.99, !tbaa !24)
+  renamable $r1, dead $cpsr = tADDrr renamable $r7, renamable $r4, 14, $noreg
+  renamable $r1 = tLDRBi killed renamable $r1, 1, 14, $noreg :: (load 1 from %ir.102, !tbaa !26)
+  $r2 = COPY renamable $r5
+  tBL 14, $noreg, @GPIO_ConfigurePin, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit $r1, implicit $r2, implicit $r3, implicit-def $sp
+  renamable $r4, dead $cpsr = nuw nsw tADDi3 killed renamable $r4, 2, 14, $noreg
+  tB %bb.25, 14, $noreg
+
+bb.28 (%ir-block.106):
+; predecessors: %bb.26, %bb.30
+  successors: %bb.29(0x04000000), %bb.30(0x7c000000); %bb.29(3.12%), %bb.30(96.88%)
+  liveins: $r4, $r5, $r6, $r7
+  tCMPi8 renamable $r7, 12, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.30, 1, killed $cpsr
+  tB %bb.29, 14, $noreg
+
+bb.29 (%ir-block.109):
+; predecessors: %bb.28
+  successors: %bb.31(0x80000000); %bb.31(100.00%)
+
+  renamable $r0, dead $cpsr = tMOVi8 1, 14, $noreg
+  renamable $r1, dead $cpsr = tMOVi8 8, 14, $noreg
+  tBL 14, $noreg, @update_state_bits_and_publish_empty_status, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit $r1, implicit-def $sp
+  renamable $r0, dead $cpsr = tMOVi8 44, 14, $noreg
+  renamable $r1, dead $cpsr = tMOVi8 255, 14, $noreg
+  renamable $r7 = tLDRpci %const.0, 14, $noreg :: (load 4 from constant-pool)
+  tSTRBr killed renamable $r1, renamable $r7, killed renamable $r0, 14, $noreg :: (store 1 into `i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 13, i32 5)`, align 4, !tbaa !8)
+  CompilerBarrier 7
+  renamable $r0, dead $cpsr = tMOVi8 0, 14, $noreg
+  renamable $r1 = tLDRspi $sp, 1, 14, $noreg :: (load 4 from %stack.3)
+  tSTRBr killed renamable $r0, renamable $r7, killed renamable $r1, 14, $noreg :: (store 1 into `i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 13, i32 13)`, align 4, !tbaa !8)
+  renamable $r5 = tLDRspi $sp, 3, 14, $noreg :: (load 4 from %stack.1)
+  renamable $r6 = tLDRspi $sp, 2, 14, $noreg :: (load 4 from %stack.2)
+  tB %bb.31, 14, $noreg
+
+bb.30 (%ir-block.110):
+; predecessors: %bb.28
+  successors: %bb.28(0x80000000); %bb.28(100.00%)
+  liveins: $r4, $r5, $r6, $r7
+  tSTRspi renamable $r6, $sp, 0, 14, $noreg :: (store 4 into stack)
+  renamable $r0 = tLDRBr renamable $r4, renamable $r7, 14, $noreg :: (load 1 from %ir.111, !tbaa !24)
+  renamable $r1, dead $cpsr = tADDrr renamable $r4, renamable $r7, 14, $noreg
+  renamable $r1 = tLDRBi killed renamable $r1, 1, 14, $noreg :: (load 1 from %ir.114, !tbaa !26)
+  renamable $r3, dead $cpsr = tMOVi8 0, 14, $noreg
+  $r2 = COPY renamable $r5
+  tBL 14, $noreg, @GPIO_ConfigurePin, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit $r1, implicit $r2, implicit $r3, implicit-def $sp
+  renamable $r7, dead $cpsr = nuw nsw tADDi3 killed renamable $r7, 2, 14, $noreg
+  tB %bb.28, 14, $noreg
+
+bb.31 (%ir-block.118):
+; predecessors: %bb.23, %bb.29
+  successors: %bb.32(0x40000000), %bb.33(0x40000000); %bb.32(50.00%), %bb.33(50.00%)
+  liveins: $r5, $r6, $r7
+  renamable $r1, dead $cpsr = tMOVi8 64, 14, $noreg
+  renamable $r0, dead $cpsr = tMOVi8 15, 14, $noreg
+  tSTRHr killed renamable $r0, renamable $r7, renamable $r1, 14, $noreg :: (volatile store 2 into `i16* bitcast (i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 15, i32 6) to i16*)`, align 4, !tbaa !21)
+  renamable $r4, dead $cpsr = tMOVi8 1, 14, $noreg
+  renamable $r0, dead $cpsr = tLSLri renamable $r4, 26, 14, $noreg
+  tCMPi8 renamable $r5, 32, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.33, 1, killed $cpsr
+  tB %bb.32, 14, $noreg
+
+bb.32 (%ir-block.122):
+; predecessors: %bb.31
+  successors: %bb.34(0x80000000); %bb.34(100.00%)
+  liveins: $r0, $r1, $r4, $r5, $r6, $r7
+  renamable $r2, dead $cpsr = tMOVi8 180, 14, $noreg
+  tSTRHr killed renamable $r2, renamable $r7, killed renamable $r1, 14, $noreg :: (volatile store 2 into `i16* bitcast (i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 15, i32 6) to i16*)`, align 4, !tbaa !21)
+  tBL 14, $noreg, @update_mode_flags_and_transitions, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit-def $sp
+  renamable $r0, dead $cpsr = tLSLri killed renamable $r4, 11, 14, $noreg
+  tBL 14, $noreg, @update_mode_flags_and_transitions, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit-def $sp
+  tB %bb.34, 14, $noreg
+
+bb.33 (%ir-block.124):
+; predecessors: %bb.31
+  successors: %bb.34(0x80000000); %bb.34(100.00%)
+  liveins: $r0, $r4, $r5, $r6, $r7
+  tBL 14, $noreg, @update_mode_flags_and_transitions, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit-def $sp
+  renamable $r0, dead $cpsr = tLSLri killed renamable $r4, 27, 14, $noreg
+  tBL 14, $noreg, @update_mode_flags_and_transitions, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit-def $sp
+
+bb.34 (%ir-block.126):
+; predecessors: %bb.33, %bb.32, %bb.21
+  successors: %bb.36(0x30000000), %bb.35(0x50000000); %bb.36(37.50%), %bb.35(62.50%)
+  liveins: $r5, $r6, $r7
+  renamable $r1 = tLDRBi renamable $r7, 12, 14, $noreg :: (dereferenceable load 1 from `i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 7, i32 0, i32 0)`, align 4, !tbaa !8)
+  renamable $r0 = tLEApcrel %const.7, 14, $noreg
+  $r2 = COPY renamable $r5
+  tBL 14, $noreg, @arch_printf, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit $r1, implicit $r2, implicit-def $sp
+  renamable $r0, dead $cpsr = tMOVi8 1, 14, $noreg
+  renamable $r1, dead $cpsr = tMOVi8 0, 14, $noreg
+  tBL 14, $noreg, @update_indexed_delay_entry_if_changed, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit $r1, implicit-def $sp, implicit-def dead $r0
+  tCMPi8 renamable $r6, 0, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.36, 0, killed $cpsr
+  tB %bb.35, 14, $noreg
+
+bb.35 (%ir-block.131):
+; predecessors: %bb.34
+  successors: %bb.36(0x80000000); %bb.36(100.00%)
+  liveins: $r5, $r6, $r7
+  $r0 = COPY renamable $r5
+  tBLXr 14, $noreg, killed renamable $r6, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit-def $sp
+
+bb.36 (%ir-block.132):
+; predecessors: %bb.34, %bb.35
+  successors: %bb.38(0x30000000), %bb.37(0x50000000); %bb.38(37.50%), %bb.37(62.50%)
+  liveins: $r5, $r7
+  renamable $r0 = tLDRBi renamable $r7, 12, 14, $noreg :: (dereferenceable load 1 from `i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 7, i32 0, i32 0)`, align 4, !tbaa !8)
+  tSTRBi killed renamable $r5, killed renamable $r7, 12, 14, $noreg :: (store 1 into `i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 7, i32 0, i32 0)`, align 4, !tbaa !8)
+  renamable $r1 = tLDRspi $sp, 4, 14, $noreg :: (volatile dereferenceable load 4 from %ir.2, !tbaa !11)
+  tCMPi8 renamable $r1, 0, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.38, 0, killed $cpsr
+  tB %bb.37, 14, $noreg
+
+bb.37 (%ir-block.138):
+; predecessors: %bb.36
+  successors: %bb.38(0x80000000); %bb.38(100.00%)
+  liveins: $r0, $r1
+  tBLXr 14, $noreg, killed renamable $r1, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit-def $sp
+
+bb.38 (%ir-block.139):
+; predecessors: %bb.36, %bb.37
+  successors: %bb.39(0x80000000); %bb.39(100.00%)
+
+
+bb.39 (%ir-block.141):
+; predecessors: %bb.2, %bb.38, %bb.1
+
+  $sp = tADDspi $sp(tied-def 0), 5, 14, $noreg
+  tPOP_RET 14, $noreg, def $r4, def $r5, def $r6, def $r7, def $pc, implicit-def $sp, implicit $sp
+
+# End machine code for function switch_display_state_and_run_hooks.
+
+# *** IR Dump After Control Flow Optimizer ***:
+# Machine code for function switch_display_state_and_run_hooks: NoPHIs, TracksLiveness, NoVRegs, TiedOpsRewritten
+Frame Objects:
+  fi#0: size=4, align=4, at location [SP-24]
+  fi#1: size=4, align=4, at location [SP-28]
+  fi#2: size=4, align=4, at location [SP-32]
+  fi#3: size=4, align=4, at location [SP-36]
+  fi#4: size=4, align=4, at location [SP-4]
+  fi#5: size=4, align=4, at location [SP-8]
+  fi#6: size=4, align=4, at location [SP-12]
+  fi#7: size=4, align=4, at location [SP-16]
+  fi#8: size=4, align=4, at location [SP-20]
+Constant Pool:
+  cp#0: @merged_globals_5650, align=4
+  cp#1: @display_state_descriptors, align=4
+  cp#2: @display_low_pins, align=4
+  cp#3: @display_high_pins, align=4
+  cp#4: @merged_globals_56d0, align=4
+  cp#5: -536813312, align=4
+  cp#6: 1342190592, align=4
+  cp#7: , align=4
+  cp#8: , align=4
+Function Live Ins: $r0
+
+bb.0 (%ir-block.1):
+  successors: %bb.1(0x40000000), %bb.2(0x40000000); %bb.1(50.00%), %bb.2(50.00%)
+  liveins: $r0, $r4, $r5, $r6, $r7, $lr
+  frame-setup tPUSH 14, $noreg, killed $r4, killed $r5, killed $r6, killed $r7, killed $lr, implicit-def $sp, implicit $sp
+  frame-setup CFI_INSTRUCTION def_cfa_offset 20
+  frame-setup CFI_INSTRUCTION offset $lr, -4
+  frame-setup CFI_INSTRUCTION offset $r7, -8
+  frame-setup CFI_INSTRUCTION offset $r6, -12
+  frame-setup CFI_INSTRUCTION offset $r5, -16
+  frame-setup CFI_INSTRUCTION offset $r4, -20
+  $sp = frame-setup tSUBspi $sp(tied-def 0), 5, 14, $noreg
+  frame-setup CFI_INSTRUCTION def_cfa_offset 40
+  renamable $r5 = COPY $r0
+  tCMPi8 $r0, 36, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.2, 3, killed $cpsr
+
+bb.1 (%ir-block.4):
+; predecessors: %bb.0
+  successors: %bb.37(0x80000000); %bb.37(100.00%)
+  liveins: $r5
+  renamable $r0 = tLEApcrel %const.8, 14, $noreg
+  renamable $r2, dead $cpsr = tMOVi8 36, 14, $noreg
+  $r1 = COPY killed renamable $r5
+  tBL 14, $noreg, @arch_printf, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit $r1, implicit $r2, implicit-def $sp
+  tB %bb.37, 14, $noreg
+
+bb.2 (%ir-block.5):
+; predecessors: %bb.0
+  successors: %bb.37(0x40000000), %bb.3(0x40000000); %bb.37(50.00%), %bb.3(50.00%)
+  liveins: $r5
+  renamable $r7 = tLDRpci %const.0, 14, $noreg :: (load 4 from constant-pool)
+  renamable $r0 = tLDRBi renamable $r7, 12, 14, $noreg :: (dereferenceable load 1 from `i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 7, i32 0, i32 0)`, align 4, !tbaa !8)
+  tCMPi8 renamable $r0, 30, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.37, 0, killed $cpsr
+
+bb.3 (%ir-block.9):
+; predecessors: %bb.2
+  successors: %bb.4(0x80000000); %bb.4(100.00%)
+  liveins: $r0, $r5, $r7
+  renamable $r6, dead $cpsr = tMOVi8 0, 14, $noreg
+  renamable $r1 = tLDRpci %const.1, 14, $noreg :: (load 4 from constant-pool)
+  renamable $r2 = COPY renamable $r6
+
+bb.4 (%ir-block.10):
+; predecessors: %bb.3, %bb.6
+  successors: %bb.5(0x04000000), %bb.6(0x7c000000); %bb.5(3.12%), %bb.6(96.88%)
+  liveins: $r0, $r1, $r2, $r5, $r6, $r7
+  renamable $r3, dead $cpsr = nuw nsw tADDi3 renamable $r2, 4, 14, $noreg
+  tCMPi8 renamable $r3, 144, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.6, 1, killed $cpsr
+
+bb.5:
+; predecessors: %bb.4
+  successors: %bb.8(0x80000000); %bb.8(100.00%)
+  liveins: $r0, $r1, $r5, $r6, $r7
+  renamable $r2 = COPY renamable $r6
+  tB %bb.8, 14, $noreg
+
+bb.6 (%ir-block.14):
+; predecessors: %bb.4
+  successors: %bb.7(0x04000000), %bb.4(0x7c000000); %bb.7(3.12%), %bb.4(96.88%)
+  liveins: $r0, $r1, $r2, $r3, $r5, $r6, $r7
+  renamable $r4 = tLDRr renamable $r1, killed renamable $r2, 14, $noreg :: (load 4 from %ir.16, !tbaa !11)
+  renamable $r2 = tLDRHi renamable $r4, 0, 14, $noreg :: (load 2 from %ir.18, align 4, !tbaa !13)
+  tCMPr killed renamable $r2, renamable $r5, 14, $noreg, implicit-def $cpsr
+  renamable $r2 = COPY killed renamable $r3
+  tBcc %bb.4, 1, killed $cpsr
+
+bb.7 (%ir-block.22):
+; predecessors: %bb.6
+  successors: %bb.8(0x80000000); %bb.8(100.00%)
+  liveins: $r0, $r1, $r4, $r5, $r6, $r7
+  renamable $r2 = tLDRi killed renamable $r4, 1, 14, $noreg :: (load 4 from %ir.23, !tbaa !18)
+
+bb.8 (%ir-block.25):
+; predecessors: %bb.7, %bb.5
+  successors: %bb.9(0x80000000); %bb.9(100.00%)
+  liveins: $r0, $r1, $r2, $r5, $r6, $r7
+  tSTRspi killed renamable $r2, $sp, 4, 14, $noreg :: (volatile store 4 into %ir.2, !tbaa !11)
+  renamable $r2 = COPY renamable $r6
+
+bb.9 (%ir-block.29):
+; predecessors: %bb.8, %bb.10
+  successors: %bb.12(0x04000000), %bb.10(0x7c000000); %bb.12(3.12%), %bb.10(96.88%)
+  liveins: $r0, $r1, $r2, $r5, $r6, $r7
+  renamable $r3, dead $cpsr = nuw nsw tADDi3 renamable $r2, 4, 14, $noreg
+  tCMPi8 renamable $r3, 144, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.12, 0, killed $cpsr
+
+bb.10 (%ir-block.33):
+; predecessors: %bb.9
+  successors: %bb.11(0x04000000), %bb.9(0x7c000000); %bb.11(3.12%), %bb.9(96.88%)
+  liveins: $r0, $r1, $r2, $r3, $r5, $r6, $r7
+  renamable $r4 = tLDRr renamable $r1, killed renamable $r2, 14, $noreg :: (load 4 from %ir.35, !tbaa !11)
+  renamable $r2 = tLDRHi renamable $r4, 0, 14, $noreg :: (load 2 from %ir.37, align 4, !tbaa !13)
+  tCMPr killed renamable $r2, renamable $r0, 14, $noreg, implicit-def $cpsr
+  renamable $r2 = COPY killed renamable $r3
+  tBcc %bb.9, 1, killed $cpsr
+
+bb.11 (%ir-block.40):
+; predecessors: %bb.10
+  successors: %bb.12(0x80000000); %bb.12(100.00%)
+  liveins: $r0, $r4, $r5, $r7
+  renamable $r6 = tLDRi killed renamable $r4, 2, 14, $noreg :: (load 4 from %ir.41, !tbaa !20)
+
+bb.12 (%ir-block.43):
+; predecessors: %bb.11, %bb.9
+  successors: %bb.14(0x40000000), %bb.13(0x40000000); %bb.14(50.00%), %bb.13(50.00%)
+  liveins: $r0, $r5, $r6, $r7
+  tCMPr killed renamable $r0, renamable $r5, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.14, 0, killed $cpsr
+
+bb.13 (%ir-block.46):
+; predecessors: %bb.12
+  successors: %bb.14(0x80000000); %bb.14(100.00%)
+  liveins: $r5, $r6, $r7
+  renamable $r0, dead $cpsr = tMOVi8 48, 14, $noreg
+  renamable $r1, dead $cpsr = tMOVi8 0, 14, $noreg
+  tSTRBr killed renamable $r1, renamable $r7, killed renamable $r0, 14, $noreg :: (store 1 into `i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 13, i32 9)`, align 4, !tbaa !8)
+
+bb.14 (%ir-block.47):
+; predecessors: %bb.12, %bb.13
+  successors: %bb.15(0x40000000), %bb.23(0x40000000); %bb.15(50.00%), %bb.23(50.00%)
+  liveins: $r5, $r6, $r7
+  tCMPi8 renamable $r5, 21, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.23, 8, killed $cpsr
+
+bb.15 (%ir-block.49):
+; predecessors: %bb.14
+  successors: %bb.16(0x30000000), %bb.17(0x50000000); %bb.16(37.50%), %bb.17(62.50%)
+  liveins: $r5, $r6, $r7
+  tSTRspi killed renamable $r6, $sp, 2, 14, $noreg :: (store 4 into %stack.2)
+  tSTRspi killed renamable $r5, $sp, 3, 14, $noreg :: (store 4 into %stack.1)
+  tBL 14, $noreg, @reset_transition_state_and_store_scaled_value, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit-def $sp
+  renamable $r4, dead $cpsr = tMOVi8 52, 14, $noreg
+  renamable $r0 = tLDRBr renamable $r7, renamable $r4, 14, $noreg :: (dereferenceable load 1 from `i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 13, i32 13)`, align 4, !tbaa !8)
+  renamable $r6, dead $cpsr = tMOVi8 1, 14, $noreg
+  tCMPi8 killed renamable $r0, 0, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.17, 1, killed $cpsr
+
+bb.16 (%ir-block.53):
+; predecessors: %bb.15
+  successors: %bb.17(0x80000000); %bb.17(100.00%)
+  liveins: $r4, $r6, $r7
+  renamable $r0, dead $cpsr = tMOVi8 0, 14, $noreg
+  renamable $r1, dead $cpsr = tMOVi8 8, 14, $noreg
+  tBL 14, $noreg, @update_state_bits_and_publish_empty_status, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit $r1, implicit-def $sp
+  tSTRBr renamable $r6, killed renamable $r7, killed renamable $r4, 14, $noreg :: (store 1 into `i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 13, i32 13)`, align 4, !tbaa !8)
+
+bb.17 (%ir-block.55):
+; predecessors: %bb.15, %bb.16
+  successors: %bb.18(0x80000000); %bb.18(100.00%)
+  liveins: $r6
+  tBL 14, $noreg, @disable_interrupt_mask_0x8000_and_publish_control_state, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit-def $sp
+  renamable $r0, dead $cpsr = tMOVi8 68, 14, $noreg
+  renamable $r1 = tLDRpci %const.4, 14, $noreg :: (load 4 from constant-pool)
+  renamable $r7, dead $cpsr = tMOVi8 0, 14, $noreg
+  tSTRHr renamable $r7, renamable $r1, killed renamable $r0, 14, $noreg :: (store 2 into `i16* bitcast (i8* getelementptr inbounds (%struct.sr08_merged_globals_56d0, %struct.sr08_merged_globals_56d0* @merged_globals_56d0, i32 0, i32 11, i32 20) to i16*)`, align 4, !tbaa !21)
+  tSTRi renamable $r7, killed renamable $r1, 16, 14, $noreg :: (store 4 into `i32* bitcast (i8* getelementptr inbounds (%struct.sr08_merged_globals_56d0, %struct.sr08_merged_globals_56d0* @merged_globals_56d0, i32 0, i32 11, i32 16) to i32*)`, !tbaa !22)
+  renamable $r0, dead $cpsr = tMOVi8 3, 14, $noreg
+  renamable $r5, dead $cpsr = tLSLri killed renamable $r0, 8, 14, $noreg
+  renamable $r4 = tLDRpci %const.2, 14, $noreg :: (load 4 from constant-pool)
+
+bb.18 (%ir-block.57):
+; predecessors: %bb.17, %bb.38
+  successors: %bb.19(0x04000000), %bb.38(0x7c000000); %bb.19(3.12%), %bb.38(96.88%)
+  liveins: $r4, $r5, $r6, $r7
+  tCMPi8 renamable $r7, 14, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.38, 1, killed $cpsr
+
+bb.19 (%ir-block.60):
+; predecessors: %bb.18
+  successors: %bb.20(0x80000000); %bb.20(100.00%)
+  liveins: $r5, $r6
+  renamable $r7, dead $cpsr = tMOVi8 0, 14, $noreg
+  renamable $r4 = tLDRpci %const.3, 14, $noreg :: (load 4 from constant-pool)
+
+bb.20 (%ir-block.69):
+; predecessors: %bb.19, %bb.22
+  successors: %bb.21(0x04000000), %bb.22(0x7c000000); %bb.21(3.12%), %bb.22(96.88%)
+  liveins: $r4, $r5, $r6, $r7
+  tCMPi8 renamable $r7, 12, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.22, 1, killed $cpsr
+
+bb.21 (%ir-block.72):
+; predecessors: %bb.20
+  successors: %bb.33(0x80000000); %bb.33(100.00%)
+  liveins: $r6
+  tBL 14, $noreg, @reset_transition_state_and_store_scaled_value, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit-def $sp
+  renamable $r0, dead $cpsr = tMOVi8 44, 14, $noreg
+  renamable $r1, dead $cpsr = tMOVi8 255, 14, $noreg
+  renamable $r7 = tLDRpci %const.0, 14, $noreg :: (load 4 from constant-pool)
+  tSTRBr killed renamable $r1, renamable $r7, killed renamable $r0, 14, $noreg :: (store 1 into `i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 13, i32 5)`, align 4, !tbaa !8)
+  renamable $r0, dead $cpsr = tLSLri renamable $r6, 15, 14, $noreg
+  renamable $r1 = tLDRpci %const.5, 14, $noreg :: (load 4 from constant-pool)
+  tSTRi killed renamable $r0, killed renamable $r1, 0, 14, $noreg :: (volatile store 4 into `i32* inttoptr (i32 -536813312 to i32*)`, align 256, !tbaa !22)
+  renamable $r0 = tLDRpci %const.6, 14, $noreg :: (load 4 from constant-pool)
+  renamable $r1 = tLDRHi renamable $r0, 0, 14, $noreg :: (volatile load 2 from %ir.75, align 1024, !tbaa !21)
+  renamable $r1, dead $cpsr = tORR killed renamable $r1(tied-def 0), killed renamable $r6, 14, $noreg
+  tSTRHi killed renamable $r1, killed renamable $r0, 0, 14, $noreg :: (volatile store 2 into %ir.79, align 1024, !tbaa !21)
+  renamable $r0, dead $cpsr = tMOVi8 0, 14, $noreg
+  renamable $r1, dead $cpsr = tMOVi8 2, 14, $noreg
+  tBL 14, $noreg, @update_state_bits_and_publish_empty_status, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit $r1, implicit-def $sp
+  renamable $r5 = tLDRspi $sp, 3, 14, $noreg :: (load 4 from %stack.1)
+  renamable $r6 = tLDRspi $sp, 2, 14, $noreg :: (load 4 from %stack.2)
+  tB %bb.33, 14, $noreg
+
+bb.22 (%ir-block.80):
+; predecessors: %bb.20
+  successors: %bb.20(0x80000000); %bb.20(100.00%)
+  liveins: $r4, $r5, $r6, $r7
+  tSTRspi renamable $r6, $sp, 0, 14, $noreg :: (store 4 into stack)
+  renamable $r0 = tLDRBr renamable $r4, renamable $r7, 14, $noreg :: (load 1 from %ir.82, !tbaa !24)
+  renamable $r1, dead $cpsr = tADDrr renamable $r4, renamable $r7, 14, $noreg
+  renamable $r1 = tLDRBi killed renamable $r1, 1, 14, $noreg :: (load 1 from %ir.85, !tbaa !26)
+  renamable $r3, dead $cpsr = tMOVi8 0, 14, $noreg
+  $r2 = COPY renamable $r5
+  tBL 14, $noreg, @GPIO_ConfigurePin, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit $r1, implicit $r2, implicit $r3, implicit-def $sp
+  renamable $r7, dead $cpsr = nuw nsw tADDi3 killed renamable $r7, 2, 14, $noreg
+  tB %bb.20, 14, $noreg
+
+bb.23 (%ir-block.89):
+; predecessors: %bb.14
+  successors: %bb.24(0x40000000), %bb.29(0x40000000); %bb.24(50.00%), %bb.29(50.00%)
+  liveins: $r5, $r6, $r7
+  renamable $r1, dead $cpsr = tMOVi8 52, 14, $noreg
+  renamable $r0 = tLDRBr renamable $r7, renamable $r1, 14, $noreg :: (dereferenceable load 1 from `i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 13, i32 13)`, align 4, !tbaa !8)
+  tCMPi8 killed renamable $r0, 1, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.29, 1, killed $cpsr
+
+bb.24 (%ir-block.92):
+; predecessors: %bb.23
+  successors: %bb.25(0x80000000); %bb.25(100.00%)
+  liveins: $r1, $r5, $r6
+  tSTRspi killed renamable $r1, $sp, 1, 14, $noreg :: (store 4 into %stack.3)
+  tSTRspi killed renamable $r6, $sp, 2, 14, $noreg :: (store 4 into %stack.2)
+  tSTRspi killed renamable $r5, $sp, 3, 14, $noreg :: (store 4 into %stack.1)
+  tBL 14, $noreg, @disable_interrupt_mask_0x8000_and_publish_control_state, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit-def $sp
+  renamable $r6, dead $cpsr = tMOVi8 1, 14, $noreg
+  renamable $r5, dead $cpsr = tLSLri renamable $r6, 9, 14, $noreg
+  renamable $r4, dead $cpsr = tMOVi8 0, 14, $noreg
+  renamable $r7 = tLDRpci %const.2, 14, $noreg :: (load 4 from constant-pool)
+
+bb.25 (%ir-block.94):
+; predecessors: %bb.24, %bb.39
+  successors: %bb.26(0x04000000), %bb.39(0x7c000000); %bb.26(3.12%), %bb.39(96.88%)
+  liveins: $r4, $r5, $r6, $r7
+  tCMPi8 renamable $r4, 14, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.39, 1, killed $cpsr
+
+bb.26 (%ir-block.97):
+; predecessors: %bb.25
+  successors: %bb.27(0x80000000); %bb.27(100.00%)
+  liveins: $r5, $r6
+  renamable $r7, dead $cpsr = tMOVi8 0, 14, $noreg
+  renamable $r4 = tLDRpci %const.3, 14, $noreg :: (load 4 from constant-pool)
+
+bb.27 (%ir-block.106):
+; predecessors: %bb.26, %bb.40
+  successors: %bb.28(0x04000000), %bb.40(0x7c000000); %bb.28(3.12%), %bb.40(96.88%)
+  liveins: $r4, $r5, $r6, $r7
+  tCMPi8 renamable $r7, 12, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.40, 1, killed $cpsr
+
+bb.28 (%ir-block.109):
+; predecessors: %bb.27
+  successors: %bb.29(0x80000000); %bb.29(100.00%)
+
+  renamable $r0, dead $cpsr = tMOVi8 1, 14, $noreg
+  renamable $r1, dead $cpsr = tMOVi8 8, 14, $noreg
+  tBL 14, $noreg, @update_state_bits_and_publish_empty_status, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit $r1, implicit-def $sp
+  renamable $r0, dead $cpsr = tMOVi8 44, 14, $noreg
+  renamable $r1, dead $cpsr = tMOVi8 255, 14, $noreg
+  renamable $r7 = tLDRpci %const.0, 14, $noreg :: (load 4 from constant-pool)
+  tSTRBr killed renamable $r1, renamable $r7, killed renamable $r0, 14, $noreg :: (store 1 into `i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 13, i32 5)`, align 4, !tbaa !8)
+  CompilerBarrier 7
+  renamable $r0, dead $cpsr = tMOVi8 0, 14, $noreg
+  renamable $r1 = tLDRspi $sp, 1, 14, $noreg :: (load 4 from %stack.3)
+  tSTRBr killed renamable $r0, renamable $r7, killed renamable $r1, 14, $noreg :: (store 1 into `i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 13, i32 13)`, align 4, !tbaa !8)
+  renamable $r5 = tLDRspi $sp, 3, 14, $noreg :: (load 4 from %stack.1)
+  renamable $r6 = tLDRspi $sp, 2, 14, $noreg :: (load 4 from %stack.2)
+
+bb.29 (%ir-block.118):
+; predecessors: %bb.23, %bb.28
+  successors: %bb.30(0x40000000), %bb.31(0x40000000); %bb.30(50.00%), %bb.31(50.00%)
+  liveins: $r5, $r6, $r7
+  renamable $r1, dead $cpsr = tMOVi8 64, 14, $noreg
+  renamable $r0, dead $cpsr = tMOVi8 15, 14, $noreg
+  tSTRHr killed renamable $r0, renamable $r7, renamable $r1, 14, $noreg :: (volatile store 2 into `i16* bitcast (i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 15, i32 6) to i16*)`, align 4, !tbaa !21)
+  renamable $r4, dead $cpsr = tMOVi8 1, 14, $noreg
+  renamable $r0, dead $cpsr = tLSLri renamable $r4, 26, 14, $noreg
+  tCMPi8 renamable $r5, 32, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.31, 1, killed $cpsr
+
+bb.30 (%ir-block.122):
+; predecessors: %bb.29
+  successors: %bb.32(0x80000000); %bb.32(100.00%)
+  liveins: $r0, $r1, $r4, $r5, $r6, $r7
+  renamable $r2, dead $cpsr = tMOVi8 180, 14, $noreg
+  tSTRHr killed renamable $r2, renamable $r7, killed renamable $r1, 14, $noreg :: (volatile store 2 into `i16* bitcast (i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 15, i32 6) to i16*)`, align 4, !tbaa !21)
+  tBL 14, $noreg, @update_mode_flags_and_transitions, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit-def $sp
+  renamable $r0, dead $cpsr = tLSLri killed renamable $r4, 11, 14, $noreg
+  tB %bb.32, 14, $noreg
+
+bb.31 (%ir-block.124):
+; predecessors: %bb.29
+  successors: %bb.32(0x80000000); %bb.32(100.00%)
+  liveins: $r0, $r4, $r5, $r6, $r7
+  tBL 14, $noreg, @update_mode_flags_and_transitions, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit-def $sp
+  renamable $r0, dead $cpsr = tLSLri killed renamable $r4, 27, 14, $noreg
+
+bb.32 (%ir-block.126):
+; predecessors: %bb.31, %bb.30
+  successors: %bb.33(0x80000000); %bb.33(100.00%)
+  liveins: $r5, $r6, $r7, $r0
+  tBL 14, $noreg, @update_mode_flags_and_transitions, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit-def $sp
+
+bb.33 (%ir-block.126):
+; predecessors: %bb.21, %bb.32
+  successors: %bb.35(0x30000000), %bb.34(0x50000000); %bb.35(37.50%), %bb.34(62.50%)
+  liveins: $r5, $r6, $r7
+  renamable $r1 = tLDRBi renamable $r7, 12, 14, $noreg :: (dereferenceable load 1 from `i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 7, i32 0, i32 0)`, align 4, !tbaa !8)
+  renamable $r0 = tLEApcrel %const.7, 14, $noreg
+  $r2 = COPY renamable $r5
+  tBL 14, $noreg, @arch_printf, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit $r1, implicit $r2, implicit-def $sp
+  renamable $r0, dead $cpsr = tMOVi8 1, 14, $noreg
+  renamable $r1, dead $cpsr = tMOVi8 0, 14, $noreg
+  tBL 14, $noreg, @update_indexed_delay_entry_if_changed, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit $r1, implicit-def $sp, implicit-def dead $r0
+  tCMPi8 renamable $r6, 0, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.35, 0, killed $cpsr
+
+bb.34 (%ir-block.131):
+; predecessors: %bb.33
+  successors: %bb.35(0x80000000); %bb.35(100.00%)
+  liveins: $r5, $r6, $r7
+  $r0 = COPY renamable $r5
+  tBLXr 14, $noreg, killed renamable $r6, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit-def $sp
+
+bb.35 (%ir-block.132):
+; predecessors: %bb.33, %bb.34
+  successors: %bb.37(0x30000000), %bb.36(0x50000000); %bb.37(37.50%), %bb.36(62.50%)
+  liveins: $r5, $r7
+  renamable $r0 = tLDRBi renamable $r7, 12, 14, $noreg :: (dereferenceable load 1 from `i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 7, i32 0, i32 0)`, align 4, !tbaa !8)
+  tSTRBi killed renamable $r5, killed renamable $r7, 12, 14, $noreg :: (store 1 into `i8* getelementptr inbounds (%struct.sr08_merged_globals_5650, %struct.sr08_merged_globals_5650* @merged_globals_5650, i32 0, i32 7, i32 0, i32 0)`, align 4, !tbaa !8)
+  renamable $r1 = tLDRspi $sp, 4, 14, $noreg :: (volatile dereferenceable load 4 from %ir.2, !tbaa !11)
+  tCMPi8 renamable $r1, 0, 14, $noreg, implicit-def $cpsr
+  tBcc %bb.37, 0, killed $cpsr
+
+bb.36 (%ir-block.138):
+; predecessors: %bb.35
+  successors: %bb.37(0x80000000); %bb.37(100.00%)
+  liveins: $r0, $r1
+  tBLXr 14, $noreg, killed renamable $r1, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit-def $sp
+
+bb.37 (%ir-block.141):
+; predecessors: %bb.2, %bb.1, %bb.36, %bb.35
+
+  $sp = tADDspi $sp(tied-def 0), 5, 14, $noreg
+  tPOP_RET 14, $noreg, def $r4, def $r5, def $r6, def $r7, def $pc, implicit-def $sp, implicit $sp
+
+bb.38 (%ir-block.61):
+; predecessors: %bb.18
+  successors: %bb.18(0x80000000); %bb.18(100.00%)
+  liveins: $r4, $r5, $r6, $r7
+  renamable $r3, dead $cpsr = tMOVi8 0, 14, $noreg
+  tSTRspi renamable $r3, $sp, 0, 14, $noreg :: (store 4 into stack)
+  renamable $r0 = tLDRBr renamable $r4, renamable $r7, 14, $noreg :: (load 1 from %ir.62, !tbaa !24)
+  renamable $r1, dead $cpsr = tADDrr renamable $r4, renamable $r7, 14, $noreg
+  renamable $r1 = tLDRBi killed renamable $r1, 1, 14, $noreg :: (load 1 from %ir.65, !tbaa !26)
+  $r2 = COPY renamable $r5
+  tBL 14, $noreg, @GPIO_ConfigurePin, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit $r1, implicit $r2, implicit $r3, implicit-def $sp
+  renamable $r7, dead $cpsr = nuw nsw tADDi3 killed renamable $r7, 2, 14, $noreg
+  tB %bb.18, 14, $noreg
+
+bb.39 (%ir-block.98):
+; predecessors: %bb.25
+  successors: %bb.25(0x80000000); %bb.25(100.00%)
+  liveins: $r4, $r5, $r6, $r7
+  renamable $r3, dead $cpsr = tMOVi8 0, 14, $noreg
+  tSTRspi renamable $r3, $sp, 0, 14, $noreg :: (store 4 into stack)
+  renamable $r0 = tLDRBr renamable $r7, renamable $r4, 14, $noreg :: (load 1 from %ir.99, !tbaa !24)
+  renamable $r1, dead $cpsr = tADDrr renamable $r7, renamable $r4, 14, $noreg
+  renamable $r1 = tLDRBi killed renamable $r1, 1, 14, $noreg :: (load 1 from %ir.102, !tbaa !26)
+  $r2 = COPY renamable $r5
+  tBL 14, $noreg, @GPIO_ConfigurePin, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit $r1, implicit $r2, implicit $r3, implicit-def $sp
+  renamable $r4, dead $cpsr = nuw nsw tADDi3 killed renamable $r4, 2, 14, $noreg
+  tB %bb.25, 14, $noreg
+
+bb.40 (%ir-block.110):
+; predecessors: %bb.27
+  successors: %bb.27(0x80000000); %bb.27(100.00%)
+  liveins: $r4, $r5, $r6, $r7
+  tSTRspi renamable $r6, $sp, 0, 14, $noreg :: (store 4 into stack)
+  renamable $r0 = tLDRBr renamable $r4, renamable $r7, 14, $noreg :: (load 1 from %ir.111, !tbaa !24)
+  renamable $r1, dead $cpsr = tADDrr renamable $r4, renamable $r7, 14, $noreg
+  renamable $r1 = tLDRBi killed renamable $r1, 1, 14, $noreg :: (load 1 from %ir.114, !tbaa !26)
+  renamable $r3, dead $cpsr = tMOVi8 0, 14, $noreg
+  $r2 = COPY renamable $r5
+  tBL 14, $noreg, @GPIO_ConfigurePin, <regmask $lr $d8 $d9 $d10 $d11 $d12 $d13 $d14 $d15 $q4 $q5 $q6 $q7 $r4 $r5 $r6 $r7 $r8 $r9 $r10 $r11 $s16 $s17 $s18 $s19 $s20 $s21 $s22 $s23 $s24 $s25 $s26 $s27 and 35 more...>, implicit-def dead $lr, implicit $sp, implicit $r0, implicit $r1, implicit $r2, implicit $r3, implicit-def $sp
+  renamable $r7, dead $cpsr = nuw nsw tADDi3 killed renamable $r7, 2, 14, $noreg
+  tB %bb.27, 14, $noreg
+
+# End machine code for function switch_display_state_and_run_hooks.
+

@@ -1,33 +1,20 @@
-/* Transmit each byte through UART data register zero. Before each write, wait
- * for status bit five; after writing, wait for status bit six to acknowledge
- * it. The status halfword is register ten in this UART's memory map.
+/* Transmit each byte through the UART data register, waiting for TX-ready
+ * (status bit 5) before each write and for TX-done (bit 6) after it.
  */
 #include <stdint.h>
 
-enum {
-    UART_DATA_REGISTER_INDEX = 0,
-    UART_STATUS_REGISTER_INDEX = 10,
-    UART_TX_READY_MASK = 0x20,
-    UART_TX_ACK_MASK = 0x40,
-};
+#define UART_REGISTERS ((volatile uint16_t *)0x50001100u)
+enum { UART_DATA = 0, UART_STATUS = 10, UART_TX_READY = 0x20, UART_TX_DONE = 0x40 };
 
-__attribute__((used, section(".text.transmit_uart_buffer"))) void transmit_uart_buffer(const uint8_t *buffer,
-                                                                                       int32_t byte_count) {
-    volatile uint16_t *uart_registers;
-    /* Retain the literal-pool load for the fixed V204 UART base address. */
-    __asm__ volatile("ldr %[registers], [pc, #28]" : [registers] "=r"(uart_registers));
-
+void transmit_uart_buffer(const uint8_t *buffer, int32_t byte_count) {
     while (byte_count != 0) {
-        uint8_t byte_to_send = *buffer;
-        uint16_t uart_status;
-        do {
-            uart_status = uart_registers[UART_STATUS_REGISTER_INDEX];
-        } while ((uart_status & UART_TX_READY_MASK) == 0);
-        uart_registers[UART_DATA_REGISTER_INDEX] = byte_to_send;
-        do {
-            uart_status = uart_registers[UART_STATUS_REGISTER_INDEX];
-        } while ((uart_status & UART_TX_ACK_MASK) == 0);
-        ++buffer;
+        uint8_t byte = *buffer;
+        while ((UART_REGISTERS[UART_STATUS] & UART_TX_READY) == 0) {
+        }
+        UART_REGISTERS[UART_DATA] = byte;
+        while ((UART_REGISTERS[UART_STATUS] & UART_TX_DONE) == 0) {
+        }
         --byte_count;
+        ++buffer;
     }
 }

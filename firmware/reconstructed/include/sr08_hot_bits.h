@@ -3,6 +3,6 @@
 
 #include <stdint.h>
 
-void update_selected_hot_bit_associated_bit_at_1d44(uint32_t bit_index);
+void GPIOn_Handler(uint32_t bit_index);
 
 #endif

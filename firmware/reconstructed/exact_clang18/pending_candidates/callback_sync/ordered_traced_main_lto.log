@@ -1,0 +1,44 @@
+LTO link: raw loads [] kept for stubs [] raw load sites []
+LTO link: inspecting temporary overlaps for a retry
+LTO link: raw loads [] kept for stubs ['0x7fc2f28'] raw load sites []
+LTO link: inspecting temporary overlaps for a retry
+LTO link: raw loads [] kept for stubs ['0x7fc2f28', '0x7fc3a30', '0x7fc3a34'] raw load sites []
+LTO link: inspecting temporary overlaps for a retry
+LTO link: raw loads [] kept for stubs ['0x7fc2f28', '0x7fc3a30', '0x7fc3a34', '0x7fc867c'] raw load sites []
+LTO link: inspecting temporary overlaps for a retry
+LTO link: raw loads [] kept for stubs ['0x7fc2f28', '0x7fc3a30', '0x7fc3a34', '0x7fc867c', '0x7fcac78'] raw load sites []
+LTO link: inspecting temporary overlaps for a retry
+LTO link: stub load at 0x07fc3612 of 0x07fc3834 now loads 0x07fc37d0
+LTO link: stub load at 0x07fc3712 of 0x07fc3aac now loads 0x07fc37d4
+LTO link: stub load at 0x07fc3716 of 0x07fc3aa4 now loads 0x07fc37d0
+LTO link: stub load at 0x07fc3720 of 0x07fc3aac now loads 0x07fc37d4
+LTO link: stub load at 0x07fc3724 of 0x07fc3aa4 now loads 0x07fc37d0
+LTO link: stub load at 0x07fc3756 of 0x07fc3aa4 now loads 0x07fc37d0
+LTO link: stub load at 0x07fc378a of 0x07fc3aa8 now loads 0x07fc37d8
+LTO link: stub load at 0x07fc4c62 of 0x07fc5020 now loads 0x07fc4cb0
+LTO link: stub load at 0x07fc4c74 of 0x07fc5020 now loads 0x07fc4cb0
+LTO link: stub load at 0x07fc8704 of 0x07fc87ec now loads 0x07fc8774
+LTO link: stub load at 0x07fc874e of 0x07fc87ec now loads 0x07fc8774
+LTO link: stub load at 0x07fc888c of 0x07fc8c34 now loads 0x07fc8c34
+LTO link: stub load at 0x07fc88aa of 0x07fc8c34 now loads 0x07fc8c34
+LTO link: stub load at 0x07fc88be of 0x07fc8c34 now loads 0x07fc8c34
+LTO link: stub load at 0x07fc88c4 of 0x07fc8c34 now loads 0x07fc8c34
+LTO link: stub load at 0x07fca850 of 0x07fcabac now loads 0x07fca89c
+LTO link: stub load at 0x07fca85e of 0x07fcabb0 now loads 0x07fca8a0
+LTO link: stub load at 0x07fca906 of 0x07fcacb4 now loads 0x07fcace8
+LTO link: stub load at 0x07fca928 of 0x07fcacb0 now loads 0x07fca960
+LTO link: stub load at 0x07fca962 of 0x07fcaae4 now loads 0x07fca9b4
+LTO link: stub load at 0x07fca97a of 0x07fcacb0 now loads 0x07fca9b8
+LTO link: stub load at 0x07fcacd2 of 0x07fcad74 now loads 0x07fcad74
+LTO link: raw loads [] kept for stubs ['0x7fc2f28', '0x7fc3a30', '0x7fc3a34', '0x7fc867c', '0x7fcac78'] raw load sites ['0x7fc3612', '0x7fc3712', '0x7fc3716', '0x7fc3720', '0x7fc3724', '0x7fc3756', '0x7fc378a', '0x7fc4c62', '0x7fc4c74', '0x7fc8704', '0x7fc874e', '0x7fc888c', '0x7fc88aa', '0x7fc88be', '0x7fc88c4', '0x7fca850', '0x7fca85e', '0x7fca906', '0x7fca928', '0x7fca962', '0x7fca97a', '0x7fcacd2']
+LTO link: inspecting temporary overlaps for a retry
+LTO link: raw loads [] kept for stubs ['0x7fc2f28', '0x7fc3a30', '0x7fc3a34', '0x7fc867c', '0x7fcac78'] raw load sites ['0x7fc3612', '0x7fc3712', '0x7fc3716', '0x7fc3720', '0x7fc3724', '0x7fc3756', '0x7fc378a', '0x7fc4c62', '0x7fc4c74', '0x7fc8704', '0x7fc874e', '0x7fc888c', '0x7fc88aa', '0x7fc88be', '0x7fc88c4', '0x7fca850', '0x7fca85e', '0x7fca906', '0x7fca928', '0x7fca962', '0x7fca97a', '0x7fcacd2']
+LTO link: inspecting temporary overlaps for a retry
+LTO link: raw loads ['0x7fc3834', '0x7fcabac', '0x7fcabb0', '0x7fcacb0', '0x7fcacb4'] kept for stubs ['0x7fc2f28', '0x7fc3a30', '0x7fc3a34', '0x7fc867c', '0x7fcac78'] raw load sites ['0x7fc3712', '0x7fc3716', '0x7fc3720', '0x7fc3724', '0x7fc3756', '0x7fc378a', '0x7fc4c62', '0x7fc4c74', '0x7fc8704', '0x7fc874e', '0x7fc888c', '0x7fc88aa', '0x7fc88be', '0x7fc88c4', '0x7fca962', '0x7fcacd2']
+LTO link: inspecting temporary overlaps for a retry
+LTO link: raw loads [] kept for stubs ['0x7fc2f28', '0x7fc3834', '0x7fc3a30', '0x7fc3a34', '0x7fc867c', '0x7fcabac', '0x7fcabb0', '0x7fcac78', '0x7fcacb0', '0x7fcacb4'] raw load sites ['0x7fc3712', '0x7fc3716', '0x7fc3720', '0x7fc3724', '0x7fc3756', '0x7fc378a', '0x7fc4c62', '0x7fc4c74', '0x7fc8704', '0x7fc874e', '0x7fc888c', '0x7fc88aa', '0x7fc88be', '0x7fc88c4', '0x7fca962', '0x7fcacd2']
+LTO link: inspecting temporary overlaps for a retry
+armlink failed for the LTO module (170 units):
+Error: L6291E: Cannot assign Fixed Execution Region ER_07fc867c Load Address:0x07fc867c. Load Address must be greater than or equal to next available Load Address:0x07fc8680.
+Finished: 0 information, 0 warning and 1 error messages.
+

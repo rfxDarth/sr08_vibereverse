@@ -1,0 +1,8 @@
+{
+  "compiler": "clang-18 normal flags",
+  "complete_object_equal": true,
+  "object_bytes": 896,
+  "object_sha256": "fa3678513ad0ca80ba8b08fea296e4e970f6e5043df4d721ea12bfae93b16da9",
+  "old_source_sha256": "5214382fc4a4140a1800469a499c49a43cbc653f4e3822021112bae1e51c1d56",
+  "new_source_sha256": "7a9cf57314e3e6c0ece8f3f5bab7e5f00ba14c3c1e2643821696d476ee6111cf"
+}

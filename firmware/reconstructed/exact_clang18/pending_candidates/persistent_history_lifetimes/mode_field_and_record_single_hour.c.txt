@@ -1,0 +1,286 @@
+/* Alice: one hour snapshot for both tail comparisons; uninstalled candidate.
+ * Pending exact-match candidate; see PERSISTENT_HISTORY_NOTES.md. */
+/* Whole-routine C reconstruction of 0x07fc48a8..0x07fc4d3e.
+ * Not installed until code, literal pools and whole-image hashes match.
+ * Prefix views reuse canonical fixed-RAM names; they allocate no new storage.
+ * The routine samples minute histories and persists quarter-hour activity /
+ * classifier records. Field names describe observed uses, not vendor symbols.
+ */
+#include <stdint.h>
+#include <stddef.h>
+#include "firmware/reconstructed/include/sr08_static_assert.h"
+#include "firmware/reconstructed/include/sr08_calendar_time.h"
+#include "firmware/reconstructed/include/sr08_flash_operation.h"
+#include "firmware/reconstructed/include/sr08_arm_eabi.h"
+
+struct history_cycle_state {
+    uint32_t last_sample_timestamp;
+    uint8_t reserved_04_to_2f[0x2c];
+    uint32_t candidate_timestamp;
+    uint8_t reserved_34_to_59[0x26];
+    uint8_t sample_history[15];
+    uint8_t flag_history[15];
+};
+struct history_clock_state {
+    uint32_t current_timestamp;
+    uint32_t accumulated_timestamp;
+    uint32_t calendar_update_timestamp;
+    uint32_t seconds_since_midnight;
+    uint32_t hardware_tick_baseline;
+    uint32_t rebase_state;
+    uint32_t calendar_second;
+    int32_t calendar_minute;
+    int32_t calendar_hour;
+};
+struct history_input_state {
+    uint8_t reserved_00_to_0d[14];
+    uint8_t classifier_mode;
+    volatile uint8_t minute_flag;
+    volatile uint8_t minute_sample;
+    uint8_t reserved_11_to_6b[0x5b];
+    volatile uint32_t activity_word;
+    volatile uint32_t reset_word;
+};
+struct history_shared_state {
+    uint8_t connection_state;
+    uint8_t reserved_01_to_09[9];
+    uint8_t state_0a;
+    uint8_t reserved_0b_to_23[0x19];
+    uint32_t word_24;
+    uint8_t reserved_28_to_37[0x10];
+    uint32_t total_steps;
+    uint32_t counter_3c;
+    uint32_t active_above_threshold_seconds;
+    uint32_t classified_seconds;
+    uint32_t active_seconds;
+    uint32_t previous_minute_steps;
+    uint32_t previous_quarter_steps;
+    uint32_t previous_quarter_counter;
+    uint8_t reserved_58_to_5b[4];
+    union {
+        struct { uint8_t minute_step_deltas[15]; uint8_t classifier_codes[15]; };
+        uint8_t minute_windows[30];
+    };
+};
+struct quarter_hour_record {
+    uint32_t timestamp;
+    uint8_t classified;
+    uint8_t reserved;
+    uint8_t values[30];
+};
+SR08_STATIC_ASSERT(offsetof(struct history_cycle_state, sample_history)==0x5a,"sample history offset");
+SR08_STATIC_ASSERT(offsetof(struct history_cycle_state, flag_history)==0x69,"flag history offset");
+SR08_STATIC_ASSERT(offsetof(struct history_input_state, activity_word)==0x6c,"activity word offset");
+SR08_STATIC_ASSERT(offsetof(struct history_shared_state, total_steps)==0x38,"step count offset");
+SR08_STATIC_ASSERT(offsetof(struct history_shared_state, minute_step_deltas)==0x5c,"step history offset");
+SR08_STATIC_ASSERT(offsetof(struct history_shared_state, classifier_codes)==0x6b,"classifier history offset");
+SR08_STATIC_ASSERT(sizeof(struct quarter_hour_record)==36,"flash record length");
+SR08_STATIC_ASSERT(offsetof(struct quarter_hour_record, values)==6,"record payload offset");
+
+extern struct history_cycle_state cycle_control_state;
+extern struct history_clock_state clock_timekeeping_state;
+extern struct history_input_state device_control_state;
+extern struct history_shared_state sr08_shared_context;
+extern uint8_t merged_globals_5650[0x80];
+extern int map_elapsed_ticks_to_firmware_time_units(void);
+extern int8_t validate_stored_sample_against_latest_reading_at_5600(uint32_t timestamp,uint32_t slot,uint32_t *sample);
+extern void stage_and_program_flash_region_3c000(void);
+extern void serialize_status_and_global_values_with_word(uint32_t value,uint32_t status);
+extern void build_mode_status_record_select_corresponding_at_43a4(uint32_t mode);
+
+__attribute__((used,section(".text.load_and_update_persistent_measurement_state_block_at_48a8")))
+void load_and_update_persistent_measurement_state_block_at_48a8(void)
+{
+    uint32_t written[4];
+    struct sr08_calendar_time calendar;
+    struct quarter_hour_record record;
+    volatile struct history_cycle_state *history=&cycle_control_state;
+    struct history_input_state *input=&device_control_state;
+    volatile struct history_shared_state *state=&sr08_shared_context;
+    volatile struct history_clock_state *clock=&clock_timekeeping_state;
+    uint32_t previous_timestamp=history->last_sample_timestamp;
+    uint32_t now=clock->current_timestamp;
+    if (now-previous_timestamp<51u) return;
+    history->last_sample_timestamp=now;
+    int32_t minute=clock->calendar_minute;
+    int32_t position=minute%15;
+    history->sample_history[position]=input->minute_sample;
+    uint32_t flag=input->minute_flag;
+    history->flag_history[position]=flag;
+    uint32_t zero=__builtin_annotation(0,"history zero");
+    state->classifier_codes[position]=zero;
+    uint32_t previous=state->previous_minute_steps;
+    uint32_t current_steps=state->total_steps;
+    state->previous_minute_steps=current_steps;
+    uint32_t minute_delta=current_steps-previous;
+    if (minute_delta>254u) minute_delta=255;
+    state->minute_step_deltas[position]=minute_delta;
+    input->minute_sample=zero;
+    ++minute;
+    if (minute%15!=0) return;
+
+    uint32_t seconds=clock->seconds_since_midnight;
+    uint32_t daytime_window=seconds-39601u;
+    uint32_t entry_window=seconds-28801u;
+    uint32_t mode=input->classifier_mode;
+    uint32_t quarter_start_steps=state->previous_quarter_steps;
+    uint32_t quarter_end_steps=state->total_steps;
+    uint32_t quiet=zero;
+    for (unsigned offset=0x69;offset!=0x78;++offset) {
+        if (((volatile uint8_t *)history)[offset]==0) goto flags_checked;
+    }
+    quiet=*(volatile uint8_t *)&input->activity_word==0;
+flags_checked:;
+    uint32_t sum=zero;
+    uint8_t large_sample=zero;
+    for(unsigned offset=0x5a;offset!=0x69;++offset) {
+        uint32_t value=((volatile uint8_t *)history)[offset];
+        if (value>35) large_sample=1;
+        sum+=value;
+    }
+    uint32_t excessive=(large_sample!=0) & (sum>__builtin_annotation(90u,"sample sum cutoff"));
+    uint32_t second_sum=zero;
+    for(unsigned offset=0x5a;offset!=0x69;++offset) second_sum+=((volatile uint8_t *)history)[offset];
+
+    uint32_t classifier_step_delta=quarter_end_steps-quarter_start_steps;
+    uint32_t tested_mode=mode;
+    if(tested_mode==2) {
+        if(daytime_window>=35999u && !excessive && classifier_step_delta<36u &&
+           input->activity_word!=0 && !quiet && state->state_0a!=2) {
+            if(second_sum>10) goto start_candidate;
+            goto fill_deep_codes;
+        }
+        goto clear_classifier;
+    }
+    if(tested_mode==1) {
+        if(daytime_window<35999u || excessive || classifier_step_delta>=36u ||
+           input->activity_word==0 || quiet || state->state_0a==2) goto clear_classifier;
+        if(second_sum<11 && now-history->candidate_timestamp>1699u) {
+            input->classifier_mode=2;
+            goto fill_deep_codes;
+        }
+        goto fill_candidate_codes;
+    }
+    if(entry_window>=46799u) {
+        uint32_t threshold=(uint32_t)map_elapsed_ticks_to_firmware_time_units();
+        if(classifier_step_delta==0 && second_sum<threshold && state->state_0a==1 &&
+           (input->activity_word&0x1ffu)!=0 && flag==0 && merged_globals_5650[0x26]==0) {
+start_candidate:
+            history->candidate_timestamp=now;
+            input->classifier_mode=1;
+fill_candidate_codes:
+            __aeabi_memclr((void *)state->classifier_codes,15);
+            for(unsigned offset=0x6b;offset!=0x7a;++offset) ((volatile uint8_t *)state)[offset]=40;
+            mode=2;
+            goto classifier_ready;
+        }
+    }
+    __aeabi_memclr((void *)state->classifier_codes,15);
+    uint32_t cleared_mode=__builtin_annotation(mode,"cleared mode snapshot");
+    if(cleared_mode==0) goto classifier_ready;
+    if(cleared_mode==1) {
+        for(unsigned offset=0x6b;offset!=0x7a;++offset) ((volatile uint8_t *)state)[offset]=40;
+        mode=2;
+        goto classifier_ready;
+    }
+    if(cleared_mode==2) goto deep_codes_cleared;
+    goto fill_leading_codes;
+clear_classifier:
+    mode=0;
+    input->classifier_mode=0;
+    __aeabi_memclr((void *)state->classifier_codes,15);
+fill_leading_codes:
+    for(unsigned offset=0x5a;offset!=0x69 && ((volatile uint8_t *)history)[offset]==0;++offset) ((volatile uint8_t *)state)[offset+0x11]=40;
+    goto classifier_ready;
+fill_deep_codes:
+    __aeabi_memclr((void *)state->classifier_codes,15);
+deep_codes_cleared:
+    for(unsigned offset=0x6b;offset!=0x7a;++offset) ((volatile uint8_t *)state)[offset]=99;
+    mode=2;
+classifier_ready:
+    input->reset_word=0;
+    __aeabi_memclr((void *)history->sample_history,15);
+    state->previous_quarter_steps=quarter_end_steps;
+    uint32_t old_counter=state->previous_quarter_counter;
+    uint32_t current_counter=state->counter_3c;
+    state->previous_quarter_counter=current_counter;
+    int32_t hour=clock->calendar_hour;
+    
+    __aeabi_memclr(&record,sizeof(record));
+    record.classified=0;
+    record.timestamp=now;
+    uint32_t counter_baseline=0;
+    if(old_counter<=current_counter) counter_baseline=old_counter;
+    uint32_t step_baseline=0;
+    if(quarter_start_steps<=quarter_end_steps) step_baseline=quarter_start_steps;
+    uint32_t quarter_delta=quarter_end_steps-step_baseline;
+    int32_t quarter=(minute+hour*60)/15;
+    if(mode==0) {
+        for(unsigned offset=0x5c;offset!=0x6b;++offset) ((uint8_t *)&record)[offset-0x56]=((volatile uint8_t *)state)[offset];
+        if(quarter_delta==0) goto finish_quarter;
+    } else {
+        uint32_t classified=0;
+        uint32_t any=0;
+        for(unsigned offset=0x6b;offset!=0x7a;++offset) {
+            uint8_t code=((volatile uint8_t *)state)[offset];
+            ((uint8_t *)&record)[offset-0x65]=code;
+            uint32_t one=__builtin_annotation(1,"record shared one");
+            if(code!=0) any=one;
+            if(code!=0) classified=__builtin_annotation(one,"record classified one");
+        }
+        record.classified=classified;
+        if(quarter_delta!=0) {
+            state->previous_quarter_steps=step_baseline;
+            state->total_steps=step_baseline;
+        }
+        if(current_counter!=counter_baseline) {
+            state->previous_quarter_counter=counter_baseline;
+            state->counter_3c=counter_baseline;
+        }
+        if(!any) goto finish_quarter;
+    }
+    written[0]=written[1]=written[2]=written[3]=0;
+    
+    convert_timestamp_to_calendar_fields(now,&calendar);
+    uint32_t weekday=now/86400u%7u;
+    uint32_t bitmap_address=weekday*0x2000u+0x2ffecu;
+    perform_flash_memory_operation((uint8_t *)written,bitmap_address,sizeof(written),SR08_FLASH_READ);
+    uint32_t record_index=(uint32_t)quarter-1u;
+    uint32_t offset=record_index*36u;
+    for(unsigned i=0;i<4;++i) written[i]=~written[i];
+    uint32_t mask=1u<<(record_index&31u);
+    uint32_t bitmap_offset=(record_index>>3)&0x3fcu;
+    uint32_t *word=(uint32_t *)((uint8_t *)written+bitmap_offset);
+    if((*word&mask)==0) {
+        uint32_t address=weekday*0x2000u+offset;
+        *word|=mask;
+        for(unsigned i=0;i<4;++i) written[i]=~written[i];
+        perform_flash_memory_operation((uint8_t *)written,bitmap_address,sizeof(written),SR08_FLASH_PROGRAM);
+        perform_flash_memory_operation((uint8_t *)&record,address+0x2e000u,sizeof(record),SR08_FLASH_PROGRAM);
+    }
+    validate_stored_sample_against_latest_reading_at_5600(clock->current_timestamp,(uint8_t)record_index,(uint32_t *)&record);
+    if(record.classified==1) {
+        state->classified_seconds+=900;
+    } else {
+        uint32_t total=0;
+        for(unsigned i=0;i<15;++i) {
+            uint32_t value=record.values[i];
+            if(value!=0) {
+                state->active_seconds+=60;
+                if(value>50) state->active_above_threshold_seconds+=60;
+                total+=value;
+            }
+        }
+        if(clock->calendar_hour==0 && clock->calendar_minute==14 && total<state->total_steps) state->total_steps=total;
+    }
+finish_quarter:
+    stage_and_program_flash_region_3c000();
+    __aeabi_memclr((void *)state->minute_windows,30);
+    int32_t tail_hour;
+    if(minute_delta==0 && (tail_hour=clock->calendar_hour)!=0 && tail_hour!=23 && input->classifier_mode==0 &&
+       ((volatile uint8_t *)input)[3]!=2 && merged_globals_5650[0x0c]!=30 && state->connection_state==0 &&
+       state->word_24>=43201u) {
+        serialize_status_and_global_values_with_word(clock->current_timestamp,0);
+        build_mode_status_record_select_corresponding_at_43a4(0);
+    }
+}

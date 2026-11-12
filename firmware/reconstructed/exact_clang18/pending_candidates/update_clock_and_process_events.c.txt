@@ -1,0 +1,230 @@
+/* PARKED (byte mismatch) — candidate C for 0x07fc44a8 update_clock_and_process_events (ac6lto).
+ * Probe together with 0x4458 (pending_candidates/wait_shared_timer_delta_exceed_requested_at_4458.c.txt): its
+ * literals then land in this function's pool as in V204. Needs, temporarily, "hourly_record_bitmap": "0x07fd07f0"
+ * in data/V204_ram_symbols.json AND in build_v204.py FIXED_DATA_SYMBOLS, plus groups
+ * ("ac6lto", [wait_shared_timer_delta_exceed_requested_at_4458]) and ("ac6lto", [update_clock_and_process_events])
+ * after get_ble_base_time_ms.
+ * Status (2026-11-16, Jeff, kept-module LTO relink): normalized diff 12 lines of 482 (was 36). Fixed this round:
+ *  - store order: V204's source stores current_timestamp before calendar_update_timestamp (proved by IR edit);
+ *    with __builtin_expect_with_probability(now.second < calendar_second, 1, 0.3) the clock pointer then stays in
+ *    r5 across the 0x48a8 call and the +8/+0 stores match.
+ *  - reminder window + record spill: __builtin_expect_with_probability(elapsed >= minutes*60-10, 1, 0.51)
+ *    (0.5x region; 0.6 and up are worse) gives V204's fall-through layout and the mov r2,r6 / adds r6 record.
+ * Remaining (12 lines):
+ *  - rebase add operand order (adds r0,r6,r0 in V204). The consthoist-input IR printed as text and compiled
+ *    codegen-only gives V204's order, so it is use-list order inside the LTO module, not IR content. Source
+ *    operand order/temporaries/re-reads (8 shapes) and -Xclang -(no-)emit-llvm-uselists do not change it.
+ *  - night check: `seconds - 28801` is sunk past the 90..104 sum loop (IndVars sinkUnusedInvariants), giving
+ *    the ctx[0x50] load/spill before the add. Keeping it in the preheader (assume, offset computed before the
+ *    radio check, annotation) always swaps r6/r7 (dcs base vs loop sum) and keeps the clock base in r7: 24 lines.
+ *    In the IR, codegen-only: 127 block moves/swaps, phi order, and 100 -mllvm codegen flags all stay at 20.
+ *    Loop shape (index type, <, while, pointer, u8/u16) canonicalizes to the same IR.
+ * Work dir/tools from that session: $T/w81 (c6.c = this file), ltsweep.py (serial variant relinks).
+ * Levers that got it from 294 to 35 lines: annotated 1 (shared request/wrap/bit constant), annotated counter wrap,
+ * source store order (accumulated before rebase_state; cycle gate before ctx+0x44), __builtin_expect(inside, 1),
+ * the day-record block as a static helper (V204's slot order is the inliner's), fence + annotated -1 for the
+ * day-start mark, annotated sod/record_base/program values (stop IndVars sinking / give the spilled 1).
+ * Fast iteration: build/lto_relink/ (relink.py recompiles one unit in a kept LTO module and relinks in ~2 s;
+ * lt.sh SRC prints the normalized diff). */
+/* Service the device clock and the work scheduled from it. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_calendar_time.h"
+#include "firmware/reconstructed/include/sr08_clock_literal_pool.h"
+#include "firmware/reconstructed/include/sr08_cycle_control_state.h"
+#include "firmware/reconstructed/include/sr08_flash_operation.h"
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+#include "firmware/reconstructed/include/sr08_radio_configuration.h"
+#include "firmware/reconstructed/include/sr08_ring_buffer.h"
+#include "firmware/reconstructed/include/sr08_time_event_queue.h"
+
+extern struct sr08_clock_timekeeping_state clock_timekeeping_state;
+extern struct sr08_cycle_control_state cycle_control_state;
+extern uint8_t sr08_shared_context[];
+extern uint32_t hourly_record_bitmap[24];
+extern void serialize_status_and_global_values_with_word(uint32_t value, uint32_t status);
+extern void load_and_update_persistent_measurement_state_block_at_48a8(void);
+extern int map_elapsed_ticks_to_firmware_time_units(void);
+extern void store_mode_flag_and_copy_configuration_word(uint8_t input);
+extern void translate_rom_result_to_display_coordinates(uint32_t timestamp);
+extern void reset_mode_state_and_publish_status_records(void);
+
+#define clock clock_timekeeping_state
+#define cycle cycle_control_state
+#define cycle_bytes ((uint8_t *)(void *)&cycle_control_state)
+#define radio_state ((uint8_t *)&device_control_state)
+#define radio_history (*(uint32_t *)(void *)(radio_state + 0x6c))
+#define context_bytes sr08_shared_context
+#define context_words ((uint32_t *)(void *)sr08_shared_context)
+#define mode_state ((uint8_t *)(void *)&merged_globals_5650)
+#define status_countdown (*(int16_t *)(void *)(mode_state + 0x40))
+
+#define CONVERSION_REQUEST (*(volatile uint32_t *)0x400000fcu)
+#define CONVERSION_RESULT (*(volatile uint32_t *)0x4000001cu)
+
+enum {
+    TICKS_PER_SECOND = 1600,
+    REBASE_TICKS = 0x6ddd000,
+    COUNTER_WRAP = 1u << 27,
+    SECONDS_PER_DAY = 86400,
+    SLOT_BYTES = 0x3000,
+    RECORD_BASE = 0x4c000,
+    BITMAP_BASE = 0x4eef0,
+    DAY_START_BASE = 0x4eff0,
+};
+
+/* Append the pending ten-second activity record to today's flash slot. */
+static void save_pending_activity_record(uint32_t one)
+{
+    uint32_t day_start, day_start_mark, cleared_bits, hour_bits;
+    struct sr08_calendar_time day_fields;
+    uint32_t stamp = clock.current_timestamp - clock.calendar_second - 60;
+    uint32_t day = stamp / SECONDS_PER_DAY;
+    day_start = day * SECONDS_PER_DAY;
+    __atomic_signal_fence(__ATOMIC_SEQ_CST);
+    day_start_mark = __builtin_annotation(0xffffffffu, "mark");
+    convert_timestamp_to_calendar_fields(stamp, &day_fields);
+    uint32_t slot = (day % 7) * SLOT_BYTES;
+    uint32_t bitmap = slot + BITMAP_BASE;
+    uint32_t hour_word = bitmap + day_fields.hour * 4;
+    perform_flash_memory_operation((uint8_t *)&hour_bits, hour_word, 4, SR08_FLASH_READ);
+    cleared_bits = hour_bits & ~(one << ((int32_t)day_fields.minute >> 1));
+    perform_flash_memory_operation((uint8_t *)hourly_record_bitmap, bitmap, 96, SR08_FLASH_READ);
+    uint32_t second_of_day = __builtin_annotation(stamp % SECONDS_PER_DAY, "sod");
+    uint32_t record_base = __builtin_annotation(slot + RECORD_BASE, "base");
+    for (int index = 0; index < 24; index++)
+        hourly_record_bitmap[index] = ~hourly_record_bitmap[index];
+    uint32_t day_start_word = slot + DAY_START_BASE;
+    perform_flash_memory_operation((uint8_t *)&day_start_mark, day_start_word, 4, SR08_FLASH_READ);
+    uint32_t record = record_base + second_of_day / 10;
+    if (day_start_mark == 0xffffffff) {
+        perform_flash_memory_operation((uint8_t *)&day_start, day_start_word, 4, SR08_FLASH_PROGRAM);
+    } else if (stamp - day_start_mark > SECONDS_PER_DAY - 1) {
+        erase_flash_range(record_base, SLOT_BYTES);
+        perform_flash_memory_operation((uint8_t *)&day_start, day_start_word, 4, SR08_FLASH_PROGRAM);
+    }
+    uint32_t program = __builtin_annotation((uint32_t)SR08_FLASH_PROGRAM, "program");
+    perform_flash_memory_operation(context_bytes + 0xa0, record, 12, program);
+    perform_flash_memory_operation((uint8_t *)&cleared_bits, hour_word, 4, program);
+    perform_flash_memory_operation((uint8_t *)hourly_record_bitmap, bitmap, 96, SR08_FLASH_READ);
+    for (int index = 0; index < 24; index++)
+        hourly_record_bitmap[index] = ~hourly_record_bitmap[index];
+}
+
+void update_clock_and_process_events(void)
+{
+    struct sr08_calendar_time now_fields;
+
+    uint32_t one = __builtin_annotation(1u, "one");
+    CONVERSION_REQUEST = one;
+    while (CONVERSION_REQUEST != 0)
+        ;
+    uint32_t counter = CONVERSION_RESULT;
+    uint32_t baseline = clock.hardware_tick_baseline;
+    if (counter < baseline)
+        counter = __builtin_annotation(counter + (one << 27), "wrap");
+    uint32_t elapsed = counter - baseline;
+    uint32_t previous = clock.current_timestamp;
+    clock.current_timestamp = clock.accumulated_timestamp + elapsed / TICKS_PER_SECOND;
+    if (elapsed >= REBASE_TICKS) {
+        clock.accumulated_timestamp = clock.current_timestamp;
+        clock.rebase_state = 0;
+        clock.hardware_tick_baseline = (baseline + (elapsed * 5 - elapsed * 5 % 8000) / 5) & 0x07ffffff;
+    }
+    uint32_t current = clock.current_timestamp;
+    if (current - previous >= 2) {
+        clock.current_timestamp = previous;
+        convert_timestamp_to_calendar_fields(current, &now_fields);
+        if (__builtin_expect_with_probability((int32_t)now_fields.second < (int32_t)clock.calendar_second, 1, 0.3))
+            load_and_update_persistent_measurement_state_block_at_48a8();
+        clock.current_timestamp = current;
+        clock.calendar_update_timestamp = current;
+    }
+    if (clock.current_timestamp == previous)
+        return;
+    clock.calendar_update_timestamp = clock.current_timestamp;
+    if ((clock.current_timestamp & 3) == 0)
+        serialize_status_and_global_values_with_word(clock.current_timestamp, 0);
+    convert_timestamp_to_calendar_fields(clock.current_timestamp,
+                                         (struct sr08_calendar_time *)(void *)&clock.calendar_second);
+    clock.seconds_since_midnight = clock.calendar_hour * 3600 + clock.calendar_minute * 60 + clock.calendar_second;
+    if ((int32_t)clock.calendar_second >= 59)
+        load_and_update_persistent_measurement_state_block_at_48a8();
+    if ((clock.calendar_second & 1) == 0) {
+        uint8_t step_event;
+        uint32_t reported = context_words[1];
+        context_words[1] = context_words[0x38 / 4];
+        context_bytes[3] = context_words[0x38 / 4] - reported;
+        step_event = context_bytes[3];
+        enqueue_ring_record_overwriting_oldest((struct sr08_ring_buffer *)(void *)&time_event_queue_state, &step_event);
+    }
+    if (clock.current_timestamp - cycle.clock_gate_timestamp_04 >= 240) {
+        cycle.clock_gate_timestamp_04 = clock.current_timestamp;
+        radio_history <<= 1;
+    }
+    int quarter = ((int32_t)clock.calendar_minute + 1) % 15;
+    if ((int32_t)clock.calendar_second >= 30 && quarter == 0 &&
+        clock.current_timestamp - cycle.clock_gate_timestamp_08 >= 64) {
+        if (radio_state[0x0e] == 0) {
+            uint32_t seconds = clock.seconds_since_midnight;
+            int daytime = seconds > 28800 && seconds < 75600;
+            uint32_t checked_steps = *(volatile uint32_t *)&context_words[0x50 / 4];
+            uint32_t total_steps = *(volatile uint32_t *)&context_words[0x38 / 4];
+            uint32_t recent = 0;
+            for (int index = 90; index != 105; index++)
+                recent += cycle_bytes[index];
+            if (!daytime) {
+                uint32_t limit = map_elapsed_ticks_to_firmware_time_units();
+                if (total_steps == checked_steps && recent < limit && (radio_history & 0x1ff) &&
+                    !(mode_state[0x26] | radio_state[0x0f])) {
+                    context_bytes[0x0a] = 0;
+                    store_mode_flag_and_copy_configuration_word(1);
+                }
+            }
+        }
+        cycle.clock_gate_timestamp_08 = clock.current_timestamp;
+    }
+    if (context_bytes[0x7c]) {
+        uint8_t minutes = context_bytes[0x7d];
+        if ((minutes < 15 || (int32_t)clock.calendar_minute % 15 == 0) && (int32_t)clock.calendar_second <= 9 &&
+            __builtin_expect_with_probability(clock.current_timestamp - context_words[0x1c / 4] >= minutes * 60u - 10, 1, 0.51)) {
+            uint32_t start = context_words[0x80 / 4];
+            uint32_t end = context_words[0x84 / 4];
+            uint32_t seconds = clock.seconds_since_midnight;
+            int inside;
+            if (end < start)
+                inside = seconds <= end || seconds >= start;
+            else
+                inside = seconds <= end && seconds >= start;
+            if (__builtin_expect(inside, 1)) {
+                store_mode_flag_and_copy_configuration_word(0);
+                context_words[0x1c / 4] = clock.current_timestamp;
+            }
+        }
+    }
+    if (((clock.calendar_hour == 23 && clock.calendar_minute == 59 && (int32_t)clock.calendar_second > 58) ||
+         (clock.calendar_minute == 0 && clock.calendar_hour == 0)) &&
+        clock.current_timestamp - cycle.display_coordinate_timestamp >= 130) {
+        cycle.display_coordinate_timestamp = clock.current_timestamp;
+        translate_rom_result_to_display_coordinates(clock.current_timestamp + 30);
+        reset_mode_state_and_publish_status_records();
+    }
+    if (clock.seconds_since_midnight - 75600 <= 60 && clock.current_timestamp - cycle.clock_gate_timestamp_10 >= 120) {
+        cycle.clock_gate_timestamp_10 = clock.current_timestamp;
+        context_words[0x44 / 4] = 0;
+        radio_state[0x0e] = 0;
+    }
+    if ((clock.calendar_minute & 1) && (int32_t)clock.calendar_second >= 58 &&
+        clock.current_timestamp - cycle.clock_gate_timestamp_14 >= 51 && context_bytes[9]) {
+        save_pending_activity_record(one);
+        context_words[0xa0 / 4] = 0xffffffff;
+        context_bytes[9] = 0;
+        cycle.clock_gate_timestamp_14 = clock.current_timestamp;
+        context_words[0xa4 / 4] = 0xffffffff;
+        context_words[0xa8 / 4] = 0xffffffff;
+    }
+    uint32_t status_event = 32;
+    if (--status_countdown <= 0) {
+        status_countdown = 6;
+        enqueue_ring_record_if_space((struct sr08_ring_buffer *)(void *)&merged_globals_574c, &status_event);
+    }
+}

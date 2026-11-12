@@ -1,41 +1,22 @@
-/* Serialize the status byte, two shared values, and the 32-bit input. */
+/* Record why the firmware is about to reset: a status code, two context
+ * values and the caller's word. */
 #include <stdint.h>
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+#include "firmware/reconstructed/include/sr08_reset_status_record.h"
+#include "firmware/reconstructed/include/sr08_shared_context.h"
 
-struct sr08_status_snapshot {
-    volatile uint8_t status_code;
-    volatile uint8_t shared_low;
-    volatile uint8_t shared_high_low;
-    volatile uint8_t shared_high_high;
-    volatile uint8_t input[4];
-};
-
-_Static_assert(sizeof(struct sr08_status_snapshot) == 8, "status snapshot must remain eight bytes");
-
-static inline void store_word_as_little_endian_bytes(volatile uint8_t destination[4], uint32_t value) {
-    destination[0] = (uint8_t)value;
-    destination[1] = (uint8_t)(value >> 8);
-    destination[2] = (uint8_t)(value >> 16);
-    destination[3] = (uint8_t)(value >> 24);
-}
-
-__attribute__((used, section(".text.serialize_status_and_global_values_with_word"))) void
-serialize_status_and_global_values_with_word(uint32_t input, uint32_t status) {
-    uint32_t status_code = status == 1 ? 59 : ~84u;
-    uint32_t shared_value_a;
-    uint32_t shared_value_b;
-    volatile struct sr08_status_snapshot *output;
-
-    /* These literals identify the two shared fields and output buffer. */
-    __asm__ volatile("ldr %[value_a], [pc, #36]\n\t"
-                     "ldr %[value_a], [%[value_a], #68]\n\t"
-                     "ldr %[value_b], [pc, #36]\n\t"
-                     "ldr %[value_b], [%[value_b], #44]\n\t"
-                     "ldr %[output], [pc, #36]"
-                     : [value_a] "=&r"(shared_value_a), [value_b] "=&r"(shared_value_b), [output] "=r"(output));
-
-    output->status_code = (uint8_t)status_code;
-    output->shared_low = (uint8_t)shared_value_b;
-    output->shared_high_low = (uint8_t)shared_value_a;
-    output->shared_high_high = (uint8_t)(shared_value_a >> 8);
-    store_word_as_little_endian_bytes(output->input, input);
+void serialize_status_and_global_values_with_word(uint32_t value, uint32_t status)
+{
+    uint8_t status_code = status == 1 ? 59 : 0xab;
+    /* V204 reads both context values before the first store. */
+    uint32_t context_value = *(volatile uint32_t *)&sr08_shared_context.context_value_44;
+    uint32_t activation_value = *(volatile uint32_t *)&merged_globals_56d0.suota_activation_value;
+    reset_status_record.status_code = status_code;
+    reset_status_record.suota_activation_value_low = (uint8_t)activation_value;
+    reset_status_record.context_value_44_low = (uint8_t)context_value;
+    reset_status_record.context_value_44_high = (uint8_t)(context_value >> 8);
+    reset_status_record.value[0] = (uint8_t)value;
+    reset_status_record.value[1] = (uint8_t)(value >> 8);
+    reset_status_record.value[2] = (uint8_t)(value >> 16);
+    reset_status_record.value[3] = (uint8_t)(value >> 24);
 }

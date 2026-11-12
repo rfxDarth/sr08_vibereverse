@@ -1,42 +1,33 @@
-/* Dispatch the enabled indicator fields from the device status bitmap. */
-__attribute__((used, naked, section(".text.dispatch_enabled_indicator_fields_for_device_status"))) void
+/* Alice: send the enabled device-status fields in their OEM order.
+ * Each send may update the shared flags, so reload them after every command.
+ * Separate integer annotations prevent pointer hoisting and preserve the
+ * original base+76 plus immediate-field addressing without assembly.
+ */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_cycle_control_state.h"
+#include "firmware/reconstructed/include/sr08_radio_commands.h"
+
+enum { STATUS_FLAGS_OFFSET = 0x4c, FINAL_VALUE_OFFSET = 0x54 };
+
+__attribute__((used, section(".text.dispatch_enabled_indicator_fields_for_device_status"))) void
 dispatch_enabled_indicator_fields_for_device_status(void) {
-    __asm__ volatile("push {r4, r5, r7, lr}\n"
-                     "movs r5, #76\n"
-                     "ldr r4, [pc, #80]\n"
-                     "ldrb r0, [r4, r5]\n"
-                     "lsls r1, r0, #31\n"
-                     "beq .Lbit1_clear\n"
-                     "mov r0, r4\n"
-                     "adds r0, #76\n"
-                     "ldrb r1, [r0, #4]\n"
-                     "movs r0, #40\n"
-                     "bl send_device_command_pair\n"
-                     "ldrb r0, [r4, r5]\n"
-                     ".Lbit1_clear: lsls r1, r0, #30\n"
-                     "bpl .Lbit2_clear\n"
-                     "mov r0, r4\n"
-                     "adds r0, #76\n"
-                     "ldrb r1, [r0, #6]\n"
-                     "movs r0, #46\n"
-                     "bl send_device_command_pair\n"
-                     "ldrb r0, [r4, r5]\n"
-                     ".Lbit2_clear: lsls r1, r0, #29\n"
-                     "bpl .Lbit3_clear\n"
-                     "mov r0, r4\n"
-                     "adds r0, #76\n"
-                     "ldrb r1, [r0, #7]\n"
-                     "movs r0, #47\n"
-                     "bl send_device_command_pair\n"
-                     "ldrb r0, [r4, r5]\n"
-                     ".Lbit3_clear: lsls r0, r0, #28\n"
-                     "bpl .Ldone\n"
-                     "movs r5, #84\n"
-                     "ldrb r1, [r4, r5]\n"
-                     "movs r0, #30\n"
-                     "bl send_device_command_pair\n"
-                     "ldrb r1, [r4, r5]\n"
-                     "movs r0, #31\n"
-                     "bl send_device_command_pair\n"
-                     ".Ldone: pop {r4, r5, r7, pc}\n");
+    volatile uint8_t *state = (volatile uint8_t *)&cycle_control_state;
+    uint32_t flags = state[STATUS_FLAGS_OFFSET];
+
+    if (flags & 1u) {
+        send_device_command_pair(40, (state + __builtin_annotation(STATUS_FLAGS_OFFSET, "command40"))[4]);
+        flags = state[STATUS_FLAGS_OFFSET];
+    }
+    if (flags & 2u) {
+        send_device_command_pair(46, (state + __builtin_annotation(STATUS_FLAGS_OFFSET, "command46"))[6]);
+        flags = state[STATUS_FLAGS_OFFSET];
+    }
+    if (flags & 4u) {
+        send_device_command_pair(47, (state + __builtin_annotation(STATUS_FLAGS_OFFSET, "command47"))[7]);
+        flags = state[STATUS_FLAGS_OFFSET];
+    }
+    if (flags & 8u) {
+        send_device_command_pair(30, state[FINAL_VALUE_OFFSET]);
+        send_device_command_pair(31, state[FINAL_VALUE_OFFSET]);
+    }
 }

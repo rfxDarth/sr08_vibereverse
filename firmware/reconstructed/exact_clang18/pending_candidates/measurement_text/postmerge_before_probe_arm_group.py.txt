@@ -1,0 +1,202 @@
+#!/usr/bin/env python3
+"""Compile a candidate Arm compiler group and compare it with V204 bytes.
+
+Maintenance tool for converting units into ``ARM_COMPILER_GROUPS``. It links
+the named source units in one armlink run at the first unit's V204 address,
+exactly as the build does, and compares the linked region with a reference
+payload. On mismatch it prints an instruction diff.
+
+Example::
+
+    probe_arm_group.py ac6 clear_shared_flag_and_switch_to_state_zero \\
+        switch_to_state_zero_unless_flag_is_one
+
+Use ``--source SYMBOL=PATH`` to try a candidate file instead of the
+manifested source, and ``--flag`` to add compiler flags.
+
+With ``ac6lto`` the named units are linked together with every unit already
+registered as ``ac6lto``, as one LTO module, and each named unit's region is
+compared. ``ac6ltowordtables`` does the same for the second LTO module
+(see arm_compilers.LTO_LINK_FLAGS). ``UNIT:FUNCTION`` probes a unit whose candidate source defines
+``FUNCTION`` (for example its SDK name) before the unit is renamed.
+"""
+from __future__ import annotations
+
+import argparse
+import difflib
+import json
+import re
+import subprocess
+import tempfile
+from pathlib import Path
+
+import arm_compilers
+import build_v204 as build
+
+HEADER_SIZE = 64
+
+
+def disassemble(data: bytes, start: int, temp: Path, name: str) -> list[str]:
+    path = temp / f"{name}.bin"
+    path.write_bytes(data)
+    listing = subprocess.run(["arm-none-eabi-objdump", "-D", "-b", "binary", "-marm", "-Mforce-thumb",
+                              f"--adjust-vma=0x{start:x}", str(path)],
+                             check=True, capture_output=True, text=True).stdout
+    return [line.strip() for line in listing.splitlines() if line.startswith(" ") and ":" in line]
+
+
+def probe_lto_module(compilers: arm_compilers.ArmCompilers, units: list[tuple[str, int, str]],
+                     support: list[tuple[str, str]], absorb: set[int], stub_range: tuple[int, int] | None, functions: dict[str, str], rows: dict[str, dict], manifest: dict, reference: bytes,
+                     temp: Path, lto_compiler: str = "ac6lto", native_units: set[str] = frozenset()) -> None:
+    """Link the probed units with the registered LTO module and compare their regions."""
+    probed = {symbol for symbol, _, _ in units}
+    module = [(functions[symbol], address, code) for symbol, address, code in units]
+    for compiler, group in build.ARM_COMPILER_GROUPS:
+        if compiler == lto_compiler:
+            module.extend((symbol, rows[symbol]["address"], (build.ROOT / rows[symbol]["source"]).read_text())
+                          for symbol in group if symbol not in probed)
+    boundaries = sorted(row["address"] for row in manifest["sources"] if row["address"] not in absorb)
+    # Everything outside the module takes part in the link as fixed V204 code.
+    in_module = {address for _, address, _ in module}
+    absorbed = set()
+    stubs = []
+    if stub_range:
+        low, high = stub_range
+        starts = [address for address in boundaries if low <= address < high]
+        for index, address in enumerate(starts):
+            if address in in_module:
+                continue
+            end = starts[index + 1] if index + 1 < len(starts) else high
+            data = reference[address - build.BASE:end - build.BASE]
+            # A unit that does not start on a word boundary continues the previous function.
+            if stubs and stubs[-1][0] + len(stubs[-1][1]) == address and address % 4:
+                stubs[-1] = (stubs[-1][0], stubs[-1][1] + data)
+            else:
+                stubs.append((address, data))
+    fixed, data_symbols = build.lto_link_symbols(build.all_fixed_symbols(manifest))
+    main_module = lto_compiler == "ac6lto"
+    readonly = build.lto_readonly_sources() if main_module else []
+    image = bytes(reference)
+    if not stub_range:
+        # As the build does: link with the surrounding code and pools (here V204's bytes).
+        func_starts = [address for address in build.layout_function_starts() if address not in absorb]
+        stubs = build.lto_context_pools(image, func_starts,
+                                        build.lto_regions(func_starts, {address for _, address, _ in module}))
+    placed = compilers.place_lto_module(module, support, build.ROOT, temp, fixed, data_symbols,
+                                        "arm-none-eabi-objcopy", "arm-none-eabi-readelf", stubs,
+                                        build.layout_pool_words(), readonly_units=readonly,
+                                        context_word=lambda address: int.from_bytes(
+                                            image[address - build.BASE:address - build.BASE + 4], "little"),
+                                        internal=build.LTO_INTERNAL_UNITS & {name for name, _, _ in module},
+                                        native_units=native_units | {
+                                            functions.get(symbol, symbol) for symbol in build.LTO_NATIVE_UNITS}
+                                        if main_module else native_units,
+                                        sealed_literals=build.LTO_SEALED_STUB_LITERALS if main_module else (),
+                                        compiler=lto_compiler)
+    wanted = {functions[symbol] for symbol in probed}
+    exact = True
+    for group in placed:
+        if group.symbols[0] not in wanted:
+            continue
+        candidate = (temp / f"lto_{group.symbols[0]}.bin").read_bytes()
+        expected = reference[group.start - build.BASE:group.end - build.BASE]
+        on_boundary = group.end in boundaries
+        print(f"0x{group.start:08x}-0x{group.end:08x} {group.symbols[0]} ({len(candidate)} bytes)"
+              + ("" if on_boundary else "; does not end at a unit start"))
+        if candidate == expected and on_boundary:
+            continue
+        exact = False
+        # Show V204 up to the next unit start that is not before the candidate's end.
+        end = next((address for address in boundaries if address >= group.end), group.end)
+        expected = reference[group.start - build.BASE:end - build.BASE]
+        ours = disassemble(candidate, group.start, temp, "candidate")
+        theirs = disassemble(expected, group.start, temp, "reference")
+        for line in difflib.unified_diff(theirs, ours, "V204", "candidate", lineterm="", n=2):
+            print(line)
+    if not exact:
+        print("MISMATCH")
+        raise SystemExit(1)
+    print("BYTE_EXACT")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("compiler", choices=sorted(arm_compilers.COMPILERS))
+    parser.add_argument("symbols", nargs="+", help="source units in address order")
+    parser.add_argument("--source", action="append", default=[], metavar="SYMBOL=PATH")
+    parser.add_argument("--support", action="append", default=[], type=Path, metavar="PATH",
+                        help="ac6lto: extra support translation unit (see LTO_SUPPORT_SOURCES)")
+    parser.add_argument("--native", action="append", default=[], metavar="SYMBOL",
+                        help="ac6lto: compile this unit without -flto, sharing the module's link context")
+    parser.add_argument("--absorb", action="append", default=[], metavar="UNIT",
+                        help="ac6lto: chunk unit that becomes part of the probed function")
+    parser.add_argument("--stubs", metavar="START-END",
+                        help="ac6lto: link V204's bytes of the other units in this hex address range as fixed code")
+    parser.add_argument("--flag", action="append", default=[], help="extra compiler flag (use --flag=-O2)")
+    parser.add_argument("--reference", type=Path, default=build.ROOT / "firmware" / "V204.bin",
+                        help="V204 SUOTA container (default) or flat payload with --payload")
+    parser.add_argument("--payload", action="store_true", help="--reference is a flat payload")
+    parser.add_argument("--arm-tools-dir", type=Path, default=build.ARM_TOOLS_DIR)
+    args = parser.parse_args()
+
+    reference = args.reference.read_bytes()
+    if not args.payload:
+        reference = reference[HEADER_SIZE:]
+    if len(reference) != build.IMAGE_SIZE:
+        raise SystemExit(f"reference payload must be {build.IMAGE_SIZE} bytes")
+    manifest = json.loads(build.MANIFEST.read_text())
+    rows = {row["symbol"]: row for row in manifest["sources"]}
+    overrides = dict(item.split("=", 1) for item in args.source)
+    units = []
+    functions = {}
+    for index, symbol in enumerate(args.symbols):
+        symbol, _, function = symbol.partition(":")
+        args.symbols[index] = symbol
+        functions[symbol] = function or symbol
+        if symbol not in rows:
+            raise SystemExit(f"unknown source unit {symbol}")
+        path = Path(overrides.pop(symbol, build.ROOT / rows[symbol]["source"]))
+        units.append((symbol, rows[symbol]["address"], path.read_text()))
+    if overrides:
+        raise SystemExit(f"--source names units outside the group: {', '.join(overrides)}")
+
+    compilers = arm_compilers.ArmCompilers(args.arm_tools_dir)
+    if args.flag:
+        name, driver, flags = arm_compilers.COMPILERS[args.compiler]
+        arm_compilers.COMPILERS[args.compiler] = (name, driver, flags + args.flag)
+    with tempfile.TemporaryDirectory(prefix="v204-arm-probe-") as directory:
+        temp = Path(directory)
+        if args.compiler in arm_compilers.LTO_COMPILERS:
+            support = (build.lto_support_sources() if args.compiler == "ac6lto" else []) + [(path.stem, path.read_text()) for path in args.support]
+            stub_range = tuple(int(value, 16) for value in args.stubs.split("-")) if args.stubs else None
+            layout = dict((name, int(address, 16)) for address, name in re.findall(
+                r"\.v204\.func\.([0-9a-f]{8}) \S+ : \{ KEEP\(\*\(\.text\.(\w+)\)\)", (build.DATA_DIR / "V204_data_sections.ld").read_text()))
+            absorb = {layout[unit] for unit in args.absorb}
+            native_units = {functions.get(symbol, symbol) for symbol in args.native}
+            probe_lto_module(compilers, units, support, absorb, stub_range, functions, rows, manifest, reference, temp,
+                             args.compiler, native_units=native_units)
+            return
+        if args.native:
+            parser.error('--native requires ac6lto')
+        group = compilers.place_group(args.compiler, units, build.ROOT, temp,
+                                      build.all_fixed_symbols(manifest), set(build.ram_symbols()) | build.FIXED_DATA_SYMBOLS.keys(),
+                                      "arm-none-eabi-objcopy",
+                                      "arm-none-eabi-readelf")
+        raw = temp / f"{args.compiler}_{units[0][0]}.bin"
+        candidate = raw.read_bytes()
+        expected = reference[group.start - build.BASE:group.end - build.BASE]
+        print(f"group 0x{group.start:08x}-0x{group.end:08x} ({len(candidate)} bytes)")
+        if candidate == expected:
+            print("BYTE_EXACT")
+            return
+        differing = sum(a != b for a, b in zip(candidate, expected))
+        print(f"MISMATCH: {differing} differing bytes")
+        ours = disassemble(candidate, group.start, temp, "candidate")
+        theirs = disassemble(expected, group.start, temp, "reference")
+        for line in difflib.unified_diff(theirs, ours, "V204", "candidate", lineterm="", n=2):
+            print(line)
+        raise SystemExit(1)
+
+
+if __name__ == "__main__":
+    main()

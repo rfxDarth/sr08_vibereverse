@@ -1,0 +1,10 @@
+{
+  "differing_bytes": 1,
+  "loads": [
+    {
+      "instruction": "0x7fc82b2",
+      "expected_pool": "0x7fc867c",
+      "actual_pool": "0x7fc84e4"
+    }
+  ]
+}

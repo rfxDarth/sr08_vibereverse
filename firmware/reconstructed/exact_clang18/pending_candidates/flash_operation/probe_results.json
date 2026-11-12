@@ -1,0 +1,234 @@
+{
+  "baseline_late_bounds_native.log": [
+    "group 0x07fc3ea0-0x07fc40a8 (520 bytes)",
+    "MISMATCH: 452 differing bytes",
+    "--- V204"
+  ],
+  "baseline_main_diagnostic.log": [
+    "the LTO module (169 units): app_std_process_event linked at 0x07fc40a4, expected 0x07fc40a0"
+  ],
+  "baseline_native.log": [
+    "group 0x07fc3ea0-0x07fc40a8 (520 bytes)",
+    "MISMATCH: 452 differing bytes",
+    "--- V204"
+  ],
+  "baseline_word_lto.log": [
+    "armlink failed for the LTO module (3 units):",
+    "Error: L6291E: Cannot assign Fixed Execution Region ER_07fc4090 Load Address:0x07fc4090. Load Address must be greater than or equal to next available Load Address:0x07fc40a4.",
+    "Finished: 0 information, 0 warning and 1 error messages."
+  ],
+  "coherent_api_late_bounds_native.log": [
+    "group 0x07fc3ea0-0x07fc40b4 (532 bytes)",
+    "MISMATCH: 493 differing bytes",
+    "--- V204"
+  ],
+  "coherent_api_native.log": [
+    "group 0x07fc3ea0-0x07fc40b4 (532 bytes)",
+    "MISMATCH: 493 differing bytes",
+    "--- V204"
+  ],
+  "coherent_status_domain_native.log": [
+    "group 0x07fc3ea0-0x07fc40ac (524 bytes)",
+    "MISMATCH: 461 differing bytes",
+    "--- V204"
+  ],
+  "common_return_a0f0_native.log": [
+    "group 0x07fc3ea0-0x07fc40a4 (516 bytes)",
+    "MISMATCH: 445 differing bytes",
+    "--- V204"
+  ],
+  "common_return_a0f1_native.log": [
+    "group 0x07fc3ea0-0x07fc40a4 (516 bytes)",
+    "MISMATCH: 445 differing bytes",
+    "--- V204"
+  ],
+  "common_return_a1f0_native.log": [
+    "group 0x07fc3ea0-0x07fc40a8 (520 bytes)",
+    "MISMATCH: 447 differing bytes",
+    "--- V204"
+  ],
+  "common_return_a1f1_native.log": [
+    "group 0x07fc3ea0-0x07fc40a8 (520 bytes)",
+    "MISMATCH: 447 differing bytes",
+    "--- V204"
+  ],
+  "common_return_main_diagnostic.log": [
+    "0x07fc3ea0-0x07fc40a0 perform_flash_memory_operation (512 bytes)",
+    "--- V204",
+    "+++ candidate"
+  ],
+  "common_return_mode_hint_0_native.log": [
+    "group 0x07fc3ea0-0x07fc40b0 (528 bytes)",
+    "MISMATCH: 485 differing bytes",
+    "--- V204"
+  ],
+  "common_return_mode_hint_1_native.log": [
+    "group 0x07fc3ea0-0x07fc40b0 (528 bytes)",
+    "MISMATCH: 468 differing bytes",
+    "--- V204"
+  ],
+  "common_return_mode_hint_2_native.log": [
+    "group 0x07fc3ea0-0x07fc40a0 (512 bytes)",
+    "MISMATCH: 470 differing bytes",
+    "--- V204"
+  ],
+  "cs_phi_c0_uint16_t_a0_native.log": [
+    "group 0x07fc3ea0-0x07fc40b4 (532 bytes)",
+    "MISMATCH: 470 differing bytes",
+    "--- V204"
+  ],
+  "cs_phi_c0_uint16_t_a1_native.log": [
+    "group 0x07fc3ea0-0x07fc40b4 (532 bytes)",
+    "MISMATCH: 470 differing bytes",
+    "--- V204"
+  ],
+  "cs_phi_c0_uint32_t_a0_native.log": [
+    "group 0x07fc3ea0-0x07fc40b4 (532 bytes)",
+    "MISMATCH: 470 differing bytes",
+    "--- V204"
+  ],
+  "cs_phi_c0_uint32_t_a1_native.log": [
+    "group 0x07fc3ea0-0x07fc40b4 (532 bytes)",
+    "MISMATCH: 470 differing bytes",
+    "--- V204"
+  ],
+  "cs_phi_c1_uint16_t_a0_native.log": [
+    "group 0x07fc3ea0-0x07fc40ac (524 bytes)",
+    "MISMATCH: 458 differing bytes",
+    "--- V204"
+  ],
+  "cs_phi_c1_uint16_t_a1_native.log": [
+    "group 0x07fc3ea0-0x07fc40ac (524 bytes)",
+    "MISMATCH: 458 differing bytes",
+    "--- V204"
+  ],
+  "cs_phi_c1_uint32_t_a0_native.log": [
+    "group 0x07fc3ea0-0x07fc40ac (524 bytes)",
+    "MISMATCH: 458 differing bytes",
+    "--- V204"
+  ],
+  "cs_phi_c1_uint32_t_a1_native.log": [
+    "group 0x07fc3ea0-0x07fc40ac (524 bytes)",
+    "MISMATCH: 458 differing bytes",
+    "--- V204"
+  ],
+  "denied_annotated_byte_native.log": [
+    "group 0x07fc3ea0-0x07fc40a8 (520 bytes)",
+    "MISMATCH: 447 differing bytes",
+    "--- V204"
+  ],
+  "denied_fence_annotation_native.log": [
+    "group 0x07fc3ea0-0x07fc40a8 (520 bytes)",
+    "MISMATCH: 447 differing bytes",
+    "--- V204"
+  ],
+  "denied_fence_native.log": [
+    "group 0x07fc3ea0-0x07fc40a8 (520 bytes)",
+    "MISMATCH: 447 differing bytes",
+    "--- V204"
+  ],
+  "false_fence_api_once_native.log": [
+    "group 0x07fc3ea0-0x07fc40c4 (548 bytes)",
+    "MISMATCH: 522 differing bytes",
+    "--- V204"
+  ],
+  "false_fence_native.log": [
+    "group 0x07fc3ea0-0x07fc40c0 (544 bytes)",
+    "MISMATCH: 515 differing bytes",
+    "--- V204"
+  ],
+  "late_bounds_annotation_1_native.log": [
+    "group 0x07fc3ea0-0x07fc40a8 (520 bytes)",
+    "MISMATCH: 446 differing bytes",
+    "--- V204"
+  ],
+  "late_bounds_annotation_2_native.log": [
+    "group 0x07fc3ea0-0x07fc40a8 (520 bytes)",
+    "MISMATCH: 446 differing bytes",
+    "--- V204"
+  ],
+  "late_bounds_annotation_3_native.log": [
+    "group 0x07fc3ea0-0x07fc40a8 (520 bytes)",
+    "MISMATCH: 446 differing bytes",
+    "--- V204"
+  ],
+  "true_fence_api_main_lto.log": [
+    "the LTO module (169 units): app_std_process_event linked at 0x07fc40bc, expected 0x07fc40a0"
+  ],
+  "true_fence_api_once_native.log": [
+    "group 0x07fc3ea0-0x07fc40b4 (532 bytes)",
+    "MISMATCH: 498 differing bytes",
+    "--- V204"
+  ],
+  "true_fence_native.log": [
+    "group 0x07fc3ea0-0x07fc40c0 (544 bytes)",
+    "MISMATCH: 504 differing bytes",
+    "--- V204"
+  ],
+  "weighted_l0_a0_native.log": [
+    "group 0x07fc3ea0-0x07fc40b4 (532 bytes)",
+    "MISMATCH: 481 differing bytes",
+    "--- V204"
+  ],
+  "weighted_l0_a1_native.log": [
+    "group 0x07fc3ea0-0x07fc40b4 (532 bytes)",
+    "MISMATCH: 481 differing bytes",
+    "--- V204"
+  ],
+  "weighted_l0_a8_native.log": [
+    "group 0x07fc3ea0-0x07fc40bc (540 bytes)",
+    "MISMATCH: 489 differing bytes",
+    "--- V204"
+  ],
+  "weighted_l1_a0_native.log": [
+    "group 0x07fc3ea0-0x07fc40bc (540 bytes)",
+    "MISMATCH: 488 differing bytes",
+    "--- V204"
+  ],
+  "weighted_l1_a1_native.log": [
+    "group 0x07fc3ea0-0x07fc40bc (540 bytes)",
+    "MISMATCH: 488 differing bytes",
+    "--- V204"
+  ],
+  "weighted_l1_a8_native.log": [
+    "group 0x07fc3ea0-0x07fc40bc (540 bytes)",
+    "MISMATCH: 488 differing bytes",
+    "--- V204"
+  ],
+  "wide_false_fence_native.log": [
+    "group 0x07fc3ea0-0x07fc40c8 (552 bytes)",
+    "MISMATCH: 505 differing bytes",
+    "--- V204"
+  ],
+  "wide_false_fence_once_native.log": [
+    "group 0x07fc3ea0-0x07fc40b4 (532 bytes)",
+    "MISMATCH: 470 differing bytes",
+    "--- V204"
+  ],
+  "wide_status_late_bounds_native.log": [
+    "group 0x07fc3ea0-0x07fc40a8 (520 bytes)",
+    "MISMATCH: 446 differing bytes",
+    "--- V204"
+  ],
+  "wide_status_main_diagnostic.log": [
+    "the LTO module (169 units): app_std_process_event linked at 0x07fc40a4, expected 0x07fc40a0"
+  ],
+  "wide_status_main_lto.log": [
+    "the LTO module (169 units): app_std_process_event linked at 0x07fc40a4, expected 0x07fc40a0"
+  ],
+  "wide_status_native.log": [
+    "group 0x07fc3ea0-0x07fc40a8 (520 bytes)",
+    "MISMATCH: 446 differing bytes",
+    "--- V204"
+  ],
+  "wide_true_fence_native.log": [
+    "group 0x07fc3ea0-0x07fc40c0 (544 bytes)",
+    "MISMATCH: 509 differing bytes",
+    "--- V204"
+  ],
+  "wide_true_fence_once_native.log": [
+    "group 0x07fc3ea0-0x07fc40ac (524 bytes)",
+    "MISMATCH: 458 differing bytes",
+    "--- V204"
+  ]
+}

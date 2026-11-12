@@ -1,0 +1,45 @@
+group 0x07fcbb94-0x07fcbbc4 (48 bytes)
+MISMATCH: 35 differing bytes
+--- V204
++++ candidate
+@@ -1,21 +1,21 @@
+-7fcbb94:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+-7fcbb96:	4e09      	ldr	r6, [pc, #36]	@ (0x7fcbbbc)
+-7fcbb98:	78b1      	ldrb	r1, [r6, #2]
+-7fcbb9a:	2408      	movs	r4, #8
+-7fcbb9c:	2501      	movs	r5, #1
+-7fcbb9e:	2900      	cmp	r1, #0
+-7fcbba0:	4621      	mov	r1, r4
+-7fcbba2:	d100      	bne.n	0x7fcbba6
+-7fcbba4:	4629      	mov	r1, r5
+-7fcbba6:	4f06      	ldr	r7, [pc, #24]	@ (0x7fcbbc0)
+-7fcbba8:	8079      	strh	r1, [r7, #2]
+-7fcbbaa:	f7ff ff75 	bl	0x7fcba98
+-7fcbbae:	78b1      	ldrb	r1, [r6, #2]
+-7fcbbb0:	2900      	cmp	r1, #0
+-7fcbbb2:	d100      	bne.n	0x7fcbbb6
+-7fcbbb4:	462c      	mov	r4, r5
+-7fcbbb6:	803c      	strh	r4, [r7, #0]
+-7fcbbb8:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
+-7fcbbba:	46c0      	nop			@ (mov r8, r8)
++7fcbb94:	b570      	push	{r4, r5, r6, lr}
++7fcbb96:	4d09      	ldr	r5, [pc, #36]	@ (0x7fcbbbc)
++7fcbb98:	78a9      	ldrb	r1, [r5, #2]
++7fcbb9a:	2401      	movs	r4, #1
++7fcbb9c:	2901      	cmp	r1, #1
++7fcbb9e:	4621      	mov	r1, r4
++7fcbba0:	d008      	beq.n	0x7fcbbb4
++7fcbba2:	4e07      	ldr	r6, [pc, #28]	@ (0x7fcbbc0)
++7fcbba4:	8071      	strh	r1, [r6, #2]
++7fcbba6:	f7ff ff77 	bl	0x7fcba98
++7fcbbaa:	78a9      	ldrb	r1, [r5, #2]
++7fcbbac:	2901      	cmp	r1, #1
++7fcbbae:	d003      	beq.n	0x7fcbbb8
++7fcbbb0:	8034      	strh	r4, [r6, #0]
++7fcbbb2:	bd70      	pop	{r4, r5, r6, pc}
++7fcbbb4:	2108      	movs	r1, #8
++7fcbbb6:	e7f4      	b.n	0x7fcbba2
++7fcbbb8:	2408      	movs	r4, #8
++7fcbbba:	e7f9      	b.n	0x7fcbbb0
+ 7fcbbbc:	5650      	ldrsb	r0, [r2, r1]
+ 7fcbbbe:	07fd      	lsls	r5, r7, #31

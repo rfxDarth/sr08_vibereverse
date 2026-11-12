@@ -1,228 +1,143 @@
-/*
- * switch_display_state_and_run_hooks: 418-byte fixed-address Thumb transcription.
- * Overall behavior: Switch the display state, update associated output state, and run hooks.
+/* switch_display_state_and_run_hooks (0x07fc3b78): switch the display/system state.
+ * Looks up the new state's enter hook and the old state's leave hook in the 35-entry descriptor table, drives the
+ * display pins (states <= 21: OUTPUT plus TIMER0/SWTIM_IRQn on; later states: INPUT_PULLDOWN and mode flags), then runs
+ * leave(new) and enter(previous).
+ * Built with the "ac6likelyprob" profile (armclang 6.16 -Oz, -mllvm -static-likely-prob=100). Code-shape notes:
+ * - __builtin_annotation(1, ...) keeps V204's one shared constant 1 (pin flag, high level, IRQ bit, timer enable) and
+ *   the shared 1 for the 1 << 26/11/27 mode flags; a compiler-only fence keeps the 0xff-then-clear store order.
+ * - __builtin_expect(enter != 0, 0) keeps `enter` spilled until a late reload into r1 (V204). Without the hint the
+ *   register allocator reloads it into r4 before the "systate" printf. The profile's -static-likely-prob=100 keeps
+ *   V204's fall-through layout of the enter call despite the hint.
  */
+/* Switch the device's display/system state. */
+#include <stdbool.h>
 #include <stdint.h>
-#include "firmware/reconstructed/include/sr08_display_state_switches.h"
-__attribute__((used, naked, section(".text.switch_display_state_and_run_hooks"))) void
-switch_display_state_and_run_hooks(uint32_t state) {
-    __asm__ volatile(
-        "push {r4, r5, r6, r7, lr} /* 0x07fc3b78 */\n"
-        "sub sp, #20 /* 0x07fc3b7a */\n"
-        "mov r5, r0 /* 0x07fc3b7c */\n"
-        "cmp r0, #36	@ 0x24 /* 0x07fc3b7e */\n"
-        "bcc.n .L_switch_display_state_and_run_hooks_at_07fc3b8e /* branch: cc, target at .+14 */ /* 0x07fc3b80 */\n"
-        ".set .Ladr_07fc3b82, .+466\n"
-        "adr r0, .Ladr_07fc3b82 /* 0x07fc3b82 -> 0x07fc3d54 */\n"
-        "movs r2, #36	@ 0x24 /* 0x07fc3b84 */\n"
-        "mov r1, r5 /* 0x07fc3b86 */\n"
-        "bl format_and_send_uart_message\n" /* at 0x07fc3b88 */
-        "b.n .L_switch_display_state_and_run_hooks_at_07fc3d16 /* branch: always, target at .+394 */ /* 0x07fc3b8c */\n"
-        ".L_switch_display_state_and_run_hooks_at_07fc3b8e:\n"
-        "ldr r7, [pc, #396] /* 0x07fc3b8e */\n"
-        "ldrb r0, [r7, #12] /* 0x07fc3b90 */\n"
-        "cmp r0, #30 /* 0x07fc3b92 */\n"
-        "bne.n .L_switch_display_state_and_run_hooks_at_07fc3b98 /* branch: ne, target at .+4 */ /* 0x07fc3b94 */\n"
-        "b.n .L_switch_display_state_and_run_hooks_at_07fc3d16 /* branch: always, target at .+384 */ /* 0x07fc3b96 */\n"
-        ".L_switch_display_state_and_run_hooks_at_07fc3b98:\n"
-        "movs r6, #0 /* 0x07fc3b98 */\n"
-        "ldr r1, [pc, #388] /* 0x07fc3b9a */\n"
-        "mov r2, r6 /* 0x07fc3b9c */\n"
-        ".L_switch_display_state_and_run_hooks_at_07fc3b9e:\n"
-        "adds r3, r2, #4 /* 0x07fc3b9e */\n"
-        "cmp r3, #144	@ 0x90 /* 0x07fc3ba0 */\n"
-        "beq.n .L_switch_display_state_and_run_hooks_at_07fc3bb4 /* branch: eq, target at .+18 */ /* 0x07fc3ba2 */\n"
-        "ldr r4, [r1, r2] /* 0x07fc3ba4 */\n"
-        "ldrh r2, [r4, #0] /* 0x07fc3ba6 */\n"
-        "cmp r2, r5 /* 0x07fc3ba8 */\n"
-        "mov r2, r3 /* 0x07fc3baa */\n"
-        "bne.n .L_switch_display_state_and_run_hooks_at_07fc3b9e /* branch: ne, target at .-14 */ /* 0x07fc3bac */\n"
-        "ldr r2, [r4, #4] /* 0x07fc3bae */\n"
-        "str r2, [sp, #16] /* 0x07fc3bb0 */\n"
-        "b.n .L_switch_display_state_and_run_hooks_at_07fc3bb6 /* branch: always, target at .+4 */ /* 0x07fc3bb2 */\n"
-        ".L_switch_display_state_and_run_hooks_at_07fc3bb4:\n"
-        "str r6, [sp, #16] /* 0x07fc3bb4 */\n"
-        ".L_switch_display_state_and_run_hooks_at_07fc3bb6:\n"
-        "mov r2, r6 /* 0x07fc3bb6 */\n"
-        ".L_switch_display_state_and_run_hooks_at_07fc3bb8:\n"
-        "adds r3, r2, #4 /* 0x07fc3bb8 */\n"
-        "cmp r3, #144	@ 0x90 /* 0x07fc3bba */\n"
-        "beq.n .L_switch_display_state_and_run_hooks_at_07fc3bca /* branch: eq, target at .+14 */ /* 0x07fc3bbc */\n"
-        "ldr r4, [r1, r2] /* 0x07fc3bbe */\n"
-        "ldrh r2, [r4, #0] /* 0x07fc3bc0 */\n"
-        "cmp r2, r0 /* 0x07fc3bc2 */\n"
-        "mov r2, r3 /* 0x07fc3bc4 */\n"
-        "bne.n .L_switch_display_state_and_run_hooks_at_07fc3bb8 /* branch: ne, target at .-14 */ /* 0x07fc3bc6 */\n"
-        "ldr r6, [r4, #8] /* 0x07fc3bc8 */\n"
-        ".L_switch_display_state_and_run_hooks_at_07fc3bca:\n"
-        "cmp r0, r5 /* 0x07fc3bca */\n"
-        "beq.n .L_switch_display_state_and_run_hooks_at_07fc3bd4 /* branch: eq, target at .+8 */ /* 0x07fc3bcc */\n"
-        "movs r0, #48	@ 0x30 /* 0x07fc3bce */\n"
-        "movs r1, #0 /* 0x07fc3bd0 */\n"
-        "strb r1, [r7, r0] /* 0x07fc3bd2 */\n"
-        ".L_switch_display_state_and_run_hooks_at_07fc3bd4:\n"
-        "cmp r5, #21 /* 0x07fc3bd4 */\n"
-        "bhi.n .L_switch_display_state_and_run_hooks_at_07fc3c20 /* branch: hi, target at .+74 */ /* 0x07fc3bd6 */\n"
-        "str r6, [sp, #8] /* 0x07fc3bd8 */\n"
-        "str r5, [sp, #12] /* 0x07fc3bda */\n"
-        "bl reset_transition_state_and_store_scaled_value\n" /* at 0x07fc3bdc */
-        "movs r4, #52	@ 0x34 /* 0x07fc3be0 */\n"
-        "ldrb r0, [r7, r4] /* 0x07fc3be2 */\n"
-        "movs r6, #1 /* 0x07fc3be4 */\n"
-        "cmp r0, #0 /* 0x07fc3be6 */\n"
-        "bne.n .L_switch_display_state_and_run_hooks_at_07fc3bf4 /* branch: ne, target at .+12 */ /* 0x07fc3be8 */\n"
-        "movs r0, #0 /* 0x07fc3bea */\n"
-        "movs r1, #8 /* 0x07fc3bec */\n"
-        "bl update_state_bits_and_publish_empty_status\n" /* at 0x07fc3bee */
-        "strb r6, [r7, r4] /* 0x07fc3bf2 */\n"
-        ".L_switch_display_state_and_run_hooks_at_07fc3bf4:\n"
-        "bl disable_interrupt_mask_0x8000_and_publish_control_state\n" /* at 0x07fc3bf4 */
-        "movs r0, #68	@ 0x44 /* 0x07fc3bf8 */\n"
-        "ldr r1, [pc, #304] /* 0x07fc3bfa */\n"
-        "movs r7, #0 /* 0x07fc3bfc */\n"
-        "strh r7, [r1, r0] /* 0x07fc3bfe */\n"
-        "str r7, [r1, #64]	@ 0x40 /* 0x07fc3c00 */\n"
-        "movs r0, #3 /* 0x07fc3c02 */\n"
-        "lsls r5, r0, #8 /* 0x07fc3c04 */\n"
-        "ldr r4, [pc, #284] /* 0x07fc3c06 */\n"
-        ".L_switch_display_state_and_run_hooks_at_07fc3c08:\n"
-        "cmp r7, #14 /* 0x07fc3c08 */\n"
-        "beq.n .L_switch_display_state_and_run_hooks_at_07fc3c52 /* branch: eq, target at .+72 */ /* 0x07fc3c0a */\n"
-        "movs r3, #0 /* 0x07fc3c0c */\n"
-        "str r3, [sp, #0] /* 0x07fc3c0e */\n"
-        "ldrb r0, [r4, r7] /* 0x07fc3c10 */\n"
-        "adds r1, r4, r7 /* 0x07fc3c12 */\n"
-        "ldrb r1, [r1, #1] /* 0x07fc3c14 */\n"
-        "mov r2, r5 /* 0x07fc3c16 */\n"
-        "bl update_status_slots_for_group_bit\n" /* at 0x07fc3c18 */
-        "adds r7, r7, #2 /* 0x07fc3c1c */\n"
-        "b.n .L_switch_display_state_and_run_hooks_at_07fc3c08 /* branch: always, target at .-22 */ /* 0x07fc3c1e */\n"
-        ".L_switch_display_state_and_run_hooks_at_07fc3c20:\n"
-        "movs r1, #52	@ 0x34 /* 0x07fc3c20 */\n"
-        "ldrb r0, [r7, r1] /* 0x07fc3c22 */\n"
-        "cmp r0, #1 /* 0x07fc3c24 */\n"
-        "bne.n .L_switch_display_state_and_run_hooks_at_07fc3ccc /* branch: ne, target at .+166 */ /* 0x07fc3c26 */\n"
-        "str r1, [sp, #4] /* 0x07fc3c28 */\n"
-        "str r6, [sp, #8] /* 0x07fc3c2a */\n"
-        "str r5, [sp, #12] /* 0x07fc3c2c */\n"
-        "bl disable_interrupt_mask_0x8000_and_publish_control_state\n" /* at 0x07fc3c2e */
-        "movs r6, #1 /* 0x07fc3c32 */\n"
-        "lsls r5, r6, #9 /* 0x07fc3c34 */\n"
-        "movs r4, #0 /* 0x07fc3c36 */\n"
-        "ldr r7, [pc, #232] /* 0x07fc3c38 */\n"
-        ".L_switch_display_state_and_run_hooks_at_07fc3c3a:\n"
-        "cmp r4, #14 /* 0x07fc3c3a */\n"
-        "beq.n .L_switch_display_state_and_run_hooks_at_07fc3c96 /* branch: eq, target at .+90 */ /* 0x07fc3c3c */\n"
-        "movs r3, #0 /* 0x07fc3c3e */\n"
-        "str r3, [sp, #0] /* 0x07fc3c40 */\n"
-        "ldrb r0, [r7, r4] /* 0x07fc3c42 */\n"
-        "adds r1, r7, r4 /* 0x07fc3c44 */\n"
-        "ldrb r1, [r1, #1] /* 0x07fc3c46 */\n"
-        "mov r2, r5 /* 0x07fc3c48 */\n"
-        "bl update_status_slots_for_group_bit\n" /* at 0x07fc3c4a */
-        "adds r4, r4, #2 /* 0x07fc3c4e */\n"
-        "b.n .L_switch_display_state_and_run_hooks_at_07fc3c3a /* branch: always, target at .-22 */ /* 0x07fc3c50 */\n"
-        ".L_switch_display_state_and_run_hooks_at_07fc3c52:\n"
-        "movs r7, #0 /* 0x07fc3c52 */\n"
-        "ldr r4, [pc, #208] /* 0x07fc3c54 */\n"
-        ".L_switch_display_state_and_run_hooks_at_07fc3c56:\n"
-        "cmp r7, #12 /* 0x07fc3c56 */\n"
-        "beq.n .L_switch_display_state_and_run_hooks_at_07fc3c6e /* branch: eq, target at .+22 */ /* 0x07fc3c58 */\n"
-        "str r6, [sp, #0] /* 0x07fc3c5a */\n"
-        "ldrb r0, [r4, r7] /* 0x07fc3c5c */\n"
-        "adds r1, r4, r7 /* 0x07fc3c5e */\n"
-        "ldrb r1, [r1, #1] /* 0x07fc3c60 */\n"
-        "movs r3, #0 /* 0x07fc3c62 */\n"
-        "mov r2, r5 /* 0x07fc3c64 */\n"
-        "bl update_status_slots_for_group_bit\n" /* at 0x07fc3c66 */
-        "adds r7, r7, #2 /* 0x07fc3c6a */\n"
-        "b.n .L_switch_display_state_and_run_hooks_at_07fc3c56 /* branch: always, target at .-22 */ /* 0x07fc3c6c */\n"
-        ".L_switch_display_state_and_run_hooks_at_07fc3c6e:\n"
-        "bl reset_transition_state_and_store_scaled_value\n" /* at 0x07fc3c6e */
-        "movs r0, #44	@ 0x2c /* 0x07fc3c72 */\n"
-        "movs r1, #255	@ 0xff /* 0x07fc3c74 */\n"
-        "ldr r7, [pc, #164] /* 0x07fc3c76 */\n"
-        "strb r1, [r7, r0] /* 0x07fc3c78 */\n"
-        "lsls r0, r6, #15 /* 0x07fc3c7a */\n"
-        "ldr r1, [pc, #176] /* 0x07fc3c7c */\n"
-        "str r0, [r1, #0] /* 0x07fc3c7e */\n"
-        "ldr r0, [pc, #176] /* 0x07fc3c80 */\n"
-        "ldrh r1, [r0, #0] /* 0x07fc3c82 */\n"
-        "orrs r1, r6 /* 0x07fc3c84 */\n"
-        "strh r1, [r0, #0] /* 0x07fc3c86 */\n"
-        "movs r0, #0 /* 0x07fc3c88 */\n"
-        "movs r1, #2 /* 0x07fc3c8a */\n"
-        "bl update_state_bits_and_publish_empty_status\n" /* at 0x07fc3c8c */
-        "ldr r5, [sp, #12] /* 0x07fc3c90 */\n"
-        "ldr r6, [sp, #8] /* 0x07fc3c92 */\n"
-        "b.n .L_switch_display_state_and_run_hooks_at_07fc3cf0 /* branch: always, target at .+92 */ /* 0x07fc3c94 */\n"
-        ".L_switch_display_state_and_run_hooks_at_07fc3c96:\n"
-        "movs r7, #0 /* 0x07fc3c96 */\n"
-        "ldr r4, [pc, #140] /* 0x07fc3c98 */\n"
-        ".L_switch_display_state_and_run_hooks_at_07fc3c9a:\n"
-        "cmp r7, #12 /* 0x07fc3c9a */\n"
-        "beq.n .L_switch_display_state_and_run_hooks_at_07fc3cb2 /* branch: eq, target at .+22 */ /* 0x07fc3c9c */\n"
-        "str r6, [sp, #0] /* 0x07fc3c9e */\n"
-        "ldrb r0, [r4, r7] /* 0x07fc3ca0 */\n"
-        "adds r1, r4, r7 /* 0x07fc3ca2 */\n"
-        "ldrb r1, [r1, #1] /* 0x07fc3ca4 */\n"
-        "movs r3, #0 /* 0x07fc3ca6 */\n"
-        "mov r2, r5 /* 0x07fc3ca8 */\n"
-        "bl update_status_slots_for_group_bit\n" /* at 0x07fc3caa */
-        "adds r7, r7, #2 /* 0x07fc3cae */\n"
-        "b.n .L_switch_display_state_and_run_hooks_at_07fc3c9a /* branch: always, target at .-22 */ /* 0x07fc3cb0 */\n"
-        ".L_switch_display_state_and_run_hooks_at_07fc3cb2:\n"
-        "movs r0, #1 /* 0x07fc3cb2 */\n"
-        "movs r1, #8 /* 0x07fc3cb4 */\n"
-        "bl update_state_bits_and_publish_empty_status\n" /* at 0x07fc3cb6 */
-        "movs r0, #44	@ 0x2c /* 0x07fc3cba */\n"
-        "movs r1, #255	@ 0xff /* 0x07fc3cbc */\n"
-        "ldr r7, [pc, #92] /* 0x07fc3cbe */\n"
-        "strb r1, [r7, r0] /* 0x07fc3cc0 */\n"
-        "movs r0, #0 /* 0x07fc3cc2 */\n"
-        "ldr r1, [sp, #4] /* 0x07fc3cc4 */\n"
-        "strb r0, [r7, r1] /* 0x07fc3cc6 */\n"
-        "ldr r5, [sp, #12] /* 0x07fc3cc8 */\n"
-        "ldr r6, [sp, #8] /* 0x07fc3cca */\n"
-        ".L_switch_display_state_and_run_hooks_at_07fc3ccc:\n"
-        "movs r1, #64	@ 0x40 /* 0x07fc3ccc */\n"
-        "movs r0, #15 /* 0x07fc3cce */\n"
-        "strh r0, [r7, r1] /* 0x07fc3cd0 */\n"
-        "movs r4, #1 /* 0x07fc3cd2 */\n"
-        "lsls r0, r4, #26 /* 0x07fc3cd4 */\n"
-        "cmp r5, #32 /* 0x07fc3cd6 */\n"
-        "bne.n .L_switch_display_state_and_run_hooks_at_07fc3ce6 /* branch: ne, target at .+14 */ /* 0x07fc3cd8 */\n"
-        "movs r2, #180	@ 0xb4 /* 0x07fc3cda */\n"
-        "strh r2, [r7, r1] /* 0x07fc3cdc */\n"
-        "bl update_mode_flags_and_transitions\n" /* at 0x07fc3cde */
-        "lsls r0, r4, #11 /* 0x07fc3ce2 */\n"
-        "b.n .L_switch_display_state_and_run_hooks_at_07fc3cec /* branch: always, target at .+8 */ /* 0x07fc3ce4 */\n"
-        ".L_switch_display_state_and_run_hooks_at_07fc3ce6:\n"
-        "bl update_mode_flags_and_transitions\n" /* at 0x07fc3ce6 */
-        "lsls r0, r4, #27 /* 0x07fc3cea */\n"
-        ".L_switch_display_state_and_run_hooks_at_07fc3cec:\n"
-        "bl update_mode_flags_and_transitions\n" /* at 0x07fc3cec */
-        ".L_switch_display_state_and_run_hooks_at_07fc3cf0:\n"
-        "ldrb r1, [r7, #12] /* 0x07fc3cf0 */\n"
-        ".set .Ladr_07fc3cf2, .+70\n"
-        "adr r0, .Ladr_07fc3cf2 /* 0x07fc3cf2 -> 0x07fc3d38 */\n"
-        "mov r2, r5 /* 0x07fc3cf4 */\n"
-        "bl format_and_send_uart_message\n" /* at 0x07fc3cf6 */
-        "movs r0, #1 /* 0x07fc3cfa */\n"
-        "movs r1, #0 /* 0x07fc3cfc */\n"
-        "bl update_indexed_delay_entry_if_changed\n" /* at 0x07fc3cfe */
-        "cmp r6, #0 /* 0x07fc3d02 */\n"
-        "beq.n .L_switch_display_state_and_run_hooks_at_07fc3d0a /* branch: eq, target at .+6 */ /* 0x07fc3d04 */\n"
-        "mov r0, r5 /* 0x07fc3d06 */\n"
-        "blx r6 /* 0x07fc3d08 */\n"
-        ".L_switch_display_state_and_run_hooks_at_07fc3d0a:\n"
-        "ldrb r0, [r7, #12] /* 0x07fc3d0a */\n"
-        "strb r5, [r7, #12] /* 0x07fc3d0c */\n"
-        "ldr r1, [sp, #16] /* 0x07fc3d0e */\n"
-        "cmp r1, #0 /* 0x07fc3d10 */\n"
-        "beq.n .L_switch_display_state_and_run_hooks_at_07fc3d16 /* branch: eq, target at .+4 */ /* 0x07fc3d12 */\n"
-        "blx r1 /* 0x07fc3d14 */\n"
-        ".L_switch_display_state_and_run_hooks_at_07fc3d16:\n"
-        "add sp, #20 /* 0x07fc3d16 */\n"
-        "pop {r4, r5, r6, r7, pc} /* 0x07fc3d18 */\n");
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+#include "firmware/reconstructed/include/sr08_sdk_da14585.h"
+#include "firmware/reconstructed/include/sr08_sdk_gpio.h"
+
+struct display_state_descriptor {
+    uint16_t state;
+    uint16_t reserved_02;
+    void (*enter)(uint32_t previous_state);
+    void (*leave)(uint32_t next_state);
+};
+
+struct gpio_pin_ref {
+    uint8_t port;
+    uint8_t pin;
+};
+
+#define DISPLAY_STATE_COUNT 36
+#define DISPLAY_STATE_DESCRIPTORS 35
+#define DISPLAY_STATE_LOCKED 0x1e
+#define DISPLAY_STATE_LAST_ACTIVE 21
+#define DISPLAY_STATE_0X20 0x20
+
+extern const struct display_state_descriptor *const display_state_descriptors[DISPLAY_STATE_DESCRIPTORS];
+extern const struct gpio_pin_ref display_low_pins[7];
+extern const struct gpio_pin_ref display_high_pins[6];
+
+extern void arch_printf(const char *format, ...);
+extern void GPIO_ConfigurePin(GPIO_PORT port, GPIO_PIN pin, GPIO_PUPD mode, GPIO_FUNCTION function, const bool high);
+extern void reset_transition_state_and_store_scaled_value(void);
+extern void update_state_bits_and_publish_empty_status(uint32_t clear_bits, uint32_t bits_to_update);
+extern void disable_interrupt_mask_0x8000_and_publish_control_state(void);
+extern uint32_t update_indexed_delay_entry_if_changed(uint32_t entry_index, uint32_t timing_value);
+extern void update_mode_flags_and_transitions(uint32_t flags);
+
+#define G5650(type, offset) (*(type *)(void *)((uint8_t *)&merged_globals_5650 + (offset)))
+#define G56D0(type, offset) (*(type *)(void *)((uint8_t *)&merged_globals_56d0 + (offset)))
+#define current_state G5650(uint8_t, 0x0c)
+#define state_byte_2c G5650(uint8_t, 0x2c)
+#define state_byte_30 G5650(uint8_t, 0x30)
+#define display_pins_driven G5650(uint8_t, 0x34)
+#define state_timeout G5650(volatile uint16_t, 0x40)
+#define counter_40 G56D0(uint32_t, 0x40)
+#define counter_44 G56D0(uint16_t, 0x44)
+
+#define TIMER0_CTRL_REG (*(volatile uint16_t *)0x50003400)
+#define TIM0_CTRL 0x0001
+
+void switch_display_state_and_run_hooks(uint32_t state)
+{
+    if (state >= DISPLAY_STATE_COUNT) {
+        arch_printf("newstate error %d,%d\n", state, DISPLAY_STATE_COUNT);
+        return;
+    }
+    uint32_t old = current_state;
+    if (old == DISPLAY_STATE_LOCKED)
+        return;
+
+    void (*enter)(uint32_t) = 0;
+    for (uint32_t i = 0; i < DISPLAY_STATE_DESCRIPTORS; i++) {
+        if (display_state_descriptors[i]->state == state) {
+            enter = display_state_descriptors[i]->enter;
+            break;
+        }
+    }
+    void (*leave)(uint32_t) = 0;
+    for (uint32_t i = 0; i < DISPLAY_STATE_DESCRIPTORS; i++) {
+        if (display_state_descriptors[i]->state == old) {
+            leave = display_state_descriptors[i]->leave;
+            break;
+        }
+    }
+    if (old != state)
+        state_byte_30 = 0;
+
+    if (state <= DISPLAY_STATE_LAST_ACTIVE) {
+        reset_transition_state_and_store_scaled_value();
+        /* Preserve V204's shared constant 1 (pin flag, high level, IRQ bit, timer enable). */
+        uint32_t one = __builtin_annotation(1, "shared one");
+        if (display_pins_driven == 0) {
+            update_state_bits_and_publish_empty_status(0, 8);
+            display_pins_driven = one;
+        }
+        disable_interrupt_mask_0x8000_and_publish_control_state();
+        counter_44 = 0;
+        counter_40 = 0;
+        for (uint32_t i = 0; i < 7; i++)
+            GPIO_ConfigurePin((GPIO_PORT)display_low_pins[i].port, (GPIO_PIN)display_low_pins[i].pin, OUTPUT, PID_GPIO, false);
+        for (uint32_t i = 0; i < 6; i++)
+            GPIO_ConfigurePin((GPIO_PORT)display_high_pins[i].port, (GPIO_PIN)display_high_pins[i].pin, OUTPUT, PID_GPIO, one);
+        reset_transition_state_and_store_scaled_value();
+        state_byte_2c = 0xff;
+        NVIC->ISER[0] = one << SWTIM_IRQn;
+        TIMER0_CTRL_REG |= one;
+        update_state_bits_and_publish_empty_status(0, 2);
+    } else {
+        if (display_pins_driven == 1) {
+            disable_interrupt_mask_0x8000_and_publish_control_state();
+            for (uint32_t i = 0; i < 7; i++)
+                GPIO_ConfigurePin((GPIO_PORT)display_low_pins[i].port, (GPIO_PIN)display_low_pins[i].pin, INPUT_PULLDOWN, PID_GPIO, false);
+            for (uint32_t i = 0; i < 6; i++)
+                GPIO_ConfigurePin((GPIO_PORT)display_high_pins[i].port, (GPIO_PIN)display_high_pins[i].pin, INPUT_PULLDOWN, PID_GPIO, true);
+            update_state_bits_and_publish_empty_status(1, 8);
+            state_byte_2c = 0xff;
+            /* Keep V204's store order (compiler-only fence; no ARM instruction). */
+            __atomic_signal_fence(__ATOMIC_SEQ_CST);
+            display_pins_driven = 0;
+        }
+        state_timeout = 15;
+        /* Preserve V204's shared constant 1 for the three mode flags. */
+        uint32_t one = __builtin_annotation(1, "mode flag one");
+        uint32_t leave_display = one << 26;
+        if (state == DISPLAY_STATE_0X20) {
+            state_timeout = 180;
+            update_mode_flags_and_transitions(leave_display);
+            update_mode_flags_and_transitions(one << 11);
+        } else {
+            update_mode_flags_and_transitions(leave_display);
+            update_mode_flags_and_transitions(one << 27);
+        }
+    }
+    arch_printf("systate %d switch to %d\n", current_state, state);
+    update_indexed_delay_entry_if_changed(1, 0);
+    if (leave)
+        leave(state);
+    uint32_t previous = current_state;
+    current_state = (uint8_t)state;
+    if (__builtin_expect(enter != 0, 0))
+        enter(previous);
 }

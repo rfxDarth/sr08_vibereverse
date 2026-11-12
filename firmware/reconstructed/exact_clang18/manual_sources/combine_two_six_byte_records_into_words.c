@@ -13,12 +13,12 @@ combine_two_six_byte_records_into_words(uint32_t *output) {
     volatile uint8_t frame_padding[2]; /* Retains the two-byte gap in V204's stack frame. */
     volatile uint8_t second_record_storage[6];
     /* Pin the helper ABI: buffers in r6/r5, count in r7, arguments in r0-r2. */
-    register volatile uint8_t *first_record_bytes __asm__("r6") = first_record_storage;
-    register volatile uint8_t *second_record_bytes __asm__("r5");
-    register uint32_t record_byte_count __asm__("r7") = 6;
-    register uint32_t device_source_offset __asm__("r0");
-    register volatile uint8_t *read_destination __asm__("r1");
-    register uint32_t read_length __asm__("r2");
+    volatile uint8_t *first_record_bytes = first_record_storage;
+    volatile uint8_t *second_record_bytes;
+    uint32_t record_byte_count = 6;
+    uint32_t device_source_offset;
+    volatile uint8_t *read_destination;
+    uint32_t read_length;
 
     device_source_offset = 2;
     read_destination = first_record_bytes;

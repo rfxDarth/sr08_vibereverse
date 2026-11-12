@@ -1,0 +1,60 @@
+group 0x07fc8fb0-0x07fc9000 (80 bytes)
+MISMATCH: 47 differing bytes
+--- V204
++++ candidate
+@@ -3,5 +3,5 @@
+ 7fc8fb4:	2300      	movs	r3, #0
+ 7fc8fb6:	7003      	strb	r3, [r0, #0]
+-7fc8fb8:	4e0f      	ldr	r6, [pc, #60]	@ (0x7fc8ff8)
++7fc8fb8:	4e0e      	ldr	r6, [pc, #56]	@ (0x7fc8ff4)
+ 7fc8fba:	4635      	mov	r5, r6
+ 7fc8fbc:	3514      	adds	r5, #20
+@@ -13,26 +13,25 @@
+ 7fc8fca:	7d30      	ldrb	r0, [r6, #20]
+ 7fc8fcc:	282b      	cmp	r0, #43	@ 0x2b
+-7fc8fce:	d10b      	bne.n	0x7fc8fe8
++7fc8fce:	d10a      	bne.n	0x7fc8fe6
+ 7fc8fd0:	7cef      	ldrb	r7, [r5, #19]
+-7fc8fd2:	2f00      	cmp	r7, #0
+-7fc8fd4:	d008      	beq.n	0x7fc8fe8
+-7fc8fd6:	2f11      	cmp	r7, #17
+-7fc8fd8:	d806      	bhi.n	0x7fc8fe8
+-7fc8fda:	4635      	mov	r5, r6
+-7fc8fdc:	3515      	adds	r5, #21
+-7fc8fde:	4628      	mov	r0, r5
+-7fc8fe0:	f7f8 fc88 	bl	0x7fc18f4
+-7fc8fe4:	42b8      	cmp	r0, r7
+-7fc8fe6:	d003      	beq.n	0x7fc8ff0
+-7fc8fe8:	2084      	movs	r0, #132	@ 0x84
+-7fc8fea:	7530      	strb	r0, [r6, #20]
+-7fc8fec:	a503      	add	r5, pc, #12	@ (adr r5, 0x7fc8ffc)
+-7fc8fee:	2704      	movs	r7, #4
+-7fc8ff0:	7027      	strb	r7, [r4, #0]
+-7fc8ff2:	4628      	mov	r0, r5
+-7fc8ff4:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
+-7fc8ff6:	46c0      	nop			@ (mov r8, r8)
+-7fc8ff8:	574c      	ldrsb	r4, [r1, r5]
+-7fc8ffa:	07fd      	lsls	r5, r7, #31
+-7fc8ffc:	5253      	strh	r3, [r2, r1]
+-7fc8ffe:	3830      	subs	r0, #48	@ 0x30
++7fc8fd2:	1e78      	subs	r0, r7, #1
++7fc8fd4:	2810      	cmp	r0, #16
++7fc8fd6:	d806      	bhi.n	0x7fc8fe6
++7fc8fd8:	4635      	mov	r5, r6
++7fc8fda:	3515      	adds	r5, #21
++7fc8fdc:	4628      	mov	r0, r5
++7fc8fde:	f7f8 fc89 	bl	0x7fc18f4
++7fc8fe2:	42b8      	cmp	r0, r7
++7fc8fe4:	d003      	beq.n	0x7fc8fee
++7fc8fe6:	2084      	movs	r0, #132	@ 0x84
++7fc8fe8:	7530      	strb	r0, [r6, #20]
++7fc8fea:	2704      	movs	r7, #4
++7fc8fec:	a502      	add	r5, pc, #8	@ (adr r5, 0x7fc8ff8)
++7fc8fee:	7027      	strb	r7, [r4, #0]
++7fc8ff0:	4628      	mov	r0, r5
++7fc8ff2:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
++7fc8ff4:	574c      	ldrsb	r4, [r1, r5]
++7fc8ff6:	07fd      	lsls	r5, r7, #31
++7fc8ff8:	5253      	strh	r3, [r2, r1]
++7fc8ffa:	3830      	subs	r0, #48	@ 0x30
++7fc8ffc:	0000      	movs	r0, r0

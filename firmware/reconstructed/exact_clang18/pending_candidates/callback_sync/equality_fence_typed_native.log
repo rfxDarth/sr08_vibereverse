@@ -1,0 +1,120 @@
+group 0x07fc85e0-0x07fc8678 (152 bytes)
+MISMATCH: 101 differing bytes
+--- V204
++++ candidate
+@@ -3,5 +3,5 @@
+ 7fc85e4:	4620      	mov	r0, r4
+ 7fc85e6:	f7ff fea9 	bl	0x7fc833c
+-7fc85ea:	4eb8      	ldr	r6, [pc, #736]	@ (0x7fc88cc)
++7fc85ea:	4e21      	ldr	r6, [pc, #132]	@ (0x7fc8670)
+ 7fc85ec:	87f0      	strh	r0, [r6, #62]	@ 0x3e
+ 7fc85ee:	4620      	mov	r0, r4
+@@ -14,57 +14,57 @@
+ 7fc8600:	4628      	mov	r0, r5
+ 7fc8602:	f7ff ffb3 	bl	0x7fc856c
+-7fc8606:	5bf1      	ldrh	r1, [r6, r7]
+-7fc8608:	8ff0      	ldrh	r0, [r6, #62]	@ 0x3e
++7fc8606:	5bf0      	ldrh	r0, [r6, r7]
++7fc8608:	8ff1      	ldrh	r1, [r6, #62]	@ 0x3e
+ 7fc860a:	460a      	mov	r2, r1
+ 7fc860c:	4302      	orrs	r2, r0
+-7fc860e:	d006      	beq.n	0x7fc861e
++7fc860e:	d019      	beq.n	0x7fc8644
+ 7fc8610:	7f72      	ldrb	r2, [r6, #29]
+ 7fc8612:	2a00      	cmp	r2, #0
+-7fc8614:	d01e      	beq.n	0x7fc8654
+-7fc8616:	4288      	cmp	r0, r1
+-7fc8618:	d105      	bne.n	0x7fc8626
+-7fc861a:	4625      	mov	r5, r4
+-7fc861c:	e01c      	b.n	0x7fc8658
+-7fc861e:	2200      	movs	r2, #0
+-7fc8620:	76f2      	strb	r2, [r6, #27]
+-7fc8622:	7f75      	ldrb	r5, [r6, #29]
+-7fc8624:	e016      	b.n	0x7fc8654
+-7fc8626:	b205      	sxth	r5, r0
+-7fc8628:	76f4      	strb	r4, [r6, #27]
+-7fc862a:	2246      	movs	r2, #70	@ 0x46
+-7fc862c:	9200      	str	r2, [sp, #0]
+-7fc862e:	5eb2      	ldrsh	r2, [r6, r2]
+-7fc8630:	7e77      	ldrb	r7, [r6, #25]
+-7fc8632:	2f00      	cmp	r7, #0
+-7fc8634:	4613      	mov	r3, r2
+-7fc8636:	d100      	bne.n	0x7fc863a
+-7fc8638:	460b      	mov	r3, r1
+-7fc863a:	b21b      	sxth	r3, r3
+-7fc863c:	1aeb      	subs	r3, r5, r3
+-7fc863e:	4da7      	ldr	r5, [pc, #668]	@ (0x7fc88dc)
+-7fc8640:	63ab      	str	r3, [r5, #56]	@ 0x38
+-7fc8642:	2f01      	cmp	r7, #1
+-7fc8644:	d105      	bne.n	0x7fc8652
+-7fc8646:	b20b      	sxth	r3, r1
+-7fc8648:	3a32      	subs	r2, #50	@ 0x32
+-7fc864a:	429a      	cmp	r2, r3
+-7fc864c:	dd01      	ble.n	0x7fc8652
+-7fc864e:	9a00      	ldr	r2, [sp, #0]
+-7fc8650:	52b1      	strh	r1, [r6, r2]
+-7fc8652:	4625      	mov	r5, r4
+-7fc8654:	4288      	cmp	r0, r1
+-7fc8656:	d110      	bne.n	0x7fc867a
+-7fc8658:	2d00      	cmp	r5, #0
+-7fc865a:	d10e      	bne.n	0x7fc867a
+-7fc865c:	2800      	cmp	r0, #0
+-7fc865e:	d00c      	beq.n	0x7fc867a
+-7fc8660:	7e70      	ldrb	r0, [r6, #25]
+-7fc8662:	2800      	cmp	r0, #0
+-7fc8664:	d009      	beq.n	0x7fc867a
+-7fc8666:	209c      	movs	r0, #156	@ 0x9c
+-7fc8668:	2107      	movs	r1, #7
+-7fc866a:	f000 f8f1 	bl	0x7fc8850
+-7fc866e:	2070      	movs	r0, #112	@ 0x70
+-7fc8670:	2100      	movs	r1, #0
+-7fc8672:	f000 f8ed 	bl	0x7fc8850
+-7fc8676:	2001      	movs	r0, #1
++7fc8614:	d01a      	beq.n	0x7fc864c
++7fc8616:	4281      	cmp	r1, r0
++7fc8618:	d013      	beq.n	0x7fc8642
++7fc861a:	b20b      	sxth	r3, r1
++7fc861c:	2146      	movs	r1, #70	@ 0x46
++7fc861e:	5e72      	ldrsh	r2, [r6, r1]
++7fc8620:	7e75      	ldrb	r5, [r6, #25]
++7fc8622:	76f4      	strb	r4, [r6, #27]
++7fc8624:	2d00      	cmp	r5, #0
++7fc8626:	4604      	mov	r4, r0
++7fc8628:	d000      	beq.n	0x7fc862c
++7fc862a:	4614      	mov	r4, r2
++7fc862c:	b224      	sxth	r4, r4
++7fc862e:	1b1b      	subs	r3, r3, r4
++7fc8630:	4c10      	ldr	r4, [pc, #64]	@ (0x7fc8674)
++7fc8632:	63a3      	str	r3, [r4, #56]	@ 0x38
++7fc8634:	2d01      	cmp	r5, #1
++7fc8636:	d104      	bne.n	0x7fc8642
++7fc8638:	b203      	sxth	r3, r0
++7fc863a:	3a32      	subs	r2, #50	@ 0x32
++7fc863c:	429a      	cmp	r2, r3
++7fc863e:	dd00      	ble.n	0x7fc8642
++7fc8640:	5270      	strh	r0, [r6, r1]
++7fc8642:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
++7fc8644:	76f5      	strb	r5, [r6, #27]
++7fc8646:	7f72      	ldrb	r2, [r6, #29]
++7fc8648:	2a00      	cmp	r2, #0
++7fc864a:	d1fa      	bne.n	0x7fc8642
++7fc864c:	4281      	cmp	r1, r0
++7fc864e:	d1f8      	bne.n	0x7fc8642
++7fc8650:	2900      	cmp	r1, #0
++7fc8652:	d0f6      	beq.n	0x7fc8642
++7fc8654:	7e70      	ldrb	r0, [r6, #25]
++7fc8656:	2800      	cmp	r0, #0
++7fc8658:	d0f3      	beq.n	0x7fc8642
++7fc865a:	209c      	movs	r0, #156	@ 0x9c
++7fc865c:	2107      	movs	r1, #7
++7fc865e:	f000 f8f7 	bl	0x7fc8850
++7fc8662:	2070      	movs	r0, #112	@ 0x70
++7fc8664:	2100      	movs	r1, #0
++7fc8666:	f000 f8f3 	bl	0x7fc8850
++7fc866a:	7774      	strb	r4, [r6, #29]
++7fc866c:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
++7fc866e:	46c0      	nop			@ (mov r8, r8)
++7fc8670:	1e28      	subs	r0, r5, #0
++7fc8672:	07fd      	lsls	r5, r7, #31
++7fc8674:	1ea4      	subs	r4, r4, #2
++7fc8676:	07fd      	lsls	r5, r7, #31

@@ -1,52 +1,33 @@
-/* Optionally calculate a three-axis magnitude before dispatching the sample. */
-__attribute__((used, naked, section(".text.optionally_calculate_three_axis_magnitude_dispatching_at_3d6c"))) void
-optionally_calculate_three_axis_magnitude_dispatching_at_3d6c(void) {
-    __asm__ volatile("push {r4, r5, r6, r7, lr}\n"
-                     "sub sp, #28\n"
-                     "mov r7, r1\n"
-                     "add r1, sp, #20\n"
-                     "strh r2, [r1, #0]\n"
-                     "add r1, sp, #24\n"
-                     "strh r7, [r1, #0]\n"
-                     "add r1, sp, #16\n"
-                     "strh r3, [r1, #0]\n"
-                     "ldr r5, [sp, #48]\n"
-                     "mov r4, r7\n"
-                     "ldr r1, [sp, #52]\n"
-                     "cmp r1, #1\n"
-                     "bne .Ldispatch\n"
-                     "mov r6, r2\n"
-                     "str r2, [sp, #12]\n"
-                     "add r0, sp, #24\n"
-                     "add r1, sp, #20\n"
-                     "str r4, [sp, #8]\n"
-                     "add r4, sp, #16\n"
-                     "mov r2, r4\n"
-                     "bl copy_three_signed_coordinates_to_display_state\n"
-                     "movs r0, #7\n"
-                     "ldr r1, [pc, #52]\n"
-                     "ldrsb r1, [r1, r0]\n"
-                     "muls r7, r7\n"
-                     "muls r6, r6\n"
-                     "adds r0, r6, r7\n"
-                     "ldrh r2, [r4, #0]\n"
-                     "ldr r4, [sp, #8]\n"
-                     "sxth r6, r2\n"
-                     "cmp r1, #0\n"
-                     "bmi .Lsqrt\n"
-                     "mov r1, r6\n"
-                     "muls r1, r6\n"
-                     "adds r0, r0, r1\n"
-                     ".Lsqrt: bl integer_square_root_restoring\n"
-                     "str r5, [sp, #0]\n"
-                     "sxth r0, r0\n"
-                     "mov r1, r4\n"
-                     "ldr r2, [sp, #12]\n"
-                     "mov r3, r6\n"
-                     "b .Lcall\n"
-                     ".Ldispatch: str r5, [sp, #0]\n"
-                     "mov r1, r4\n"
-                     ".Lcall: bl update_motion_sample_history_and_activity_flags\n"
-                     "add sp, #28\n"
-                     "pop {r4, r5, r6, r7, pc}\n");
+/* Pass a motion sample to update_motion_sample_history_and_activity_flags.
+ * In mode 1 the sample is first published to the display state (which
+ * negates z), and the first value becomes the vector magnitude: of x and y,
+ * plus the published z unless device_control_state.magnitude_axes is
+ * negative. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_radio_configuration.h"
+
+void copy_three_signed_coordinates_to_display_state(volatile uint16_t *x, volatile uint16_t *y, volatile int16_t *angle);
+uint32_t integer_square_root_restoring(uint32_t input);
+void update_motion_sample_history_and_activity_flags(int16_t value, int16_t x, int16_t y, int16_t z, uint32_t extra);
+
+void optionally_calculate_three_axis_magnitude_dispatching_at_3d6c(int16_t value, int16_t x, int16_t y, int16_t z,
+                                                                   uint32_t extra, uint32_t mode)
+{
+    volatile uint16_t shown_x;
+    volatile uint16_t shown_y;
+    int16_t shown_z;
+    shown_y = y;
+    shown_x = x;
+    shown_z = z;
+
+    if (mode == 1) {
+        copy_three_signed_coordinates_to_display_state(&shown_x, &shown_y, (volatile int16_t *)&shown_z);
+        uint32_t sum = x * x + y * y;
+        int16_t z_shown = shown_z;
+        if (!(device_control_state.magnitude_axes < 0))
+            sum += z_shown * z_shown;
+        update_motion_sample_history_and_activity_flags((int16_t)integer_square_root_restoring(sum), x, y, z_shown, extra);
+        return;
+    }
+    update_motion_sample_history_and_activity_flags(value, x, y, z, extra);
 }

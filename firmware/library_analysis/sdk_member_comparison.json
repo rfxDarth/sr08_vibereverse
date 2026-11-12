@@ -1,0 +1,62 @@
+[
+  {
+    "member": "patch.o",
+    "identical": true,
+    "sha256_22": "efedb3408bfb532a0fe0d6ed40e6b85877d207eae8cc50c857c22f64cf81f39d",
+    "sha256_24": "efedb3408bfb532a0fe0d6ed40e6b85877d207eae8cc50c857c22f64cf81f39d"
+  },
+  {
+    "member": "patch_skip_slave_lat.o",
+    "identical": true,
+    "sha256_22": "cd4c66d282c1c837bc5c1bb639ac5367e03a87a6293cc987e44304afea3be969",
+    "sha256_24": "cd4c66d282c1c837bc5c1bb639ac5367e03a87a6293cc987e44304afea3be969"
+  },
+  {
+    "member": "patch_heap_log.o",
+    "identical": true,
+    "sha256_22": "bd9ca91c2dd43e4a57b54502180f5219f7aed81f0c07597775e7dc64f7deb8b7",
+    "sha256_24": "bd9ca91c2dd43e4a57b54502180f5219f7aed81f0c07597775e7dc64f7deb8b7"
+  },
+  {
+    "member": "pll_vcocal_lut.o",
+    "identical": true,
+    "sha256_22": "dad6ffbe1bddf13ec4ef8b35f97ae002d58ddbd82b677e29ce450b9ef4731ebc",
+    "sha256_24": "dad6ffbe1bddf13ec4ef8b35f97ae002d58ddbd82b677e29ce450b9ef4731ebc"
+  },
+  {
+    "member": "rf_calibration.o",
+    "identical": true,
+    "sha256_22": "d649d945a084f3aec3b5bf92b9ff2e775cb30ca8a0aff748eeb62fb21ad134c8",
+    "sha256_24": "d649d945a084f3aec3b5bf92b9ff2e775cb30ca8a0aff748eeb62fb21ad134c8"
+  },
+  {
+    "member": "otp_verify_crc.o",
+    "identical": true,
+    "sha256_22": "7367b2889741abfe45802bd05e62c5e962f3b0bda89217dce88ba79db51b1265",
+    "sha256_24": "7367b2889741abfe45802bd05e62c5e962f3b0bda89217dce88ba79db51b1265"
+  },
+  {
+    "member": "smpc_util.o",
+    "identical": true,
+    "sha256_22": "b0935a0d005374c3179c1358c55f4e71526930b8bd320918b8bb0ce750584f6d",
+    "sha256_24": "b0935a0d005374c3179c1358c55f4e71526930b8bd320918b8bb0ce750584f6d"
+  },
+  {
+    "member": "dbg.o",
+    "identical": true,
+    "sha256_22": "07dfc532ee2ae881486e7d947ccb3b08680be89ce14e9c278b5953cf976a594a",
+    "sha256_24": "07dfc532ee2ae881486e7d947ccb3b08680be89ce14e9c278b5953cf976a594a"
+  },
+  {
+    "member": "dbg_task.o",
+    "identical": true,
+    "sha256_22": "8c9f62ecdf748f28f2fc3daba323fa664ffaf257d87bfa60d099e8378229e8ad",
+    "sha256_24": "8c9f62ecdf748f28f2fc3daba323fa664ffaf257d87bfa60d099e8378229e8ad"
+  },
+  {
+    "member": "arch_asm.o",
+    "identical": true,
+    "sha256_22": "975a36948b43e5d0c263bb2c40b65522c66583797e2bd713a416fa13c86b9490",
+    "sha256_24": "975a36948b43e5d0c263bb2c40b65522c66583797e2bd713a416fa13c86b9490"
+  }
+]

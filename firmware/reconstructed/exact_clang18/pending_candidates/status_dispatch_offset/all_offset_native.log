@@ -1,0 +1,77 @@
+group 0x07fc80d8-0x07fc812c (84 bytes)
+MISMATCH: 77 differing bytes
+--- V204
++++ candidate
+@@ -1,37 +1,37 @@
+ 7fc80d8:	b5b0      	push	{r4, r5, r7, lr}
+-7fc80da:	254c      	movs	r5, #76	@ 0x4c
+-7fc80dc:	4c14      	ldr	r4, [pc, #80]	@ (0x7fc8130)
+-7fc80de:	5d60      	ldrb	r0, [r4, r5]
++7fc80da:	204c      	movs	r0, #76	@ 0x4c
++7fc80dc:	4c12      	ldr	r4, [pc, #72]	@ (0x7fc8128)
++7fc80de:	5c20      	ldrb	r0, [r4, r0]
+ 7fc80e0:	07c1      	lsls	r1, r0, #31
+-7fc80e2:	d006      	beq.n	0x7fc80f2
+-7fc80e4:	4620      	mov	r0, r4
+-7fc80e6:	304c      	adds	r0, #76	@ 0x4c
+-7fc80e8:	7901      	ldrb	r1, [r0, #4]
+-7fc80ea:	2028      	movs	r0, #40	@ 0x28
+-7fc80ec:	f000 fbb0 	bl	0x7fc8850
+-7fc80f0:	5d60      	ldrb	r0, [r4, r5]
+-7fc80f2:	0781      	lsls	r1, r0, #30
+-7fc80f4:	d506      	bpl.n	0x7fc8104
+-7fc80f6:	4620      	mov	r0, r4
+-7fc80f8:	304c      	adds	r0, #76	@ 0x4c
+-7fc80fa:	7981      	ldrb	r1, [r0, #6]
+-7fc80fc:	202e      	movs	r0, #46	@ 0x2e
+-7fc80fe:	f000 fba7 	bl	0x7fc8850
+-7fc8102:	5d60      	ldrb	r0, [r4, r5]
+-7fc8104:	0741      	lsls	r1, r0, #29
+-7fc8106:	d506      	bpl.n	0x7fc8116
+-7fc8108:	4620      	mov	r0, r4
+-7fc810a:	304c      	adds	r0, #76	@ 0x4c
+-7fc810c:	79c1      	ldrb	r1, [r0, #7]
+-7fc810e:	202f      	movs	r0, #47	@ 0x2f
+-7fc8110:	f000 fb9e 	bl	0x7fc8850
+-7fc8114:	5d60      	ldrb	r0, [r4, r5]
+-7fc8116:	0700      	lsls	r0, r0, #28
+-7fc8118:	d508      	bpl.n	0x7fc812c
+-7fc811a:	2554      	movs	r5, #84	@ 0x54
+-7fc811c:	5d61      	ldrb	r1, [r4, r5]
+-7fc811e:	201e      	movs	r0, #30
+-7fc8120:	f000 fb96 	bl	0x7fc8850
+-7fc8124:	5d61      	ldrb	r1, [r4, r5]
+-7fc8126:	201f      	movs	r0, #31
+-7fc8128:	f000 fb92 	bl	0x7fc8850
++7fc80e2:	4625      	mov	r5, r4
++7fc80e4:	354c      	adds	r5, #76	@ 0x4c
++7fc80e6:	2900      	cmp	r1, #0
++7fc80e8:	d004      	beq.n	0x7fc80f4
++7fc80ea:	7929      	ldrb	r1, [r5, #4]
++7fc80ec:	2028      	movs	r0, #40	@ 0x28
++7fc80ee:	f000 fbaf 	bl	0x7fc8850
++7fc80f2:	7828      	ldrb	r0, [r5, #0]
++7fc80f4:	0781      	lsls	r1, r0, #30
++7fc80f6:	d504      	bpl.n	0x7fc8102
++7fc80f8:	79a9      	ldrb	r1, [r5, #6]
++7fc80fa:	202e      	movs	r0, #46	@ 0x2e
++7fc80fc:	f000 fba8 	bl	0x7fc8850
++7fc8100:	7828      	ldrb	r0, [r5, #0]
++7fc8102:	0741      	lsls	r1, r0, #29
++7fc8104:	d504      	bpl.n	0x7fc8110
++7fc8106:	79e9      	ldrb	r1, [r5, #7]
++7fc8108:	202f      	movs	r0, #47	@ 0x2f
++7fc810a:	f000 fba1 	bl	0x7fc8850
++7fc810e:	7828      	ldrb	r0, [r5, #0]
++7fc8110:	0700      	lsls	r0, r0, #28
++7fc8112:	d508      	bpl.n	0x7fc8126
++7fc8114:	2554      	movs	r5, #84	@ 0x54
++7fc8116:	5d61      	ldrb	r1, [r4, r5]
++7fc8118:	201e      	movs	r0, #30
++7fc811a:	f000 fb99 	bl	0x7fc8850
++7fc811e:	5d61      	ldrb	r1, [r4, r5]
++7fc8120:	201f      	movs	r0, #31
++7fc8122:	f000 fb95 	bl	0x7fc8850
++7fc8126:	bdb0      	pop	{r4, r5, r7, pc}
++7fc8128:	1ea4      	subs	r4, r4, #2
++7fc812a:	07fd      	lsls	r5, r7, #31

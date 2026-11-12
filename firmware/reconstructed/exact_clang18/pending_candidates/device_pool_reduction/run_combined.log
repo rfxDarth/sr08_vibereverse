@@ -1,0 +1,11 @@
+{
+  "synthetic_only": true,
+  "oem_input_required": false,
+  "compiler": "ac6",
+  "pool_readers": true,
+  "reader_lto": false,
+  "cases": 8,
+  "selected_target_counts": {
+    "0x7fc867c": 8
+  }
+}

@@ -1,0 +1,10 @@
+group 0x07fc82b0-0x07fc833c (140 bytes)
+MISMATCH: 1 differing bytes
+--- V204
++++ candidate
+@@ -1,4 +1,4 @@
+ 7fc82b0:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+-7fc82b2:	4ef2      	ldr	r6, [pc, #968]	@ (0x7fc867c)
++7fc82b2:	4e1e      	ldr	r6, [pc, #120]	@ (0x7fc832c)
+ 7fc82b4:	2700      	movs	r7, #0
+ 7fc82b6:	7777      	strb	r7, [r6, #29]

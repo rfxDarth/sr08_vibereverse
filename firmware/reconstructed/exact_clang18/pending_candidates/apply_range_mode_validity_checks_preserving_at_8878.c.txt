@@ -1,0 +1,23 @@
+/* Invalidate the current measurement (0x7fff) when the sensor reading is out
+ * of range for sensor 0x27, the sensor is not ready, or its status is 0 or
+ * 510; return the (possibly invalidated) measurement. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_cycle_control_state.h"
+#include "firmware/reconstructed/include/sr08_radio_configuration.h"
+
+enum { MEASUREMENT_INVALID = 0x7fff, MOTION_SENSOR_ID = 0x27 };
+
+int32_t apply_range_mode_validity_checks_preserving_at_8878(void)
+{
+    if (device_control_state.scan_initialization_status == 1) {
+        int16_t reading = device_control_state.sensor_reading.value_2;
+        if (reading < -16384 || reading > 25000 || device_control_state.last_probe_status != MOTION_SENSOR_ID)
+            cycle_control_state.measurement_value = MEASUREMENT_INVALID;
+    }
+    if (device_control_state.sensor_state_19 != 1 || device_control_state.sensor_state_1a == 1)
+        cycle_control_state.measurement_value = MEASUREMENT_INVALID;
+    uint16_t status = device_control_state.sensor_reading.status;
+    if (status == 0 || status == 510)
+        cycle_control_state.measurement_value = MEASUREMENT_INVALID;
+    return cycle_control_state.measurement_value;
+}

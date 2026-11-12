@@ -1,5 +1,12 @@
 # SR08 MVP firmware candidate
 
+> **Status: abandoned.** An early MVP revision was flashed successfully once,
+> and the ring was returned to stock through SUOTA. Later attempts to iterate on
+> this image bricked the device, so this path is no longer pursued. Do not flash
+> builds from this directory. The per-revision notes below ("has not been
+> flashed", etc.) are historical. Ongoing work is the byte-exact V204
+> reconstruction in `firmware/reconstructed/exact_clang18/`.
+
 This is a buildable DA14585 smoke-test image based on the ATC SR08 project's
 SDK, startup, linker configuration, display GPIO map, button input, BLE demo,
 and SUOTA path. It is intended as a first hardware test, not as a reconstruction

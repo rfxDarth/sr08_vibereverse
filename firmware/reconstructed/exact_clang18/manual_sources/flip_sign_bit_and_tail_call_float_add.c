@@ -1,13 +1,6 @@
-/* C XOR veneer with the target's register-pinned high-bit mask. */
-#include <stdint.h>
-
-extern void add_v204_software_float_values(uint32_t, uint32_t);
-
-__attribute__((used, section(".text.flip_sign_bit_and_tail_call_float_add"))) void
-flip_sign_bit_and_tail_call_float_add(uint32_t first, uint32_t second) {
-    /* Flip bit 31 of the second ABI argument before tail-calling the helper. */
-    register uint32_t sign_bit_mask __asm__("r2") = 1;
-    __asm__ volatile("lsls r2, r2, #31" : "+r"(sign_bit_mask));
-    __asm__ volatile("eors r1, r2\n\tb add_v204_software_float_values" : : : "r1");
-    __builtin_unreachable();
-}
+/* flip_sign_bit_and_tail_call_float_add: linked unchanged from the ARM Compiler 6.16 C library.
+ *
+ * V204 contains microlib member mf_p.l(fadd.o) (__aeabi_fadd, __aeabi_fsub and __aeabi_frsub)
+ * at 0x07fc1988. The build extracts that member instead of compiling this
+ * unit; see ARM_LIBRARY_MEMBERS in build_v204.py.
+ */

@@ -1,0 +1,25 @@
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+
+/* The low-level segment values are preserved until the glyph mapping is
+ * established. The six-phase progression replaces digits from right to left.
+ */
+__attribute__((used,section(".text.select_measurement_text_update_per_result_at_aae8")))
+void select_measurement_text_update_per_result_at_aae8(void)
+{
+    uint32_t phase = ((volatile uint8_t *)&merged_globals_5650)[0x30] % 6u;
+    volatile uint8_t *display = (volatile uint8_t *)&merged_globals_56d0;
+    uint32_t glyph;
+    if (phase <= 4) { __atomic_signal_fence(__ATOMIC_SEQ_CST); glyph = 101; }
+    else {  glyph = 109; }
+    display[0x44] = glyph;
+    *(volatile uint32_t *)(display + 0x40) = 0x41414153u;
+    uint32_t discarded_difference;
+    if (phase >= 4) { display[0x43] = 73; goto second; }
+    if (phase == 3) {
+second: display[0x42] = 73;
+first: display[0x41] = 73;
+    } else if (!__builtin_sub_overflow(phase, 2u, &discarded_difference)) { goto first; }
+    else if (phase == 0) { return; }
+    display[0x40] = 91;
+}

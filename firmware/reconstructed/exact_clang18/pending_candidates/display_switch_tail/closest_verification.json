@@ -1,0 +1,42 @@
+{
+  "compiler": "ARM6.16 native ac6 -Oz",
+  "source": "volatile_copy.c.txt",
+  "source_sha256": "65117f05ff85e1d2e0a7cf1a1892a1818be3d3a0b090511019d8482fab8dd743",
+  "bytes": 500,
+  "candidate_sha256": "5857271de19739a7e6e3e7ae4d5029d504c10ec6eefc38abfccaa00084be6877",
+  "differing_bytes": 6,
+  "differences": [
+    {
+      "address": "0x7fc3ba2",
+      "oem": "0x7",
+      "candidate": "0x6"
+    },
+    {
+      "address": "0x7fc3bb0",
+      "oem": "0x4",
+      "candidate": "0x0"
+    },
+    {
+      "address": "0x7fc3bb1",
+      "oem": "0x92",
+      "candidate": "0xe0"
+    },
+    {
+      "address": "0x7fc3bb2",
+      "oem": "0x0",
+      "candidate": "0x32"
+    },
+    {
+      "address": "0x7fc3bb3",
+      "oem": "0xe0",
+      "candidate": "0x46"
+    },
+    {
+      "address": "0x7fc3bb5",
+      "oem": "0x96",
+      "candidate": "0x92"
+    }
+  ],
+  "tail_3bb6_through_end_equal": true,
+  "accepted": false
+}

@@ -1,0 +1,12 @@
+{
+  "bytes": 67144,
+  "differing_bytes": 1,
+  "offset_ranges": [
+    [
+      33458,
+      33459
+    ]
+  ],
+  "payload_prefix_sha256": "b8f19849d7848ef1b1e97b43a31593262a8451de213662ad741cbc8803d44adb",
+  "diagnostic_note": "objcopy includes eight bytes after the payload; the actual 67136-byte payload differs only at 0x07fc82b2 (literal-load offset)."
+}

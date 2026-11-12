@@ -1,0 +1,88 @@
+{
+  "annotation_native.log": [
+    "group 0x07fcbb38-0x07fcbb6c (52 bytes)",
+    "MISMATCH: 11 differing bytes",
+    "--- V204"
+  ],
+  "baseline_native.log": [
+    "group 0x07fcbb38-0x07fcbb6c (52 bytes)",
+    "MISMATCH: 11 differing bytes",
+    "--- V204"
+  ],
+  "common_i0_e0_h0_native.log": [
+    "group 0x07fcbb38-0x07fcbb6c (52 bytes)",
+    "MISMATCH: 8 differing bytes",
+    "--- V204"
+  ],
+  "common_i0_e0_h1_native.log": [
+    "group 0x07fcbb38-0x07fcbb6c (52 bytes)",
+    "MISMATCH: 8 differing bytes",
+    "--- V204"
+  ],
+  "common_i0_e0_hnone_native.log": [
+    "group 0x07fcbb38-0x07fcbb6c (52 bytes)",
+    "MISMATCH: 8 differing bytes",
+    "--- V204"
+  ],
+  "common_i0_e1_h0_native.log": [
+    "group 0x07fcbb38-0x07fcbb6c (52 bytes)",
+    "MISMATCH: 11 differing bytes",
+    "--- V204"
+  ],
+  "common_i0_e1_h1_native.log": [
+    "group 0x07fcbb38-0x07fcbb6c (52 bytes)",
+    "BYTE_EXACT"
+  ],
+  "common_i0_e1_hnone_native.log": [
+    "group 0x07fcbb38-0x07fcbb6c (52 bytes)",
+    "BYTE_EXACT"
+  ],
+  "common_i1_e0_h0_native.log": [
+    "group 0x07fcbb38-0x07fcbb6c (52 bytes)",
+    "MISMATCH: 8 differing bytes",
+    "--- V204"
+  ],
+  "common_i1_e0_h1_native.log": [
+    "group 0x07fcbb38-0x07fcbb6c (52 bytes)",
+    "MISMATCH: 8 differing bytes",
+    "--- V204"
+  ],
+  "common_i1_e0_hnone_native.log": [
+    "group 0x07fcbb38-0x07fcbb6c (52 bytes)",
+    "MISMATCH: 8 differing bytes",
+    "--- V204"
+  ],
+  "common_i1_e1_h0_native.log": [
+    "group 0x07fcbb38-0x07fcbb6c (52 bytes)",
+    "MISMATCH: 11 differing bytes",
+    "--- V204"
+  ],
+  "common_i1_e1_h1_native.log": [
+    "group 0x07fcbb38-0x07fcbb6c (52 bytes)",
+    "BYTE_EXACT"
+  ],
+  "common_i1_e1_hnone_native.log": [
+    "group 0x07fcbb38-0x07fcbb6c (52 bytes)",
+    "BYTE_EXACT"
+  ],
+  "conditional_fence_native.log": [
+    "group 0x07fcbb38-0x07fcbb6c (52 bytes)",
+    "MISMATCH: 8 differing bytes",
+    "--- V204"
+  ],
+  "constant_annotation_native.log": [
+    "group 0x07fcbb38-0x07fcbb6c (52 bytes)",
+    "MISMATCH: 11 differing bytes",
+    "--- V204"
+  ],
+  "fence_native.log": [
+    "group 0x07fcbb38-0x07fcbb6c (52 bytes)",
+    "MISMATCH: 11 differing bytes",
+    "--- V204"
+  ],
+  "installed_native.log": [
+    "group 0x07fcbb38-0x07fcbb6c (52 bytes)",
+    "BYTE_EXACT"
+  ],
+  "standalone_build.log": []
+}

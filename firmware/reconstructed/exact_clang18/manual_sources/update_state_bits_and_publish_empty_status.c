@@ -1,39 +1,17 @@
-/* Update selected state bits and publish whether the resulting word is empty. */
+/* Vendor sleep blockers: set or clear bits in a mask and allow extended sleep
+ * only while no bit is set. Unlike arch_set_extended_sleep/arch_disable_sleep,
+ * this writes sleep_env and rwip_env directly. */
 #include <stdint.h>
-#include "firmware/reconstructed/include/sr08_empty_status_record.h"
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+#include "firmware/reconstructed/include/sr08_sdk_arch_sleep.h"
 
-__attribute__((used, section(".text.update_state_bits_and_publish_empty_status"))) void
-update_state_bits_and_publish_empty_status(uint32_t clear_mode, uint32_t state_mask) {
-    uint32_t state;
-
-    if (clear_mode) {
-        __asm__ volatile("ldr %[state], [pc, #552]\n\t"
-                         "ldr %[state], [%[state], #120]\n\t"
-                         "bics %[state], %[mask]"
-                         : [state] "=&r"(state)
-                         : [mask] "r"(state_mask)
-                         : "cc", "memory");
-    } else {
-        __asm__ volatile("ldr %[state], [pc, #544]\n\t"
-                         "ldr %[state], [%[state], #120]\n\t"
-                         "orrs %[state], %[mask]"
-                         : [state] "=&r"(state)
-                         : [mask] "r"(state_mask)
-                         : "cc", "memory");
-    }
-
-    /* The state word is at offset 0x78 from the global state base. */
-    volatile uint32_t *global_state;
-    __asm__ volatile("ldr %[base], [pc, #540]\n\t"
-                     "str %[state], [%[base], #120]"
-                     : [base] "=&r"(global_state)
-                     : [state] "r"(state)
-                     : "memory");
-
-    uint32_t state_word_is_empty = (state == 0);
-    volatile struct sr08_empty_status_record *status;
-    __asm__ volatile("ldr %[status], [pc, #12]" : [status] "=r"(status));
-    status->primary_is_empty = (uint8_t)state_word_is_empty;
-    __asm__ volatile("ldr %[status], [pc, #12]" : [status] "=r"(status));
-    status->secondary_is_empty = (uint8_t)state_word_is_empty;
+void update_state_bits_and_publish_empty_status(uint32_t release, uint32_t blockers)
+{
+    if (release)
+        merged_globals_5650.sleep_block_mask &= ~blockers;
+    else
+        merged_globals_5650.sleep_block_mask |= blockers;
+    uint32_t mask = merged_globals_5650.sleep_block_mask;
+    sleep_env.slp_state = (sleep_state_t)(mask == 0);
+    rwip_env.sleep_enable = (mask == 0);
 }

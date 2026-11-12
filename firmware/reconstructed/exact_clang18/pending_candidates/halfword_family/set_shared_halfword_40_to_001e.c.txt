@@ -1,0 +1,6 @@
+#include "firmware/reconstructed/include/sr08_display_helpers.h"
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+__attribute__((used,section(".text.set_shared_halfword_40_to_001e"))) void set_shared_halfword_40_to_001e(void){
+ volatile struct sr08_display_output_state *state=(volatile struct sr08_display_output_state *)&merged_globals_56d0;
+ *(volatile uint16_t *)(void *)state->digits=SR08_DISPLAY_STATE_WORD_001e;
+}

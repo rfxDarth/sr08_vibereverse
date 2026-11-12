@@ -132,7 +132,7 @@ public class RecoverMissedFunctions extends ghidra.app.script.GhidraScript {
                     function.getBody(), result.getErrorMessage()));
                 if (result.decompileCompleted() && result.getDecompiledFunction() != null) {
                     String name = String.format("V204_functions/manual_0x%08x.c", value);
-                    java.io.File output = new java.io.File("/home/drath/Projects/personal/code/sr08_ai/firmware/decompiled/" + name);
+                    java.io.File output = new java.io.File("firmware/decompiled/" + name);
                     output.getParentFile().mkdirs();
                     String header = "/* Ghidra 12.1.4 pseudocode; V204 payload SHA-256: " +
                         "5020c236a289544d878196bec3e21b005835237bc2fc34935927533bcd1c8570; " +

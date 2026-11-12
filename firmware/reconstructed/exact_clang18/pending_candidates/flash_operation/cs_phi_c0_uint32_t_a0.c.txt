@@ -1,0 +1,213 @@
+/* Vendor flash access entry: wakes the SPI flash, reads, programs or erases,
+ * then puts the flash back into deep power down. The read, page program and
+ * block erase bodies are the Renesas DA145xx SDK 6.0.18.1182.1
+ * sdk/platform/driver/spi_flash/spi_flash.c functions spi_flash_release_from_power_down,
+ * spi_flash_read_data, spi_flash_write_data / spi_flash_page_program and
+ * spi_flash_block_erase (Copyright (C) Dialog Semiconductor / Renesas
+ * Electronics Corporation; see third_party/renesas_sdk_6.0.18.1182.1/dialog_license.txt),
+ * which V204's link inlined here. V204's configuration: a fixed 8 Mbit
+ * chip size (spi_flash_cfg_env.chip_size), SPI_FLASH_ENABLE_POWER_PIN() and
+ * USE_SPI_FLASH_ADESTO_UDPD compiled out, and a vendor chip-select pin (P0_3
+ * when merged_globals_5650.spi_flash_cs_select is set, else P0_0) in place
+ * of spi_env's. Programming and erasing are refused while a measurement is
+ * running unless the attribute record allows it. */
+#include <stdbool.h>
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_flagged_record.h"
+#include "firmware/reconstructed/include/sr08_flash_operation.h"
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+#include "firmware/reconstructed/include/sr08_sdk_da14585.h"
+
+#define P0_SET_DATA_REG (0x50003002)
+#define P0_RESET_DATA_REG (0x50003004)
+#define WATCHDOG_REG (0x50003100)
+#define WATCHDOG_DEFAULT_PERIOD 0xC8
+
+#define SPI_MODE_8BIT 0
+#define SPI_MODE_32BIT 2
+
+#define SPI_FLASH_ERR_OK 0
+#define SPI_FLASH_PAGE_SIZE 256
+#define SPI_FLASH_SECTOR_SIZE 4096
+#define SPI_FLASH_CHIP_SIZE (1u << 23)
+#define SPI_FLASH_OP_DP 0xB9
+#define SPI_FLASH_OP_RDP 0xAB
+#define SPI_FLASH_OP_PP 0x02
+#define SPI_FLASH_OP_READ 0x03
+#define SPI_FLASH_OP_SE 0x20
+
+/* Use the actual exported APIs; no assembler symbol aliases. */
+#include "firmware/reconstructed/include/sr08_output_state.h"
+#include "firmware/reconstructed/include/sr08_flash_transfer.h"
+int drive_ring_s_output_state_machine(void);
+void initialize_shared_state_when_status_clear(void);
+
+static inline void wdg_reload(const int period)
+{
+    (void)period;
+    SetWord16(WATCHDOG_REG, WATCHDOG_DEFAULT_PERIOD);
+}
+
+static inline uint16_t spi_cs_pin_mask(void)
+{
+    uint32_t mask = 8;
+    if (!(*(const uint8_t *)&merged_globals_5650.spi_flash_cs_select)) { __atomic_signal_fence(__ATOMIC_SEQ_CST); mask = 1; }
+    return mask;
+}
+
+static inline void spi_cs_low(void)
+{
+    SetWord16(P0_RESET_DATA_REG, spi_cs_pin_mask());
+}
+
+static inline void spi_cs_high(void)
+{
+    SetWord16(P0_SET_DATA_REG, spi_cs_pin_mask());
+}
+
+static inline int32_t spi_flash_release_from_power_down(void)
+{
+    uint16_t mask = spi_cs_pin_mask();
+    SetWord16(P0_RESET_DATA_REG, mask);
+    SetWord16(P0_SET_DATA_REG, mask);
+    spi_set_bitmode(SPI_MODE_8BIT);
+    update_mode_dependent_output_state_during_flash_transfer(SPI_FLASH_OP_RDP);
+    return SPI_FLASH_ERR_OK;
+}
+
+static inline int32_t spi_flash_block_erase(uint32_t address, uint32_t erase_op)
+{
+    int32_t status = spi_flash_is_busy();
+    if (status != SPI_FLASH_ERR_OK)
+        return status;
+    status = drive_ring_s_output_state_machine();
+    if (status != SPI_FLASH_ERR_OK)
+        return status;
+    spi_set_bitmode(SPI_MODE_32BIT);
+    update_mode_dependent_output_state_during_flash_transfer((erase_op << 24) | address);
+    return spi_flash_wait_till_ready();
+}
+
+static inline int32_t spi_flash_page_program(uint8_t *wr_data_ptr, uint32_t address, uint16_t size)
+{
+    int32_t status = spi_flash_is_busy();
+    if (status != SPI_FLASH_ERR_OK)
+        return status;
+    uint16_t temp_size = size;
+    status = drive_ring_s_output_state_machine();
+    if (status != SPI_FLASH_ERR_OK)
+        return status;
+    if (temp_size > SPI_FLASH_PAGE_SIZE)
+        temp_size = SPI_FLASH_PAGE_SIZE;
+    spi_set_bitmode(SPI_MODE_32BIT);
+    spi_cs_low();
+    spi_access((SPI_FLASH_OP_PP << 24) | address);
+    spi_set_bitmode(SPI_MODE_8BIT);
+    while (temp_size > 0) {
+        spi_access(*wr_data_ptr++);
+        temp_size--;
+    }
+    spi_cs_high();
+    return spi_flash_wait_till_ready();
+}
+
+static inline int32_t spi_flash_write_data(uint8_t *wr_data_ptr, uint32_t address, uint32_t size,
+                                          uint32_t *actual_size)
+{
+    int32_t status = SPI_FLASH_ERR_OK;
+    uint32_t bytes_written;
+    uint32_t feasible_size = size;
+    uint32_t currentAddress = address;
+    uint32_t currentEndOfPage = (currentAddress / SPI_FLASH_PAGE_SIZE + 1) * SPI_FLASH_PAGE_SIZE - 1;
+    uint32_t bytes_left_to_send;
+
+    spi_set_bitmode(SPI_MODE_8BIT);
+    if (size > SPI_FLASH_CHIP_SIZE - address)
+        feasible_size = SPI_FLASH_CHIP_SIZE - address;
+    bytes_left_to_send = feasible_size;
+    bytes_written = 0;
+    while (bytes_written < feasible_size) {
+        if (currentAddress + bytes_left_to_send > currentEndOfPage)
+            bytes_left_to_send = currentEndOfPage - currentAddress + 1;
+        status = spi_flash_page_program(wr_data_ptr + bytes_written, currentAddress, bytes_left_to_send);
+        if (status != SPI_FLASH_ERR_OK)
+            return status;
+        bytes_written += bytes_left_to_send;
+        currentAddress = currentEndOfPage + 1;
+        currentEndOfPage += SPI_FLASH_PAGE_SIZE;
+        bytes_left_to_send = feasible_size - bytes_written;
+    }
+    *actual_size = bytes_written;
+    return status;
+}
+
+static inline int32_t spi_flash_read_data(uint8_t *rd_data_ptr, uint32_t address, uint32_t size,
+                                         uint32_t *actual_size)
+{
+    int32_t status = spi_flash_is_busy();
+    if (status != SPI_FLASH_ERR_OK)
+        return status;
+    if (size + address > SPI_FLASH_CHIP_SIZE)
+        *actual_size = SPI_FLASH_CHIP_SIZE - address;
+    else
+        *actual_size = size;
+    spi_set_bitmode(SPI_MODE_32BIT);
+    spi_cs_low();
+    spi_access((SPI_FLASH_OP_READ << 24) | address);
+    spi_set_bitmode(SPI_MODE_8BIT);
+    for (uint32_t i = 0; i < *actual_size; i++)
+        *rd_data_ptr++ = (uint8_t)spi_access(0x0000);
+    spi_cs_high();
+    return SPI_FLASH_ERR_OK;
+}
+
+/* Vendor: programming and erasing are allowed unless a measurement is running
+ * without the attribute record's flag. */
+static inline __attribute__((always_inline)) bool flash_write_allowed(void)
+{
+    return merged_globals_5650.measurement_state != 1 || read_record_flag_bit_zero();
+}
+
+uint32_t perform_flash_memory_operation(uint8_t *buffer, uint32_t flash_address, uint32_t byte_count,
+                                        enum sr08_flash_operation operation)
+{
+    int32_t status;
+    uint32_t actual_size = 0;
+
+    wdg_reload(WATCHDOG_DEFAULT_PERIOD);
+    spi_flash_release_from_power_down();
+    switch (operation) {
+    case SR08_FLASH_READ:
+        status = spi_flash_read_data(buffer, flash_address, byte_count, &actual_size);
+        break;
+    case SR08_FLASH_PROGRAM:
+        if (!flash_write_allowed()) {
+            initialize_shared_state_when_status_clear();
+            return (uint32_t)(int8_t)-1;
+        }
+        status = spi_flash_write_data(buffer, flash_address, byte_count, &actual_size);
+        break;
+    default: {
+        if (!flash_write_allowed()) {
+            initialize_shared_state_when_status_clear();
+            return (uint32_t)(int8_t)-1;
+        }
+        uint32_t sectors = (byte_count + SPI_FLASH_SECTOR_SIZE - 1) / SPI_FLASH_SECTOR_SIZE;
+        if (sectors == 0)
+            sectors = 1;
+        flash_address &= ~(uint32_t)(SPI_FLASH_SECTOR_SIZE - 1);
+        status = -1;
+        while (sectors != 0) {
+            wdg_reload(WATCHDOG_DEFAULT_PERIOD);
+            status = spi_flash_block_erase(flash_address, SPI_FLASH_OP_SE);
+            if (status != SPI_FLASH_ERR_OK)
+                break;
+            flash_address += SPI_FLASH_SECTOR_SIZE;
+            sectors--;
+        }
+        break;
+    }
+    }
+    initialize_shared_state_when_status_clear();
+    return (uint32_t)(int8_t)status;
+}

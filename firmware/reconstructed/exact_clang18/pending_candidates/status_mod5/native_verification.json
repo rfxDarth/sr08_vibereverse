@@ -1,0 +1,55 @@
+{
+  "status": "native instruction match except literal-load offsets; shared-context validation pending",
+  "code_and_alignment_range": [
+    "0x07fca914",
+    "0x07fca960"
+  ],
+  "candidate_sha256": "03c2daaa2008704881370e522ac16fe06eeec5bd9349864e7c8c646550eedb48",
+  "native_group_bytes": 84,
+  "oem_region_bytes": 76,
+  "remaining_instruction_differences": [
+    {
+      "side": "-",
+      "instruction": "7fca918:\t4deb      \tldr\tr5, [pc, #940]\t@ (0x7fcacc8)"
+    },
+    {
+      "side": "+",
+      "instruction": "7fca918:\t4d11      \tldr\tr5, [pc, #68]\t@ (0x7fca960)"
+    },
+    {
+      "side": "-",
+      "instruction": "7fca928:\t49e1      \tldr\tr1, [pc, #900]\t@ (0x7fcacb0)"
+    },
+    {
+      "side": "+",
+      "instruction": "7fca928:\t490e      \tldr\tr1, [pc, #56]\t@ (0x7fca964)"
+    }
+  ],
+  "candidate_private_literals": [
+    "0x07fca960",
+    "0x07fca964"
+  ],
+  "oem_shared_literals": [
+    "0x07fcacc8",
+    "0x07fcacb0"
+  ],
+  "installed": true,
+  "shared_context_result": {
+    "status": "not byte-exact",
+    "region_bytes": 76,
+    "differing_bytes": 1,
+    "site": "0x07fca918",
+    "original_literal": "0x07fcacc8",
+    "candidate_literal": "0x07fcacb4",
+    "log": "sub_overflow_lto.log"
+  },
+  "shared_context_pair_result": {
+    "status": "BYTE_EXACT",
+    "routines": {
+      "recreate_display_status_indicator_update_selected_at_a914": 76,
+      "write_shared_state_byte_45_and_word_40": 24
+    },
+    "log": "with_writer_lto.log",
+    "full_image_validation": "canonical payload and container verified"
+  }
+}

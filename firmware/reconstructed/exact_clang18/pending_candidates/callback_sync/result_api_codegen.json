@@ -1,0 +1,24 @@
+{
+  "read_callback_pair_for_mode_window_39_3a": {
+    "old": {
+      "code": "80b50321414308463938c0b23a39c9b2fff7feff80bd",
+      "relocations": "00000010 R_ARM_THM_CALL    read_three_callback_values_between_mode_at_85a0\n00000000 R_ARM_PREL31      .text.read_callback_pair_for_mode_window_39_3a"
+    },
+    "new": {
+      "code": "80b50321414308463938c0b23a39c9b2fff7feff80bd",
+      "relocations": "00000010 R_ARM_THM_CALL    read_three_callback_values_between_mode_at_85a0\n00000000 R_ARM_PREL31      .text.read_callback_pair_for_mode_window_39_3a"
+    },
+    "equal": true
+  },
+  "read_callback_pair_for_mode_window_42_43": {
+    "old": {
+      "code": "80b50321414308464238c0b24339c9b2fff7feff80bd",
+      "relocations": "00000010 R_ARM_THM_CALL    read_three_callback_values_between_mode_at_85a0\n00000000 R_ARM_PREL31      .text.read_callback_pair_for_mode_window_42_43"
+    },
+    "new": {
+      "code": "80b50321414308464238c0b24339c9b2fff7feff80bd",
+      "relocations": "00000010 R_ARM_THM_CALL    read_three_callback_values_between_mode_at_85a0\n00000000 R_ARM_PREL31      .text.read_callback_pair_for_mode_window_42_43"
+    },
+    "equal": true
+  }
+}

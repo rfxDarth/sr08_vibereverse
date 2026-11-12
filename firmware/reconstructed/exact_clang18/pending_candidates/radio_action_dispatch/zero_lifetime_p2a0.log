@@ -1,0 +1,15 @@
+0x07fc86b8-0x07fc8774 dispatch_radio_state_action_block_at_86b8 (188 bytes)
+--- V204
++++ candidate
+@@ -40,7 +40,7 @@
+ 7fc870c:	2105      	movs	r1, #5
+ 7fc870e:	7381      	strb	r1, [r0, #14]
+-7fc8710:	2100      	movs	r1, #0
+-7fc8712:	2210      	movs	r2, #16
+-7fc8714:	8182      	strh	r2, [r0, #12]
++7fc8710:	2110      	movs	r1, #16
++7fc8712:	8181      	strh	r1, [r0, #12]
++7fc8714:	2100      	movs	r1, #0
+ 7fc8716:	2401      	movs	r4, #1
+ 7fc8718:	04a2      	lsls	r2, r4, #18
+MISMATCH

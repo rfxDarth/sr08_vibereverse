@@ -1,0 +1,106 @@
+group 0x07fc8500-0x07fc8570 (112 bytes)
+MISMATCH: 95 differing bytes
+--- V204
++++ candidate
+@@ -1,54 +1,54 @@
+ 7fc8500:	b5b0      	push	{r4, r5, r7, lr}
+-7fc8502:	48cc      	ldr	r0, [pc, #816]	@ (0x7fc8834)
++7fc8502:	4818      	ldr	r0, [pc, #96]	@ (0x7fc8564)
+ 7fc8504:	6bc1      	ldr	r1, [r0, #60]	@ 0x3c
+ 7fc8506:	2401      	movs	r4, #1
+ 7fc8508:	2901      	cmp	r1, #1
+-7fc850a:	d120      	bne.n	0x7fc854e
++7fc850a:	d10a      	bne.n	0x7fc8522
+ 7fc850c:	2140      	movs	r1, #64	@ 0x40
+ 7fc850e:	5a41      	ldrh	r1, [r0, r1]
+-7fc8510:	2900      	cmp	r1, #0
+-7fc8512:	d005      	beq.n	0x7fc8520
+-7fc8514:	4a13      	ldr	r2, [pc, #76]	@ (0x7fc8564)
+-7fc8516:	4291      	cmp	r1, r2
+-7fc8518:	d019      	beq.n	0x7fc854e
+-7fc851a:	2244      	movs	r2, #68	@ 0x44
++7fc8510:	4a15      	ldr	r2, [pc, #84]	@ (0x7fc8568)
++7fc8512:	4291      	cmp	r1, r2
++7fc8514:	d005      	beq.n	0x7fc8522
++7fc8516:	2244      	movs	r2, #68	@ 0x44
++7fc8518:	2900      	cmp	r1, #0
++7fc851a:	d10d      	bne.n	0x7fc8538
+ 7fc851c:	5a82      	ldrh	r2, [r0, r2]
+-7fc851e:	e003      	b.n	0x7fc8528
+-7fc8520:	2244      	movs	r2, #68	@ 0x44
+-7fc8522:	5a82      	ldrh	r2, [r0, r2]
+-7fc8524:	2a00      	cmp	r2, #0
+-7fc8526:	d012      	beq.n	0x7fc854e
+-7fc8528:	2342      	movs	r3, #66	@ 0x42
+-7fc852a:	4de8      	ldr	r5, [pc, #928]	@ (0x7fc88cc)
+-7fc852c:	52e9      	strh	r1, [r5, r3]
+-7fc852e:	2146      	movs	r1, #70	@ 0x46
+-7fc8530:	526a      	strh	r2, [r5, r1]
+-7fc8532:	5ac2      	ldrh	r2, [r0, r3]
+-7fc8534:	2344      	movs	r3, #68	@ 0x44
+-7fc8536:	52ea      	strh	r2, [r5, r3]
+-7fc8538:	5a41      	ldrh	r1, [r0, r1]
+-7fc853a:	2248      	movs	r2, #72	@ 0x48
+-7fc853c:	52a9      	strh	r1, [r5, r2]
+-7fc853e:	3040      	adds	r0, #64	@ 0x40
+-7fc8540:	2108      	movs	r1, #8
+-7fc8542:	f002 fe19 	bl	0x7fcb178
+-7fc8546:	2000      	movs	r0, #0
+-7fc8548:	76a8      	strb	r0, [r5, #26]
+-7fc854a:	766c      	strb	r4, [r5, #25]
+-7fc854c:	bdb0      	pop	{r4, r5, r7, pc}
+-7fc854e:	2042      	movs	r0, #66	@ 0x42
+-7fc8550:	49de      	ldr	r1, [pc, #888]	@ (0x7fc88cc)
+-7fc8552:	2200      	movs	r2, #0
+-7fc8554:	520a      	strh	r2, [r1, r0]
+-7fc8556:	2048      	movs	r0, #72	@ 0x48
+-7fc8558:	520a      	strh	r2, [r1, r0]
+-7fc855a:	644a      	str	r2, [r1, #68]	@ 0x44
+-7fc855c:	768c      	strb	r4, [r1, #26]
+-7fc855e:	764a      	strb	r2, [r1, #25]
+-7fc8560:	bdb0      	pop	{r4, r5, r7, pc}
+-7fc8562:	46c0      	nop			@ (mov r8, r8)
+-7fc8564:	ffff 0000 	vaddl.u<illegal width 64>	q8, d15, d0
+-7fc8568:	1e28      	subs	r0, r5, #0
+-7fc856a:	07fd      	lsls	r5, r7, #31
+-7fc856c:	b580      	push	{r7, lr}
+-7fc856e:	2103      	movs	r1, #3
++7fc851e:	2a00      	cmp	r2, #0
++7fc8520:	d10b      	bne.n	0x7fc853a
++7fc8522:	2142      	movs	r1, #66	@ 0x42
++7fc8524:	4a11      	ldr	r2, [pc, #68]	@ (0x7fc856c)
++7fc8526:	2000      	movs	r0, #0
++7fc8528:	5250      	strh	r0, [r2, r1]
++7fc852a:	4611      	mov	r1, r2
++7fc852c:	3142      	adds	r1, #66	@ 0x42
++7fc852e:	80c8      	strh	r0, [r1, #6]
++7fc8530:	2302      	movs	r3, #2
++7fc8532:	50c8      	str	r0, [r1, r3]
++7fc8534:	7694      	strb	r4, [r2, #26]
++7fc8536:	e012      	b.n	0x7fc855e
++7fc8538:	5a82      	ldrh	r2, [r0, r2]
++7fc853a:	2342      	movs	r3, #66	@ 0x42
++7fc853c:	4d0b      	ldr	r5, [pc, #44]	@ (0x7fc856c)
++7fc853e:	52e9      	strh	r1, [r5, r3]
++7fc8540:	4629      	mov	r1, r5
++7fc8542:	3142      	adds	r1, #66	@ 0x42
++7fc8544:	808a      	strh	r2, [r1, #4]
++7fc8546:	5ac2      	ldrh	r2, [r0, r3]
++7fc8548:	804a      	strh	r2, [r1, #2]
++7fc854a:	2246      	movs	r2, #70	@ 0x46
++7fc854c:	5a82      	ldrh	r2, [r0, r2]
++7fc854e:	80ca      	strh	r2, [r1, #6]
++7fc8550:	3040      	adds	r0, #64	@ 0x40
++7fc8552:	2108      	movs	r1, #8
++7fc8554:	f002 fe10 	bl	0x7fcb178
++7fc8558:	2000      	movs	r0, #0
++7fc855a:	76a8      	strb	r0, [r5, #26]
++7fc855c:	4620      	mov	r0, r4
++7fc855e:	4903      	ldr	r1, [pc, #12]	@ (0x7fc856c)
++7fc8560:	7648      	strb	r0, [r1, #25]
++7fc8562:	bdb0      	pop	{r4, r5, r7, pc}
++7fc8564:	1f8c      	subs	r4, r1, #6
++7fc8566:	07fd      	lsls	r5, r7, #31
++7fc8568:	ffff 0000 	vaddl.u<illegal width 64>	q8, d15, d0
++7fc856c:	1e28      	subs	r0, r5, #0
++7fc856e:	07fd      	lsls	r5, r7, #31

@@ -1,0 +1,812 @@
+[
+  {
+    "config": [
+      -1,
+      -1,
+      -1,
+      -1
+    ],
+    "bytes": 100,
+    "masked_code_differences": 59
+  },
+  {
+    "config": [
+      -1,
+      -1,
+      -1,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 12
+  },
+  {
+    "config": [
+      -1,
+      -1,
+      -1,
+      1
+    ],
+    "bytes": 100,
+    "masked_code_differences": 59
+  },
+  {
+    "config": [
+      -1,
+      -1,
+      0,
+      -1
+    ],
+    "bytes": 100,
+    "masked_code_differences": 59
+  },
+  {
+    "config": [
+      -1,
+      -1,
+      0,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 0
+  },
+  {
+    "config": [
+      -1,
+      -1,
+      0,
+      1
+    ],
+    "bytes": 100,
+    "masked_code_differences": 59
+  },
+  {
+    "config": [
+      -1,
+      -1,
+      1,
+      -1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 57
+  },
+  {
+    "config": [
+      -1,
+      -1,
+      1,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 57
+  },
+  {
+    "config": [
+      -1,
+      -1,
+      1,
+      1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 57
+  },
+  {
+    "config": [
+      -1,
+      0,
+      -1,
+      -1
+    ],
+    "bytes": 100,
+    "masked_code_differences": 59
+  },
+  {
+    "config": [
+      -1,
+      0,
+      -1,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 12
+  },
+  {
+    "config": [
+      -1,
+      0,
+      -1,
+      1
+    ],
+    "bytes": 100,
+    "masked_code_differences": 59
+  },
+  {
+    "config": [
+      -1,
+      0,
+      0,
+      -1
+    ],
+    "bytes": 100,
+    "masked_code_differences": 59
+  },
+  {
+    "config": [
+      -1,
+      0,
+      0,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 52
+  },
+  {
+    "config": [
+      -1,
+      0,
+      0,
+      1
+    ],
+    "bytes": 100,
+    "masked_code_differences": 59
+  },
+  {
+    "config": [
+      -1,
+      0,
+      1,
+      -1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 57
+  },
+  {
+    "config": [
+      -1,
+      0,
+      1,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 57
+  },
+  {
+    "config": [
+      -1,
+      0,
+      1,
+      1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 57
+  },
+  {
+    "config": [
+      -1,
+      1,
+      -1,
+      -1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 56
+  },
+  {
+    "config": [
+      -1,
+      1,
+      -1,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 56
+  },
+  {
+    "config": [
+      -1,
+      1,
+      -1,
+      1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 56
+  },
+  {
+    "config": [
+      -1,
+      1,
+      0,
+      -1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 56
+  },
+  {
+    "config": [
+      -1,
+      1,
+      0,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 56
+  },
+  {
+    "config": [
+      -1,
+      1,
+      0,
+      1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 56
+  },
+  {
+    "config": [
+      -1,
+      1,
+      1,
+      -1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 56
+  },
+  {
+    "config": [
+      -1,
+      1,
+      1,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 56
+  },
+  {
+    "config": [
+      -1,
+      1,
+      1,
+      1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 56
+  },
+  {
+    "config": [
+      0,
+      -1,
+      -1,
+      -1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 65
+  },
+  {
+    "config": [
+      0,
+      -1,
+      -1,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 64
+  },
+  {
+    "config": [
+      0,
+      -1,
+      -1,
+      1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 65
+  },
+  {
+    "config": [
+      0,
+      -1,
+      0,
+      -1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 65
+  },
+  {
+    "config": [
+      0,
+      -1,
+      0,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 67
+  },
+  {
+    "config": [
+      0,
+      -1,
+      0,
+      1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 65
+  },
+  {
+    "config": [
+      0,
+      -1,
+      1,
+      -1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 64
+  },
+  {
+    "config": [
+      0,
+      -1,
+      1,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 64
+  },
+  {
+    "config": [
+      0,
+      -1,
+      1,
+      1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 64
+  },
+  {
+    "config": [
+      0,
+      0,
+      -1,
+      -1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 65
+  },
+  {
+    "config": [
+      0,
+      0,
+      -1,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 64
+  },
+  {
+    "config": [
+      0,
+      0,
+      -1,
+      1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 65
+  },
+  {
+    "config": [
+      0,
+      0,
+      0,
+      -1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 65
+  },
+  {
+    "config": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 65
+  },
+  {
+    "config": [
+      0,
+      0,
+      0,
+      1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 65
+  },
+  {
+    "config": [
+      0,
+      0,
+      1,
+      -1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 64
+  },
+  {
+    "config": [
+      0,
+      0,
+      1,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 64
+  },
+  {
+    "config": [
+      0,
+      0,
+      1,
+      1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 64
+  },
+  {
+    "config": [
+      0,
+      1,
+      -1,
+      -1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 67
+  },
+  {
+    "config": [
+      0,
+      1,
+      -1,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 67
+  },
+  {
+    "config": [
+      0,
+      1,
+      -1,
+      1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 67
+  },
+  {
+    "config": [
+      0,
+      1,
+      0,
+      -1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 67
+  },
+  {
+    "config": [
+      0,
+      1,
+      0,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 67
+  },
+  {
+    "config": [
+      0,
+      1,
+      0,
+      1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 67
+  },
+  {
+    "config": [
+      0,
+      1,
+      1,
+      -1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 67
+  },
+  {
+    "config": [
+      0,
+      1,
+      1,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 67
+  },
+  {
+    "config": [
+      0,
+      1,
+      1,
+      1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 67
+  },
+  {
+    "config": [
+      1,
+      -1,
+      -1,
+      -1
+    ],
+    "bytes": 100,
+    "masked_code_differences": 59
+  },
+  {
+    "config": [
+      1,
+      -1,
+      -1,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 12
+  },
+  {
+    "config": [
+      1,
+      -1,
+      -1,
+      1
+    ],
+    "bytes": 100,
+    "masked_code_differences": 59
+  },
+  {
+    "config": [
+      1,
+      -1,
+      0,
+      -1
+    ],
+    "bytes": 100,
+    "masked_code_differences": 59
+  },
+  {
+    "config": [
+      1,
+      -1,
+      0,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 0
+  },
+  {
+    "config": [
+      1,
+      -1,
+      0,
+      1
+    ],
+    "bytes": 100,
+    "masked_code_differences": 59
+  },
+  {
+    "config": [
+      1,
+      -1,
+      1,
+      -1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 57
+  },
+  {
+    "config": [
+      1,
+      -1,
+      1,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 57
+  },
+  {
+    "config": [
+      1,
+      -1,
+      1,
+      1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 57
+  },
+  {
+    "config": [
+      1,
+      0,
+      -1,
+      -1
+    ],
+    "bytes": 100,
+    "masked_code_differences": 59
+  },
+  {
+    "config": [
+      1,
+      0,
+      -1,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 12
+  },
+  {
+    "config": [
+      1,
+      0,
+      -1,
+      1
+    ],
+    "bytes": 100,
+    "masked_code_differences": 59
+  },
+  {
+    "config": [
+      1,
+      0,
+      0,
+      -1
+    ],
+    "bytes": 100,
+    "masked_code_differences": 59
+  },
+  {
+    "config": [
+      1,
+      0,
+      0,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 52
+  },
+  {
+    "config": [
+      1,
+      0,
+      0,
+      1
+    ],
+    "bytes": 100,
+    "masked_code_differences": 59
+  },
+  {
+    "config": [
+      1,
+      0,
+      1,
+      -1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 57
+  },
+  {
+    "config": [
+      1,
+      0,
+      1,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 57
+  },
+  {
+    "config": [
+      1,
+      0,
+      1,
+      1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 57
+  },
+  {
+    "config": [
+      1,
+      1,
+      -1,
+      -1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 56
+  },
+  {
+    "config": [
+      1,
+      1,
+      -1,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 56
+  },
+  {
+    "config": [
+      1,
+      1,
+      -1,
+      1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 56
+  },
+  {
+    "config": [
+      1,
+      1,
+      0,
+      -1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 56
+  },
+  {
+    "config": [
+      1,
+      1,
+      0,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 56
+  },
+  {
+    "config": [
+      1,
+      1,
+      0,
+      1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 56
+  },
+  {
+    "config": [
+      1,
+      1,
+      1,
+      -1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 56
+  },
+  {
+    "config": [
+      1,
+      1,
+      1,
+      0
+    ],
+    "bytes": 104,
+    "masked_code_differences": 56
+  },
+  {
+    "config": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "bytes": 104,
+    "masked_code_differences": 56
+  }
+]

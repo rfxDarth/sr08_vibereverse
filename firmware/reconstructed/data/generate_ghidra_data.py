@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import struct
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -20,6 +21,16 @@ MANUAL = ((0x7FC0000, 0x7FC009F), (0x7FC5480, 0x7FC5483),
 # REA inspection identifies this unclaimed tail as constants, ROM pointers,
 # lookup tables, and image padding rather than executable code.
 DATA_OVERRIDE_RANGES = ((0x7FCF154, 0x7FD063F),)
+# Const objects maintained by hand as separate LTO read-only units
+# (build_v204.LTO_READONLY_SOURCES), so the link can fold their contents:
+# address -> size. They get their own layout sections and are not emitted.
+LTO_READONLY_OBJECTS = {
+    0x07FC0110: 14,   # nvds_data_storage, V204_nvds.c
+    0x07FC3110: 56,   # cust_prf_funcs, V204_user_custs_config.c
+    0x07FCF9F4: 7,    # user_security_conf, V204_user_config.c
+    0x07FCF9FC: 120,  # custs1_att_db, V204_custs1_attributes.c
+    0x07FCFA74: 88,   # custs1_uuid_storage, V204_custs1_uuids.c
+}
 TYPED_DATA_VIEWS = {
     0x07FC90DC: (
         "v204_calendar_conversion_constants",
@@ -67,7 +78,7 @@ TYPED_DATA_VIEWS = {
         "v204_hid_profile_data_region",
         "Mixed constant pool with a typed HID callback map, 23 HID attribute descriptors, and four adjacent handler addresses; unclassified prefix and tail remain byte arrays.",
         "union sr08_hid_profile_data_region",
-        1002,
+        786,
     ),
 }
 HID_CALLBACK_MAP = (
@@ -237,10 +248,10 @@ TYPED_WORDS = {
         "26-bit progress threshold compared with the stream cursor delta.",
         "SR08_STREAM_PROGRESS_THRESHOLD", 0x03FFFFFF),
     0x07FC30F0: ("v204_display_code_record_message_id",
-                 "Message ID literal loaded by submit_display_code_record_for_fd.",
+                 "Message ID literal loaded by app_custs1_create_db.",
                  "SR08_DISPLAY_CODE_RECORD_MESSAGE_ID", 0x00000D1B),
     0x07FC321C: ("v204_per_slot_state_record_type",
-                 "PC-relative message-type literal loaded by publish_per_slot_state_byte.",
+                 "PC-relative message-type literal loaded by app_easy_gap_confirm.",
                  "SR08_PER_SLOT_STATE_RECORD_TYPE", 0x00000E02),
     0x07FC5758: ("v204_crc32_reflected_polynomial",
                  "Reflected CRC-32 polynomial consumed by crc32_update_one_byte.",
@@ -309,7 +320,7 @@ TYPED_POINTERS = {
     ),
     0x07FC1EE4: (
         "v204_state_nibble_registers",
-        "MMIO base 0x50001104 read and updated as halfwords at offsets 0 and 4 by poll_state_nibble_clear_state_specific_at_1ea4.",
+        "MMIO base 0x50001104 read and updated as halfwords at offsets 0 and 4 by UART2_Handler.",
         "volatile uint16_t",
         0x50001104,
     ),
@@ -357,7 +368,7 @@ TYPED_POINTERS = {
     ),
     0x07FC737C: (
         "v204_shared_state_bytes_for_packet_display_helpers",
-        "Shared state base used by the incoming-packet handler and display-code lookup helper.",
+        "Shared state base used by the HID write handler and profile-permission lookup.",
         "volatile uint8_t",
         0x07FD56D0,
     ),
@@ -405,7 +416,7 @@ TYPED_POINTERS = {
     ),
     0x07FC64A4: (
         "v204_indexed_record_table",
-        "Writable 122-byte indexed-record blocks used by store_byte_in_table_by_high_index and the measurement-status updater.",
+        "Writable 122-byte indexed-record blocks used by gapc_encrypt_ind_handler and the measurement-status updater.",
         "volatile struct sr08_indexed_record_block",
         0x07FD53E4,
     ),
@@ -498,7 +509,7 @@ def main() -> None:
                         help="include an exact-function CSV and reserve its emitted span")
     args = parser.parse_args()
     payload = PAYLOAD.read_bytes()
-    hid_blob = payload[0x07FCF6E2 - BASE:0x07FCF6E2 - BASE + 1002]
+    hid_blob = payload[0x07FCF6E2 - BASE:0x07FCF6E2 - BASE + 786]
 
     def blob_word(offset: int) -> int:
         return int.from_bytes(hid_blob[offset:offset + 4], "little")
@@ -626,7 +637,10 @@ def main() -> None:
     if not vectors_bytes <= addresses:
         raise SystemExit(f"startup vector table {vectors_symbol} is not wholly classified data")
     typed_word_bytes.update(vectors_bytes)
-    addresses = sorted(addresses - typed_word_bytes)
+    lto_bytes = {address + offset for address, size in LTO_READONLY_OBJECTS.items() for offset in range(size)}
+    if not lto_bytes <= addresses:
+        raise SystemExit("an LTO read-only object is not wholly classified data")
+    addresses = sorted(addresses - typed_word_bytes - lto_bytes)
     spans: list[tuple[int, int]] = []
     for address in addresses:
         if spans and address == spans[-1][1] + 1:
@@ -712,7 +726,8 @@ def main() -> None:
                 raise SystemExit(f"unrecognized HID handler address 0x{address:08x}")
             lines.append(f"            {handler_name},")
         lines.append("        },")
-        append_byte_array_initializer("remaining_bytes", data[0x1CA:], "        ")
+        append_byte_array_initializer("bytes_before_custom_attributes", data[0x1CA:0x312], "        ")
+        # The following bytes are LTO_READONLY_OBJECTS.
 
     def append_clock_literal_pool_view(data: bytes) -> None:
         alignment_word = int.from_bytes(data[:2], "little")
@@ -1002,6 +1017,7 @@ def main() -> None:
                     for start, size, function in exact_functions)
     sections.extend((address, 0, "v204.func", function)
                     for address, function in EXTRA_FUNCTION_SECTIONS)
+    sections.extend((address, size, "v204.auto", None) for address, size in LTO_READONLY_OBJECTS.items())
     sections.sort(key=lambda item: item[0])
     linker = ["SECTIONS", "{"]
     for address, size, prefix, function in sections:

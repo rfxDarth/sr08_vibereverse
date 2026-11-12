@@ -15,7 +15,7 @@ import java.util.TreeMap;
 /** Record instruction addresses represented by each decompiler CFG. */
 public class AuditPcodeAddresses extends ghidra.app.script.GhidraScript {
     private static final String DEFAULT_OUTPUT =
-        "/home/drath/Projects/personal/code/sr08_ai/firmware/decompiled/V204_pcode_addresses.tsv";
+        "firmware/decompiled/V204_pcode_addresses.tsv";
 
     @Override
     protected void run() throws Exception {

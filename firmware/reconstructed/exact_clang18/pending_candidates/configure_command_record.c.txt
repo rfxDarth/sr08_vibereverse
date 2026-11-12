@@ -1,0 +1,92 @@
+/* PARKED candidate for 0x07fc8134 configure_command_record (Jeff). Not byte-exact.
+ * Matches V204's mode-test order (switch case order 0x800, 0x400, 1, 2, 0x2000, 0x1000 makes
+ * 0x400 the fall-through block), the 32000/divisor call and the (x<<6)+(x<<4)+(y<<7)+(y<<5)+15
+ * tail. The remaining difference is register/spill assignment of the per-mode values: V204 keeps
+ * the hoisted constants 1 (r2, sp+16) and 0 (sp+24) for the default/case-1/case-2 phi inputs,
+ * this form re-materialises them. The tables at 0x07fd03dc / 0x07fd0456 must be symbols
+ * (sensor_mode_register_pairs / sensor_mode_preamble_pairs, not yet in V204_ram_symbols.json);
+ * numeric addresses let the compiler derive one base from the other. Local declaration
+ * order/types shift the allocation (best hill-climb 132 diff lines vs 196 for this order). */
+/* Configure the sensor register table for one of six command modes. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_radio_commands.h"
+#include "firmware/reconstructed/include/sr08_radio_configuration.h"
+
+extern void configure_radio_state_and_send_command_6a(void);
+
+extern const struct sr08_radio_command_pair sensor_mode_preamble_pairs[];
+extern struct sr08_radio_command_pair sensor_mode_register_pairs[];
+#define MODE_PREAMBLE_PAIRS sensor_mode_preamble_pairs
+#define MODE_REGISTER_PAIRS sensor_mode_register_pairs
+
+void configure_command_record(uint32_t mode)
+{
+    struct sr08_radio_command_pair *pairs = MODE_REGISTER_PAIRS;
+    uint8_t reg29, reg28, reg27, reg26, reg2b_low, reg2b_high, reg2a_low, reg2a_high;
+    uint32_t divisor, x, y;
+
+    ensure_radio_profile_then_scan_paired_bytes(MODE_PREAMBLE_PAIRS);
+    pairs[41].second = 0x83;
+    switch (mode) {
+    case 0x800:
+        reg29 = 0; reg28 = 0; reg27 = 32; reg26 = 0;
+        reg2b_low = 0; reg2b_high = 0; reg2a_low = 0; reg2a_high = 1;
+        divisor = 100; x = 1; y = 1;
+    break;
+    case 0x400:
+        reg29 = 0; reg28 = 32; reg27 = 0; reg26 = 0;
+        reg2b_low = 64; reg2b_high = 0; reg2a_low = 0; reg2a_high = 0;
+        divisor = 100; x = 1; y = 1;
+    break;
+    case 1:
+        pairs[8].second = 0x30;
+        pairs[9].second = 0x30;
+        pairs[7].second = 8;
+        pairs[6].second = 8;
+        reg29 = 0; reg28 = 0; reg27 = 0; reg26 = 10;
+        reg2b_low = 16; reg2b_high = 0; reg2a_low = 32; reg2a_high = 0;
+        divisor = 25; x = 0; y = 1;
+    break;
+    case 2:
+        pairs[41].second = 0x80;
+        pairs[10].second = 0x88;
+        pairs[9].second = 0x40;
+        pairs[8].second = 0x40;
+        pairs[7].second = 0x40;
+        pairs[6].second = 0x40;
+        pairs[1].second = 0xff;
+        reg29 = 0x40; reg28 = 0; reg27 = 0; reg26 = 0;
+        reg2b_low = 0; reg2b_high = 2; reg2a_low = 0; reg2a_high = 4;
+        divisor = 25; x = 1; y = 0;
+    break;
+    case 0x2000:
+        pairs[41].second = 0;
+        reg29 = 32; reg28 = 32; reg27 = 32; reg26 = 0;
+        reg2b_low = 64; reg2b_high = 2; reg2a_low = 0; reg2a_high = 1;
+        divisor = 25; x = 1; y = 1;
+    break;
+    case 0x1000:
+        reg29 = 0; reg28 = 8; reg27 = 8; reg26 = 0;
+        reg2b_low = 64; reg2b_high = 0; reg2a_low = 0; reg2a_high = 1;
+        divisor = 100; x = 1; y = 1;
+    break;
+    default:
+        reg2b_low = 0; reg2b_high = 0; reg2a_low = 0; reg2a_high = 0;
+        divisor = 100; x = 1; y = 1;
+        break;
+    }
+    pairs[17].second = reg28;
+    pairs[18].second = reg29;
+    pairs[16].second = reg27;
+    pairs[20].second = reg2b_low | reg2b_high;
+    pairs[19].second = reg2a_low | reg2a_high;
+    pairs[15].second = reg26;
+    device_control_state.scan_initialization_status = 0;
+    uint32_t rate = 32000u / divisor;
+    pairs[2].second = (uint8_t)rate;
+    pairs[3].second = (uint8_t)(rate >> 8);
+    pairs[12].second = (uint8_t)((y << 7) + (x << 6) + (y << 5) + (x << 4) + 15);
+    ensure_radio_profile_then_scan_paired_bytes(pairs);
+    configure_radio_state_and_send_command_6a();
+    device_control_state.configuration_ready = 1;
+}

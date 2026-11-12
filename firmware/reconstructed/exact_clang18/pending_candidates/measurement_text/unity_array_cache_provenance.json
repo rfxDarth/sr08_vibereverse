@@ -1,0 +1,14 @@
+{
+  "analysis_only": true,
+  "canonical_input_hashes_verified": 582,
+  "unchanged_object_reuses": 1778,
+  "fresh_compiles": [
+    "lto_select_measurement_text_update_per_result_at_aae8.c",
+    "lto_v204_stub_07fc3584.s",
+    "lto_v204_stub_07fc2b70.s",
+    "lto_v204_stub_07fc2b70.s",
+    "lto_v204_stub_07fc3584.s",
+    "lto_v204_stub_07fc3584.s"
+  ],
+  "retained": "/tmp/sr08-alice-measurement-text-unity-array-retained"
+}

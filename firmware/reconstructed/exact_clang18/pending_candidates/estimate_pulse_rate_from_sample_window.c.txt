@@ -1,0 +1,113 @@
+/* PARKED (byte mismatch) — candidate C for 0x07fcd9c8 estimate_pulse_rate_from_sample_window (ac5, armcc 5.06u7).
+ * Probe: probe_arm_group.py ac5 estimate_pulse_rate_from_sample_window --source estimate_pulse_rate_from_sample_window=<this>
+ * Status (2026-11-15): same instruction sequence shape (power macro inlined, top-6 insertion, three clamped
+ * window sums), 102 of 437 lines differ with registers and stack offsets abstracted. All of it is register
+ * allocation: V204 keeps ctx in lr and the three energies in ip/r1/r3 and spills more (frame 60, 14 bytes longer);
+ * here the energies go to lr/r4/r3 and ctx to r1 (frame 92). Declaration order (5 permutations) does not move
+ * it. A static inline power helper is not inlined by armcc (use the macro). Source facts the bytes fix:
+ * `peak <= 89` / `bin <= 94` bounds (cmp #79 / #89), `end >= i` loop tests, one counter `i` for every loop,
+ * the 3600000000/3700000000 seeds for the previous/before-previous power. */
+/* Pulse-rate estimate from the measurement context's 100-bin spectrum (pairs_6fc: re/im words, >>15 before
+ * squaring). The six largest local power peaks are kept in ascending order; the strongest gives the rate
+ * (bin + 45). The power within +-10 bins of it, within +-10 bins of each other strong peak at twice or half its
+ * rate, and within +-5 bins of each strong peak 12..16 bins away is the signal energy. The signal-to-noise ratio
+ * signal / (noise / 8) goes to half_c92 (160 when there is no noise), the strongest peak's power to word_c8c. */
+#include <stdint.h>
+#include <stdlib.h>
+#include "firmware/reconstructed/include/sr08_sensor_frame_batch_state.h"
+
+#define BIN_POWER(ctx, k) \
+    ((((int32_t)(ctx)->pairs_6fc[k].first >> 15) * ((int32_t)(ctx)->pairs_6fc[k].first >> 15)) + \
+     (((int32_t)(ctx)->pairs_6fc[k].second >> 15) * ((int32_t)(ctx)->pairs_6fc[k].second >> 15)))
+
+uint8_t estimate_pulse_rate_from_sample_window(void)
+{
+    uint16_t i = 0;
+    uint32_t max_power = 0;
+    uint8_t peak_bin[6] = {0};
+    uint32_t peak_power[6] = {0};
+    uint32_t total = 0;
+    uint32_t main_energy = 0;
+    uint32_t harmonic_energy = 0;
+    uint32_t side_energy = 0;
+    struct sr08_measurement_context *ctx = sensor_frame_batch_state.context;
+    uint32_t previous = 3600000000u;
+    uint32_t before_previous = 3700000000u;
+    uint16_t j;
+    uint8_t peak;
+    uint8_t rate;
+
+    for (i = 0; i < 100; i++) {
+        uint32_t power = BIN_POWER(ctx, i);
+        total += power;
+        if (power < previous && previous >= before_previous) {
+            for (j = 0; j < 6; j++) {
+                if (peak_power[j] < previous) {
+                    if (j != 0) {
+                        peak_bin[j - 1] = peak_bin[j];
+                        peak_power[j - 1] = peak_power[j];
+                    }
+                    peak_bin[j] = (uint8_t)(i - 1);
+                    peak_power[j] = previous;
+                }
+            }
+        }
+        before_previous = previous;
+        previous = power;
+        if (power > max_power)
+            max_power = power;
+    }
+
+    ctx->word_c8c = peak_power[5];
+    peak = peak_bin[5];
+    rate = (uint8_t)(peak + 45);
+    if (peak >= 10 && peak <= 89) {
+        for (i = peak - 10; peak + 10 >= i; i++)
+            main_energy += BIN_POWER(ctx, i);
+    } else if (peak < 10) {
+        for (i = 0; peak + 10 >= i; i++)
+            main_energy += BIN_POWER(ctx, i);
+    } else if (peak > 89) {
+        for (i = peak - 10; i < 100; i++)
+            main_energy += BIN_POWER(ctx, i);
+    }
+
+    for (j = 0; j < 5; j++) {
+        uint8_t bin = peak_bin[j];
+        int32_t twice_peak = 2 * (peak + 45) - bin;
+        int32_t twice_bin = 2 * (bin + 45) - peak;
+        if ((twice_peak >= 41 && twice_peak <= 49) || (twice_bin >= 41 && twice_bin <= 49)) {
+            if (peak_power[5] > peak_power[j] * 2 && bin != 0) {
+                if (bin >= 10 && bin <= 89) {
+                    for (i = bin - 10; bin + 10 >= i; i++)
+                        harmonic_energy += BIN_POWER(ctx, i);
+                } else if (bin < 10) {
+                    for (i = 0; bin + 10 >= i; i++)
+                        harmonic_energy += BIN_POWER(ctx, i);
+                } else if (bin > 89) {
+                    for (i = bin - 10; i < 100; i++)
+                        harmonic_energy += BIN_POWER(ctx, i);
+                }
+            }
+        }
+        if (abs(abs(peak - bin) - 14) <= 2 && peak_power[5] > peak_power[j] * 2 && bin != 0) {
+            if (bin >= 5 && bin <= 94) {
+                for (i = bin - 5; bin + 5 >= i; i++)
+                    side_energy += BIN_POWER(ctx, i);
+            } else if (bin < 5) {
+                for (i = 0; bin + 5 >= i; i++)
+                    side_energy += BIN_POWER(ctx, i);
+            } else if (bin > 94) {
+                for (i = bin - 5; i < 100; i++)
+                    side_energy += BIN_POWER(ctx, i);
+            }
+        }
+    }
+
+    if (main_energy + harmonic_energy + side_energy + 8 < total)
+        ctx->half_c92 = (main_energy + harmonic_energy + side_energy) /
+                        ((total - main_energy - harmonic_energy - side_energy) >> 3);
+    else
+        ctx->half_c92 = 160;
+    return rate;
+}

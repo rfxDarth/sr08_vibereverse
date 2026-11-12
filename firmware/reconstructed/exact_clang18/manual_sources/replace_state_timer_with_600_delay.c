@@ -1,21 +1,11 @@
-/* Replace the timer slot stored at state offset nine using delay value 600. */
-#include <stdint.h>
-#include "firmware/reconstructed/include/sr08_device_state.h"
-
-extern void replace_occupied_slot_newly_allocated_initialized_at_3410(uint32_t);
-extern uint32_t store_item_in_first_free_registration_slot(uint32_t, uint32_t);
-
+/* Restart the measurement-refresh timer with a 600-tick delay. */
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+#include "firmware/reconstructed/include/sr08_sdk_app.h"
+extern void param_update_request_timer_cb(void);
 __attribute__((used, section(".text.replace_state_timer_with_600_delay"))) void
 replace_state_timer_with_600_delay(void) {
-    volatile struct sr08_device_state *device_state;
-    __asm__ volatile("ldr %[device_state], [pc, #924]" : [device_state] "=r"(device_state));
-    replace_occupied_slot_newly_allocated_initialized_at_3410(device_state->timer_slot_index);
-    uint32_t callback;
-    uint32_t timeout_value;
-    __asm__ volatile("movs %[timeout], #75\n"
-                     "lsls %[timeout], %[timeout], #3\n"
-                     "ldr %[callback], [pc, #8]"
-                     : [timeout] "=r"(timeout_value), [callback] "=r"(callback));
-    uint8_t timer_slot = store_item_in_first_free_registration_slot(timeout_value, callback);
-    device_state->timer_slot_index = timer_slot;
+    volatile struct sr08_merged_globals_5650 *state = &merged_globals_5650;
+    app_easy_timer_cancel(state->app_param_update_request_timer_used);
+    state->app_param_update_request_timer_used =
+        app_easy_timer(600, param_update_request_timer_cb);
 }

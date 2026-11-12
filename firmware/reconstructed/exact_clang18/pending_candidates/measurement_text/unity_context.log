@@ -1,0 +1,136 @@
+LTO link: raw loads [] kept for stubs [] raw load sites []
+LTO link: inspecting temporary overlaps for a retry
+LTO link: raw loads [] kept for stubs ['0x7fc2f28'] raw load sites []
+LTO link: inspecting temporary overlaps for a retry
+LTO link: raw loads [] kept for stubs ['0x7fc2f28', '0x7fc3a30', '0x7fc3a34'] raw load sites []
+LTO link: inspecting temporary overlaps for a retry
+LTO link: raw loads [] kept for stubs ['0x7fc2f28', '0x7fc3a30', '0x7fc3a34', '0x7fc3aac'] raw load sites []
+LTO link: inspecting temporary overlaps for a retry
+LTO link: raw loads [] kept for stubs ['0x7fc2f28', '0x7fc3a30', '0x7fc3a34', '0x7fc3aac', '0x7fc50ac', '0x7fc50b0'] raw load sites []
+LTO link: inspecting temporary overlaps for a retry
+LTO link: raw loads [] kept for stubs ['0x7fc2f28', '0x7fc3a30', '0x7fc3a34', '0x7fc3aac', '0x7fc50ac', '0x7fc50b0', '0x7fcac78'] raw load sites []
+LTO link: inspecting temporary overlaps for a retry
+LTO link: raw loads [] kept for stubs ['0x7fc2f28', '0x7fc3a30', '0x7fc3a34', '0x7fc3aac', '0x7fc50ac', '0x7fc50b0', '0x7fcac78', '0x7fcacb4'] raw load sites []
+LTO link: inspecting temporary overlaps for a retry
+LTO link: stub load at 0x07fc1f7a of 0x07fc20ec now loads 0x07fc1fa4
+LTO link: stub load at 0x07fc2d02 of 0x07fc2f88 now loads 0x07fc2d78
+LTO link: stub load at 0x07fc3612 of 0x07fc3834 now loads 0x07fc37d0
+LTO link: stub load at 0x07fc3716 of 0x07fc3aa4 now loads 0x07fc37d0
+LTO link: stub load at 0x07fc3724 of 0x07fc3aa4 now loads 0x07fc37d0
+LTO link: stub load at 0x07fc3756 of 0x07fc3aa4 now loads 0x07fc37d0
+LTO link: stub load at 0x07fc378a of 0x07fc3aa8 now loads 0x07fc37d4
+LTO link: stub load at 0x07fc39dc of 0x07fc3aa4 now loads 0x07fc3a0c
+LTO link: stub load at 0x07fc39e6 of 0x07fc3aa8 now loads 0x07fc3a10
+LTO link: stub load at 0x07fc4c62 of 0x07fc5020 now loads 0x07fc4ca4
+LTO link: stub load at 0x07fc4c74 of 0x07fc5020 now loads 0x07fc4ca4
+LTO link: stub load at 0x07fc4cec of 0x07fc4fc4 now loads 0x07fc4d44
+LTO link: stub load at 0x07fc4cf4 of 0x07fc4fc4 now loads 0x07fc4d44
+LTO link: stub load at 0x07fc4cfc of 0x07fc5028 now loads 0x07fc4d58
+LTO link: stub load at 0x07fc4ea6 of 0x07fc522c now loads 0x07fc4f28
+LTO link: stub load at 0x07fc4f1e of 0x07fc522c now loads 0x07fc4f28
+LTO link: stub load at 0x07fc8704 of 0x07fc87ec now loads 0x07fc8774
+LTO link: stub load at 0x07fc874e of 0x07fc87ec now loads 0x07fc8774
+LTO link: stub load at 0x07fc888c of 0x07fc8c34 now loads 0x07fc88dc
+LTO link: stub load at 0x07fc88aa of 0x07fc8c34 now loads 0x07fc88dc
+LTO link: stub load at 0x07fc88be of 0x07fc8c34 now loads 0x07fc88dc
+LTO link: stub load at 0x07fc88c4 of 0x07fc8c34 now loads 0x07fc88dc
+LTO link: stub load at 0x07fca850 of 0x07fcabac now loads 0x07fca89c
+LTO link: stub load at 0x07fca85e of 0x07fcabb0 now loads 0x07fca8a0
+LTO link: stub load at 0x07fca962 of 0x07fcaae4 now loads 0x07fca9b4
+LTO link: stub load at 0x07fca97a of 0x07fcacb0 now loads 0x07fca9b8
+LTO link: stub load at 0x07fca9d4 of 0x07fcad70 now loads 0x07fcaa44
+LTO link: stub load at 0x07fcabc6 of 0x07fcad74 now loads 0x07fcac08
+LTO link: stub load at 0x07fcabd2 of 0x07fcad74 now loads 0x07fcac08
+LTO link: stub load at 0x07fcabe0 of 0x07fcad74 now loads 0x07fcac08
+LTO link: stub load at 0x07fcabee of 0x07fcad74 now loads 0x07fcac08
+LTO link: stub load at 0x07fcabfc of 0x07fcad74 now loads 0x07fcac08
+LTO link: stub load at 0x07fcacd2 of 0x07fcad74 now loads 0x07fcace0
+LTO link: stub load at 0x07fcad06 of 0x07fcad74 now loads 0x07fcad4c
+LTO link: stub load at 0x07fcad2e of 0x07fcad74 now loads 0x07fcad4c
+LTO link: raw loads [] kept for stubs ['0x7fc2f28', '0x7fc3a30', '0x7fc3a34', '0x7fc3aac', '0x7fc50ac', '0x7fc50b0', '0x7fcac78', '0x7fcacb4'] raw load sites ['0x7fc1f7a', '0x7fc2d02', '0x7fc3612', '0x7fc3716', '0x7fc3724', '0x7fc3756', '0x7fc378a', '0x7fc39dc', '0x7fc39e6', '0x7fc4c62', '0x7fc4c74', '0x7fc4cec', '0x7fc4cf4', '0x7fc4cfc', '0x7fc4ea6', '0x7fc4f1e', '0x7fc8704', '0x7fc874e', '0x7fc888c', '0x7fc88aa', '0x7fc88be', '0x7fc88c4', '0x7fca850', '0x7fca85e', '0x7fca962', '0x7fca97a', '0x7fca9d4', '0x7fcabc6', '0x7fcabd2', '0x7fcabe0', '0x7fcabee', '0x7fcabfc', '0x7fcacd2', '0x7fcad06', '0x7fcad2e']
+LTO link: stub load at 0x07fc1f7a of 0x07fc20ec now loads 0x07fc1fa4
+LTO link: stub load at 0x07fc2d02 of 0x07fc2f88 now loads 0x07fc2d78
+LTO link: stub load at 0x07fc39dc of 0x07fc3aa4 now loads 0x07fc3a0c
+LTO link: stub load at 0x07fc39e6 of 0x07fc3aa8 now loads 0x07fc3a10
+LTO link: stub load at 0x07fc4c62 of 0x07fc5020 now loads 0x07fc4ca4
+LTO link: stub load at 0x07fc4c74 of 0x07fc5020 now loads 0x07fc4ca4
+LTO link: stub load at 0x07fc4cec of 0x07fc4fc4 now loads 0x07fc4d44
+LTO link: stub load at 0x07fc4cf4 of 0x07fc4fc4 now loads 0x07fc4d44
+LTO link: stub load at 0x07fc4cfc of 0x07fc5028 now loads 0x07fc4d58
+LTO link: stub load at 0x07fc4ea6 of 0x07fc522c now loads 0x07fc4f28
+LTO link: stub load at 0x07fc4f1e of 0x07fc522c now loads 0x07fc4f28
+LTO link: stub load at 0x07fc888c of 0x07fc8c34 now loads 0x07fc88dc
+LTO link: stub load at 0x07fc88aa of 0x07fc8c34 now loads 0x07fc88dc
+LTO link: stub load at 0x07fc88be of 0x07fc8c34 now loads 0x07fc88dc
+LTO link: stub load at 0x07fc88c4 of 0x07fc8c34 now loads 0x07fc88dc
+LTO link: stub load at 0x07fca9d4 of 0x07fcad70 now loads 0x07fcaa44
+LTO link: stub load at 0x07fcabc6 of 0x07fcad74 now loads 0x07fcac08
+LTO link: stub load at 0x07fcabd2 of 0x07fcad74 now loads 0x07fcac08
+LTO link: stub load at 0x07fcabe0 of 0x07fcad74 now loads 0x07fcac08
+LTO link: stub load at 0x07fcabee of 0x07fcad74 now loads 0x07fcac08
+LTO link: stub load at 0x07fcabfc of 0x07fcad74 now loads 0x07fcac08
+LTO link: stub load at 0x07fcacd2 of 0x07fcad74 now loads 0x07fcace0
+LTO link: stub load at 0x07fcad06 of 0x07fcad74 now loads 0x07fcad4c
+LTO link: stub load at 0x07fcad2e of 0x07fcad74 now loads 0x07fcad4c
+LTO link: raw loads ['0x7fc20ec', '0x7fc2f88', '0x7fc3aa4', '0x7fc3aa8', '0x7fc4fc4', '0x7fc5020', '0x7fc5028', '0x7fc522c', '0x7fc8c34', '0x7fcad70', '0x7fcad74'] kept for stubs ['0x7fc2f28', '0x7fc3a30', '0x7fc3a34', '0x7fc3aac', '0x7fc50ac', '0x7fc50b0', '0x7fcac78', '0x7fcacb4'] raw load sites ['0x7fc1f7a', '0x7fc2d02', '0x7fc3612', '0x7fc3716', '0x7fc3724', '0x7fc3756', '0x7fc378a', '0x7fc39dc', '0x7fc39e6', '0x7fc4c62', '0x7fc4c74', '0x7fc4cec', '0x7fc4cf4', '0x7fc4cfc', '0x7fc4ea6', '0x7fc4f1e', '0x7fc8704', '0x7fc874e', '0x7fc888c', '0x7fc88aa', '0x7fc88be', '0x7fc88c4', '0x7fca850', '0x7fca85e', '0x7fca962', '0x7fca97a', '0x7fca9d4', '0x7fcabc6', '0x7fcabd2', '0x7fcabe0', '0x7fcabee', '0x7fcabfc', '0x7fcacd2', '0x7fcad06', '0x7fcad2e']
+LTO link: raw loads ['0x7fc20ec', '0x7fc2f88', '0x7fc3aa4', '0x7fc3aa8', '0x7fc4fc4', '0x7fc5020', '0x7fc5028', '0x7fc522c', '0x7fc8c34', '0x7fcad70', '0x7fcad74'] kept for stubs ['0x7fc2f28', '0x7fc3a30', '0x7fc3a34', '0x7fc3aac', '0x7fc50ac', '0x7fc50b0', '0x7fcac78', '0x7fcacb4'] raw load sites ['0x7fc1f7a', '0x7fc2d02', '0x7fc3612', '0x7fc3716', '0x7fc3724', '0x7fc3756', '0x7fc378a', '0x7fc39dc', '0x7fc39e6', '0x7fc4c62', '0x7fc4c74', '0x7fc4cec', '0x7fc4cf4', '0x7fc4cfc', '0x7fc4ea6', '0x7fc4f1e', '0x7fc8704', '0x7fc874e', '0x7fc888c', '0x7fc88aa', '0x7fc88be', '0x7fc88c4', '0x7fca850', '0x7fca85e', '0x7fca962', '0x7fca97a', '0x7fca9d4', '0x7fcabc6', '0x7fcabd2', '0x7fcabe0', '0x7fcabee', '0x7fcabfc', '0x7fcacd2', '0x7fcad06', '0x7fcad2e']
+LTO link: raw loads ['0x7fc20ec', '0x7fc2f88', '0x7fc3834', '0x7fc3aa4', '0x7fc3aa8', '0x7fc4fc4', '0x7fc5020', '0x7fc5028', '0x7fc522c', '0x7fc8c34', '0x7fcabac', '0x7fcabb0', '0x7fcad70', '0x7fcad74'] kept for stubs ['0x7fc2f28', '0x7fc3a30', '0x7fc3a34', '0x7fc3aac', '0x7fc50ac', '0x7fc50b0', '0x7fcac78', '0x7fcacb4'] raw load sites ['0x7fc1f7a', '0x7fc2d02', '0x7fc3716', '0x7fc3724', '0x7fc3756', '0x7fc378a', '0x7fc39dc', '0x7fc39e6', '0x7fc4c62', '0x7fc4c74', '0x7fc4cec', '0x7fc4cf4', '0x7fc4cfc', '0x7fc4ea6', '0x7fc4f1e', '0x7fc8704', '0x7fc874e', '0x7fc888c', '0x7fc88aa', '0x7fc88be', '0x7fc88c4', '0x7fca962', '0x7fca97a', '0x7fca9d4', '0x7fcabc6', '0x7fcabd2', '0x7fcabe0', '0x7fcabee', '0x7fcabfc', '0x7fcacd2', '0x7fcad06', '0x7fcad2e']
+LTO link: raw loads ['0x7fc20ec', '0x7fc2f88', '0x7fc3aa4', '0x7fc3aa8', '0x7fc4fc4', '0x7fc5020', '0x7fc5028', '0x7fc522c', '0x7fc8c34', '0x7fcad70', '0x7fcad74'] kept for stubs ['0x7fc2f28', '0x7fc3834', '0x7fc3a30', '0x7fc3a34', '0x7fc3aac', '0x7fc50ac', '0x7fc50b0', '0x7fcabac', '0x7fcabb0', '0x7fcac78', '0x7fcacb4'] raw load sites ['0x7fc1f7a', '0x7fc2d02', '0x7fc3716', '0x7fc3724', '0x7fc3756', '0x7fc378a', '0x7fc39dc', '0x7fc39e6', '0x7fc4c62', '0x7fc4c74', '0x7fc4cec', '0x7fc4cf4', '0x7fc4cfc', '0x7fc4ea6', '0x7fc4f1e', '0x7fc8704', '0x7fc874e', '0x7fc888c', '0x7fc88aa', '0x7fc88be', '0x7fc88c4', '0x7fca962', '0x7fca97a', '0x7fca9d4', '0x7fcabc6', '0x7fcabd2', '0x7fcabe0', '0x7fcabee', '0x7fcabfc', '0x7fcacd2', '0x7fcad06', '0x7fcad2e']
+0x07fcaae8-0x07fcab3c select_measurement_text_update_per_result_at_aae8 (84 bytes)
+0x07fcab3c-0x07fcab78 update_status_display_using_remainder_rom_at_ab3c (60 bytes)
+--- V204
++++ candidate
+@@ -2,27 +2,28 @@
+ 7fcab3e:	2040      	movs	r0, #64	@ 0x40
+ 7fcab40:	4c8c      	ldr	r4, [pc, #560]	@ (0x7fcad74)
+-7fcab42:	490c      	ldr	r1, [pc, #48]	@ (0x7fcab74)
++7fcab42:	490b      	ldr	r1, [pc, #44]	@ (0x7fcab70)
+ 7fcab44:	5221      	strh	r1, [r4, r0]
+-7fcab46:	4620      	mov	r0, r4
+-7fcab48:	3040      	adds	r0, #64	@ 0x40
+-7fcab4a:	2152      	movs	r1, #82	@ 0x52
+-7fcab4c:	7081      	strb	r1, [r0, #2]
+-7fcab4e:	2030      	movs	r0, #48	@ 0x30
+-7fcab50:	49a5      	ldr	r1, [pc, #660]	@ (0x7fcade8)
+-7fcab52:	5c08      	ldrb	r0, [r1, r0]
+-7fcab54:	2103      	movs	r1, #3
+-7fcab56:	f753 fa2f 	bl	0x7f1dfb8
+-7fcab5a:	2902      	cmp	r1, #2
+-7fcab5c:	d303      	bcc.n	0x7fcab66
+-7fcab5e:	2044      	movs	r0, #68	@ 0x44
+-7fcab60:	2108      	movs	r1, #8
+-7fcab62:	5421      	strb	r1, [r4, r0]
+-7fcab64:	e001      	b.n	0x7fcab6a
+-7fcab66:	2900      	cmp	r1, #0
+-7fcab68:	d002      	beq.n	0x7fcab70
+-7fcab6a:	2043      	movs	r0, #67	@ 0x43
+-7fcab6c:	2108      	movs	r1, #8
+-7fcab6e:	5421      	strb	r1, [r4, r0]
+-7fcab70:	bd10      	pop	{r4, pc}
+-7fcab72:	46c0      	nop			@ (mov r8, r8)
+-7fcab74:	5b13      	ldrh	r3, [r2, r4]
++7fcab46:	2042      	movs	r0, #66	@ 0x42
++7fcab48:	2152      	movs	r1, #82	@ 0x52
++7fcab4a:	5421      	strb	r1, [r4, r0]
++7fcab4c:	2030      	movs	r0, #48	@ 0x30
++7fcab4e:	4909      	ldr	r1, [pc, #36]	@ (0x7fcab74)
++7fcab50:	5c08      	ldrb	r0, [r1, r0]
++7fcab52:	2103      	movs	r1, #3
++7fcab54:	f753 fa30 	bl	0x7f1dfb8
++7fcab58:	2902      	cmp	r1, #2
++7fcab5a:	d303      	bcc.n	0x7fcab64
++7fcab5c:	2044      	movs	r0, #68	@ 0x44
++7fcab5e:	2108      	movs	r1, #8
++7fcab60:	5421      	strb	r1, [r4, r0]
++7fcab62:	e001      	b.n	0x7fcab68
++7fcab64:	2900      	cmp	r1, #0
++7fcab66:	d002      	beq.n	0x7fcab6e
++7fcab68:	2043      	movs	r0, #67	@ 0x43
++7fcab6a:	2108      	movs	r1, #8
++7fcab6c:	5421      	strb	r1, [r4, r0]
++7fcab6e:	bd10      	pop	{r4, pc}
++7fcab70:	5b13      	ldrh	r3, [r2, r4]
++7fcab72:	0000      	movs	r0, r0
++7fcab74:	5650      	ldrsb	r0, [r2, r1]
++7fcab76:	07fd      	lsls	r5, r7, #31
+MISMATCH

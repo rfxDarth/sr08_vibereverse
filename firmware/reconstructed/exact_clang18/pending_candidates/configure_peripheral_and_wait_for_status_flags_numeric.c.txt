@@ -1,0 +1,44 @@
+/* Adapted from SDK rwble.c BLE_WAKEUP_LP_Handler/power_up and rwip.c.
+ * Copyright (C) RivieraWaves 2009-2014
+ * Copyright (C) 2017-2024 Modified by Renesas Electronics Corporation and/or its affiliates.
+ */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+extern void initialize_peripheral_state_and_interrupts(void);
+extern void ble_regs_pop(void);
+#define SYS16(offset) (*(volatile uint16_t *)(0x50000000u+(offset)))
+__attribute__((used,section(".text.configure_peripheral_and_wait_for_status_flags"))) void
+configure_peripheral_and_wait_for_status_flags(void) {
+    if ((SYS16(0x0a)&3u)!=0) {
+        if ((SYS16(0x14)&4u)!=0) initialize_peripheral_state_and_interrupts();
+        SYS16(0x20)|=0x80;
+        volatile uint16_t *cal=(volatile uint16_t *)0x50001600;
+        cal[1]=255;
+        cal[0]=4;
+        SYS16(0)|=0x30;
+        SYS16(0)|=3;
+        for (;;) {
+            uint32_t high=cal[3];
+            uint32_t low=cal[2];
+            if ((high<<16)+low>1000u) break;
+        }
+        cal[0]=5;
+        SYS16(2)=*(volatile uint16_t *)(0x07fd5650u+0x3a);
+        SYS16(0x20)&=(uint16_t)~0x80;
+    }
+    while ((*(volatile uint16_t *)0x50003308&4u)!=0) {}
+    SYS16(0)&=(uint16_t)~0x30;
+    SYS16(0)&=(uint16_t)~3;
+    if ((SYS16(0x0a)&3u)!=0) {
+        SYS16(0x0a)&=(uint16_t)~3;
+        SYS16(0x22)&=(uint16_t)~1;
+    }
+    SYS16(8)|=0x80;
+    SYS16(0x10)&=(uint16_t)~4;
+    while ((SYS16(0x14)&2u)==0) {}
+    ble_regs_pop();
+    *(volatile uint32_t *)0x40000208=*(volatile uint32_t *)(0x07fd5650u+0x54);
+    volatile uint32_t *interrupts=(volatile uint32_t *)0x40000010;
+    (void)*interrupts;
+    while ((*interrupts&4u)==0) {}
+}

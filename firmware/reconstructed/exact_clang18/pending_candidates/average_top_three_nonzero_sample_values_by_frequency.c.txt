@@ -1,0 +1,48 @@
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_arm_eabi.h"
+
+/* Destructive duplicate counting and first-in-array tie breaking. V204 uses
+ * signed byte loop indices and a 28-byte count table; callers must supply
+ * between 1 and 28 samples. Missing second/third values reuse the first.
+ */
+__attribute__((used,section(".text.average_top_three_nonzero_sample_values_by_frequency")))
+uint32_t average_top_three_nonzero_sample_values_by_frequency(uint32_t *samples, int32_t count)
+{
+    int8_t frequencies[28] = {0};
+    int32_t first_count = frequencies[0], second_count = 0, third_count = 0;
+    uint32_t first = 0, second = 0, third = 0;
+    int8_t i, j;
+    for (i = 0; i < count; ++i) frequencies[i] = 0;
+    for (i = 0; i < count - 1; ++i) {
+        for (j = i + 1; j < count; ++j) {
+            if (samples[i] == samples[j] && samples[i] != 0 && samples[j] != 0) {
+                frequencies[i]++;
+                samples[j] = 0;
+            }
+        }
+        if (samples[i] != 0) frequencies[i]++;
+    }
+    if (samples[count - 1] != 0) frequencies[count - 1]++;
+    for (i = 0; i < count; ++i) {
+        if (frequencies[i] > first_count) {
+            first_count = frequencies[i];
+            first = samples[i];
+        }
+    }
+    for (i = 0; i < count; ++i) {
+        if (frequencies[i] > second_count && frequencies[i] <= first_count && samples[i] != first) {
+            second_count = frequencies[i];
+            second = samples[i];
+        }
+    }
+    for (i = 0; i < count; ++i) {
+        if (frequencies[i] > third_count && frequencies[i] <= second_count &&
+            samples[i] != second && samples[i] != first) {
+            third_count = frequencies[i];
+            third = samples[i];
+        }
+    }
+    if (second == 0) second = first;
+    if (third == 0) third = first;
+    return (uint32_t)__aeabi_idiv((int32_t)(first + second + third), 3);
+}

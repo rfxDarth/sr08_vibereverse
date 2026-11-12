@@ -1,0 +1,13 @@
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_cycle_control_state.h"
+extern void send_device_command_pair(uint32_t,uint32_t);
+__attribute__((used,section(".text.dispatch_enabled_indicator_fields_for_device_status"))) void
+dispatch_enabled_indicator_fields_for_device_status(void) {
+    volatile uint8_t *state=(volatile uint8_t *)&cycle_control_state;
+    uint32_t field_offset=__builtin_annotation(0x4c,"status flags");
+    uint32_t flags=state[field_offset];
+    if(flags&1u){send_device_command_pair(40,(state+__builtin_annotation(field_offset,"command40"))[4]);flags=state[field_offset];}
+    if(flags&2u){send_device_command_pair(46,(state+__builtin_annotation(field_offset,"command46"))[6]);flags=state[field_offset];}
+    if(flags&4u){send_device_command_pair(47,(state+__builtin_annotation(field_offset,"command47"))[7]);flags=state[field_offset];}
+    if(flags&8u){send_device_command_pair(30,state[0x54]);send_device_command_pair(31,state[0x54]);}
+}

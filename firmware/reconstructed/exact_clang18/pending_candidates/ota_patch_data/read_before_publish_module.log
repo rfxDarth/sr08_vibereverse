@@ -1,0 +1,19 @@
+0x07fcc148-0x07fcc2f0 suotar_patch_data_ind_handler (424 bytes)
+--- V204
++++ candidate
+@@ -93,9 +93,9 @@
+ 7fcc204:	d15e      	bne.n	0x7fcc2c4
+ 7fcc206:	6872      	ldr	r2, [r6, #4]
+-7fcc208:	9902      	ldr	r1, [sp, #8]
+-7fcc20a:	7701      	strb	r1, [r0, #28]
+-7fcc20c:	4611      	mov	r1, r2
+-7fcc20e:	3140      	adds	r1, #64	@ 0x40
+-7fcc210:	6279      	str	r1, [r7, #36]	@ 0x24
++7fcc208:	4611      	mov	r1, r2
++7fcc20a:	3140      	adds	r1, #64	@ 0x40
++7fcc20c:	6279      	str	r1, [r7, #36]	@ 0x24
++7fcc20e:	9b02      	ldr	r3, [sp, #8]
++7fcc210:	7703      	strb	r3, [r0, #28]
+ 7fcc212:	2a00      	cmp	r2, #0
+ 7fcc214:	d054      	beq.n	0x7fcc2c0
+MISMATCH

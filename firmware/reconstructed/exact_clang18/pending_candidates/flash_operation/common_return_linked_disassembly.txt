@@ -1,0 +1,244 @@
+
+/tmp/sr08-alice-flash-common-return-lto-debug/lto_module.axf:     file format elf32-littlearm
+
+
+Disassembly of section ER_07fc3ea0:
+
+07fc3ea0 <perform_flash_memory_operation>:
+ 7fc3ea0:	b5f0      	push	{r4, r5, r6, r7, lr}
+ 7fc3ea2:	b087      	sub	sp, #28
+ 7fc3ea4:	461f      	mov	r7, r3
+ 7fc3ea6:	4616      	mov	r6, r2
+ 7fc3ea8:	460d      	mov	r5, r1
+ 7fc3eaa:	9003      	str	r0, [sp, #12]
+ 7fc3eac:	4896      	ldr	r0, [pc, #600]	@ (7fc4108 <__arm_cp.42_1>)
+ 7fc3eae:	24c8      	movs	r4, #200	@ 0xc8
+ 7fc3eb0:	8004      	strh	r4, [r0, #0]
+ 7fc3eb2:	4877      	ldr	r0, [pc, #476]	@ (7fc4090 <__arm_cp.41_1>)
+ 7fc3eb4:	7880      	ldrb	r0, [r0, #2]
+ 7fc3eb6:	2800      	cmp	r0, #0
+ 7fc3eb8:	d001      	beq.n	7fc3ebe <perform_flash_memory_operation+0x1e>
+ 7fc3eba:	2008      	movs	r0, #8
+ 7fc3ebc:	e000      	b.n	7fc3ec0 <perform_flash_memory_operation+0x20>
+ 7fc3ebe:	2001      	movs	r0, #1
+ 7fc3ec0:	4974      	ldr	r1, [pc, #464]	@ (7fc4094 <__arm_cp.41_2>)
+ 7fc3ec2:	8048      	strh	r0, [r1, #2]
+ 7fc3ec4:	8008      	strh	r0, [r1, #0]
+ 7fc3ec6:	2000      	movs	r0, #0
+ 7fc3ec8:	9006      	str	r0, [sp, #24]
+ 7fc3eca:	f007 fe4f 	bl	7fcbb6c <spi_set_bitmode>
+ 7fc3ece:	20ab      	movs	r0, #171	@ 0xab
+ 7fc3ed0:	f007 fe60 	bl	7fcbb94 <update_mode_dependent_output_state_during_flash_transfer>
+ 7fc3ed4:	2f01      	cmp	r7, #1
+ 7fc3ed6:	d02d      	beq.n	7fc3f34 <perform_flash_memory_operation+0x94>
+ 7fc3ed8:	2f00      	cmp	r7, #0
+ 7fc3eda:	d000      	beq.n	7fc3ede <perform_flash_memory_operation+0x3e>
+ 7fc3edc:	e094      	b.n	7fc4008 <perform_flash_memory_operation+0x168>
+ 7fc3ede:	f007 fdf7 	bl	7fcbad0 <spi_flash_is_busy>
+ 7fc3ee2:	4607      	mov	r7, r0
+ 7fc3ee4:	2800      	cmp	r0, #0
+ 7fc3ee6:	d000      	beq.n	7fc3eea <perform_flash_memory_operation+0x4a>
+ 7fc3ee8:	e0cc      	b.n	7fc4084 <perform_flash_memory_operation+0x1e4>
+ 7fc3eea:	2002      	movs	r0, #2
+ 7fc3eec:	f007 fe3e 	bl	7fcbb6c <spi_set_bitmode>
+ 7fc3ef0:	4867      	ldr	r0, [pc, #412]	@ (7fc4090 <__arm_cp.41_1>)
+ 7fc3ef2:	7880      	ldrb	r0, [r0, #2]
+ 7fc3ef4:	2401      	movs	r4, #1
+ 7fc3ef6:	2800      	cmp	r0, #0
+ 7fc3ef8:	4620      	mov	r0, r4
+ 7fc3efa:	d000      	beq.n	7fc3efe <perform_flash_memory_operation+0x5e>
+ 7fc3efc:	2008      	movs	r0, #8
+ 7fc3efe:	4965      	ldr	r1, [pc, #404]	@ (7fc4094 <__arm_cp.41_2>)
+ 7fc3f00:	8048      	strh	r0, [r1, #2]
+ 7fc3f02:	2003      	movs	r0, #3
+ 7fc3f04:	0600      	lsls	r0, r0, #24
+ 7fc3f06:	4328      	orrs	r0, r5
+ 7fc3f08:	f007 fdc6 	bl	7fcba98 <spi_access>
+ 7fc3f0c:	2700      	movs	r7, #0
+ 7fc3f0e:	4638      	mov	r0, r7
+ 7fc3f10:	f007 fe2c 	bl	7fcbb6c <spi_set_bitmode>
+ 7fc3f14:	1971      	adds	r1, r6, r5
+ 7fc3f16:	05e0      	lsls	r0, r4, #23
+ 7fc3f18:	4281      	cmp	r1, r0
+ 7fc3f1a:	d900      	bls.n	7fc3f1e <perform_flash_memory_operation+0x7e>
+ 7fc3f1c:	1b46      	subs	r6, r0, r5
+ 7fc3f1e:	9c03      	ldr	r4, [sp, #12]
+ 7fc3f20:	2e00      	cmp	r6, #0
+ 7fc3f22:	d100      	bne.n	7fc3f26 <perform_flash_memory_operation+0x86>
+ 7fc3f24:	e0a1      	b.n	7fc406a <perform_flash_memory_operation+0x1ca>
+ 7fc3f26:	2000      	movs	r0, #0
+ 7fc3f28:	f007 fdb6 	bl	7fcba98 <spi_access>
+ 7fc3f2c:	7020      	strb	r0, [r4, #0]
+ 7fc3f2e:	1e76      	subs	r6, r6, #1
+ 7fc3f30:	1c64      	adds	r4, r4, #1
+ 7fc3f32:	e7f5      	b.n	7fc3f20 <perform_flash_memory_operation+0x80>
+ 7fc3f34:	4856      	ldr	r0, [pc, #344]	@ (7fc4090 <__arm_cp.41_1>)
+ 7fc3f36:	7b80      	ldrb	r0, [r0, #14]
+ 7fc3f38:	2801      	cmp	r0, #1
+ 7fc3f3a:	d104      	bne.n	7fc3f46 <perform_flash_memory_operation+0xa6>
+ 7fc3f3c:	f008 faaa 	bl	7fcc494 <read_record_flag_bit_zero>
+ 7fc3f40:	2800      	cmp	r0, #0
+ 7fc3f42:	d100      	bne.n	7fc3f46 <perform_flash_memory_operation+0xa6>
+ 7fc3f44:	e097      	b.n	7fc4076 <perform_flash_memory_operation+0x1d6>
+ 7fc3f46:	2400      	movs	r4, #0
+ 7fc3f48:	4620      	mov	r0, r4
+ 7fc3f4a:	f007 fe0f 	bl	7fcbb6c <spi_set_bitmode>
+ 7fc3f4e:	2001      	movs	r0, #1
+ 7fc3f50:	9005      	str	r0, [sp, #20]
+ 7fc3f52:	05c0      	lsls	r0, r0, #23
+ 7fc3f54:	1b42      	subs	r2, r0, r5
+ 7fc3f56:	42b2      	cmp	r2, r6
+ 7fc3f58:	d300      	bcc.n	7fc3f5c <perform_flash_memory_operation+0xbc>
+ 7fc3f5a:	4632      	mov	r2, r6
+ 7fc3f5c:	9805      	ldr	r0, [sp, #20]
+ 7fc3f5e:	0200      	lsls	r0, r0, #8
+ 7fc3f60:	9006      	str	r0, [sp, #24]
+ 7fc3f62:	1828      	adds	r0, r5, r0
+ 7fc3f64:	21ff      	movs	r1, #255	@ 0xff
+ 7fc3f66:	4388      	bics	r0, r1
+ 7fc3f68:	1e41      	subs	r1, r0, #1
+ 7fc3f6a:	9401      	str	r4, [sp, #4]
+ 7fc3f6c:	4626      	mov	r6, r4
+ 7fc3f6e:	4614      	mov	r4, r2
+ 7fc3f70:	9202      	str	r2, [sp, #8]
+ 7fc3f72:	4296      	cmp	r6, r2
+ 7fc3f74:	d300      	bcc.n	7fc3f78 <perform_flash_memory_operation+0xd8>
+ 7fc3f76:	e080      	b.n	7fc407a <perform_flash_memory_operation+0x1da>
+ 7fc3f78:	1960      	adds	r0, r4, r5
+ 7fc3f7a:	4288      	cmp	r0, r1
+ 7fc3f7c:	9104      	str	r1, [sp, #16]
+ 7fc3f7e:	d901      	bls.n	7fc3f84 <perform_flash_memory_operation+0xe4>
+ 7fc3f80:	1b48      	subs	r0, r1, r5
+ 7fc3f82:	1c44      	adds	r4, r0, #1
+ 7fc3f84:	f007 fda4 	bl	7fcbad0 <spi_flash_is_busy>
+ 7fc3f88:	2800      	cmp	r0, #0
+ 7fc3f8a:	d16c      	bne.n	7fc4066 <perform_flash_memory_operation+0x1c6>
+ 7fc3f8c:	f007 fdd4 	bl	7fcbb38 <drive_ring_s_output_state_machine>
+ 7fc3f90:	2800      	cmp	r0, #0
+ 7fc3f92:	d168      	bne.n	7fc4066 <perform_flash_memory_operation+0x1c6>
+ 7fc3f94:	2002      	movs	r0, #2
+ 7fc3f96:	f007 fde9 	bl	7fcbb6c <spi_set_bitmode>
+ 7fc3f9a:	483d      	ldr	r0, [pc, #244]	@ (7fc4090 <__arm_cp.41_1>)
+ 7fc3f9c:	7880      	ldrb	r0, [r0, #2]
+ 7fc3f9e:	2800      	cmp	r0, #0
+ 7fc3fa0:	9805      	ldr	r0, [sp, #20]
+ 7fc3fa2:	d000      	beq.n	7fc3fa6 <perform_flash_memory_operation+0x106>
+ 7fc3fa4:	2008      	movs	r0, #8
+ 7fc3fa6:	493b      	ldr	r1, [pc, #236]	@ (7fc4094 <__arm_cp.41_2>)
+ 7fc3fa8:	8048      	strh	r0, [r1, #2]
+ 7fc3faa:	9805      	ldr	r0, [sp, #20]
+ 7fc3fac:	0640      	lsls	r0, r0, #25
+ 7fc3fae:	4305      	orrs	r5, r0
+ 7fc3fb0:	4628      	mov	r0, r5
+ 7fc3fb2:	f007 fd71 	bl	7fcba98 <spi_access>
+ 7fc3fb6:	2000      	movs	r0, #0
+ 7fc3fb8:	f007 fdd8 	bl	7fcbb6c <spi_set_bitmode>
+ 7fc3fbc:	b2a0      	uxth	r0, r4
+ 7fc3fbe:	9906      	ldr	r1, [sp, #24]
+ 7fc3fc0:	4288      	cmp	r0, r1
+ 7fc3fc2:	4625      	mov	r5, r4
+ 7fc3fc4:	d300      	bcc.n	7fc3fc8 <perform_flash_memory_operation+0x128>
+ 7fc3fc6:	9d06      	ldr	r5, [sp, #24]
+ 7fc3fc8:	9803      	ldr	r0, [sp, #12]
+ 7fc3fca:	1987      	adds	r7, r0, r6
+ 7fc3fcc:	0428      	lsls	r0, r5, #16
+ 7fc3fce:	d005      	beq.n	7fc3fdc <perform_flash_memory_operation+0x13c>
+ 7fc3fd0:	7838      	ldrb	r0, [r7, #0]
+ 7fc3fd2:	f007 fd61 	bl	7fcba98 <spi_access>
+ 7fc3fd6:	1e6d      	subs	r5, r5, #1
+ 7fc3fd8:	1c7f      	adds	r7, r7, #1
+ 7fc3fda:	e7f7      	b.n	7fc3fcc <perform_flash_memory_operation+0x12c>
+ 7fc3fdc:	48ef      	ldr	r0, [pc, #956]	@ (7fc439c <__arm_cp.7fc41e4_1b8>)
+ 7fc3fde:	7880      	ldrb	r0, [r0, #2]
+ 7fc3fe0:	2800      	cmp	r0, #0
+ 7fc3fe2:	d001      	beq.n	7fc3fe8 <perform_flash_memory_operation+0x148>
+ 7fc3fe4:	2008      	movs	r0, #8
+ 7fc3fe6:	e000      	b.n	7fc3fea <perform_flash_memory_operation+0x14a>
+ 7fc3fe8:	2001      	movs	r0, #1
+ 7fc3fea:	492a      	ldr	r1, [pc, #168]	@ (7fc4094 <__arm_cp.41_2>)
+ 7fc3fec:	8008      	strh	r0, [r1, #0]
+ 7fc3fee:	f007 fd8f 	bl	7fcbb10 <spi_flash_wait_till_ready>
+ 7fc3ff2:	2800      	cmp	r0, #0
+ 7fc3ff4:	d137      	bne.n	7fc4066 <perform_flash_memory_operation+0x1c6>
+ 7fc3ff6:	9806      	ldr	r0, [sp, #24]
+ 7fc3ff8:	9904      	ldr	r1, [sp, #16]
+ 7fc3ffa:	1808      	adds	r0, r1, r0
+ 7fc3ffc:	19a6      	adds	r6, r4, r6
+ 7fc3ffe:	9a02      	ldr	r2, [sp, #8]
+ 7fc4000:	1b94      	subs	r4, r2, r6
+ 7fc4002:	1c4d      	adds	r5, r1, #1
+ 7fc4004:	4601      	mov	r1, r0
+ 7fc4006:	e7b4      	b.n	7fc3f72 <perform_flash_memory_operation+0xd2>
+ 7fc4008:	48e4      	ldr	r0, [pc, #912]	@ (7fc439c <__arm_cp.7fc41e4_1b8>)
+ 7fc400a:	7b80      	ldrb	r0, [r0, #14]
+ 7fc400c:	2801      	cmp	r0, #1
+ 7fc400e:	d103      	bne.n	7fc4018 <perform_flash_memory_operation+0x178>
+ 7fc4010:	f008 fa40 	bl	7fcc494 <read_record_flag_bit_zero>
+ 7fc4014:	2800      	cmp	r0, #0
+ 7fc4016:	d02e      	beq.n	7fc4076 <perform_flash_memory_operation+0x1d6>
+ 7fc4018:	481f      	ldr	r0, [pc, #124]	@ (7fc4098 <__arm_cp.41_3>)
+ 7fc401a:	4920      	ldr	r1, [pc, #128]	@ (7fc409c <__arm_cp.41_4>)
+ 7fc401c:	1871      	adds	r1, r6, r1
+ 7fc401e:	0b0e      	lsrs	r6, r1, #12
+ 7fc4020:	d100      	bne.n	7fc4024 <perform_flash_memory_operation+0x184>
+ 7fc4022:	2601      	movs	r6, #1
+ 7fc4024:	4005      	ands	r5, r0
+ 7fc4026:	9806      	ldr	r0, [sp, #24]
+ 7fc4028:	43c7      	mvns	r7, r0
+ 7fc402a:	2e00      	cmp	r6, #0
+ 7fc402c:	d02a      	beq.n	7fc4084 <perform_flash_memory_operation+0x1e4>
+ 7fc402e:	4836      	ldr	r0, [pc, #216]	@ (7fc4108 <__arm_cp.42_1>)
+ 7fc4030:	8004      	strh	r4, [r0, #0]
+ 7fc4032:	f007 fd4d 	bl	7fcbad0 <spi_flash_is_busy>
+ 7fc4036:	2800      	cmp	r0, #0
+ 7fc4038:	d115      	bne.n	7fc4066 <perform_flash_memory_operation+0x1c6>
+ 7fc403a:	f007 fd7d 	bl	7fcbb38 <drive_ring_s_output_state_machine>
+ 7fc403e:	2800      	cmp	r0, #0
+ 7fc4040:	d111      	bne.n	7fc4066 <perform_flash_memory_operation+0x1c6>
+ 7fc4042:	2002      	movs	r0, #2
+ 7fc4044:	f007 fd92 	bl	7fcbb6c <spi_set_bitmode>
+ 7fc4048:	2001      	movs	r0, #1
+ 7fc404a:	0740      	lsls	r0, r0, #29
+ 7fc404c:	4328      	orrs	r0, r5
+ 7fc404e:	f007 fda1 	bl	7fcbb94 <update_mode_dependent_output_state_during_flash_transfer>
+ 7fc4052:	f007 fd5d 	bl	7fcbb10 <spi_flash_wait_till_ready>
+ 7fc4056:	2800      	cmp	r0, #0
+ 7fc4058:	d105      	bne.n	7fc4066 <perform_flash_memory_operation+0x1c6>
+ 7fc405a:	4810      	ldr	r0, [pc, #64]	@ (7fc409c <__arm_cp.41_4>)
+ 7fc405c:	1940      	adds	r0, r0, r5
+ 7fc405e:	1c45      	adds	r5, r0, #1
+ 7fc4060:	1e76      	subs	r6, r6, #1
+ 7fc4062:	9f06      	ldr	r7, [sp, #24]
+ 7fc4064:	e7e1      	b.n	7fc402a <perform_flash_memory_operation+0x18a>
+ 7fc4066:	4607      	mov	r7, r0
+ 7fc4068:	e00c      	b.n	7fc4084 <perform_flash_memory_operation+0x1e4>
+ 7fc406a:	48cc      	ldr	r0, [pc, #816]	@ (7fc439c <__arm_cp.7fc41e4_1b8>)
+ 7fc406c:	7880      	ldrb	r0, [r0, #2]
+ 7fc406e:	2800      	cmp	r0, #0
+ 7fc4070:	d005      	beq.n	7fc407e <perform_flash_memory_operation+0x1de>
+ 7fc4072:	2008      	movs	r0, #8
+ 7fc4074:	e004      	b.n	7fc4080 <perform_flash_memory_operation+0x1e0>
+ 7fc4076:	27ff      	movs	r7, #255	@ 0xff
+ 7fc4078:	e004      	b.n	7fc4084 <perform_flash_memory_operation+0x1e4>
+ 7fc407a:	9f01      	ldr	r7, [sp, #4]
+ 7fc407c:	e002      	b.n	7fc4084 <perform_flash_memory_operation+0x1e4>
+ 7fc407e:	2001      	movs	r0, #1
+ 7fc4080:	4904      	ldr	r1, [pc, #16]	@ (7fc4094 <__arm_cp.41_2>)
+ 7fc4082:	8008      	strh	r0, [r1, #0]
+ 7fc4084:	f007 fd2d 	bl	7fcbae2 <initialize_shared_state_when_status_clear>
+ 7fc4088:	b278      	sxtb	r0, r7
+ 7fc408a:	b007      	add	sp, #28
+ 7fc408c:	bdf0      	pop	{r4, r5, r6, r7, pc}
+ 7fc408e:	46c0      	nop			@ (mov r8, r8)
+
+07fc4090 <__arm_cp.41_1>:
+ 7fc4090:	07fd5650 	.word	0x07fd5650
+
+07fc4094 <__arm_cp.41_2>:
+ 7fc4094:	50003002 	.word	0x50003002
+
+07fc4098 <__arm_cp.41_3>:
+ 7fc4098:	fffff000 	.word	0xfffff000
+
+07fc409c <__arm_cp.41_4>:
+ 7fc409c:	00000fff 	.word	0x00000fff

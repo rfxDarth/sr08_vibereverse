@@ -1,6 +1,8 @@
 #ifndef SR08_MEASUREMENT_RANGE_H
 #define SR08_MEASUREMENT_RANGE_H
 
+#include "firmware/reconstructed/include/sr08_static_assert.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -11,9 +13,9 @@ struct sr08_measurement_range {
     uint8_t entry_count;
 };
 
-_Static_assert(offsetof(struct sr08_measurement_range, range_start) == 4,
+SR08_STATIC_ASSERT(offsetof(struct sr08_measurement_range, range_start) == 4,
                "measurement range start offset must remain four");
-_Static_assert(offsetof(struct sr08_measurement_range, entry_count) == 6,
+SR08_STATIC_ASSERT(offsetof(struct sr08_measurement_range, entry_count) == 6,
                "measurement range count offset must remain six");
 
 #endif

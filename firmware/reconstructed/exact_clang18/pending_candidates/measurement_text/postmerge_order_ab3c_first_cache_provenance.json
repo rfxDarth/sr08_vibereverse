@@ -1,0 +1,26 @@
+{
+  "analysis_only": true,
+  "canonical_input_hashes_verified": 580,
+  "unchanged_object_reuses": 1788,
+  "fresh_compiles": [
+    "lto_select_measurement_text_update_per_result_at_aae8.c",
+    "lto_v204_stub_07fc2b70.s",
+    "lto_v204_stub_07fc3584.s",
+    "lto_v204_stub_07fc2b70.s",
+    "lto_v204_stub_07fc3584.s",
+    "lto_v204_stub_07fc3584.s"
+  ],
+  "retained": "/tmp/sr08-alice-merge6-cached-order_ab3c_first",
+  "probe_args": [
+    "ac6lto",
+    "select_measurement_text_update_per_result_at_aae8",
+    "--native",
+    "select_measurement_text_update_per_result_at_aae8",
+    "--source",
+    "select_measurement_text_update_per_result_at_aae8=pending_candidates/measurement_text/final.c.txt",
+    "--reference",
+    "/home/drath/Projects/personal/code/sr08_ai/firmware/V204.bin",
+    "--arm-tools-dir",
+    "/home/drath/Projects/personal/code/sr08_ai/Tools"
+  ]
+}

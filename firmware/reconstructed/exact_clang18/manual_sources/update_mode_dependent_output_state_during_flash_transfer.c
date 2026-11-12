@@ -1,35 +1,34 @@
-/*
- * Initialize the two output-state halfwords around the shared mode helper.
- * Read the mode byte at offset 2, write 1 or 8 to output halfword 1, pass the
- * incoming transaction value through to the polled MMIO helper, then read
- * the mode byte again and write 1 or 8 to output halfword 0. Keep the Thumb
- * body pinned because it fits this 38-byte slot exactly and preserves the
- * original aligned stack save around the helper call.
+/* Renesas spi_transaction: assert CS, transfer one word, then release CS.
+ * SR08 selects P0_3 (mask 8) or P0_0 (mask 1) with the shared byte.
  */
 #include <stdint.h>
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
 #include "firmware/reconstructed/include/sr08_flash_transfer.h"
-#include "firmware/reconstructed/include/sr08_output_state.h"
 
-__attribute__((naked, used, section(".text.update_mode_dependent_output_state_during_flash_transfer"))) uint32_t
-update_mode_dependent_output_state_during_flash_transfer(uint32_t transaction_value __attribute__((unused))) {
-    __asm__ volatile("push {r3, r4, r5, r6, r7, lr}\n\t"
-                     "ldr r6, [pc, #36]\n\t"
-                     "ldrb r1, [r6, #2]\n\t"
-                     "movs r4, #8\n\t"
-                     "movs r5, #1\n\t"
-                     "cmp r1, #0\n\t"
-                     "mov r1, r4\n\t"
-                     "bne .Lfirst_done_bb94\n\t"
-                     "mov r1, r5\n"
-                     ".Lfirst_done_bb94:\n\t"
-                     "ldr r7, [pc, #24]\n\t"
-                     "strh r1, [r7, #2]\n\t"
-                     "bl transfer_flash_controller_word\n\t"
-                     "ldrb r1, [r6, #2]\n\t"
-                     "cmp r1, #0\n\t"
-                     "bne .Lsecond_done_bb94\n\t"
-                     "mov r4, r5\n"
-                     ".Lsecond_done_bb94:\n\t"
-                     "strh r4, [r7, #0]\n\t"
-                     "pop {r3, r4, r5, r6, r7, pc}");
+static __attribute__((always_inline)) inline uint16_t
+chip_select_mask(uint8_t select_pin_3, uint16_t pin_3, uint16_t pin_0)
+{
+    if (select_pin_3)
+        return pin_3;
+    /* Keep a real conditional block through optimization; no ARM instruction. */
+    __atomic_signal_fence(__ATOMIC_SEQ_CST);
+    return pin_0;
+}
+
+uint32_t update_mode_dependent_output_state_during_flash_transfer(uint32_t value)
+{
+    /* Read the stored byte, including any noncanonical nonzero bool value. */
+    const uint8_t *selection =
+        (const uint8_t *)&merged_globals_5650.spi_flash_cs_select;
+    uint8_t selected = *selection;
+    uint16_t pin_3 = 8;
+    /* Preserve the original shared constant lifetime/register assignment. */
+    uint16_t pin_0 = __builtin_annotation(1, "pin 0 mask");
+
+    *(volatile uint16_t *)0x50003004u =
+        chip_select_mask(selected, pin_3, pin_0);
+    uint32_t result = spi_access(value);
+    *(volatile uint16_t *)0x50003002u =
+        chip_select_mask(*selection, pin_3, pin_0);
+    return result;
 }

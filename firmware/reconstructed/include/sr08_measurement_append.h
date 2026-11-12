@@ -9,7 +9,7 @@
                          "mov r4, r2\n"                                                                                \
                          "mov r6, r1\n"                                                                                \
                          "movs r0, #253\n"                                                                             \
-                         "bl find_keyed_record_value\n"                                                                \
+                         "bl prf_env_get\n"                                                                \
                          "mov r5, r0\n"                                                                                \
                          "ldrh r7, [r0, #4]\n"                                                                         \
                          "str r6, [sp, #0]\n"                                                                          \
@@ -24,11 +24,11 @@
                          ".Litem_not_active:\n"                                                                        \
                          "adds r0, r6, r7\n"                                                                           \
                          "uxth r0, r0\n"                                                                               \
-                         "bl search_next_item_decoded_marker_matches_at_7284\n"                                        \
+                         "bl get_cfg_handle\n"                                        \
                          "cmp r0, #0\n"                                                                                \
                          "beq .Lfatal_missing_record\n"                                                                \
                          "add r1, sp, #8\n"                                                                            \
-                         "bl match_measurement_index_and_write_offset\n"                                               \
+                         "bl custs1_get_att_idx\n"                                               \
                          "cmp r0, #0\n"                                                                                \
                          "beq .Lactivate_item\n"                                                                       \
                          "ldr r0, [pc, #%c[fatal_pointer_offset_a]]\n"                                                 \
@@ -58,7 +58,7 @@
                          "str r0, [r5, #8]\n"                                                                          \
                          "ldr r0, [sp, #8]\n"                                                                          \
                          "strb r0, [r5, #13]\n"                                                                        \
-                         "bl append_or_finalize_measurement_record_chunk\n"                                            \
+                         "bl custs1_exe_operation\n"                                            \
                          ".Lreturn_status:\n"                                                                          \
                          "mov r0, r7\n"                                                                                \
                          "pop {r1, r2, r3, r4, r5, r6, r7, pc}\n"                                                      \

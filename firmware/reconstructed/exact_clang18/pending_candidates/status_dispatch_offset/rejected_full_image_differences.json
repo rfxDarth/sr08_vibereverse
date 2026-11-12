@@ -1,0 +1,45 @@
+{
+  "diagnostic_only": true,
+  "full_binary_bytes": 67144,
+  "compared_bytes": 67136,
+  "canonical_match": false,
+  "candidate_prefix_sha256": "aa568febc3d4ac57d25a25a718681566479069483c86d02a2710744cdb8e032a",
+  "differences": [
+    {
+      "offset": "0xa918",
+      "address": "0x7fca918",
+      "original": "0xeb",
+      "candidate": "0xf1"
+    },
+    {
+      "offset": "0xacc0",
+      "address": "0x7fcacc0",
+      "original": "0x2",
+      "candidate": "0x1"
+    },
+    {
+      "offset": "0xacc8",
+      "address": "0x7fcacc8",
+      "original": "0xd0",
+      "candidate": "0x6b"
+    },
+    {
+      "offset": "0xacc9",
+      "address": "0x7fcacc9",
+      "original": "0x56",
+      "candidate": "0x1f"
+    },
+    {
+      "offset": "0xacca",
+      "address": "0x7fcacca",
+      "original": "0xfd",
+      "candidate": "0x77"
+    },
+    {
+      "offset": "0xaccb",
+      "address": "0x7fcaccb",
+      "original": "0x7",
+      "candidate": "0x5d"
+    }
+  ]
+}

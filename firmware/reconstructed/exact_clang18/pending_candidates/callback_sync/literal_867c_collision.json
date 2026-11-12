@@ -1,0 +1,27 @@
+{
+  "diagnostic_only": true,
+  "strict_link_rejected": true,
+  "cause_of_pinning": "early chained function + known original pool gap; arm_compilers.py _DroppedLiterals(gap)",
+  "initial_fixed_stub_loads_of_867c": [],
+  "original_only_load_site": "0x07fc82b2 (main LTO configure_radio_state_and_send_command_6a)",
+  "sections": {
+    "ER_07fc85e0": {
+      "address": "0x7fc85e0",
+      "size": 160,
+      "word_at_867c": "0x7fd1ea4",
+      "sha256": "0ee05bfbdb28f91b6fe51a86d34a53b3f371b6ebdd25cbddc595a1205860afd2"
+    },
+    "ER_07fc867c": {
+      "address": "0x7fc867c",
+      "size": 4,
+      "word_at_867c": "0x7fd1e28",
+      "sha256": "477fa804608b1f41b8bcb7209c5ac01f60d2e547005c7612449751583f84c55f"
+    }
+  },
+  "candidate_code_end": "0x07fc8676",
+  "alignment_nop": "0x07fc8676",
+  "private_pool_device": "0x07fc8678",
+  "private_pool_cycle": "0x07fc867c",
+  "oem_return_instruction": "0x07fc867a",
+  "canonical_build_changes": false
+}

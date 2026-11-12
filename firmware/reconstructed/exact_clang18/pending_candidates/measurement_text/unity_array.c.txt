@@ -1,0 +1,50 @@
+#include <stdint.h>
+extern uint8_t merged_globals_5650[];
+extern uint8_t merged_globals_56d0[];
+
+/* The low-level segment values are preserved until the glyph mapping is
+ * established. The six-phase progression replaces digits from right to left.
+ */
+__attribute__((used,section(".text.select_measurement_text_update_per_result_at_aae8")))
+void select_measurement_text_update_per_result_at_aae8(void)
+{
+    uint32_t phase = ((volatile uint8_t *)&merged_globals_5650)[0x30] % 6u;
+    volatile uint8_t *display = (volatile uint8_t *)&merged_globals_56d0;
+    /* Glyphs 101 and 109 differ only in bit 3. This expression preserves
+     * the OEM CMP #4 / BHI selection without reversing the two arms. */
+    display[0x44] = 101u | ((uint32_t)(phase > 4) << 3);
+    *(volatile uint32_t *)(display + 0x40) = 0x41414153u;
+    uint32_t discarded_difference;
+    if (phase >= 4) { display[0x43] = 73; goto second; }
+    if (phase == 3) {
+second: display[0x42] = 73;
+first: display[0x41] = 73;
+    } else if (!__builtin_sub_overflow(phase, 2u, &discarded_difference)) { goto first; }
+    else if (phase == 0) { return; }
+    display[0x40] = 91;
+}
+
+/* Show status patterns and light up to two indicators from config modulo three.
+ * Compiled natively and linked in the shared module for exact literal sharing.
+ * The address annotation retains the digit-base expression; it supplies no instructions.
+ */
+#include <stdint.h>
+extern uint8_t merged_globals_5650[];
+extern uint8_t merged_globals_56d0[];
+#define VIEW(p) ((volatile uint8_t *)__builtin_annotation((uintptr_t)(p), "display digits"))
+__attribute__((used, section(".text.update_status_display_using_remainder_rom_at_ab3c"))) void
+update_status_display_using_remainder_rom_at_ab3c(void) {
+    volatile uint8_t *base = merged_globals_56d0;
+    *(volatile uint16_t *)(base + 64) = 0x5b13;
+    volatile uint8_t *digits = VIEW(base + 64);
+    digits[2] = 82;
+    unsigned remainder = ((volatile uint8_t *)merged_globals_5650)[48] % 3;
+    if (remainder >= 2) {
+        base[68] = 8;
+        goto second;
+    }
+    if (remainder == 0)
+        return;
+second:
+    base[67] = 8;
+}

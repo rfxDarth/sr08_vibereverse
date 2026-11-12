@@ -1,0 +1,20 @@
+    .syntax unified
+    .thumb
+    .section .text.module_target,"ax",%progbits
+    .balign 2
+    .global module_target
+    .type module_target,%function
+    .thumb_func
+module_target:
+    ldr r0, __arm_cp.7fc8500_copy_07fd1e28
+    .inst.n 0x4770
+    .inst.n 0xbf00
+    .inst.n 0xbf00
+    .global __arm_cp.7fc8500_8
+__arm_cp.7fc8500_8:
+    .long 0x07fd1e28
+    .size __arm_cp.7fc8500_8, 4
+    .reloc module_target, R_ARM_NONE, __arm_cp.7fc8500_8
+__arm_cp.7fc8500_copy_07fd1e28:
+    .long 0x07fd1e28
+    .size __arm_cp.7fc8500_copy_07fd1e28, 4

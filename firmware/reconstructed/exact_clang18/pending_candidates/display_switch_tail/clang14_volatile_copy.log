@@ -1,0 +1,39 @@
+/usr/bin/clang-14 failed for switch_display_state_and_run_hooks (clang14):
+/tmp/v204-arm-probe-nmm5_q0m/clang14_switch_display_state_and_run_hooks.c:74:10: error: GCC does not allow variable declarations in for loop initializers before C99 [-Werror,-Wgcc-compat]
+    for (uint32_t i = 0; i < DISPLAY_STATE_DESCRIPTORS; i++) {
+         ^
+/tmp/v204-arm-probe-nmm5_q0m/clang14_switch_display_state_and_run_hooks.c:82:10: error: GCC does not allow variable declarations in for loop initializers before C99 [-Werror,-Wgcc-compat]
+    for (uint32_t i = 0; i < DISPLAY_STATE_DESCRIPTORS; i++) {
+         ^
+/tmp/v204-arm-probe-nmm5_q0m/clang14_switch_display_state_and_run_hooks.c:82:19: error: redefinition of 'i'
+    for (uint32_t i = 0; i < DISPLAY_STATE_DESCRIPTORS; i++) {
+                  ^
+/tmp/v204-arm-probe-nmm5_q0m/clang14_switch_display_state_and_run_hooks.c:74:19: note: previous definition is here
+    for (uint32_t i = 0; i < DISPLAY_STATE_DESCRIPTORS; i++) {
+                  ^
+/tmp/v204-arm-probe-nmm5_q0m/clang14_switch_display_state_and_run_hooks.c:102:14: error: GCC does not allow variable declarations in for loop initializers before C99 [-Werror,-Wgcc-compat]
+        for (uint32_t i = 0; i < 7; i++)
+             ^
+/tmp/v204-arm-probe-nmm5_q0m/clang14_switch_display_state_and_run_hooks.c:104:14: error: GCC does not allow variable declarations in for loop initializers before C99 [-Werror,-Wgcc-compat]
+        for (uint32_t i = 0; i < 6; i++)
+             ^
+/tmp/v204-arm-probe-nmm5_q0m/clang14_switch_display_state_and_run_hooks.c:104:23: error: redefinition of 'i'
+        for (uint32_t i = 0; i < 6; i++)
+                      ^
+/tmp/v204-arm-probe-nmm5_q0m/clang14_switch_display_state_and_run_hooks.c:102:23: note: previous definition is here
+        for (uint32_t i = 0; i < 7; i++)
+                      ^
+/tmp/v204-arm-probe-nmm5_q0m/clang14_switch_display_state_and_run_hooks.c:114:18: error: GCC does not allow variable declarations in for loop initializers before C99 [-Werror,-Wgcc-compat]
+            for (uint32_t i = 0; i < 7; i++)
+                 ^
+/tmp/v204-arm-probe-nmm5_q0m/clang14_switch_display_state_and_run_hooks.c:116:18: error: GCC does not allow variable declarations in for loop initializers before C99 [-Werror,-Wgcc-compat]
+            for (uint32_t i = 0; i < 6; i++)
+                 ^
+/tmp/v204-arm-probe-nmm5_q0m/clang14_switch_display_state_and_run_hooks.c:116:27: error: redefinition of 'i'
+            for (uint32_t i = 0; i < 6; i++)
+                          ^
+/tmp/v204-arm-probe-nmm5_q0m/clang14_switch_display_state_and_run_hooks.c:114:27: note: previous definition is here
+            for (uint32_t i = 0; i < 7; i++)
+                          ^
+9 errors generated.
+

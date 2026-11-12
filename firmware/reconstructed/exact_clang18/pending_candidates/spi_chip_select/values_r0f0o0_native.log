@@ -1,0 +1,24 @@
+group 0x07fcbb94-0x07fcbbc4 (48 bytes)
+MISMATCH: 4 differing bytes
+--- V204
++++ candidate
+@@ -2,9 +2,9 @@
+ 7fcbb96:	4e09      	ldr	r6, [pc, #36]	@ (0x7fcbbbc)
+ 7fcbb98:	78b1      	ldrb	r1, [r6, #2]
+-7fcbb9a:	2408      	movs	r4, #8
+-7fcbb9c:	2501      	movs	r5, #1
++7fcbb9a:	2401      	movs	r4, #1
++7fcbb9c:	2508      	movs	r5, #8
+ 7fcbb9e:	2900      	cmp	r1, #0
+ 7fcbba0:	4621      	mov	r1, r4
+-7fcbba2:	d100      	bne.n	0x7fcbba6
++7fcbba2:	d000      	beq.n	0x7fcbba6
+ 7fcbba4:	4629      	mov	r1, r5
+ 7fcbba6:	4f06      	ldr	r7, [pc, #24]	@ (0x7fcbbc0)
+@@ -13,5 +13,5 @@
+ 7fcbbae:	78b1      	ldrb	r1, [r6, #2]
+ 7fcbbb0:	2900      	cmp	r1, #0
+-7fcbbb2:	d100      	bne.n	0x7fcbbb6
++7fcbbb2:	d000      	beq.n	0x7fcbbb6
+ 7fcbbb4:	462c      	mov	r4, r5
+ 7fcbbb6:	803c      	strh	r4, [r7, #0]

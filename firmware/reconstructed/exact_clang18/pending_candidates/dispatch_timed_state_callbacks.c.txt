@@ -1,0 +1,194 @@
+/* PARKED (Jeff 2026-11-16): 62 normalized lines (plain ac6 -mllvm -disable-machine-sink; was 78). New levers in this
+ * version: annotated clamp constants (10/98 materialised inside their branches, as V204), a no-code assume keeping
+ * `level > 10`, and an annotated `display_character * 2`.
+ * Remaining:
+ * - V204 keeps the level full-width in r3 and re-sign-extends it before the second clamp; ours folds the sext
+ *   through the phi. uint32_t level with (int8_t) compares turns into shifted compares (76-116).
+ * - The clock-wrap select is a branch diamond in V204; every if/else or annotated form of it disrupts the function
+ *   (176+).
+ * - Register choice in the segment loop (r2 vs r0/r3).
+ * Backup of the previous candidate: $CLAUDE_JOB_DIR/tmp/backup_8c90_cand.txt. */
+/* 2026-11-16 (Jeff): best with the LTO switch -disable-machine-sink: 73 raw lines of 222 (99 without); see the
+ * WORK_CLAIMS lever ledger. Source variants for the doubling, wrap and clamp did not go lower. */
+/* PARKED (byte mismatch) — candidate C for 0x07fc8c90 dispatch_timed_state_callbacks (ac6lto).
+ * Plain compile and LTO agree. The device_control_state literal is shared with 0x8fa0 by armlink, as in V204.
+ * Best shape: 97 of 209 normalized lines differ, all register/spill-slot choices:
+ *  - V204 spills now/149/brightness to sp4/sp8/sp0 (no stm). Here they merge into one stm {sp0..8}.
+ *  - V204 keeps the constant 1 in r5 and 0x2c in r6/r7. Here 1 sits in r7 and 0x2c in r5/r6.
+ *  - V204 computes display_character*2 before the segment loop and spills it; here it is sunk into
+ *    the column==5 arm (the IR shl i8 lands in the loop-exit block).
+ *  - dcs+0x23 is addressed as base+34, #1 rather than movs #35.
+ * Findings that helped:
+ *  - read the previous column once into a local;
+ *  - choose the level with if/else, which keeps V204's signed sxtb compares; a ternary lets instcombine
+ *    make the second clamp unsigned;
+ *  - volatile segment and display_character reads give V204's load order.
+ * Decoded behavior: six-column display multiplexing through display_high_pins / display_low_pins, with
+ * PWM3 brightness from shared_context.display_character (doubled for column 5, clamped 10..98, stored at
+ * device_control_state+0x22/0x23). On column wrap it re-renders through the display_state_descriptors
+ * render hook (+12, argument &500) after clearing merged_globals_56d0+0x40..0x45 and counting frames at
+ * least 500 ms apart in merged_globals_5650+0x30. The timer2 sequence is the SDK one: config, freq_set,
+ * start, pwm_signal_config, resume. */
+/* TIMER0 callback: multiplex the six-column segment display. Each tick turns the previous column
+ * off, advances to the next column (wrapping at six), and on the wrap re-renders the frame through
+ * the current display state's render hook (counting slow frames, at least 500 ms apart). It then
+ * drives the column's seven segment lines, routes the column line to PWM3, and sets the PWM duty
+ * from the display brightness (doubled for the last column, clamped to 10..98). */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+#include "firmware/reconstructed/include/sr08_radio_configuration.h"
+#include "firmware/reconstructed/include/sr08_shared_context.h"
+
+struct display_state_descriptor {
+    uint16_t state;
+    uint16_t reserved_02;
+    void (*enter)(uint32_t previous_state);
+    void (*leave)(uint32_t next_state);
+    void (*render)(uint16_t *interval);
+};
+
+struct gpio_pin_ref {
+    uint8_t port;
+    uint8_t pin;
+};
+
+#define DISPLAY_STATE_DESCRIPTORS 35
+#define DISPLAY_COLUMNS 6
+#define DISPLAY_SEGMENTS 7
+
+extern const struct display_state_descriptor *const display_state_descriptors[DISPLAY_STATE_DESCRIPTORS];
+extern const struct gpio_pin_ref display_low_pins[DISPLAY_SEGMENTS];
+extern const struct gpio_pin_ref display_high_pins[DISPLAY_COLUMNS];
+extern uint32_t get_ble_base_time_ms(void);
+
+#define G5650(type, offset) (*(type *)(void *)((uint8_t *)&merged_globals_5650 + (offset)))
+#define G56D0(type, offset) (*(type *)(void *)((uint8_t *)&merged_globals_56d0 + (offset)))
+#define current_state G5650(uint8_t, 0x0c)
+#define display_column G5650(int8_t, 0x2c)
+#define slow_frames G5650(uint8_t, 0x30)
+#define display_pins_driven G5650(uint8_t, 0x34)
+#define last_frame_time G56D0(uint32_t, 0x3c)
+#define column_segments ((volatile uint8_t *)(void *)((uint8_t *)&merged_globals_56d0 + 0x40))
+#define display_character (*(volatile uint8_t *)&sr08_shared_context.display_character)
+#define radio_state ((uint8_t *)&device_control_state)
+
+/* sdk/platform/include/da14585_586.h */
+#define GPIO_BASE 0x50003000
+#define TRIPLE_PWM_FREQUENCY 0x5000340E
+#define TRIPLE_PWM_CTRL_REG 0x50003410
+#define PWM3_DUTY_CYCLE 0x5000340A
+#define TRIPLE_PWM_ENABLE 0x0001
+#define SW_PAUSE_EN 0x0002
+#define HW_PAUSE_EN 0x0004
+#define SetWord16(a, d) (*(volatile uint16_t *)(a) = (d))
+#define GetWord16(a) (*(volatile uint16_t *)(a))
+#define SetBits16(a, f, d) SetWord16((a), (GetWord16(a) & (~(uint16_t)(f))) | ((uint16_t)(d) << shift16(f)))
+#define shift16(f) ((f) == 1 ? 0 : (f) == 2 ? 1 : 2)
+
+/* Pad set/reset/mode registers, addressed directly (no port-3 remap). */
+#define PIN_SET(ref) SetWord16(GPIO_BASE + 2 + ((ref).port << 5), 1 << (ref).pin)
+#define PIN_RESET(ref) SetWord16(GPIO_BASE + 4 + ((ref).port << 5), 1 << (ref).pin)
+#define PIN_MODE(ref, mode) SetWord16(GPIO_BASE + 6 + ((ref).port << 5) + ((ref).pin << 1), (mode))
+#define OUTPUT 0x300
+#define PID_PWM3 24
+
+/* sdk/platform/driver/timer/timer2.[ch] (DA14585). */
+typedef enum { TIM2_HW_PAUSE_OFF = 0, TIM2_HW_PAUSE_ON = 1 } tim2_hw_pause_t;
+typedef enum { TIM2_PWM_2 = 1, TIM2_PWM_3 = 2, TIM2_PWM_4 = 3 } tim2_pwm_t;
+typedef struct { tim2_hw_pause_t hw_pause; } tim2_config_t;
+typedef struct { tim2_pwm_t pwm_signal; uint8_t pwm_dc; } tim2_pwm_config_t;
+
+static inline void timer2_start(void) { SetBits16(TRIPLE_PWM_CTRL_REG, TRIPLE_PWM_ENABLE, 1); }
+static inline void timer2_stop(void) { SetBits16(TRIPLE_PWM_CTRL_REG, TRIPLE_PWM_ENABLE, 0); }
+static inline void timer2_resume(void) { SetBits16(TRIPLE_PWM_CTRL_REG, SW_PAUSE_EN, 0); }
+static void timer2_config(tim2_config_t *config) { SetBits16(TRIPLE_PWM_CTRL_REG, HW_PAUSE_EN, config->hw_pause); }
+static void timer2_pwm_freq_set(uint32_t pwm_freq, uint32_t input_freq)
+{
+    SetWord16(TRIPLE_PWM_FREQUENCY, (input_freq / pwm_freq) - 1u);
+}
+static void timer2_pwm_signal_config(tim2_pwm_config_t *pwm_config)
+{
+    uint32_t counter, dc;
+
+    counter = GetWord16(TRIPLE_PWM_FREQUENCY) + 1u;
+    dc = (counter * (pwm_config->pwm_dc)) / 100u;
+    switch (pwm_config->pwm_signal) {
+    case TIM2_PWM_2:
+        SetWord16(0x50003408, dc);
+        break;
+    case TIM2_PWM_3:
+        SetWord16(PWM3_DUTY_CYCLE, dc);
+        break;
+    case TIM2_PWM_4:
+        SetWord16(0x5000340C, dc);
+        break;
+    default:
+        break;
+    }
+}
+
+void dispatch_timed_state_callbacks(void)
+{
+    uint8_t brightness = display_character;
+    uint16_t interval = 500;
+    uint32_t now = get_ble_base_time_ms();
+
+    if (display_pins_driven != 1)
+        return;
+    int8_t previous = display_column;
+    if (previous >= 0) {
+        timer2_stop();
+        PIN_SET(display_high_pins[previous]);
+        PIN_MODE(display_high_pins[previous], OUTPUT);
+        for (int i = 0; i < DISPLAY_SEGMENTS; i++)
+            PIN_RESET(display_low_pins[i]);
+    }
+    display_column = (int8_t)(previous + 1) % DISPLAY_COLUMNS;
+    if (display_column == 0) {
+        uint32_t last = last_frame_time;
+        if (((now >= last ? now : now + 0x5000000) - last) / 4 >= 125) {
+            slow_frames++;
+            last_frame_time = now;
+        }
+        __builtin_memset(column_segments, 0, DISPLAY_COLUMNS);
+        for (int i = 0; i < DISPLAY_STATE_DESCRIPTORS; i++) {
+            if (display_state_descriptors[i]->state == current_state) {
+                if (display_state_descriptors[i]->render)
+                    display_state_descriptors[i]->render(&interval);
+                break;
+            }
+        }
+    }
+    int8_t column = display_column;
+    uint8_t segments = column_segments[column];
+    int8_t last_column_level = __builtin_annotation(display_character * 2, "column5");
+    for (int i = 0; i < DISPLAY_SEGMENTS; i++) {
+        if ((segments >> i) & 1)
+            PIN_SET(display_low_pins[i]);
+        else
+            PIN_RESET(display_low_pins[i]);
+    }
+    PIN_SET(display_high_pins[column]);
+    PIN_MODE(display_high_pins[column], OUTPUT + PID_PWM3);
+
+    tim2_config_t config = { TIM2_HW_PAUSE_OFF };
+    timer2_config(&config);
+    timer2_pwm_freq_set(20000, 1000000); /* only the register value 49 is observable */
+    timer2_start();
+    radio_state[0x22] = 1;
+    int8_t level;
+    if (column == 5)
+        level = last_column_level;
+    else
+        level = brightness;
+    int small = level > 10;
+    __builtin_assume(small | (level != 77));
+    if (!small)
+        level = __builtin_annotation(10, "min");
+    if (level >= 98)
+        level = __builtin_annotation(98, "max");
+    radio_state[0x23] = 100 - level;
+    tim2_pwm_config_t pwm = { TIM2_PWM_3, (uint8_t)(100 - level) };
+    timer2_pwm_signal_config(&pwm);
+    timer2_resume();
+}

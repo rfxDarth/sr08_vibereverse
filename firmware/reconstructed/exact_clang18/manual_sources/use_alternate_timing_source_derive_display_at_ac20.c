@@ -1,45 +1,46 @@
-/* Use the alternate timing source or derive display markers from sensor mode. */
-__attribute__((used, naked, section(".text.use_alternate_timing_source_derive_display_at_ac20"))) void
+/* Show the value at shared-context byte 0x08 on three digits when it is nonzero.
+ * Otherwise mark (segment pattern 0x08) as many of the first three digits as the
+ * low two bits of the display-mode byte (0x07fd5680) select. Either way, set the
+ * display tag to 0x10. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_display_value_formatters.h"
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+#include "firmware/reconstructed/include/sr08_shared_context.h"
+
+enum {
+    ALTERNATE_VALUE_OFFSET = 0x08,
+    DISPLAY_MODE_FLAGS_OFFSET = 0x30,
+    DISPLAY_SELECTOR_MASK = 0x03,
+    DISPLAY_DIGIT_COUNT = 3,
+    DISPLAY_FORMATTER_MODE = 1,
+    DISPLAY_MARKER = 0x08,
+    DISPLAY_VALUE_TAG = 0x10,
+};
+
+__attribute__((used, section(".text.use_alternate_timing_source_derive_display_at_ac20"))) void
 use_alternate_timing_source_derive_display_at_ac20(void) {
-    __asm__ volatile("push {r7, lr}\n"
-                     "ldr r0, [pc, #884]\n"
-                     "ldrb r0, [r0, #8]\n"
-                     "cmp r0, #0\n"
-                     "beq .Lmode\n"
-                     "ldr r1, [pc, #328]\n"
-                     "adds r1, #64\n"
-                     "movs r2, #3\n"
-                     "movs r3, #1\n"
-                     "bl convert_quotient_remainder_sequence_ring_s_at_3148\n"
-                     "b .Ldone_markers\n"
-                     ".Lmode: movs r0, #48\n"
-                     "ldr r1, [pc, #792]\n"
-                     "ldrb r1, [r1, r0]\n"
-                     "movs r0, #3\n"
-                     "ands r0, r1\n"
-                     "cmp r0, #3\n"
-                     "bne .Lmode_lt3\n"
-                     "movs r0, #66\n"
-                     "ldr r1, [pc, #296]\n"
-                     "movs r2, #8\n"
-                     "strb r2, [r1, r0]\n"
-                     "b .Lmarker41\n"
-                     ".Lmode_lt3: cmp r0, #2\n"
-                     "bcc .Lmode_le1\n"
-                     ".Lmarker41: movs r0, #65\n"
-                     "ldr r1, [pc, #284]\n"
-                     "movs r2, #8\n"
-                     "strb r2, [r1, r0]\n"
-                     ".Lmarker40: movs r0, #64\n"
-                     "ldr r1, [pc, #276]\n"
-                     "movs r2, #8\n"
-                     "strb r2, [r1, r0]\n"
-                     ".Ldone_markers: movs r0, #69\n"
-                     "ldr r1, [pc, #268]\n"
-                     "movs r2, #16\n"
-                     "strb r2, [r1, r0]\n"
-                     "pop {r7, pc}\n"
-                     ".Lmode_le1: cmp r0, #0\n"
-                     "bne .Lmarker40\n"
-                     "b .Ldone_markers\n");
+    uint8_t value = ((const volatile uint8_t *)(const void *)&sr08_shared_context)[ALTERNATE_VALUE_OFFSET];
+    struct sr08_display_output_state *state = (struct sr08_display_output_state *)(void *)&merged_globals_56d0;
+    if (value) {
+        convert_quotient_remainder_sequence_ring_s_at_3148(value, state->digits, DISPLAY_DIGIT_COUNT,
+                                                           DISPLAY_FORMATTER_MODE);
+    } else {
+        uint32_t marked = ((const uint8_t *)(const void *)&merged_globals_5650)[DISPLAY_MODE_FLAGS_OFFSET] &
+                          DISPLAY_SELECTOR_MASK;
+        /* V204's compare chain: 3 marks digits 2, 1, 0; 2 marks 1, 0; 1 marks 0. */
+        if (marked == 3) {
+            state->digits[2] = DISPLAY_MARKER;
+            goto mark_digit_1;
+        }
+        if (marked >= 2) {
+        mark_digit_1:
+            state->digits[1] = DISPLAY_MARKER;
+            goto mark_digit_0;
+        }
+        if (marked != 0) {
+        mark_digit_0:
+            state->digits[0] = DISPLAY_MARKER;
+        }
+    }
+    state->tag = DISPLAY_VALUE_TAG;
 }

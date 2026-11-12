@@ -1,6 +1,8 @@
 #ifndef SR08_RADIO_STATE_LITERALS_H
 #define SR08_RADIO_STATE_LITERALS_H
 
+#include "firmware/reconstructed/include/sr08_static_assert.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -17,15 +19,15 @@ union sr08_radio_state_literal_pool {
     struct sr08_radio_state_literal_fields view;
 } __attribute__((packed));
 
-_Static_assert(offsetof(struct sr08_radio_state_literal_fields, device_control_state_bytes) == 2,
+SR08_STATIC_ASSERT(offsetof(struct sr08_radio_state_literal_fields, device_control_state_bytes) == 2,
                "radio device-control pointer must remain at offset two");
-_Static_assert(offsetof(struct sr08_radio_state_literal_fields, radio_update_parameter_8330) == 6,
+SR08_STATIC_ASSERT(offsetof(struct sr08_radio_state_literal_fields, radio_update_parameter_8330) == 6,
                "radio update parameter must remain at offset six");
-_Static_assert(offsetof(struct sr08_radio_state_literal_fields, radio_update_parameter_8334) == 10,
+SR08_STATIC_ASSERT(offsetof(struct sr08_radio_state_literal_fields, radio_update_parameter_8334) == 10,
                "radio update parameter must remain at offset ten");
-_Static_assert(offsetof(struct sr08_radio_state_literal_fields, radio_profile_state_bytes) == 14,
+SR08_STATIC_ASSERT(offsetof(struct sr08_radio_state_literal_fields, radio_profile_state_bytes) == 14,
                "radio profile-state pointer must remain at offset fourteen");
-_Static_assert(sizeof(union sr08_radio_state_literal_pool) == 18,
+SR08_STATIC_ASSERT(sizeof(union sr08_radio_state_literal_pool) == 18,
                "radio state literal pool must remain eighteen bytes");
 
 #endif

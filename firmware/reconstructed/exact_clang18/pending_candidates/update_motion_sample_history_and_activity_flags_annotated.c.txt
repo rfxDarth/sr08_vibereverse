@@ -1,0 +1,131 @@
+/* PARKED (Jeff, 2026-11-15), improved: update_motion_sample_history_and_activity_flags (0x07fc41e4).
+ * With an annotated sequence-start 1 (`__builtin_annotation(1, ...)` before the link-mode tests) the LTO probe
+ * output is the right length (448 bytes) and lines up 1:1 with V204. Only the callee-saved register assignment
+ * differs, as a rotation: V204 has now = r4, z = r5, base = r6, magnitude = r7; armclang has magnitude = r4, now = r5,
+ * z = r6, base = r7 (plain ac6 the same). That is the greedy allocator's priority order.
+ * Retry 2026-11-15 under the LTO relink: storing HISTORY_3 before SAMPLE_TIME fixes those two stores' order; the
+ * rotation is unchanged with now/z/magnitude annotated, the level call moved, or motion_level forced inline. */
+/* Track the motion sample: a magnitude jump of more than 300 wakes a connected HID host with the
+ * mouse or touch report sequence (at most once per 1.2 s), a jump of more than 250 requests a
+ * display refresh in mode 16 (at most once a second). Once a second, compare the four inputs with
+ * the stored ones: a change of 80 or more marks activity (120 or more also clears the idle
+ * counter); otherwise the device is level when the z input is within 200 (unless only x and y are
+ * used), the x input is within 200 of 1000 and the y input is within 200. */
+#include <stdint.h>
+#include <stdlib.h>
+#include "firmware/reconstructed/include/sr08_cycle_control_state.h"
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+#include "firmware/reconstructed/include/sr08_radio_configuration.h"
+#include "firmware/reconstructed/include/sr08_sdk_app.h"
+#include "firmware/reconstructed/include/sr08_sdk_hogpd.h"
+
+extern uint8_t sr08_shared_context[];
+extern void advance_registration_data_transfers(void);
+extern void initialize_and_dispatch_three_byte_request(uint8_t first, uint8_t second, uint8_t third);
+
+#define radio_state ((uint8_t *)&device_control_state)
+#define radio_half(offset) (*(int16_t *)(void *)(radio_state + (offset)))
+#define radio_word(offset) (*(uint32_t *)(void *)(radio_state + (offset)))
+#define cycle_words ((uint32_t *)(void *)&cycle_control_state)
+#define magnitude_of(value) ((uint16_t)(((value) + ((value) >> 15)) ^ ((value) >> 15)))
+#define mode_state ((uint8_t *)(void *)&merged_globals_5650)
+
+enum {
+    LEVEL = 0x0f,             /* device_control_state bytes */
+    ACTIVITY_COUNT = 0x10,
+    TOUCH_SEQUENCE = 0x20,
+    MOUSE_SEQUENCE = 0x21,
+    HISTORY_0 = 0x2c,         /* int16 history */
+    HISTORY_1 = 0x2e,
+    HISTORY_2 = 0x30,
+    HISTORY_3 = 0x32,
+    LAST_MAGNITUDE = 0x34,
+    SAMPLE_TIME = 0x68,       /* words */
+    ACTIVITY_FLAGS = 0x6c,
+    DISPLAY_TIME = 0x74,
+    WAKE_TIME = 0x78,
+    IDLE_COUNTER_WORD = 0x18 / 4,  /* cycle_control_state */
+    PHASE_WORD = 0x24 / 4,
+    REPEAT_WORD = 0x28 / 4,
+    LINK_MODE = 17,           /* sr08_shared_context */
+    LINK_CONNECTED = 18,
+    DISPLAY_MODE = 12,        /* merged_globals_5650 */
+    INTERVAL = 1000,
+    WAKE_INTERVAL = 1200,
+};
+
+/* 1 when the device lies still and level: no motion, z within 200 (unless only x and y are
+ * used), x within 200 of 1000 and y within 200. */
+static uint8_t motion_level(uint16_t motion, uint16_t gravity, int16_t y, int16_t z)
+{
+    if (motion >= 80)
+        return 0;
+    if (device_control_state.magnitude_axes >= 0 && magnitude_of(z) > 200)
+        return 0;
+    int offset = gravity < INTERVAL ? INTERVAL - gravity : gravity - INTERVAL;
+    return (offset <= 200) & (magnitude_of(y) <= 200);
+}
+
+void update_motion_sample_history_and_activity_flags(int16_t magnitude, int16_t x, int16_t y, int16_t z,
+                                                     uint32_t now)
+{
+    uint32_t jump = abs(magnitude - radio_half(LAST_MAGNITUDE));
+
+    if (jump > 300) {
+        if (now - radio_word(WAKE_TIME) > WAKE_INTERVAL) {
+            struct hogpd_env_tag *hogpd_env = PRF_ENV_GET(HOGPD, hogpd);
+            radio_word(WAKE_TIME) = now;
+            if (sr08_shared_context[LINK_CONNECTED] != 0 && (hogpd_env->svcs[0].ntf_cfg[0] & 0xc0) == 0xc0) {
+                /* V204 materializes the sequence-start 1 once, before the link-mode tests. */
+                uint8_t one = __builtin_annotation(1, "sequence start");
+                if (sr08_shared_context[LINK_MODE] == 2) {
+                    radio_state[MOUSE_SEQUENCE] = one;
+                    cycle_words[PHASE_WORD] = 0;
+                    cycle_words[REPEAT_WORD] = 0;
+                    app_easy_timer(1, advance_registration_data_transfers);
+                }
+                if (sr08_shared_context[LINK_MODE] == 1) {
+                    radio_state[TOUCH_SEQUENCE] = one;
+                    cycle_words[PHASE_WORD] = 0;
+                    cycle_words[REPEAT_WORD] = 0;
+                    app_easy_timer(1, advance_registration_data_transfers);
+                }
+            }
+        }
+    } else if (jump <= 250) {
+        goto store_magnitude;
+    }
+    if (now - radio_word(DISPLAY_TIME) > INTERVAL) {
+        radio_word(DISPLAY_TIME) = now;
+        if (mode_state[DISPLAY_MODE] == 16)
+            initialize_and_dispatch_three_byte_request(6, 2, 0);
+    }
+store_magnitude:
+    radio_half(LAST_MAGNITUDE) = magnitude;
+    if (now - radio_word(SAMPLE_TIME) >= INTERVAL) {
+
+        uint32_t change = abs(x - radio_half(HISTORY_1));
+        uint32_t delta = abs(magnitude - radio_half(HISTORY_0));
+        if (delta < change)
+            delta = change;
+        change = abs(y - radio_half(HISTORY_2));
+        if (delta < change)
+            delta = change;
+        change = abs(z - radio_half(HISTORY_3));
+        if (delta < change)
+            delta = change;
+        if (delta >= 80) {
+            radio_word(ACTIVITY_FLAGS) |= 1;
+            if (delta >= 120)
+                cycle_words[IDLE_COUNTER_WORD] = 0;
+            radio_state[ACTIVITY_COUNT]++;
+        }
+        uint8_t level = motion_level(delta, magnitude_of(x), y, z);
+        radio_half(HISTORY_3) = z;
+        radio_word(SAMPLE_TIME) = now;
+        radio_half(HISTORY_2) = y;
+        radio_half(HISTORY_1) = x;
+        radio_half(HISTORY_0) = magnitude;
+        radio_state[LEVEL] = level;
+    }
+}

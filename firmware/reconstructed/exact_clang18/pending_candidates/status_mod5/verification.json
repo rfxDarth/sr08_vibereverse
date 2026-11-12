@@ -1,0 +1,21 @@
+{
+  "accepted": true,
+  "payload_bytes": 67136,
+  "payload_sha256": "5020c236a289544d878196bec3e21b005835237bc2fc34935927533bcd1c8570",
+  "container_bytes": 67200,
+  "container_sha256": "c747249568a75dc9925a7d25de7baffca2ae5ff42cd2ffd7dfddf8ee42b5e8e8",
+  "payload_equals_oem": true,
+  "container_equals_oem": true,
+  "source_bundle": "/tmp/sr08-alice-status-mod5-registered-source-bundle",
+  "source_inputs": 582,
+  "all_source_inputs_match": true,
+  "linked_sections": 504,
+  "source_units": 449,
+  "direct_assembly_units": 66,
+  "expanded_assembly_units": 68,
+  "support_tests_passed": 10,
+  "new_c_units": [
+    "recreate_display_status_indicator_update_selected_at_a914",
+    "write_shared_state_byte_45_and_word_40"
+  ]
+}

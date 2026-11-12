@@ -1,0 +1,93 @@
+/* PARKED 2026-11-15 (Jeff): ac5 (armcc 5.06 -O3) MISMATCH, 508 vs 540 bytes (incl. pool).
+ * Everything after the isqrt call matches V204 apart from register choice; the level bands are
+ * <thr, <200, [200,500), >=500. The filter section is 16 bytes short: armcc merges the input delay
+ * stores into stmia with writeback, while V204 keeps separate str/ldrh with ip as a temp.
+ * V204 also reads the threshold as sensor_frame_batch_state+0x20+12 (shared_sensor_profile
+ * .profile_byte_0c, defined in the same original TU); an extern profile costs a separate pool word.
+ * Tried: macro / __inline / __forceinline stages, struct vs array state, cached output_1, pre-shifted
+ * inputs, -O1/-O2/-Otime/-Ospace. */
+/* Filter one accelerometer sample (two second-order stages per axis), take the magnitude of the
+ * filtered axes, and keep a five-sample magnitude history. A local peak goes into the four-entry
+ * peak history; the peak average then gives the motion level: 0 below the profile threshold, 1
+ * below 200, 2 up to 500 and 3 above. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_sensor_frame_batch_state.h"
+#include "firmware/reconstructed/include/sr08_shared_sensor_profile.h"
+
+extern uint32_t integer_square_root_newton_iteration(uint32_t radicand);
+
+enum { SAMPLE_COUNTER_WRAP = 100000 };
+
+#define magnitudes ((int16_t *)(void *)context->reserved_cee_to_cf7)
+#define peaks ((int16_t *)(void *)context->history_d14)
+#define peak_average (*(int16_t *)(void *)context->reserved_d30_to_d33)
+
+struct filter_stage_state {
+    int32_t input_1;
+    int32_t input_2;
+    int32_t output_1;
+    int32_t output_2;
+    int32_t last;
+};
+
+/* One second-order stage. */
+static __forceinline int filter_stage(struct filter_stage_state *state, int input, int a1, int a2)
+{
+    int16_t difference = input - state->input_2;
+    state->input_2 = state->input_1;
+    state->input_1 = input;
+    int output = difference - ((a1 * state->output_1 + a2 * state->output_2) >> 6);
+    state->last = output;
+    state->output_2 = state->output_1;
+    state->output_1 = output;
+    return output;
+}
+
+uint8_t filter_accelerometer_sample_and_classify_level(int16_t x, int16_t y, int16_t z)
+{
+    struct sr08_measurement_context *context = sensor_frame_batch_state.context;
+    struct filter_stage_state *filter;
+    uint16_t index;
+
+    if (++context->word_d34 == SAMPLE_COUNTER_WRAP)
+        context->word_d34 = 0;
+    filter = (struct filter_stage_state *)(void *)context->accumulators_d80;
+    int fx = filter_stage(&filter[1], filter_stage(&filter[0], x >> 3, -109, 51), -83, 42);
+    int fy = filter_stage(&filter[3], filter_stage(&filter[2], y >> 3, -109, 51), -83, 42);
+    int fz = filter_stage(&filter[5], filter_stage(&filter[4], z >> 3, -109, 51), -83, 42);
+    uint32_t root = integer_square_root_newton_iteration(
+        (uint16_t)((fx >> 2) * (fx >> 2) + (fy >> 2) * (fy >> 2) + (fz >> 2) * (fz >> 2)));
+
+    context = sensor_frame_batch_state.context;
+    for (index = 4; index != 0; index--)
+        magnitudes[index] = magnitudes[index - 1];
+    context = sensor_frame_batch_state.context;
+    int16_t magnitude = root;
+    magnitudes[0] = magnitude;
+    if (magnitudes[2] > magnitudes[4] && magnitudes[2] > magnitudes[3] && magnitudes[2] > magnitudes[1] &&
+        magnitudes[2] > magnitude) {
+        for (index = 3; index != 0; index--)
+            peaks[index] = peaks[index - 1];
+        context = sensor_frame_batch_state.context;
+        peaks[0] = magnitudes[2];
+    }
+    context = sensor_frame_batch_state.context;
+    if (peaks[3] != 0)
+        peak_average = (peaks[3] + peaks[2] + (peaks[1] + peaks[0])) >> 2;
+
+    int average = peak_average;
+    uint8_t level;
+    if (average < shared_sensor_profile.profile_byte_0c)
+        level = 0;
+    else if (average < 200)
+        level = 1;
+    else if (average >= 200 && average < 500)
+        level = 2;
+    else if (average >= 500)
+        level = 3;
+    else
+        goto done;
+    context->flags_d6c[3] = level;
+done:
+    return context->flags_d6c[3];
+}

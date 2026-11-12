@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-15",
+  "sections": 506,
+  "manifest_units": 449,
+  "direct_assembly": 68,
+  "expanded_assembly": 70,
+  "export": "/tmp/sr08-alice-local-pool-value-source-bundle",
+  "artifacts": "/tmp/sr08-alice-local-pool-value-standalone",
+  "export_inputs_compared_to_workspace": 582,
+  "payload_sha256": "5020c236a289544d878196bec3e21b005835237bc2fc34935927533bcd1c8570",
+  "container_sha256": "c747249568a75dc9925a7d25de7baffca2ae5ff42cd2ffd7dfddf8ee42b5e8e8",
+  "payload_equals_oem": true,
+  "container_equals_oem": true,
+  "support_tests_passed": 10
+}

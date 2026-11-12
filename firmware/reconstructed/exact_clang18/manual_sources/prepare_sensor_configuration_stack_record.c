@@ -8,13 +8,10 @@ extern void search_circular_record_queue_and_compact_if_needed(void *);
 __attribute__((used, section(".text.prepare_sensor_configuration_stack_record"))) void
 prepare_sensor_configuration_stack_record(void) {
     union sr08_queue_record record;
-    uint32_t word;
 
     __aeabi_memclr(record.sensor_configuration.reserved, sizeof(record.sensor_configuration.reserved));
     record.sensor_configuration.marker = 0xbb;
-    __asm__ volatile("ldr %[word], [pc, #16]" : [word] "=r"(word));
-    record.sensor_configuration.second = word;
-    __asm__ volatile("ldr %[word], [pc, #16]" : [word] "=r"(word));
-    record.sensor_configuration.first = word;
+    record.sensor_configuration.second = 0xbe0a0928u;
+    record.sensor_configuration.first = 0x07e86a20u;
     search_circular_record_queue_and_compact_if_needed(&record.sensor_configuration.first);
 }

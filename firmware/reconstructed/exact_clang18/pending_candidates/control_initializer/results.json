@@ -1,0 +1,226 @@
+[
+  {
+    "pointer": false,
+    "mask": 0,
+    "optimization": "O2",
+    "bytes": 136,
+    "differing_bytes": 24
+  },
+  {
+    "pointer": false,
+    "mask": 0,
+    "optimization": "O3",
+    "bytes": 136,
+    "differing_bytes": 61
+  },
+  {
+    "pointer": false,
+    "mask": 1,
+    "optimization": "O2",
+    "bytes": 136,
+    "differing_bytes": 24
+  },
+  {
+    "pointer": false,
+    "mask": 1,
+    "optimization": "O3",
+    "bytes": 136,
+    "differing_bytes": 61
+  },
+  {
+    "pointer": false,
+    "mask": 2,
+    "optimization": "O2",
+    "bytes": 136,
+    "differing_bytes": 24
+  },
+  {
+    "pointer": false,
+    "mask": 2,
+    "optimization": "O3",
+    "bytes": 136,
+    "differing_bytes": 61
+  },
+  {
+    "pointer": false,
+    "mask": 3,
+    "optimization": "O2",
+    "bytes": 136,
+    "differing_bytes": 24
+  },
+  {
+    "pointer": false,
+    "mask": 3,
+    "optimization": "O3",
+    "bytes": 136,
+    "differing_bytes": 61
+  },
+  {
+    "pointer": false,
+    "mask": 4,
+    "optimization": "O2",
+    "bytes": 136,
+    "differing_bytes": 24
+  },
+  {
+    "pointer": false,
+    "mask": 4,
+    "optimization": "O3",
+    "bytes": 136,
+    "differing_bytes": 61
+  },
+  {
+    "pointer": false,
+    "mask": 5,
+    "optimization": "O2",
+    "bytes": 136,
+    "differing_bytes": 24
+  },
+  {
+    "pointer": false,
+    "mask": 5,
+    "optimization": "O3",
+    "bytes": 136,
+    "differing_bytes": 61
+  },
+  {
+    "pointer": false,
+    "mask": 6,
+    "optimization": "O2",
+    "bytes": 136,
+    "differing_bytes": 24
+  },
+  {
+    "pointer": false,
+    "mask": 6,
+    "optimization": "O3",
+    "bytes": 136,
+    "differing_bytes": 61
+  },
+  {
+    "pointer": false,
+    "mask": 7,
+    "optimization": "O2",
+    "bytes": 136,
+    "differing_bytes": 24
+  },
+  {
+    "pointer": false,
+    "mask": 7,
+    "optimization": "O3",
+    "bytes": 136,
+    "differing_bytes": 61
+  },
+  {
+    "pointer": true,
+    "mask": 0,
+    "optimization": "O2",
+    "bytes": 136,
+    "differing_bytes": 29
+  },
+  {
+    "pointer": true,
+    "mask": 0,
+    "optimization": "O3",
+    "bytes": 136,
+    "differing_bytes": 65
+  },
+  {
+    "pointer": true,
+    "mask": 1,
+    "optimization": "O2",
+    "bytes": 136,
+    "differing_bytes": 29
+  },
+  {
+    "pointer": true,
+    "mask": 1,
+    "optimization": "O3",
+    "bytes": 136,
+    "differing_bytes": 65
+  },
+  {
+    "pointer": true,
+    "mask": 2,
+    "optimization": "O2",
+    "bytes": 136,
+    "differing_bytes": 29
+  },
+  {
+    "pointer": true,
+    "mask": 2,
+    "optimization": "O3",
+    "bytes": 136,
+    "differing_bytes": 65
+  },
+  {
+    "pointer": true,
+    "mask": 3,
+    "optimization": "O2",
+    "bytes": 136,
+    "differing_bytes": 29
+  },
+  {
+    "pointer": true,
+    "mask": 3,
+    "optimization": "O3",
+    "bytes": 136,
+    "differing_bytes": 65
+  },
+  {
+    "pointer": true,
+    "mask": 4,
+    "optimization": "O2",
+    "bytes": 136,
+    "differing_bytes": 29
+  },
+  {
+    "pointer": true,
+    "mask": 4,
+    "optimization": "O3",
+    "bytes": 136,
+    "differing_bytes": 65
+  },
+  {
+    "pointer": true,
+    "mask": 5,
+    "optimization": "O2",
+    "bytes": 136,
+    "differing_bytes": 29
+  },
+  {
+    "pointer": true,
+    "mask": 5,
+    "optimization": "O3",
+    "bytes": 136,
+    "differing_bytes": 65
+  },
+  {
+    "pointer": true,
+    "mask": 6,
+    "optimization": "O2",
+    "bytes": 136,
+    "differing_bytes": 29
+  },
+  {
+    "pointer": true,
+    "mask": 6,
+    "optimization": "O3",
+    "bytes": 136,
+    "differing_bytes": 65
+  },
+  {
+    "pointer": true,
+    "mask": 7,
+    "optimization": "O2",
+    "bytes": 136,
+    "differing_bytes": 29
+  },
+  {
+    "pointer": true,
+    "mask": 7,
+    "optimization": "O3",
+    "bytes": 136,
+    "differing_bytes": 65
+  }
+]

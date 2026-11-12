@@ -1,38 +1,42 @@
+/* Exchange one byte with the I2C device: send command_value, issue a read and
+ * return the received byte. A transmit abort is reported with V204's debug
+ * print (source line 118) and gives 0. Register names are the DA14585's (SDK
+ * datasheet header).
+ */
 #include <stdint.h>
 #include "firmware/reconstructed/include/sr08_format.h"
-#include "firmware/reconstructed/include/sr08_status_wait_helpers.h"
-/* Exchange one command through the radio interface; the 16-bit data register
- * transmits only the low halfword of command_value.
- */
+
+#define I2C_DATA_CMD_REG        (*(volatile uint16_t *)0x50001310u)
+#define I2C_CLR_TX_ABRT_REG     (*(volatile uint16_t *)0x50001354u)
+#define I2C_TX_ABRT_SOURCE_REG  (*(volatile uint16_t *)0x50001380u)
+#define I2C_CMD_READ            0x0100u
+#define ABRT_7B_ADDR_NOACK      0x0001u
+
+extern void wait_for_status_mask_0x02_set_minimum_8(void);
+extern void wait_for_status_mask_0x04_set_minimum_32(void);
+extern void wait_for_status_mask_0x20_clear_minimum_8(void);
+extern void wait_i2c_rx_fifo_or_timeout(void);
+extern const char i2c_ack_format[]; /* "%d,ack0x%x\n" */
+
 uint8_t exchange_one_radio_word(uint32_t command_value)
-
 {
-    volatile uint16_t *command_register;
-    volatile uint16_t *radio_status_registers;
-    uint32_t wait_result;
-    uint8_t response;
+    uint16_t response;
 
     wait_for_status_mask_0x02_set_minimum_8();
-    __asm__ volatile("ldr %[command_register], [pc, #252]" : [command_register] "=r"(command_register));
-    *command_register = (uint16_t)command_value;
+    I2C_DATA_CMD_REG = command_value;
     wait_for_status_mask_0x02_set_minimum_8();
-    *command_register = 0x100;
+    I2C_DATA_CMD_REG = I2C_CMD_READ;
     wait_for_status_mask_0x04_set_minimum_32();
-    __asm__ volatile("ldr %[status_registers], [pc, #240]" : [status_registers] "=r"(radio_status_registers));
-    if ((radio_status_registers[0x16] & 1) == 0) {
-        wait_result = wait_for_any_status_bit_or_elapsed_200(*radio_status_registers);
-        response = (uint8_t)*command_register;
-    } else {
-        uint32_t format_string;
-        __asm__ volatile("ldr %[format_string], [pc, #224]" : [format_string] "=r"(format_string));
-        format_and_send_uart_message((const uint8_t *)(uintptr_t)format_string, 0x76, 1);
-        wait_result = (uint32_t)*radio_status_registers;
+    if (I2C_TX_ABRT_SOURCE_REG & ABRT_7B_ADDR_NOACK) {
+        arch_printf((const uint8_t *)i2c_ack_format, 118, 1);
+        (void)I2C_CLR_TX_ABRT_REG;
         response = 0;
+    } else {
+        (void)I2C_CLR_TX_ABRT_REG;
+        wait_i2c_rx_fifo_or_timeout();
+        response = I2C_DATA_CMD_REG;
     }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-non-prototype"
-    wait_for_status_mask_0x04_set_minimum_32(wait_result);
-#pragma clang diagnostic pop
+    wait_for_status_mask_0x04_set_minimum_32();
     wait_for_status_mask_0x20_clear_minimum_8();
     return response;
 }

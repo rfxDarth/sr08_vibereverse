@@ -1,6 +1,8 @@
 #ifndef SR08_SHARED_STATE_FIELDS_H
 #define SR08_SHARED_STATE_FIELDS_H
 
+#include "firmware/reconstructed/include/sr08_static_assert.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -14,10 +16,10 @@ struct sr08_shared_word_state {
     uint32_t word_at_1c;
 };
 
-_Static_assert(offsetof(struct sr08_shared_counter_state, counter_at_04) == 4,
+SR08_STATIC_ASSERT(offsetof(struct sr08_shared_counter_state, counter_at_04) == 4,
                "shared counter must remain at offset four");
-_Static_assert(offsetof(struct sr08_shared_word_state, word_at_1c) == 0x1c, "shared word must remain at offset 0x1c");
-_Static_assert(sizeof(struct sr08_shared_word_state) == 0x20, "shared word region must remain 0x20 bytes");
+SR08_STATIC_ASSERT(offsetof(struct sr08_shared_word_state, word_at_1c) == 0x1c, "shared word must remain at offset 0x1c");
+SR08_STATIC_ASSERT(sizeof(struct sr08_shared_word_state) == 0x20, "shared word region must remain 0x20 bytes");
 
 enum { SR08_SHARED_STATE_POINTER_LITERAL_DISPLACEMENT = 12 };
 

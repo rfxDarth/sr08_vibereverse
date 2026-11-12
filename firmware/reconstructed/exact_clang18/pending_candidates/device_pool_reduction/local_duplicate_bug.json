@@ -1,0 +1,12 @@
+{
+  "original_literal": "0x7fc8600",
+  "local_equal_literal": "0x7fc8508",
+  "value": "0x7fd1e28",
+  "fixed_target_load": [
+    "ldr r0, __arm_cp.7fc8500_8"
+  ],
+  "module_target_load": [
+    "ldr r0, __arm_cp.7fc8500_copy_07fd1e28"
+  ],
+  "normal_builder_changed": false
+}

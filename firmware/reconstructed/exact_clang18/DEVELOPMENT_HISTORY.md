@@ -1,3 +1,288 @@
+# Alice — display switch C within six bytes, not installed (2026-11-15)
+
+Canonical installed tree unchanged: **506 sections / 449 units; 68 direct /
+70 expanded ASM**. Only normal-file delta is an Alice claim comment, proven
+complete-object identical; 581 other inputs match prior canonical event-ring
+bundle. installed_verification.json in display_switch_tail/ records proof.
+No new full build claimed, no guards/compiler profiles/support edits.
+
+0x3b78 switch_display_state_and_run_hooks now Alice-claimed. Jeff's newer
+annotated native C was 34 bytes off due early callback reload into r4. A separate
+volatile saved_enter slot initialized immediately AFTER first lookup retains
+its SSA lookup and forces original late r1 reload/call. volatile_copy.c.txt now
+matches 494/500 bytes; all bytes from 0x3bb6 to 0x3d6c exact. Remaining six bytes
+are ONLY first lookup's phi/store join, locations in closest_verification.json.
+No acceptance or ASM count reduction; original source remains installed.
+
+Explicit per-edge volatile stores survive optimized IR but machine Control
+Flow Optimizer merges them; register allocation also rotates because zero
+needn't remain live. Best phi/store form keeps original allocation but copies
+zero before common store instead of OEM two stores. Optimized .ll and native
+*_branch_folder.txt dumps establish the stages. Other scoped volatile, default,
+address/index/fence/PHI/taildup variants and ARM6.18/Clang14/18 probes are saved
+negative results; avoid repetition. No failed flags installed. Future work
+should preserve both default-zero liveness and edge stores, not retry full
+variable volatility. All evidence in pending_candidates/display_switch_tail/.
+
+Timer 0x4458 was read-only triage: already instruction-exact in Jeff candidate,
+needs max-range literals shared with clock 0x44a8. Not claimed/edited; no new
+unchanged pool probe. Jeff now has additional accepted work noted in shared
+WORK_CLAIMS (including 1da8/3d6c); Alice did not merge his tree. Other claims
+unchanged. All jobs terminal; no flash/commit/push, shared/Tools untouched.
+
+# Alice — event-ring initializer types clarified; full image exact (2026-11-15)
+
+Canonical **506 sections / 449 units; 68 direct / 70 expanded ASM**. Ten support
+tests pass. Source-only payload and OTA directly equal OEM V204, hashes
+5020c236… / c7472495…. All 582 exported inputs match workspace.
+
+0x2568 initialize_configuration_record_defaults now uses the canonical shared
+event ring types instead of a redundant 23-word struct with misleading names.
+The former "type" is capacity 16; "capacity" is element size 20; secondary
+capacity 8 and both storage links are explicit. Primary state at +0x34,
+secondary at +0x48. Existing header asserts layouts. Remaining register/literal
+ASM blocks are preserved; this is a type/readability cleanup, NOT ASM removal.
+Complete normal Clang18 object identical (896 bytes) and full build canonical.
+No shared/Jeff/Tools changes, no compiler/profile/guard changes.
+
+Evidence: pending_candidates/event_ring_init/verification.json,
+typed_cleanup_object_comparison.json, source_input_hashes.json,
+installed_audit.json, support_tests.log and standalone_build.log.
+Export /tmp/sr08-alice-event-ring-types-source-bundle; artifacts stem
+/tmp/sr08-alice-event-ring-types-standalone. Merge source and catalog/diagnostic
+metadata; no ABI/name change. Claim stays active for pure-C conversion.
+
+Pure-C baseline using volatile fields emits 48/39 differences; nonvolatile 52/22
+has correct frame/store layout but different early constants/pointer order and
+registers. Declaration/field/call order, inline helper, aggregates, word view,
+constant/pointer annotations, fences, O levels and ARM6.18/ARM5 provenance
+probes are negative; details in README/probe_results. Scheduling-source 26,
+list-burr unchanged 22, linearize unsupported. Avoid unchanged reruns.
+All jobs terminal. Other pending claims unchanged; no flash/commit/push.
+
+# Alice — local-literal builder fix verified; range C retry still rejected (2026-11-15)
+
+Canonical installed tree: **506 sections / 449 units; 68 direct / 70 expanded
+ASM**. Both payload/container equal OEM, hashes 5020c236… / c7472495….
+**Ten support tests** pass. All 582 normal inputs equal accepted support-fix
+source bundle. No ASM count reduction this batch; legitimate compiler-context
+lookup defect fixed with regression proof, no guard relaxation.
+
+stub_assembly used to look for an equal local word before resolving the value
+of an external MODULE-owned target. It could miss an existing local duplicate
+and create a needless temporary copy. context_word lookup now precedes own[]
+selection. Fixed-target behavior, sealed words and missing-local copy retries
+covered by four tests (one red before the fix), alongside six prior tests.
+No constants/instructions rewritten, checks unchanged. Merge arm_compilers.py
+and tests/test_stub_local_literal.py. Jeff/shared header/data untouched.
+
+Accepted standalone: /tmp/sr08-alice-local-pool-value-standalone.{elf,payload.bin,bin};
+export /tmp/sr08-alice-local-pool-value-source-bundle. Evidence in
+pending_candidates/device_pool_reduction/: verification.json, source_input_hashes.json,
+standalone_build.log, support_tests.log and local_duplicate_before_test.log.
+
+New reproduce.py is an optional source-only 4-pool linker model, no OEM binary.
+Code-bearing pools share; standalone words do not. All 96 order/reader controls
+select 867c. Making far pools standalone reproduces 8568 -> 84e4 -> 832c ->
+private82bc, eight cases each. association_matrix.json / *_results.json retain
+observations. Mapping symbols alone and separate-reader sections were negative
+controls; separate_reader_model.py.txt preserves that earlier version.
+
+Range-checker C was retried with the fix (ac6lto/native, same proven one-hint
+candidate). Full 104-byte region matches, but existing caller 0x82b2 still
+loads 8568 instead of 867c (f2 -> ad), the identical prior one-byte/hash failure
+b8f19849…. Fix is real but NOT sufficient to solve this selection. Rejected
+experiment in range_standalone_build.log, range_rejected_differences.json,
+range_source_input_hashes.json. Own C source and registrations restored;
+restored_verification.json proves all 582 inputs match accepted support snapshot.
+No new post-restoration build claimed. Experimental 67/69 audit is not current.
+
+Next useful pool reduction must model actual initializer/native checker context,
+not merely equal pool eligibility; avoid repeating same full conversion without
+new cause. No new guards/exclusions, no byte patching. All jobs terminal;
+range/callback/flash claims remain active. No flash/commit/push.
+
+# Alice — callback literal conflict traced, installed build unchanged (2026-11-15)
+
+Canonical remains **506 sections / 449 units; 68 direct / 70 expanded ASM**.
+All 582 installed build inputs still byte-equal last accepted callback-result
+API source bundle. No source, guard, compiler support, profile or header changes
+this batch; no fresh full build claimed. All jobs terminal.
+
+0x85e0 investigation now has exact ownership evidence. Original 0x867c is read
+only at 0x82b2 by a main LTO C function, with no initial fixed-stub reader. The
+retention algorithm pins that known pool word after a chained function arrives
+four bytes early (_DroppedLiterals(gap)); it is not introduced by a stub read.
+Final rejected diagnostic ELF has callback section's cycle_control_state word
+0x07fd1ea4 AND retained original device_control_state word 0x07fd1e28 at that
+same VMA 0x867c. Candidate return is at 0x8674 (+NOP at 0x8676, private pools
+0x8678/867c), OEM return at 0x867a. It is a real layout/content conflict, not
+permission to drop retention or overwrite a word. Guards remain unchanged.
+
+Durable evidence: callback_sync/literal_867c_context.json,
+literal_867c_collision.json, ordered_traced_disassembly.txt and
+ordered_traced_main_lto.log. The latter captures the full retry sequence and
+strict rejection; /tmp/sr08-alice-callback-sync-lto-debug retains the diagnostic
+ELF with overlapping sections. Do not flatten/use that ELF as firmware.
+
+New settled-assignment opacity/fence native variants remain inexact and are
+recorded in probe_results.json/README. Original synchronizer ASM stays, claim
+active. Useful next actions: recover original code shape, or reduce the four
+root-pointer pools and pre-merge ownership behavior; not another unchanged
+main probe. Jeff/shared files untouched; no flash/commit/push.
+
+# Alice — signed sample-return APIs corrected; full byte parity (2026-11-15)
+
+Canonical installed tree: **506 sections / 449 units; 68 direct / 70 expanded
+assembly units**. No new ASM conversion this batch. The sampler API correction
+removes an actual cross-unit type mismatch needed by the pending synchronizer.
+Both payload/container directly equal V204; hashes 5020c236… / c7472495….
+Six support tests pass; all **582** exported inputs match current workspace,
+no original firmware in export. New header accounts for +1 input.
+
+OEM synchronizer stores R0 from 0x833c/0x856c window wrappers. Their legacy
+macro declared wrappers AND sampler void, although 0x85a0 already returns
+int16_t. New additive sr08_callback_samples.h supplies real signed-result APIs
+and a return-propagating macro. Alice's two decompiled wrapper sources use it;
+0x85a0 source includes it to check its definition. Both wrapper code sections
+AND relocation lists are identical with normal Clang18 flags. Legacy shared
+sr08_callback_mode_range.h and Jeff files untouched. Merge all three C source
+changes plus new header atomically. No compiler/guard/profile/placement changes.
+
+Evidence: pending_candidates/callback_sync/result_api_{verification,codegen,
+source_input_hashes,audit}.json and result_api_standalone_build.log. Export
+/tmp/sr08-alice-callback-result-source-bundle; artifacts stem
+/tmp/sr08-alice-callback-result-standalone. Last inputs rechecked unchanged.
+
+0x85e0 synchronizer is now Alice-claimed, original ASM installed. Its pending
+C also read reference/profile BEFORE setting VALUES_DIFFER; ordered_stores
+corrects that volatile ordering. *_typed candidates use proper sample APIs.
+Native fencing/opaque final tests recover some original register assignment but
+remain inexact. Main LTO ordered_stores_typed rejects fixed literal 0x867c:
+next required 0x8680. No successful new C region from that run. Four-byte
+placement overflow is not four differing code bytes; don't weaken guards.
+See README/probe_results in callback_sync/. All jobs terminal. Flash wrapper
+and previous pending claims unchanged; no flash/commit/push.
+
+# Alice — measurement/display routine now C, full image exact (2026-11-15)
+
+**Canonical: 506 sections / 449 units; 68 direct / 70 expanded assembly units.**
+Source-only payload (67136 bytes) and OTA container (67200) directly equal OEM
+V204, hashes 5020c236… / c7472495…. Six support tests pass; all 581 exported
+inputs match current workspace. No original firmware in export.
+
+`update_measurement_display_and_mode_state` (0x7380) is ordinary main ac6lto C,
+exact across all 296 bytes. It stores result mode, updates two-minute result
+slots and runs timed display/event transitions. The inherited near-match swapped
+mode==1 and value!=0. A conditional compiler signal fence in an inline helper
+prevents reassociation, and caching display_mode prevents a reload. Fence emits
+no hardware instruction. Partial RAM view offsets are statically asserted.
+
+First probe failed at unrelated ER_87ec: inherited raw sensor_field_state[]
+declaration conflicted with the newer canonical shared struct and enlarged the
+publisher by four. Using sr08_sensor_field_state.h and its tail byte +0x58
+restored layout without changing native candidate output. typed_sensor_main_lto.log
+is the successful probe; clean_main_lto.log records the earlier failed form.
+No support/profile/guard/placement/shared-header changes, Jeff files untouched.
+Merge source, main ac6lto registration and catalog/diagnostic metadata.
+
+Artifacts: /tmp/sr08-alice-measurement-display-standalone.{elf,payload.bin,bin};
+export /tmp/sr08-alice-measurement-display-source-bundle. Durable proof in
+pending_candidates/measurement_display/: verification.json, source_input_hashes.json,
+installed_audit.json, typed_sensor_main_lto.log and standalone_build.log.
+Claim closed, all jobs terminal. No flash/commit/push. Flash wrapper 0x3ea0
+remains claimed and inexact as documented below; no new candidate installed
+there. Other active candidates and prior atomic merge requirements unchanged.
+
+# Alice — flash wrapper now fits its fixed region, still inexact (2026-11-15)
+
+Canonical installed tree remains **507 sections / 449 units; 69 direct / 71
+expanded ASM**. All 581 current normal build inputs still match last accepted
+WEL build hashes; no normal-source/guard/profile changes this batch. No new
+full build claimed. Last accepted payload/container remain canonical.
+
+0x3ea0 common_return_a0f0.c.txt replaces direct denied-write return -1 with
+status=255 and a common final annotated signed-byte conversion. Native shrinks
+520 -> 516 bytes. Main LTO now fits original 0x3ea0..0x40a0 (512 bytes including
+four original-position pools), preserving app_std_process_event at 0x40a0.
+This removes the previous overflow without any placement-rule change.
+It still differs in 422/512 bytes: block placement, stack slots, CS branch
+shape, and merged cleanup. Original has a separate denied-path power-down call
+before r7=255, whereas this candidate shares the common call. NOT installed;
+original ASM stays. Claim active. Evidence in flash_operation/README.md,
+common_return_verification.json, common_return_main_diagnostic.log and
+common_return_linked_disassembly.txt. Diagnostic dir:
+/tmp/sr08-alice-flash-common-return-lto-debug; all jobs terminal.
+
+Conditional mask phi/annotation matrix, denied cleanup fences, byte annotations
+and operation-likelihood hints are recorded negative probes. An erase-likely
+hint gives 512 native bytes but different code; do not treat size as equality.
+Next work must recover original block/cleanup/register behavior, not simply
+fit the slot. No Jeff/header/Tools edits, no flash/commit/push.
+
+# Alice — flash write-enable now C; current-header standalone exact (2026-11-15)
+
+**Canonical: 507 sections / 449 units; 69 direct / 71 expanded assembly units.**
+Both payload (67136) and OTA container (67200) directly equal OEM V204. Hashes
+remain 5020c236… / c7472495…. Six support tests pass; all 581 exported inputs
+match the current workspace, no original firmware in export.
+
+`drive_ring_s_output_state_machine` (0xbb38) is SDK spi_flash_set_write_enable,
+now ordinary native ac6 C, exact across all 52 region bytes. A conditional
+compiler fence on the WEL error path plus final status annotation preserves
+the common return; neither emits an ARM instruction. No hints/initial-status
+annotation needed. No compiler-support, profile flag, placement or guard changes.
+Merge source, ac6 registration and catalog/diagnostic metadata. Jeff source untouched.
+
+Artifacts: `/tmp/sr08-alice-flash-wel-current.{elf,payload.bin,bin}`;
+export `/tmp/sr08-alice-flash-wel-current-source-bundle`. Durable proof:
+`exact_clang18_alice/pending_candidates/flash_write_enable/verification.json`,
+source_input_hashes.json, installed_audit.json, installed_native.log and
+current_standalone_build.log. A concurrent shared-header edit during first build
+replaced unused fields +5..7 with padding. Fresh export/full rebuild against
+current header passed; old exported-build proofs explicitly first_export_*.
+No header modification by Alice in this batch. Claim closed. No flash/commit/push.
+
+0x3ea0 flash wrapper remains claimed and ASM installed. Retained main LTO
+output disproves a current three-branch-only mismatch: inherited candidate and
+API-consistent wide-status candidate both emit 516 bytes, overrun app_std
+by four, but differ in stack slots/block ordering. See flash_operation/README.md,
+api_codegen_comparison.json and wide_status_linked_diff.txt. Guards reject both;
+no candidate installed. Conditional fences cause duplicate initial selector
+reads unless initial mask is computed once. Weighted, annotated and late-bounds
+variants are inexact; avoid repeating. Diagnostic link dirs retained in /tmp;
+no live jobs. Previous OTA/status API and SPI batches below still need merging
+as documented; shared edits additive rules remain in force.
+
+# Alice — SPI transaction converted to C, full standalone verified (2026-11-15)
+
+**Canonical: 508 sections / 449 units; 70 direct / 72 expanded assembly units.**
+Complete source-only payload and OTA container directly equal OEM V204. Hashes
+remain 5020c236… / c7472495…. Six support tests pass. All 581 exported inputs
+match workspace; no original firmware is in the export.
+
+`update_mode_dependent_output_state_during_flash_transfer` (0xbb94) is now
+ordinary C, identified as Renesas `spi_transaction` in our own SDK's spi_58x.c.
+Native ac6 registration is required; no LTO profile/support/guard changes.
+All 48 bytes match: select pin, assert CS, spi_access, re-read selector,
+release CS and return the full word. A compiler-only fence on the pin-0 path
+retains the OEM branch direction; annotating only its constant reproduces
+register allocation. Neither emits hardware instructions. Previous weighted
+select/fence variants failed; logs and sources are retained to avoid repetition.
+
+Artifacts: `/tmp/sr08-alice-spi-cs-standalone.{elf,payload.bin,bin}`;
+export `/tmp/sr08-alice-spi-cs-source-bundle`. Durable evidence:
+`exact_clang18_alice/pending_candidates/spi_chip_select/verification.json`,
+source_input_hashes.json, installed_audit.json, installed_native.log and
+standalone_build.log. Claim closed. Merge the source and ac6 registration
+with metadata; Jeff's files remain untouched. The OTA/status API batch below
+still needs to be merged atomically as documented. No flash/commit/push.
+
+The same branch-direction finding may help the released 0x3ea0 flash driver,
+but its different register lifetimes still need independent proof. That source
+also needs prototype/asm-alias cleanup before acceptance; see pending candidate.
+Other pending candidates and previous negative results remain in their notes.
+
 # Historical reconstruction notes
 
 > Archived progress log retained from the original README. Its counts and
@@ -111,7 +396,7 @@ clearing the control bit and publishing state.
 `lookup_measurement_value_by_index` at `0x07fc5a6c` and
 `match_measurement_index_and_write_offset` at `0x07fc5a88` now share a checked
 range-prefix struct with the start value at offset four and count at offset six.
-`publish_per_slot_state_byte` at `0x07fc31f8` uses a checked 44-byte record
+`app_easy_gap_confirm` at `0x07fc31f8` uses a checked 44-byte record
 layout for the state value and submitted flag at offsets `0x28` and `0x29`.
 `initialize_state_and_return_one` at `0x07fcd990` runs the initializer at
 `0x07fcd908` and returns one. It retains its short assembly wrapper because
@@ -123,19 +408,19 @@ registers, masks, and elapsed-time thresholds to the shared wait routine; a
 single inline load where needed preserves the original peripheral-pointer
 literal access.
 
-`report_hardfault_context_and_halt` at `0x07fc1d88` now uses a typed context
+`HardFault_HandlerC` at `0x07fc1d88` now uses a typed context
 argument and named volatile status registers. It reports the HardFault state,
 writes the hardware status codes, then spins forever. Removing the unused
 Ghidra typedef and macro preamble kept its linked bytes unchanged.
 
-`handle_nmi_and_report_context` at `0x07fc1df8` names the NMI control and
+`NMI_HandlerC` at `0x07fc1df8` names the NMI control and
 pending-interrupt registers and its exception-context parameter. It preserves
 the original status polling and NMI reporting sequence.
 Both handlers now call `print_exception_context_to_uart` with a typed exception
 kind and a pointer to the saved register context. The reporter's pinned Thumb
 range remains byte-identical and is named for its UART output.
 
-`initialize_peripheral_control_state` at `0x07fc566c` now names its control
+`calibrate_rcx20` at `0x07fc566c` now names its control
 registers and shared enable byte. `clear_shared_state_and_mmio_flag` at
 `0x07fc9830` names the state word and MMIO register while preserving the ROM
 service call and bit-31 clear.
@@ -240,7 +525,7 @@ lookup. There are now 13
 low-confidence entries still labeled unclassified. Catalog
 generation uses analysis CSVs; the checked-in catalog itself is the normal
 build input.
-`dispatch_service_event_and_update_shared_state` at `0x07fcc578` now uses
+`user_catch_rest_hndl` at `0x07fcc578` now uses
 named local assembly labels for its record handler, response construction,
 transfer reset, status update, periodic-record triggers, and common returns.
 The branch encodings and linked section remain unchanged.
@@ -250,7 +535,7 @@ and session state before constructing message records. One path reverses and
 copies two 32-byte payload blocks; another fills a 32-byte block with `0xff`.
 The exact Thumb transcription remains pinned while its role is documented.
 
-`handle_per_slot_ble_data_record` at `0x07fc60ec` selects a slot from the
+`gapc_bond_req_ind_handler` at `0x07fc60ec` selects a slot from the
 request's high byte, updates its fixed-size record for type 7, or initializes
 slot state and emits a fixed notification for type 0. Unsupported types follow
 the firmware's fatal loop.
@@ -278,7 +563,7 @@ record streams and rejects repeated tracked field tags. Its assembly body is
 unchanged; the parameter types and roles are documented at the function
 declaration.
 
-`initialize_display_config_or_run_handler` at `0x07fc302c` creates the
+`app_db_init_next` at `0x07fc302c` creates the
 display configuration on first entry, then dispatches its handler sequence on
 later calls. It returns one when the sequence resets and zero otherwise.
 
@@ -667,7 +952,7 @@ wrappers `FUN_07fc8b20`, `FUN_07fc8b48`, `FUN_07fc8b54`, `FUN_07fc8b60`,
 `FUN_07fcaac8`, `FUN_07fcbbc4`, `FUN_07fc31d4`, `FUN_07fc1a2a`, and
 `FUN_07fc20b4`, `FUN_07fc1b3e`, `FUN_07fc1b66`, `FUN_07fcee94`, `FUN_07fc2fcc`, `FUN_07fc3564`, `FUN_07fc3e40`, and
 `FUN_07fc4144`, and `FUN_07fc3e60`, and `FUN_07fc5db4`, and `FUN_07fc0758`, and `FUN_07fc1e70`, and `FUN_07fcbb38`, and `FUN_07fcbb10`, and `FUN_07fcd0c8`, and `FUN_07fcbb94`, and `FUN_07fccf5c` are in
-`firmware/reconstructed/exact_clang18/manual_sources/` (originally
+`firmware/reconstructed/exact_clang18_jeff/manual_sources/` (originally
 `firmware/reconstructed/candidates/`). Inline assembly pins the two shared
 PC-relative loads in the first function, the base/index store encoding in the
 second, and the shared-pool loads in the third, fourth, and fifth. The fifth
@@ -933,7 +1218,7 @@ the initialization routine, set the pending flag, then invoke ROM service
 
 `FUN_07fc1394` routes an incoming packet by status and sensor mode, updates timestamp fields when eligible, and otherwise invokes the mode-specific notification path. Its 146-byte mnemonic Thumb reconstruction preserves the tail branch into the shared return block at `0x07fc1170` and matches V204.
 
-`store_item_in_first_free_registration_slot` now expresses its ten-slot scan,
+`app_easy_timer` now expresses its ten-slot scan,
 empty-slot write, helper call, and zero-on-full result in C. Inline assembly
 retains the literal load, zero-based counter branch and increment, pointer
 advance, and byte-sized return/call operands needed for the original 42-byte
@@ -960,7 +1245,7 @@ The isolated source bundle and repository builds retain exact payload parity.
 
 `update_indexed_delay_entry_if_changed` returns its `entry_index` parameter
 directly, removing the saved copy without altering its 30-byte section.
-`build_and_publish_compact_sensor_request_record` likewise passes `index`
+`app_easy_gap_disconnect` likewise passes `index`
 directly to the second assembly block instead of using a saved alias. Isolated
 bundle and repository builds retain the canonical payload hash.
 
@@ -1010,25 +1295,25 @@ A trial cleanup of `c_delay_loop_v204_timing_padding_at_0194` removed its `remai
 
 Applied the repository Clang format style to the 13 C translation units that were out of format. All 220 non-pinned C units now pass `clang-format-18 --dry-run --Werror`. The full repository build and exported 538-file standalone bundle both retain canonical payload parity; the repository build also matched the reference SUOTA container.
 
-Replaced numeric local branch labels with descriptive labels in seven pinned routines: `crc32_update_one_byte`, `dispatch_fixed_size_records_by_marker`, `visit_selected_five_word_records_update_at_58ac`, `route_record_update_slot_state_two_at_6458`, `reproduce_sensor_record_allocation_out_range_at_6724`, `update_companion_mode_bits_and_notify_display`, and `fill_hardware_fifo_optionally_report_state_at_89b0`. The branch structure is now easier to follow while the assembled bytes remain unchanged. Repository and standalone-bundle builds retained the canonical payload and the standalone build emitted the canonical SUOTA container.
+Replaced numeric local branch labels with descriptive labels in seven pinned routines: `crc32_update_one_byte`, `dispatch_fixed_size_records_by_marker`, `visit_selected_five_word_records_update_at_58ac`, `gapc_encrypt_req_ind_handler`, `reproduce_sensor_record_allocation_out_range_at_6724`, `update_companion_mode_bits_and_notify_display`, and `fill_hardware_fifo_optionally_report_state_at_89b0`. The branch structure is now easier to follow while the assembled bytes remain unchanged. Repository and standalone-bundle builds retained the canonical payload and the standalone build emitted the canonical SUOTA container.
 
 Continued the pinned-source label cleanup: `applies_pending_record_operation_item_while_at_d99c`, `allocate_initialize_record_first_use_release_at_3254`, and `clear_shared_flag_and_switch_to_state_zero` now use labels describing the inactive return, send path, and already-clear branch. Repository and standalone builds still reproduce the canonical payload; the standalone build emitted the canonical SUOTA container.
 
-Named local branches in five additional instruction-pinned routines: `dispatch_through_seven_entry_callback_table`, `scan_bounded_record_range_until_callback_at_87f4`, `update_mode_bits_and_notify_display_service`, `clear_selected_slot_record_series`, and `set_pending_flag_while_preserving_caller_at_5260`. The labels identify callback iteration/default dispatch, bounded scan outcomes, mode-flag paths, indexed clear/fatal handling, and interrupt-mask restoration. Repository and isolated source-bundle builds remain byte-identical to the canonical payload, and the bundle emitted the canonical SUOTA container.
+Named local branches in five additional instruction-pinned routines: `app_entry_point_handler`, `scan_bounded_record_range_until_callback_at_87f4`, `update_mode_bits_and_notify_display_service`, `hogpd_cleanup`, and `set_pending_flag_while_preserving_caller_at_5260`. The labels identify callback iteration/default dispatch, bounded scan outcomes, mode-flag paths, indexed clear/fatal handling, and interrupt-mask restoration. Repository and isolated source-bundle builds remain byte-identical to the canonical payload, and the bundle emitted the canonical SUOTA container.
 
-Named numeric branches in five additional routines: `replace_occupied_slot_newly_allocated_initialized_at_3410`, `allocate_attach_per_slot_record_not_at_98a0`, `clear_and_invoke_registered_callback_for_five_values`, `dispatch_batch_item_three_sign_extended_at_ee4c`, and `normalize_and_round_v204_software_float`. Branch labels now describe slot exits, allocation, callback bounds/results, item iteration, staged normalization, sticky-bit handling, and result packing. Repository and exported source-bundle builds retained canonical payload parity; the bundle emitted the canonical SUOTA container.
+Named numeric branches in five additional routines: `replace_occupied_slot_newly_allocated_initialized_at_3410`, `allocate_attach_per_slot_record_not_at_98a0`, `app_msg_utils_api_process_handler`, `dispatch_batch_item_three_sign_extended_at_ee4c`, and `normalize_and_round_v204_software_float`. Branch labels now describe slot exits, allocation, callback bounds/results, item iteration, staged normalization, sticky-bit handling, and result packing. Repository and exported source-bundle builds retained canonical payload parity; the bundle emitted the canonical SUOTA container.
 
-Replaced numeric labels in `select_fast_rom_write_allocate_initialize_at_575c`, `load_per_slot_record_emit_time_at_334c`, and `format_integer_radix_zero_padded` with labels for fallback allocation, one-time initialization, and formatter paths (sign, radix digits, padding, termination, and reversal). Both repository and isolated source-bundle builds retain exact payload parity; the bundle emits the canonical SUOTA container.
+Replaced numeric labels in `create_timer`, `app_easy_security_accept_encryption`, and `format_integer_radix_zero_padded` with labels for fallback allocation, one-time initialization, and formatter paths (sign, radix digits, padding, termination, and reversal). Both repository and isolated source-bundle builds retain exact payload parity; the bundle emits the canonical SUOTA container.
 
 Named local branches in `dispatch_l2cap_and_smp_received_pdu`, `reverse_copy_two_byte_regions_record_at_1894`, and `search_circular_record_queue_insert_missing_at_2f2c`: they now identify protocol dispatch cases, each reverse-copy loop, and circular-queue scan/replace/enqueue/return paths. The full repository build and exported standalone bundle retain canonical payload parity; the bundle emitted the canonical SUOTA container.
 
-Named numeric loop and exit labels in `quiesce_irq_source_wait_pending_bit_at_c4b0`, `wait_requested_status_mask_minimum_elapsed_at_8a78`, and `poll_state_nibble_clear_state_specific_at_1ea4`. The labels now identify IRQ/lock waits, status checks and elapsed-time gates, plus state-specific polling and flag updates. Repository and standalone-bundle builds still match the canonical payload, and the bundle emits the canonical SUOTA container.
+Named numeric loop and exit labels in `quiesce_irq_source_wait_pending_bit_at_c4b0`, `wait_requested_status_mask_minimum_elapsed_at_8a78`, and `UART2_Handler`. The labels now identify IRQ/lock waits, status checks and elapsed-time gates, plus state-specific polling and flag updates. Repository and standalone-bundle builds still match the canonical payload, and the bundle emits the canonical SUOTA container.
 
-Replaced numeric labels with named paths in `send_type_9_message_if_task_state_zero`, `temporarily_clear_hardware_flags_query_sensor_at_16f8`, and `wait_shared_timer_delta_exceed_requested_at_4458`. The names mark the fatal wait, hardware-flag restoration, lock polling, interval loop, and elapsed-delta check. Repository and standalone source-bundle builds retained exact payload parity; the bundle emitted the canonical container.
+Replaced numeric labels with named paths in `gapm_device_ready_ind_handler`, `temporarily_clear_hardware_flags_query_sensor_at_16f8`, and `wait_shared_timer_delta_exceed_requested_at_4458`. The names mark the fatal wait, hardware-flag restoration, lock polling, interval loop, and elapsed-delta check. Repository and standalone source-bundle builds retained exact payload parity; the bundle emitted the canonical container.
 
 Named labels in `evaluate_two_mode_dependent_record_readiness_at_022c`, `validate_selected_record_state_return_readiness_at_01e8`, and `build_measurement_message_from_service_record`, clarifying mode groups, readiness outcomes, and measurement-code selection. Also replaced the `fun_07fc76a0_parses_variable_length_service_at_76a0` alias in its three callers with `parse_variable_length_service_record` and removed the alias definition. The repository and standalone bundle both reproduce the canonical payload; the bundle emits the canonical SUOTA container.
 
-Named the local wait loop in `build_sensor_command_packet_acquiring_shared_at_519c`, and replaced numeric branch labels in `validate_stored_sample_against_latest_reading_at_5600`, `conditional_mode_updates_using_two_display_at_74a8`, `accumulate_two_timing_deltas_update_wrapped_at_8bdc`, `update_selected_hot_bit_associated_bit_at_1d44`, `update_status_display_using_remainder_rom_at_ab3c`, and `compute_display_segment_position_from_mode_table`. A first parity run caught one wrongly targeted named branch in the display-position routine; correcting the label restored an exact full-payload match. The standalone bundle also reproduces the canonical payload and container.
+Named the local wait loop in `build_sensor_command_packet_acquiring_shared_at_519c`, and replaced numeric branch labels in `validate_stored_sample_against_latest_reading_at_5600`, `conditional_mode_updates_using_two_display_at_74a8`, `accumulate_two_timing_deltas_update_wrapped_at_8bdc`, `GPIOn_Handler`, `update_status_display_using_remainder_rom_at_ab3c`, and `compute_display_segment_position_from_mode_table`. A first parity run caught one wrongly targeted named branch in the display-position routine; correcting the label restored an exact full-payload match. The standalone bundle also reproduces the canonical payload and container.
 
 Named pinned assembly branches in `send_crypto_operation_result_message`, `accumulate_elapsed_units_store_quotient_remainder_at_97f0`, `dispatch_callback_for_record_types_26_fc_fd`, `sr08_block_transform_wrapper_packs_key_at_077e`, `serialize_measurement_record_by_mode`, and `multiply_v204_software_float_values`. Labels now describe selector paths, callback iteration, word packing/unpacking, serialization modes, zero/underflow cases, and ties-to-even rounding. Repository and standalone-bundle builds retain the canonical payload; the bundle emits the canonical SUOTA container. Four manual-source files remain in the numeric-label audit.
 
@@ -1168,7 +1453,7 @@ Added the checked four-byte `sr08_ota_transfer_status` payload layout and change
 
 Added a checked five-word `sr08_scaled_payload_descriptor` for `copy_scaled_payload_slice_when_mask_hits`. The C accesses at descriptor indices three and four are now `copy_length` and `payload_base`; static offset checks also document the first two range operands and selection mask consumed by the pinned load sequence. The complete payload remains byte-identical.
 
-Typed the input prefix in `check_status_record_range_and_publish_code`, naming its status byte and candidate halfword with checked offsets. Replaced the standalone `ldrh r0, [r1, #4]` with the C field load; the section remains byte-exact. A C rewrite of the shared-state store caused Clang to keep the candidate in `r4` instead of V204's `r0`, changing the compare/store instructions, so the two-instruction store adapter remains.
+Typed the input prefix in `suotar_patch_len_ind_handler`, naming its status byte and candidate halfword with checked offsets. Replaced the standalone `ldrh r0, [r1, #4]` with the C field load; the section remains byte-exact. A C rewrite of the shared-state store caused Clang to keep the candidate in `r4` instead of V204's `r0`, changing the compare/store instructions, so the two-instruction store adapter remains.
 
 Typed the flash-controller register prefix in `transfer_flash_controller_word` as status, low/high data, transfer trigger, and control fields, with checked halfword offsets. Replacing indexed `controller[n]` accesses with named fields preserves the exact payload bytes; the carry-sensitive readback sequence remains pinned.
 
@@ -1196,7 +1481,7 @@ Replaced both event-packet scratch clear counts with `sizeof(packet.scratch)` an
 
 Extracted the four repeated shifts/stores in `serialize_status_and_global_values_with_word` into `store_word_as_little_endian_bytes`, preserving volatile byte writes. Clang inlined the helper to the same sequence; the complete payload remains byte-identical.
 
-Named the scan bounds, two-byte pair stride, shared-state-relative mode/value lookup biases, and not-found code in `search_display_code_table_from_minus20_to_zero`. Documented that the lookup pointer is the containing state block and the pairs begin at byte offsets 102/103; the complete payload remains byte-identical.
+Named the scan bounds, two-byte pair stride, shared-state-relative mode/value lookup biases, and not-found code in `get_user_prf_srv_perm`. Documented that the lookup pointer is the containing state block and the pairs begin at byte offsets 102/103; the complete payload remains byte-identical.
 
 Added the checked `sr08_indexed_sensor_state_view` for the shared indexed sensor-state window and replaced the request builder's raw `slot[0x5b]` store with `slot->measurement_available`. The layout records offsets 0x58, 0x5a, and 0x5b; its comment clarifies that views overlap because the underlying fields are columns with a 14-byte index stride. The full payload remains byte-identical.
 
@@ -1210,7 +1495,7 @@ Added a size assertion to `sr08_indexed_sensor_state_view`, requiring the typed 
 
 Added `sr08_display_code_lookup_table` with ten checked two-byte mode/value pairs beginning at shared-table offset 0x66. The lookup routine now derives its scan biases and pair stride from the layout instead of unexplained numeric constants; its generated instructions and the complete payload remain byte-identical.
 
-Modeled the 122-byte indexed-record stride in `store_byte_in_table_by_high_index` as `sr08_indexed_record_block`. The access is now `table_base[(packed_value >> 8) + 1].value`, naming the first byte of the next block instead of expressing it as a scaled byte offset plus one stride. The full payload remains byte-identical.
+Modeled the 122-byte indexed-record stride in `gapc_encrypt_ind_handler` as `sr08_indexed_record_block`. The access is now `table_base[(packed_value >> 8) + 1].value`, naming the first byte of the next block instead of expressing it as a scaled byte offset plus one stride. The full payload remains byte-identical.
 
 Moved `sr08_indexed_record_block` and its checked 122-byte size into `sr08_indexed_record_table.h`. Reused `SR08_INDEXED_RECORD_BLOCK_SIZE` in the matching measurement-status Thumb transcription's `movs` immediate, tying both table accesses to one checked stride without changing its encoding. The full payload remains byte-identical.
 
@@ -1250,7 +1535,7 @@ Applied the documented Clang format to the ten maintained C/mixed-source units t
 
 Pruned the frozen ROM symbol map from 869 entries to the 128 names referenced by manifested source units; the full ROM index remains in the analysis exports. Updated the manifest freezer to apply the same filter. The linker still resolves every source reference, and root and standalone source-bundle builds retain canonical payload and container hashes. Refreshed the source-style counts in the README from the current manifest and linked section map.
 
-Named the per-slot state-record type literal displacement in `publish_per_slot_state_byte` and retained its register-allocation input. The routine compiles to the same instructions; formatting and both build paths pass with canonical hashes.
+Named the per-slot state-record type literal displacement in `app_easy_gap_confirm` and retained its register-allocation input. The routine compiles to the same instructions; formatting and both build paths pass with canonical hashes.
 
 Named the shared radio-status literal displacement and the status mask that skips profile restoration in `ensure_radio_profile_then_exchange_word`. Both status loads and the C condition compile to the same instructions; formatting and the root and standalone builds pass with canonical hashes.
 
@@ -1349,3 +1634,1249 @@ Removed the mode activation gate's mode==2 asm goto, replacing it with C under p
 Removed the mode-two compound flag-check asm block from the mode activation gate. C now tests named bit-0 and bit-6 masks for the two profile results; existing disabled block-placement setting preserves the complete 62-byte section and relocations. Mode-one compound and split-condition candidates still change instruction/register encoding and remain outside build inputs.
 
 Renamed mode-gate first/second locals and assembly operand names to profile_result_42/profile_result_43, reflecting their actual command IDs without assuming sensor semantics. Full mode-one C conditions, split mode checks, branch-hint variants, and scheduler/coalescing controls still fail exact section comparison; retained the constrained mode-one block.
+
+Named the flash-controller high-data status bit and transfer-complete mask, using the same high-data bit definition for the constrained response-mask shift. The whole-readback ordinary-C candidate grows the section from 56 to 60 bytes under tested layout/scheduling controls; retained exact readback adapters. Full canonical verification covers the accepted constant cleanup.
+
+Removed the configuration initializer's zero-register MOVS asm block, using a C zero initializer with unchanged instruction section and relocations. The final-count assignment still differs as C. Flash readback guard alone grows its helper by two bytes, and unsigned-integer-to-float wrapper C variants differ under Clang/GCC; those candidates remain outside canonical build inputs.
+
+Separated the configuration initializer's secondary-link value from its unrelated final-count local, preserving the exact MOVS constraint while removing misleading variable reuse. Corrected the thirteen-word reserved prefix name to bytes 00 through 30. The final-count C assignment still changes register allocation across tested scheduler/allocator choices.
+
+Removed 16498 address-only inline comments from 107 exact source files. These repeated each instruction address without explaining behavior; retained semantic, literal-pool, and layout comments. Manifest addresses and generated disassembly remain authoritative. Status-slot C shift probe still grows its section by two bytes and remains outside build inputs.
+
+Removed 1525 duplicated address-plus-disassembly comments from 19 source files, retaining behavioral and branch-layout explanations. Corrected the variable-length list upsert's limitation comment: its C candidate differs in caller-register saves and payload stack offsets as well as comparison operand encoding.
+
+Added manifest validation for per-function compiler routing and option overrides. A stale function name now fails explicitly before compilation instead of silently dropping the setting after a rename. This guards the source-level loop conversions whose exact output depends on those overrides.
+
+Tested four reflected CRC bit-step C forms against six compiler configurations each; no exact replacement for its bit-processing assembly found. Removed stale README source-style totals, which predated recent C conversions and were not maintained by the manifest. Clarified that manifest kinds describe provenance rather than current C/assembly style, and byte parity is distinct from complete C recovery.
+
+Removed redundant r4/r5 annotations from the MTU helper's saved connection index and response pointer, and renamed its selected value to negotiated_mtu. All 52 bytes and relocations match. Three direct C minimum-selection forms under six compiler configurations each still alter the comparison encoding; retained the exact selection adapter.
+
+Audited 86 explicit rN local-register annotations with compiled section/relocation comparisons. Seventy were individually removable; cumulative per-function checks accepted 65 removals across 30 source files. Five individually exact removals changed code when combined and were retained. Complete linked payload and OTA container remain canonical. This removes compiler-specific declaration noise while preserving the remaining assembly constraints.
+
+Moved the ring-buffer copy helper's tail-plus-index addition out of its two-instruction assembly block into C. Retaining only the AND instruction constraint preserves the original mask destination allocation; the full 40-byte object section and relocations match. This removes one pinned arithmetic instruction without adding any new assembly constraints.
+
+Moved three instructions from queue submission's mixed assembly into C: count-1, typed queue->entry_size load, and typed queue->entries load. The remaining adapters preserve the pending sum and address arithmetic. Combined 44-byte section and relocations match; replacing the address adapter too changes register encoding at seven bytes despite equal section size.
+
+Applied the checked-in C formatting policy to all manifested source units after arithmetic conversions and address-comment removal, preserving instruction strings. Split multiply/add submission candidates still differ in register allocation and remain outside the canonical build. Full canonical verification covers formatting changes.
+
+Exposed the six application CUSTS1 attribute descriptors in the maintained HID/profile constant-region C view using SDK attm_desc_128. Replaced 120 raw initializer bytes with typed fields, retaining prefix/suffix storage and adding offset/size assertions at 0x07fcf9fc. Updated the optional data generator accordingly. The full 1002-byte region and complete payload/container hashes match. No duplicate attribute-table object was linked. This prepares immutable field visibility for the unresolved SDK profile LTO group.
+
+Exposed the CUSTS1 primary-service, characteristic-declaration, service UUID, two custom attribute UUIDs and client-configuration UUID as immutable typed fields in the profile constant region. Descriptor pointers now refer symbolically to fields of that same object using checked offsetof expressions, rather than numeric pointer literals. Added address assertions and updated the optional generator. Full payload and OTA container remain canonical. These definitions enable future LTO propagation of referenced UUID values without duplicating data.
+
+Added optional fixed-address read-only objects to the Arm LTO placement interface, with separate code/data output objects, symbol address and size checks, and rejection of writable/executable data regions. Non-word-aligned objects use temporary aligned execution-region padding that is excluded by symbol bounds. Probes verified aligned and unaligned data placement, then the actual maintained 1002-byte profile object including all self-references matched exactly after LTO. The existing canonical build path also passed full payload/container hashes. Canonical CUSTS1 handlers are not switched yet.
+
+### 2026-11-13: custom-service write handler and shared context literals
+
+Replaced handle_incoming_service_record at 0x07fc6bf4 with the SDK-named
+custs1_gattc_write_req_ind_handler in C, using custom_common.c helpers through
+LTO. The full 456-byte unit matches, and the complete source build passed both
+canonical payload/container hashes (457 units, 652 linked sections). Active
+manifest entries containing assembly fell from 190 to 189.
+
+Temporary source-built context stubs now expose cross-stub literal loads using
+explicit R_ARM_THM_PC8 relocations and a -4 implicit addend, preserving their
+16-bit width. This exposes the 0xc16/0x7fff words in the SUOTA exit pool to
+armlink without appending unnecessary literal copies. If a module-literal copy
+survives coalescing and grows a stub, validation can trigger the existing raw-load
+retry after checking unchanged instructions and the equal loaded word. A grown
+stub is never accepted as final context. No firmware opcode patching or original
+image build dependency was introduced.
+
+Replaced the three SUOTA write fragments at 0x07fc6dbc–0x07fc6fc0 with the
+SDK-derived suotar_gattc_write_req_ind_handler. Added the actual SDK indication
+layouts and characteristic codes. The 516-byte function matches exactly; two
+volatile field accesses preserve V204's length-then-character-code byte-store
+order before sending the patch-data indication. Simple statement reordering
+was normalized to the opposite schedule. Removed the obsolete fragment sources
+and manifest/catalog rows, and corrected the recovered behavior description.
+The complete image and an exported standalone source bundle both matched the
+canonical hashes with these two write-handler conversions.
+
+Removed the remaining inline assembly from get_user_prf_srv_perm: a C reference
+to merged_globals_56d0 reproduces its 40-byte function under ARMclang6.16. SDK
+app.c identifies the ten two-byte records at shared-block offset0x66 as task
+IDs/profile permissions, not display mode/code pairs. Renamed the layout header
+and fields to reflect that evidence. The final repository build passed the
+canonical payload and container hashes (647 sections, 455 units). There are now
+185 active manifested units containing assembly, down from190 at handoff.
+
+The latest standalone bundle including the pure-C permission lookup also passed
+the canonical hashes (647 sections, 455 units). No builds remain running.
+
+### 2026-11-13: arithmetic, barriers, and queue peek in C
+
+Replaced the leap-year routine's fixed-register divider calls with ordinary
+unsigned modulo, the interrupt-disable routine's DSB/ISB assembly with ARM
+compiler builtins, and the restoring integer-square-root arithmetic assembly
+with C expressions. ARMclang6.16 reproduces the adjacent leap/barrier group's
+84 bytes and the square-root unit's52 bytes exactly.
+
+Recovered the actual semantics of copy_scaled_payload_slice_when_mask_hits:
+its assembly reloads element size into r2 before MULS, so it multiplies tail by
+element size, not the range delta described by its old mixed C/assembly body.
+Replaced the assembly with a40-byte exact C function using sr08_ring_buffer,
+renamed peek_ring_buffer_entry, with callers, manifest, catalog and linker
+references updated. It copies the oldest record without advancing tail, returning
+zero on success and UINT32_MAX when empty. Removed the redundant local descriptor
+layout. The full source build passed both canonical hashes (645 sections,
+455 units). Active manifested assembly units decreased from185 to181.
+
+Standalone export of this arithmetic/queue-peek checkpoint also passed both
+canonical hashes (645 sections,455 units). Final git diff --check passed.
+
+### 2026-11-13: SPI readiness and the four-byte initializer frame
+
+Replaced poll_output_state_table_and_report_count_advance with the SDK-named
+spi_flash_wait_till_ready in C: at most2000000 status reads, returning zero when
+busy clears and -1 on timeout. Its40 bytes match with ARMclang6.16 LTO. Updated
+callers, declarations, catalog and linker references; corrected adjacent SPI
+comments that had described flash operations as unrelated state updates.
+
+Replaced initialize_state_and_return_one's naked assembly with a normal call
+and return. -mstack-alignment=4 alone still saved r7; the explicit APCS GNU ABI
+profile (-mabi=apcs-gnu) reproduces all12 bytes, including its original four-byte
+stack frame. Added ac6apcs for this no-argument/word-return routine; this is a
+matching compilation configuration, not proof that the OEM used that profile.
+
+LTO overlap handling can now inspect a diagnostic image solely to discover a
+validator retry; diagnostic placements can never be returned. Literal validation
+uses actual emitted words, and raw-load retention checks values as well as
+coverage, so a different word occupying an old pool address is not mistaken for
+the original literal. check_lto_overlap_rejection.py exercises a real collision
+and confirms that diagnostic inspection still rejects it. The attempted HID
+cleanup conversion remains uninstalled due to pool placement conflicts.
+
+Full repository and standalone builds passed canonical payload/container hashes:
+643 sections,455 units,67136 payload bytes. Active manifested assembly units
+fell from181 to179. git diff --check passed. No commits or flashing.
+
+### 2026-11-13: coordinated pointer wrappers and PRIMASK C conversion
+
+The main tree converted five claimed units without modifying the parallel
+agent's app_db_init_next/user_app_adv_start sources. Four ac6lto wrappers now
+use C address expressions: both status-wait wrappers, the measurement/1000
+store, and clear_radio_flag_and_configure_state. The radio wrapper needs a
+named device_control_state base to retain STRB offset27 rather than a folded
+field-address literal. Added that fixed RAM symbol and declaration. An additive
+union view exposes merged_globals_5650 offset0x74 as scaled_measurement_value
+while retaining reserved_64 and all prior offsets/size.
+
+set_pending_flag_if_status_bit_7_clear now uses ARM register intrinsics and
+compiler signal fences, with no inline assembly. Aggressive machine CSE reuses
+the existing one-valued mask register instead of spilling r4; disabling tail
+merging preserves V204's two restore/return paths. These are function-specific
+Clang18 SOURCE_FLAGS. All52 bytes match.
+
+Native source objects can now own their emitted literal pools: the builder
+records .text.function extents when suppressing fully covered fixed data,
+using the existing partial-overlap rejection. This removes duplicate ownership
+of the two PRIMASK literal words without patching instructions or weakening the
+image hash gate. Shared include/data changes were additive, as recorded in
+WORK_CLAIMS.md.
+
+Full repository and actual exported-bundle builds passed both canonical hashes:
+641 sections,455 units,67136 payload bytes. Main-tree assembly units fell179→174.
+The first purported standalone invocation accidentally ran in the repository;
+it was corrected by building from /tmp/sr08-wrappers-verified-bundle, output
+/tmp/sr08-wrappers-bundle.bin. No commits, pushes or flashing.
+
+### 2026-11-13: three further coordinated C conversions
+
+Converted read_state_word_at_10_with_record_flag_clamp (0x07fc2da8) and
+switch_to_display_state_zero_if_fourteen (0x07fc3b40) with ac6lto. The first
+requires clamp-before-flag-selection C ordering; the second reads offset0x0c,
+not the measurement_state field at0x0e. Converted the six-byte reverse profile
+copy (0x07fc72f0) with native Armclang6.16 and source pre-RA scheduling. A separate
+destination increment preserves instruction order. Added ac6source profile and
+read-only fixed alias v204_profile_record at0x07fc0110 (existing data +0x70).
+Native placement/probe links classify fixed data aliases as data symbols.
+Optional addgroup accepts arbitrary compiler keys. No storage or binary-input
+dependency was added.
+
+Main full build passed:639 sections,455 units,67136 bytes. The exported source
+bundle /tmp/sr08-three-more-bundle produced /tmp/sr08-three-more-standalone.bin;
+independent hashing confirmed the canonical complete-container SHA-256. Main
+payload/container also match canonical hashes. Assembly units fell174→171.
+Parallel agent's tree remains untouched; consult WORK_CLAIMS.md before further
+conversion work. No commits, pushes or flashing.
+
+### 2026-11-13: six more display, configuration and stack-record C units
+
+Converted increment_character_by_ten_wrap_at_d,
+set_state_flag_and_switch_to_twenty_two,
+switch_to_display_state_1b_when_word_44_is_100 and
+prepare_sensor_configuration_stack_record with native ac6;
+store_mode_flag_and_copy_configuration_word and
+update_device_settings_and_timeout_if_value_low with ac6lto. Replaced assembly
+literal loads with named C roots or recovered constant assignments. Stack
+record uses direct word assignments with no temporary variable. No shared
+layout/compiler changes required. Active units containing asm fell171→165.
+
+Independent source-only bundle /tmp/sr08-display-six-bundle PASSED,632 sections,
+455 units, canonical payload/container hashes. Output container
+/tmp/sr08-display-six-standalone.bin was independently rehashed. The full
+repository six-unit check also PASSED (session35928 exit0),632 sections and
+both canonical hashes. Earlier three-unit and four-unit checkpoints passed.
+
+Three display literal candidates remain uninstalled: packed-word writes shift
+a consecutive function boundary under LTO, and the halfword write selects a
+different identical-valued pool word. Findings recorded in WORK_CLAIMS.md.
+README stale unit counts and resolved constraints corrected. No parallel-tree
+edits, commits, pushes or flashing.
+
+### 2026-11-13: timer, state reset, event packet, flash staging and SDK RF C
+
+Five additional units now compile with ac6lto without inline assembly:
+replace_state_timer_with_600_delay (28 bytes),
+reset_mode_state_and_publish_status_records (40 bytes),
+emit_event_packet_when_active_mode_changes (68 bytes),
+stage_and_program_flash_region_3c000 (48 bytes), and rf_regs (76 bytes).
+The timer uses SDK app_easy_timer callback/handle types and a C delay600.
+State/event/flash routines use named RAM roots and the checked existing views.
+
+rf_regs was identified in the locally pulled SDK_6.0.22.1401 rf_585.c and
+system_settings.h. It restores RF power timing, DC offset, spare/VCO settings
+and retained bias/mixer IQ trims. Corrected the old display/sensor description.
+The source names the SDK registers and uses checked local layouts for the
+retained trim fields (merged root offsets0x3c,0x3e), without shared header/data
+changes or writing to the SDK. Native instructions match except shared pools;
+LTO and full image verification reproduce those pools exactly.
+
+Repository /tmp/sr08-state-five.{elf,payload.bin,bin} PASSED (session50940 exit0),
+619 sections,455 units,67136 payload bytes, canonical payload/container hashes.
+Independent source-only bundle /tmp/sr08-state-five-bundle also PASSED
+(session69262 exit0), output /tmp/sr08-state-five-standalone.bin. Active units
+with assembly fell165→160. Final containers and payload independently rehashed.
+
+format_shared_value_and_set_flag_40 remains uninstalled: native body matches
+except root literal selection, but LTO conflicts at ER_07fcad70 and diagnostic
+link faults under Wine. Retained original source and documented the failure;
+subsequent timer/reset probe without it passed. No parallel-tree edits, commits,
+pushes or flashing. Goal remains incomplete.
+
+### 2026-11-13: merge of the parallel tree
+
+The parallel agent's units were merged into this tree (WORK_CLAIMS.md was the record of who changed what), and
+`exact_clang18_jeff/` was re-synced from the result. Merged units, all ac6lto:
+
+- SDK app code: `user_app_adv_start`, `adv_data_update_timer_cb` (was register_thumb_handler_and_store_slot_index).
+- I2C sensor wrappers: ensure_radio_profile_then_exchange_word, ensure_radio_profile_then_scan_paired_bytes,
+  initialize_radio_scan_and_mark_state_ready, both dispatch_transition_0x10/0x20 units,
+  retry_radio_command_until_status_0x27, send_four_adjacent_field_updates_via_callback,
+  configure_radio_profile_and_mark_state_ready, exchange_one_radio_word,
+  fill_hardware_fifo_optionally_report_state_at_89b0 (a uint16_t count; include/sr08_radio_status.h still says
+  uint32_t, which its forwarding caller needs) and read_three_callback_values_between_mode_at_85a0.
+- SDK gpio.c, verbatim: `GPIO_ConfigurePin` (was update_status_slots_for_group_bit), `GPIOn_Handler` (was
+  update_selected_hot_bit_associated_bit_at_1d44; an LTO_INTERNAL_UNITS entry, so its range check and callback
+  branch fold away as in V204) and GPIO0..4_Handler.
+- SDK adc_58x.c: `adc_init` (was initialize_control_registers_encode_four_optional_at_2048) and the vendor's
+  `adc_get_p0_1_sample` (was reproduce_two_pulse_output_sequence_used_at_1ff4; SDK adc_get_vbat_sample reading
+  P0_1).
+- Renamed only: `app_easy_gap_undirected_advertise_start_create_msg` (was get_or_initialize_cached_text_record).
+
+Shared additions: include/sr08_sdk_gpio.h and include/sr08_sdk_adc.h (new); in include/sr08_sdk_da14585.h the
+SDK's full IRQn enumeration, `__NVIC_ClearPendingIRQ` and three GPIO registers; union views
+`merged_globals_5650.measurement_state` (+0x0e) and `.adv_cmd` (+0x58); `i2c_ack_format` in FIXED_DATA_SYMBOLS.
+
+LTO placer changes in `arm_compilers.py` (no firmware bytes are used; the canonical hash still gates the image):
+- A moved stub load is first retried as a raw load at that site alone, then literal-wide. If the module then drops
+  the literal, the fallback goes on to the literal-wide retry and kept-for-stubs path for those literals only.
+- A module function at a halfword address shares the previous module function's execution region, because armlink
+  word-aligns regions. Its bytes are cut out of the shared region by address.
+- armlink judges literal ranges on the pre-merge layout. A module load that our link merges into a stub literal
+  which is out of range once each module function's merged-away literal words are added back is not V204's, so that
+  stub word is sealed (written as plain code) and the module is relinked (adc_init's GP_ADC_CTRL_REG load).
+- `SR08_LTO_SPILL` and `SR08_LTO_TRACE` debugging aids.
+
+Verification: this tree, the parallel tree and a standalone source bundle (`export_source_bundle.py`) all build to
+the canonical payload and container hashes: 603 sections, 455 source units, 143 still with inline assembly.
+
+### 2026-11-13: three post-merge C conversions
+
+Main converts copy_three_signed_coordinates_to_display_state (48 bytes,native
+ac6), reset_transition_state_and_store_scaled_value (32 bytes,ac6lto), and
+format_shared_value_and_set_flag_40 (36 bytes,ac6lto). The merged original-layout
+literal-range logic resolves the formatter's prior LTO overlap. Coordinate copy
+uses the existing checked coordinate/queue views and new fixed RAM symbol
+coordinate_queue_state=0x07fd1f1c. A numeric queue root folds to1f78 and removes
+the original ADD0x5c; named root retains both instructions. Shared declaration
+and RAM symbol are additive and allocate no storage.
+
+The two packed display stores still shift the second entry to0x07fcaccc
+instead ofacd0 under both LTO and a native four-function group. The isolated
+halfword store still loads root fromace0 instead ofacb4. Original implementations
+retained and claims released to parked status; these retries are not conversions.
+
+Repository /tmp/sr08-postmerge-three.{elf,payload.bin,bin} PASSED (20968 exit0),
+and source-only bundle /tmp/sr08-postmerge-three-bundle PASSED (35450 exit0),
+output /tmp/sr08-postmerge-three-standalone.bin.600 sections,455 units,67136
+payload bytes; both canonical payload/container hashes independently checked.
+Active units with inline asm fell143→140. No parallel-tree edits, commits,
+pushes or flashing.
+
+Next-source lead: SDK_6.0.22.1401/sdk/platform/core_modules/arch_console/
+arch_console.c contains the parser behind arch_printf, including the same fatal
+printf diagnostic. V204 has96-byte output buffer,24-byte integer scratch and
+direct UART submission; SDK22 defaults PRINT_SZ256 and has additional console
+queue/defer modes. Only inspected; no claim/candidate created. Preserve the SDK
+copyright notice if copying its source into the reconstruction.
+
+### 2026-11-13: console parser and integer formatter recovered as C
+
+arch_printf now compiles as344 exact bytes with native ac6. Reused the parser,
+length helper and character helper from the locally pulled SDK_6.0.22.1401
+arch_console.c, retaining its notice. V204 uses96 output bytes,24 integer-scratch
+bytes and direct UART transmission. The append wrapper calls the existing
+fixed-capacity helper. Capturing the character-write destination once avoids
+alias-induced cursor reloads; volatile byte stores preserve character/NUL order.
+Declaring va_list before the output buffer preserves the original stack layout.
+Corrected sr08_format.h return type to void: all source calls ignore it, and
+V204's epilogue pops the return address into r0 rather than returning a count.
+
+format_integer_radix_zero_padded is SDK arch_itoa,152 bytes,ac6lto. V204 has
+no radix>16 guard, so the corresponding SDK check is absent in this recovered
+source. The original SDK reversal loop matches after LTO. Native ac6/Clang18
+differ only at two loop updates; source scheduling fixes those but perturbs
+minus-sign stores. Native ac5 and alternate loop rewrites also failed. None
+of those workarounds/fences were installed; the accepted loop is ordinary C.
+
+Both units together pass full repository and source-only builds,598 sections,
+455 units,67136 payload bytes. Main8329 exit0, standalone39140 exit0. Artifacts:
+/tmp/sr08-console-two.{elf,payload.bin,bin} and
+/tmp/sr08-console-two-standalone.{elf,bin}, bundle /tmp/sr08-console-two-bundle.
+Payload/container hashes independently verified canonical. Active units with
+inline assembly fell140→138 (496 bytes of code/data now produced from C).
+The earlier printf-only checkpoint also passed both builds. Whitespace check
+passed; source changes since the bundle export are comments/EOF whitespace only.
+No parallel-tree or SDK edits, commits, pushes or flashing.
+
+### 2026-11-13: display candidate diagnostics and expanded assembly inventory
+
+Three display candidates remain uninstalled in build/cand/display_modes/.
+Native signed-byte wrapper matches except shared literal loads. The isolated
+traced LTO run completes context checks but selects output-root wordace0 rather
+thanac78 at a8f4. The combined mode/remainder candidate run fails the context
+value check at a906 (eb→f8). No validator or linker policies were weakened.
+Native mode selection spills r4 and forms separate offsets66/65 instead of
+base+64 reuse; the remainder candidate has correct modulo control flow but
+uses offset66 instead of the original MOV/ADD64 plus byte2. Original sources
+remain installed, and claims were released/parked with the evidence.
+
+Added audit_inline_assembly.py and included it in source-bundle exports. It
+preprocesses every active manifest source, follows project-owned line markers
+so compiler/system headers are excluded, and reports preprocessing failures.
+Default GCC uses its standard headers plus the installed ARM include directory
+as a fallback for arm_compat.h. The initial Clang-only pass lacked string.h;
+that incomplete result was rejected. Final repository audit:455 entries,zero
+preprocessing errors,138 with direct assembly syntax and162 after expansion
+(24 additional macro-backed entries). Conservative count includes register
+bindings/unused inline functions; upstream objects and other compiler branches
+still need a separate completion audit.
+
+Export /tmp/sr08-audit-bundle produced the identical audit report using
+--arm-tools-dir Tools.
+--require-zero returned1 as expected for162 affected entries, with no errors.
+The source count is corrected, not a regression: earlier138 was direct text
+only. No functional firmware changes this attempt; last bit-matching image
+remains /tmp/sr08-console-two.bin. No parallel-tree, SDK or compiler changes.
+
+### 2026-11-13: RCX clock calibration and cache-refresh C conversions
+
+Identified wait_sensor_readiness_combine_counter_words_at_b7d4 as the SDK
+arch_system.c read_rcx_freq path specialized for20 calibration cycles. It waits
+for CLK_REF_SEL_REG bit2 to clear, reads high/low calibration words, clears
+merged5650 byte0, and publishes slot duration, frequency and period. The C
+version matches84 bytes with ac6lto. Uses the existing linked unsigned64
+division runtime entry via a regular uint64_t-returning C declaration; quotient
+is returned in r0/r1 and the unused remainder is discarded. A local checked
+view names the result words without changing shared layouts. Native body
+matched except literal sharing before LTO. Corrected its misleading sensor
+description in the catalog; existing symbol name retained for coordination.
+
+clear_cached_sensor_fields_refresh_calibration_at_8f48 matches104 bytes with
+native ac6. It has two actual arguments, clears observed cache fields in the
+original order, preserves four indirect readback calls through the fixed Thumb
+callback0x07fc8585, and calls the existing final configuration helper. Original
+naked signature was void(void), despite consuming r0/r1. No new shared symbols,
+layout changes or compiler/placer changes needed.
+
+Full repository /tmp/sr08-rcx-cache.{elf,payload.bin,bin} PASSED (74313 exit0);
+independent source-only export /tmp/sr08-rcx-cache-bundle PASSED (41271 exit0),
+output /tmp/sr08-rcx-cache-standalone.bin.596 sections,455 units,67136 payload
+bytes; canonical payload and full container hashes independently checked.
+Expanded audit58174 exit0:136 direct /160 macro-expanded assembly entries,
+zero preprocessing failures.188 bytes of code/data now produced from C.
+Handoff consolidated into a current-state document; detailed older evidence
+remains in this history. No parallel-tree/SDK changes, commits, pushes or flashes.
+
+### 2026-11-13: BLE connection-parameter update construction and timing gate
+
+Identified allocate_initialize_record_first_use_release_at_3254 as V204's
+three-argument customization of SDK app.c app_easy_gap_param_update_start and
+its get/create helper. Uses the14-byte GAPC_PARAM_UPDATE_CMD, operation9,
+connection-task address, supplied min/max intervals, zero latency/event lengths
+and timeout600. The rcp diagnostic and cached command reuse/send/reset match.
+The C version is104 bytes with native ac6. Splitting get/create into an
+always-inlined helper and send/reset into the entry reproduces the original
+register assignment; a flattened function does not. Volatile field writes
+preserve the observed initialization order. Added named fixed RAM table
+gapc_param_update_commands=0x07fd53c0; no storage/layout changes.
+
+The shared GAPC_UPDATE_PARAMS enum addition initially conflicted with an
+existing unit's local enumerator and was reverted; constructor uses a local
+opcode9 definition, leaving the shared header unchanged. Failed LTO trial
+60354 was rejected. Final recipe uses native ac6 and the split SDK structure.
+
+gate_periodic_record_creation_sensor_mode_at_2dc4 is the corresponding BLE
+request gate,88 bytes with ac6lto. Ordinary C reproduces its short-circuit
+settings checks, timestamp wrap0x05000000, threshold6001, captured connection
+index, selected equal intervals, timestamp commit and unconditional timer
+restart. Threshold remains expressed in ticks, without an assumed conversion
+to seconds. Corrected catalog descriptions and repaired an inherited malformed
+advertising-description CSV row; all catalog rows now have9 columns.
+
+Full repository /tmp/sr08-ble-param-two.{elf,payload.bin,bin} PASSED59711 exit0,
+594 sections,455 units,67136 bytes. Standalone source-only bundle
+/tmp/sr08-ble-param-two-bundle PASSED62339 exit0, output
+/tmp/sr08-ble-param-two-standalone.bin. Both canonical hashes independently
+checked. Audit76279 exit0:134 direct /158 expanded assembly entries,zero errors.
+192 bytes of code/data now produced from C. No compiler/placer policy changes,
+parallel-tree edits, SDK changes, commits, pushes or flashing.
+
+### 2026-11-14: record-window accumulation recovered as C
+
+accumulate_two_timing_deltas_update_wrapped_at_8bdc now matches96 bytes with
+ac6lto. It queries two record windows, storing the first result before the
+second query, then reloads/adds the stored result and conditionally commits a
+published value only across the9000 threshold. The explicit if/else-if spelling
+preserves the original compare bounds and register allocation; equivalent
+early-return/goto form did not. No assumed time-unit conversion or new memory
+layout. Raw0x07fd0858 time reference must join the clock_timekeeping_state
+symbol migration if that parallel fixed symbol is later merged.
+
+Repository /tmp/sr08-window-sum.{elf,payload.bin,bin} PASSED79557 exit0 and
+independent /tmp/sr08-window-sum-bundle PASSED34124 exit0, output
+/tmp/sr08-window-sum-standalone.bin.593 sections,455 units,canonical payload and
+container hashes independently checked. Audit43110 exit0:133 direct /157
+expanded assembly entries,zero preprocessing failures (previously134/158).
+
+Cached-name validator C candidate remains uninstalled:84-byte ac6/LTO output
+differs22 byte offsets because the record pointer is not kept across the flash
+read, length uses root+39 instead of record+19, and fallback ADR/MOV order
+swaps. Split helper and source scheduling do not fix it; -Os/O1/O2 differ37
+bytes. ARM5 language compatibility was repaired (--gnu,portable assertions),
+then its real84-byte output differed65 bytes. All failed probes recorded in
+WORK_CLAIMS, candidates under build/cand/name_and_timing/. Original source
+retained. No parallel-tree, SDK, compiler or validation-policy changes.
+
+UART2 configuration0x07fcc4b0 converted to120-byte native ac6 C. SDK uart_t
+register layout; PRIMASK intrinsics/compiler fences preserve critical section.
+USR initial read clears busy IRQ,then busy polling; SDK baud setting0x000101,
+8N1,FIFO enabled,no auto flow/RTS. Catalog corrected from generic IRQ label.
+Repository and source-only builds canonical:592 sections,455 units;132 direct/
+156 expanded assembly units. Outputs /tmp/sr08-uart-config.bin and
+/tmp/sr08-uart-config-standalone.bin.
+
+### 2026-11-14: second parallel/Alice merge
+
+All units installed in exact_clang18_jeff since the first merge are now in main: the ring-buffer trio
+(0x2efc/0x2f2c/0x2fa4), 0x2488, 0x37d0, 0x3e60, 0x43a4/0x4400, 0x4440 (get_ble_base_time_ms), 0x4fc8, 0x5038,
+0x54b4/0x54f8, 0x5600, 0x74a8, 0x7524/0x7526 (SDK hogpd_create/hogpd_destroy), 0x87f4, 0x8ad8, 0x1e60, 0x1ea4
+(SDK UART2_Handler), 0xc2f0 (SDK suotar_patch_len_ind_handler), 0xc528 (SDK uart_rx_isr) and the three units moved
+to `clock_timekeeping_state`. The parallel tree received main's installs (0x8bdc, 0x3254, 0x2dc4, 0x8f48, 0xb7d4,
+0xc4b0, arch_printf, arch_itoa, 0x3dd8, 0x31d4, 0xad54). Renamed units use their SDK names everywhere, with no
+aliases. coordinate_queue_state and event_record_queue_state were the same object at 0x07fd1f1c; it is now a single
+struct with the coordinate ring at +0x5c. The chained-gap `_DroppedLiterals` rule from the parallel arm_compilers.py
+is in both trees.
+
+Verification: both trees build to the canonical payload and container hashes, 575 sections, 455 source units.
+
+Main postmerge clock cleanup: replace last raw0x07fd0858 cast in accumulator
+0x8bdc with clock_timekeeping_state.current_timestamp.96-byte LTO probe exact;
+repository and577-file source-only export preserve canonical image hashes.
+Assembly count unchanged112 direct/136 expanded.
+
+Removed inline ADD block from display-pair writer0xaa4c using ordinary pointer
+arithmetic. Native ac6 reproduces28 bytes; full and standalone builds preserve
+canonical hashes. Two literal-load blocks remain,unit count unchanged136.
+
+BLE wakeup0x1c18 recovered from SDK rwble.c/rwip.c. Native C matches entire
+196-byte region with only two fixed shared-pool LDR constraints. Accepted
+control-flow conversion replaces naked asm body. All-C source is parked on
+LTO literal sharing; named/numeric references show different pool failures.
+Full and source-only builds canonical;574 sections,455 units. Unit count
+unchanged112 direct/136 expanded because two loads remain.
+
+Fully converted piecewise elapsed-time mapper0x4164 to C with ac6lto.128 bytes
+exact; full and standalone builds canonical,573 sections. Original unsigned
+late-window wrapping and uint16 truncations preserved. Readable range bounds
+compile to original shifted comparisons automatically. Assembly inventory now
+111 direct/135 expanded,no failures. No inline asm remains in this function.
+
+### 2026-11-14: third parallel/Alice merge
+
+The parallel tree was the base. Main's post-merge work came in: 0x8bdc (clock_timekeeping_state), 0x1c18
+(BLE_WAKEUP_LP_Handler control flow), 0x4164 (all C), 0xaa4c (pointer arithmetic), the 0xace8 notes and
+`pending_candidates/`. Parallel installs since the second merge:
+- SDK app_std_process_event (0x40a0) and app_gap/app_sec/app_suotar_process_handler, with handler tables named in
+  FIXED_DATA_SYMBOLS;
+- suotar_patch_mem_dev_ind_handler (0xc31c) and user_catch_rest_hndl (0xc578);
+- hogpd_gattc_write_req_ind_handler (0x6fc0, absorbing its three chunks; hogpd_ntf_cfg_ind_send with V204's
+  encryption check is `lto_support/hogpd_ntf_cfg_ind_send.c`) and hogpd_cleanup (0x74d4). These two only link
+  exact together: the write handler's ASSERT literals share hogpd_cleanup's pool, as in V204;
+- SDK nvds_init_func/nvds_del_func/nvds_put_func (0xa844/0xa79c/0xa848, order from the ROM jump table), and
+  nvds_data_storage as an LTO read-only object at 0x07fc0110 (`data/V204_nvds.c`);
+- SDK names for the GAP/GATT/SUOTA stub handlers (gapm_adv_report_ind_handler, gapc_param_update_req_ind_handler,
+  gapc_le_pkt_size_ind_handler, gattc_svc_changed_cfg_ind_handler, gapc_peer_features_ind_handler,
+  gapc_security_ind_handler, gapm_addr_solved_ind_handler, gapm_ral_size_ind_handler, gapm_ral_addr_ind_handler,
+  suotar_gpio_map_ind_handler, suotar_patch_data_ind_handler), app_entry_point_handler, app_process_handlers and
+  app_custs1_process_handler.
+
+The prf.c group is now ac6lto: with prf_env_get in the module, LTO sees it as read-only, which the write handler's
+load scheduling needs. arm_compilers.py passes armlink's arguments in a via file once the command passes 24,000
+characters: the LTO module link had reached Wine's 32,767-character command-line limit, and armlink then failed
+with no output.
+
+Verification: both trees build to the canonical payload and container hashes, 569 sections, 452 source units;
+103 units contain assembly directly (124 after header expansion).
+
+### 2026-11-14: Alice working-tree identity
+
+Renamed exact_clang18 to exact_clang18_alice at the user's request. Alice
+ownership labels,manifest paths,build/export tools and repository instructions
+follow the new name. Jeff's tree remains his responsibility. Full build569
+sections/452 units preserves canonical payload and container hashes;source-only
+export577 files succeeds. Audit103 direct/124 expanded,zero failures.
+
+### Alice: remove stale CUSTS1 manual duplicates
+
+Removed11 unmanifested manual copies already implemented in the active SDK C
+profile (six included assembly). Retained all five active manual CUSTS1 files.
+Catalog now points those11 symbols to custs1_profile.c with correct C style
+and SDK behavior descriptions. The complete source-only export remains byte
+identical to the prior canonical-build checkpoint; active assembly inventory
+unchanged103 direct/124 expanded. No Jeff files changed.
+
+### Alice: remove fixed-register bindings from eleven halfword writers
+
+Added sr08_display_halfword_store.h for compiler-selected registers and named
+asm output; wrappers use it. Old helper retained for Jeff compatibility. All
+eleven Clang18 text sections/relocations unchanged; full and source-only builds
+canonical. One literal LDR per unit remains,construct count22 ->11. Plain-C
+family matches instructions but selects pool8e50 rather than8e3c under LTO;
+those candidates remain separate. No placement/hash checks relaxed.
+
+### Alice: recover NVDS getter in C with its original word table
+
+A C computed goto preserved the dispatch instructions but placed its table at
+the end. Guarded/indexed switches still compressed. Native LLVM option
+arm-synthesize-thumb-1-tbb=false preserves the original inline word table;
+passing it to compile-stage LTO has no effect,while a linker-wide setting
+changes a correct bond-handler switch. Added scoped ac6wordtables profile
+instead. Getter scalar fields use one shared board-config initializer with
+the stored NVDS object; BD address stays a stored-data read. All164 bytes
+match. Renamed/merged the two old assembly chunks into nvds_get_func C.
+Full and source-only builds canonical:566 sections,451 units;101 direct/122
+expanded assembly units. Config data14 bytes independently unchanged.
+
+### Alice: periodic BLE connection-parameter callback fully C
+
+Converted0xad78 to C with existing SDK types and explicit wrap/reference
+checks. Native instructions match except literal placement; LTO128 bytes exact.
+SDK user_app_connection already calls this param_update_request_timer_cb,so
+replaced old sensor-freshness name and updated two callers. No assembler
+constraints remain. Full and source-only builds canonical:565 sections,451
+units;100 direct/121 expanded assembly-containing units. Shared-layout selector
+added for compatibility;no new data layout or compiler policy changes.
+
+### Alice: HOGPD report update sender fully C
+
+Recovered0x3ab0 using existing SDK HOGPD layout,counter extension and message
+APIs. Initial native probe matched all144 bytes including strings. Correct
+SDK prf_get_task_from_id return type avoids truncation instructions;legacy
+wide ROM declaration not modified. Field initialization,payload copy,logging,
+allocation-failure path and send call all original. Full/source-only canonical:
+564 sections,451 units;99 direct/120 expanded assembly-containing units.
+
+### Alice: display value/mode routine0xa960 candidate recovered
+
+Preserved a zero-asm C candidate covering the nonzero halfword formatter path
+and zero-value mode-marker path. Native ac6 matches every nonliteral
+instruction; LTO preserves the84-byte code but selects different shared pools
+for five display-root loads. Candidate parked; original remains installed,
+with no builder or layout changes. Details and logs in WORK_CLAIMS.md.
+
+### Alice: measurement display and correlation candidates
+
+Preserved C for0xaae8 measurement-phase glyph progression and0xf014 fixed-point
+normalized correlation. Neither installed: the first has branch/pool differences;
+the latter has register/scheduling differences despite fitting the264-byte slot.
+Explicit sample temporaries remove duplicated shifts in ARM5 and improve its
+size268->264. Signed/unsigned arithmetic probes generated identical code,
+so signedness alone does not explain the remaining differences. WORK_CLAIMS.md
+has exact boundaries, probe logs and rejected variants. Audit remains99/120
+with zero preprocessing failures. All Alice probes terminal.
+
+### Alice: normalized correlation0xf014 fully C and exact
+
+Replaced the full asm routine with readable C. Products/additions explicitly
+wrap32; signed divisions retain their original two-stage truncation. Initial
+205byte mismatch was mostly inline helper call/return allocation preferences,
+not arithmetic signedness. C expression macros reduce it to10; equivalent
+comparison ordering to5; split loads/shifts and a product temporary remove
+the remaining differences. Native ac5 BYTE_EXACT264-byte aligned region.
+Full24039 and standalone76767 pass canonical payload/container hashes,563
+sections451 units. Audit98 direct/119 expanded,no preprocessing failures.
+No shared ABI,data or linker-policy edits. The obsolete parked C copy is
+removed. Artifacts and merge list in WORK_CLAIMS.md.
+
+### Alice: frequency-average0xcf80 C candidate preserved
+
+Reconstructed the destructive duplicate-count pass and three stable frequency
+selection scans. All observed callers pass25. Baseline C reproduces the52-byte
+stack and branch structure but permutes several registers; not installed.
+Boundary0xd0aa belongs to a following auto-code block,not expendable padding.
+WORK_CLAIMS.md records the tested forms and compiler levels. Claim released;
+no live Alice processes. Accepted correlation checkpoint remains current.
+
+### Alice: queue compaction and calendar C candidates
+
+Recovered the event-record deduplicating compactor as C. Reordering two local
+calculations reduces the native mismatch36->8bytes; LTO still differs in one
+copy/multiply pair and two shared literals. Candidate parked.
+
+Calendar0x9004 reconstruction corrects two earlier semantic labels: year is
+years since1900 and the final word is one-based day-of-year. Shared header
+comments and Alice catalog updated without ABI/member-name changes. Host C
+checked against Python datetime over49716 timestamps,including every UTC day
+in the uint32 range;all eight fields match. Native instruction parity still
+fails,so no replacement installed. This semantic check does not execute V204.
+All claims released and probes terminal; details in WORK_CLAIMS.md.
+
+### Alice: decimal display formatter0x3148 fully C and exact
+
+Replaced naked assembly with right-to-left decimal extraction and a C segment
+lookup table. Mode1 blanks leading positions while preserving units; other
+modes keep zeroes. A documented unsigned wrap comparison retains the original
+reverse-index decrement/CMP/BCS sequence; output i!=digit_count retains update
+ordering. Native ac6 BYTE_EXACT140bytes,including the17-entry table and its
+padding. Full96822 and standalone61794 match canonical hashes,562 sections
+451units; audit97 direct/118 expanded,no preprocessing failures.
+No shared ABI,data or linker-policy changes. Normal ownership logic removes
+duplicate auto-data for the compiler-owned table. Candidate copy removed;
+artifacts and rejected variants in WORK_CLAIMS.md. All Alice processes terminal.
+
+### Alice: BLE-clock status wait0x8a78 fully C and exact
+
+Replaced the presumed hand-written body with ordinary void C. PUSH/POP caller
+registers are compiler-generated local storage,not interrupt preservation.
+The savedr0 slot is overwritten by timeout. A nonvoid signature was forcing
+extra instructions;void C matches96bytes,including all frame operations and
+IO literals. No asm,intrinsics or interrupt ABI required.
+
+Corrected semantics: BLE_SAMPLECLK_REG sampling handshake,not a spinlock;
+status match OR timeout,not minimum delay. Canonical name
+poll_status_until_match_or_ble_timeout. The200-count wrapper now has a void
+prototype and name wait_i2c_rx_fifo_or_timeout,matching I2C_RXFLR_REG. Caller
+and catalog changes verified as part of full77710 and standalone51538:
+canonical hashes,561sections451units. Audit96 direct/117expanded,no errors.
+Shared header and layout retain legacy declarations/selectors for Jeff.
+All Alice jobs terminal;merge dependencies/artifacts in WORK_CLAIMS.md.
+
+### Alice: full measurement-state initializer0xec2c reconstructed as C candidate
+
+Typed reconstruction covers all arrays/defaults in the existing measurement
+context layout. Established that the two %3 defaults use the ROM divider's
+remainder,not quotient. The arena at07fd0b58 overlaps the smaller status
+context view;installation needs a correctly typed alias rather than changing
+that old declaration. Cached-zero/counter lifetimes reproduce the first166
+bytes except pool offsets,but the rest of the536-byte region still differs.
+Candidate and a reproducible analysis-only alias probe retained. No conversion
+installed,no shared map or compiler/placer changes. Claims and exact variant
+results are recorded in WORK_CLAIMS.md. All Alice jobs terminal.
+
+### Alice: HID sequence reconstruction and formatter declaration cleanup
+
+Recovered0xa64c as the mouse/touch report-sequence pump using HOGPD types.
+Report descriptor/table evidence identifies relative mouse movement/wheel
+stages and a twelve-report touch sequence,with shared phase state. Native C
+fits336bytes but does not match instructions. A local array initializer fixes
+LTO's unplaced read-only-data error;strict comparison still fails. Candidate,
+probe aliases and data analysis retained;original remains installed.
+
+Fixed the signed display caller's incompatible declaration of the unsigned
+decimal formatter,using its canonical header and explicit uint32 conversion.
+Entire Clang18 object is byte-identical before/after under exact build flags.
+No binary behavior change or new full-build claim. Audit96 direct/117expanded,
+zero preprocessing failures. Shared header changes are comments only;Jeff
+files untouched. Details/artifacts in WORK_CLAIMS.md. All jobs terminal.
+
+### 2026-11-14: fourth Jeff/Alice merge
+
+Done by Jeff while Alice was paused mid-work. Jeff's tree was the base. Files were classified by modification time
+against the third merge (Alice-only, Jeff-only, both), and the overlaps were settled by hand:
+
+- From Alice: wait_i2c_rx_fifo_or_timeout (0x1ee8, was wait_for_any_status_bit_or_elapsed_200), the decimal display
+  formatter (0x3148, ac6), poll_status_until_match_or_ble_timeout (0x8a78, ac6), nvds_get_func (0xa7a0, absorbing the
+  0xa7c8 chunk, with the new `ac6wordtables` profile, `-mllvm -arm-synthesize-thumb-1-tbb=false`, for its word
+  switch table), param_update_request_timer_cb (0xad78, ac6lto), compute_fixed_point_normalized_cross_correlation
+  (0xf014, ac5), data/V204_nvds.c using sr08_nvds_config.h, nvds_data_storage in FIXED_DATA_SYMBOLS, Alice's catalog
+  rows and the 0x3ab0 summary, and her pending candidates.
+- From Jeff: everything listed under "Jeff between the third and fourth merges" in ../WORK_CLAIMS.md (SDK startup
+  assembled from the SDK's startup_DA14585_586.s, rwble_isr, calibrate_rcx20, suotar_init body, hogpd_init, the display
+  halfword family, and the other ac6lto/ac5 units), plus parked candidates for 0x3ea0 and 0x86b8.
+- Overlaps: the 11 display halfword writers and allocate_ble_data_record_and_send keep Jeff's all-C ac6lto versions.
+  For the two pending candidates both agents edited (advance_sensor_cycle_and_toggle_mode_flags,
+  convert_timestamp_to_calendar_fields), Alice's is `<name>.c.txt` and Jeff's is `<name>_jeff.c.txt`.
+- Alice's tree and the shared `../data/` were then regenerated from Jeff's, with paths rewritten. Alice's active claim
+  (0xc8b0) keeps its CLAIMED marker in her tree.
+
+Both trees build to the canonical payload and container hashes and to byte-identical containers: 528 sections,
+451 source units. Audit: 85 direct / 91 expanded assembly units, no preprocessing failures.
+
+
+### 2026-11-14: Alice — exact C packet serialization
+
+Converted two units to ordinary native `ac6` C, with no special compiler flags
+or changes to the linker/placement/hash guards:
+
+- `advance_sensor_cycle_and_toggle_mode_flags` at 0x07fcc8b0: all **244 bytes**
+  through 0x07fcc9a4 match, including its four literal words. Uses typed prefix
+  views of canonical RAM symbols, preserves the wrapping byte/cycle counters
+  and alternate-mode control, and writes the 20-byte 0x50 report. It captures
+  `llc_env[0]` before mode callbacks and stores all seven low bytes, the kind,
+  then all high bytes, RSSI, a shared value and low step count. The shared word
+  at +0x2c is also the SUOTA activation value; its report meaning is unknown.
+- `build_sensor_command_packet_acquiring_shared_at_519c` at 0x07fc519c: all
+  **100 bytes** through 0x07fc5200 match, including its three literal words.
+  Samples BLE_SAMPLECLK_REG / BLE_BASETIMECNT_REG, not a hardware lock. Builds
+  the 20-byte 0x0c profile command and computes CRC-32 over its 15 payload bytes
+  with seed 0x4a59af55. Record size, payload offset 1 and CRC offset 16 asserted.
+
+The counter/mode control in the first conversion comes from Jeff's preserved
+candidate. Source and payload pointer annotations retain distinct address
+expressions until instruction selection; they return their input address and
+emit no runtime operation, assembly block or instruction bytes. Explicit
+volatile output views retain byte-store order without making the queue reader
+access a volatile-qualified record through an ordinary pointer. Removing the
+first routine's source annotation gives 240 bytes / 125 differing bytes;
+removing its payload annotation gives 236 / 207. Removing the second routine's
+annotation gives 96 / 78. A typed array-GEP replacement still differs, so the
+byte-offset views are intentional. GlobalMerge and LTO alternatives were
+rejected by the existing layout/fixed-stub guards and never installed.
+
+The first full attempt with four new RAM aliases failed the unchanged LTO
+address guard: the unrelated 0x8bdc entry moved to 0x8be0. Investigation found
+that `place_lto_module` only gives a stub literal a symbolic relocation when
+its physical data address has one unambiguous name; duplicate RAM views made
+`data_at` ambiguous and changed literal sharing. The final source reuses the
+canonical fixed RAM names, and reads ROM llc_env[0] at its SDK address. The RAM
+symbol JSON is unchanged and identical to the supplied pre-merge archive's
+`data/V204_ram_symbols.json`. No workaround or weakened validator was added.
+
+Added the shared LLC prefix header, checked against our own downloaded
+`Tools/SDK_6.0.22.1401/sdk/ble_stack/controller/llc/llc.h` and that SDK's ROM
+symbol list: llc_env 0x07fd7918, RSSI +0x24. Removed the two superseded c8b0
+candidate copies and the installed header's old draft from Alice's pending
+folder; Jeff's files remain untouched.
+
+The local full build after c8b0 passed with 527 sections. The final standalone
+build, covering both conversions, passes with **526 sections, 451 units** and
+complete 67,136-byte coverage. Its 580 exported inputs were compared with the
+current workspace and are identical. The initial source-only attempt exposed
+a fourth-merge omission: the SDK startup source was not exported. Fixed
+`export_source_bundle.py` to enumerate `SDK_ASSEMBLY_SOURCES` using its existing
+reconstruction-root containment rule. Also documented native Arm and Wine/Keil
+requirements in the bundle README. The verified export contains no original
+firmware image, scan CSV or object intermediates.
+
+Verified final artifacts:
+
+- Export: `/tmp/sr08-alice-sensor-packets-source-bundle-complete`
+- Build log: `/tmp/sr08-alice-sensor-packets-standalone-complete.log`
+- ELF/payload/OTA: `/tmp/sr08-alice-sensor-packets-standalone.{elf,payload.bin,bin}`
+- Payload SHA-256: `5020c236a289544d878196bec3e21b005835237bc2fc34935927533bcd1c8570`
+- OTA SHA-256: `c747249568a75dc9925a7d25de7baffca2ae5ff42cd2ffd7dfddf8ee42b5e8e8`
+
+Independent sha256sum confirms both; direct comparison confirms the OTA equals
+OEM V204.bin and the verified local build. Installed-source probe logs:
+`/tmp/sr08-alice-sensor-cycle-installed.log` and
+`/tmp/sr08-alice-profile-packet-installed.log`. Audit:
+`/tmp/sr08-alice-sensor-packets-audit.json`, **83 direct / 89 expanded**
+assembly-containing units, zero preprocessing failures. Both converted units
+are absent from the affected list. Both claims closed; all Alice processes
+terminal. No flashing, commit or push. Overall zero-inline-assembly goal remains
+active and incomplete. Jeff must include the exporter fix in the next merge.
+
+
+## Alice — 2026-11-14 persistent-history C and differential execution
+
+Recovered complete pending C for 0x48a8+0x4cb0 and traced five parent loads
+to the 0x4f28 literal that blocked the 0x4e98 configuration conversion. Joint
+C/LTO probing now emits all 156 configuration bytes exactly; parent still
+differs, so no source was installed. Original gates and linker rules unchanged.
+
+Added optional Thumb differential emulation: native and retained LTO parent
+candidates pass 304 synthetic RAM/flash/I/O cases each. Separate-predicate
+alternative passes 304 and an expanded 5104-case run; a reversed history-gate
+negative control fails case 18. Released 0x552c record-summing candidate passes
+138 windows but remains 47 bytes inexact. These checks do not establish hardware
+behavior, all-state equivalence or bit parity. Unicorn 2.1.4 stays optional in
+/tmp; it is not exported or imported by the firmware builder.
+
+C-form search tested 768 variants (312 binaries); an additional root-address
+annotation sweep tested 32 variants (8 binaries) without improvement. Preserved
+the leading alternative source alongside the original, with detailed commands,
+hashes, stack-layout findings and failed approaches in
+pending_candidates/PERSISTENT_HISTORY_NOTES.md. No asm hidden in new helpers.
+
+No new accepted conversion: baseline remains 451 units / 526 sections, audit
+83 direct / 89 expanded. Compared all 580 exported inputs to the canonical
+standalone checkpoint: 576 identical, four comment-only C edits with equal
+preprocessed tokens. Parent/configuration claims remain active. No Tools or
+Jeff-tree edits, flashing, commit or push. All jobs terminal.
+
+
+## Alice — 2026-11-14 four display routines in C, native objects sharing module pools
+
+Installed ordinary C at 0xaa4c (28 bytes), 0xab3c (60), 0xab78 (60), and
+0xac7c (60), including alignment/literals. Incomplete canonical byte-array
+declarations and integer pointer annotations preserve native address forms.
+For 0xab78, 240 assignment/select forms (121 binaries) yielded the needed
+register assignment using order fifth/fourth/first/second/third. No register
+bindings, instruction encodings or assembly blocks were introduced.
+
+Full LTO changed these native instructions, so LTO_NATIVE_UNITS now compiles
+the four C files without -flto and links their normal objects into the existing
+module for literal coalescing. The probe supports --native and automatically
+uses installed native-unit settings. This changes compilation choice, not the
+fixed-address/context/parity requirements. Pre-LTO bitcode retains the annotation
+intrinsic; the exact later pass responsible for the changed form is unresolved.
+
+Fixed two support issues with evidence: Wine background winedevice processes
+held compiler stderr pipes after the compiler exited (capture now uses temporary
+regular files), and a diagnostic trailing literal copy from stub 0xacd0 landed
+over code at 0xace8. The diagnostic-copy resolver now uses owning ELF sections
+and generated value tags only to trigger existing raw-load retries. Diagnostic
+overlap links still cannot return placements; a strict link must succeed.
+Three focused regression tests pass, including negative copy-metadata cases.
+Shared Wine server/Jeff jobs were not terminated. Optional Thumb emulation also
+passes 256 config-byte values for each installed routine (1024 cases).
+
+Final formatted source-only export of 580 files builds canonically: 523 sections,
+451 units, 79 direct / 85 expanded assembly units (down four each). All exported
+inputs equal workspace files. Direct comparison confirms both the 67,136-byte
+payload SHA 5020c236a289544d878196bec3e21b005835237bc2fc34935927533bcd1c8570
+and 67,200-byte OTA SHA c747249568a75dc9925a7d25de7baffca2ae5ff42cd2ffd7dfddf8ee42b5e8e8
+match OEM. Export: /tmp/sr08-alice-display-four-formatted-source-bundle; log
+/tmp/sr08-alice-display-four-formatted-standalone.log; artifacts share that stem.
+The earlier unformatted standalone snapshot also passed.
+
+Four claims closed, candidate duplicates removed, catalogs and README updated.
+The pending display emulator now reads installed sources. Additional parent
+root-array search tested 32 forms/four binaries with no improvement; parent and
+configuration claims remain active. Tools, shared data/headers and Jeff's tree
+untouched. No flashing, commit or push. All Alice jobs terminal; overall
+zero-assembly goal remains active.
+
+
+## Alice — 2026-11-14 ARM5 sensor batch dispatcher recovered
+
+Converted dispatch_batch_item_three_sign_extended_at_ee4c to ordinary C. ARM5
+5.06u7 emits exactly all 72 OEM bytes, including the root literal. The original
+register-homing prologue and right-to-left sample argument evaluation reproduce
+under ARM5; the prior ARM6/Clang attempts did not. Ordinary or volatile pointer
+parameters with nonvolatile samples give 21 differing bytes. Volatile pointed-to
+signed samples reduce this to ten, and initializing the uint8 index before the
+context guard makes it exact. Nonvolatile pointer parameters are retained in the
+installed source. Count remains 32-bit; the byte index wraps as in V204. No new
+flags, register bindings, assembly blocks or linker changes. Final formatted
+installed-source probe is BYTE_EXACT; obsolete ARM6 candidate removed.
+
+Fresh isolated export: /tmp/sr08-alice-batch-dispatcher-source-bundle, 580 inputs
+all byte-identical to workspace. Build log and artifacts use
+/tmp/sr08-alice-batch-dispatcher-standalone. Complete payload and OTA directly
+compare equal to OEM, with canonical SHA values unchanged. 522 sections, 451
+units; audit 78 direct / 84 expanded assembly units, no preprocessing failures.
+Three existing compiler-support regression tests pass.
+
+Also reconstructed six pending display writers/formatters and checked 780
+synthetic RAM/flash/I/O cases (all signed/unsigned byte inputs for formatters).
+Native bodies match apart from pools; full native and LTO probes expose acc8/
+acb0 retained-word collisions. Neither pending display family is installed.
+Symbol aliases/globalizing pool labels and code-site retention-anchor trials
+were investigated and rejected; the production anchor trial and its test were
+reverted, restoring arm_compilers.py exactly to the prior verified checkpoint.
+No instruction patching or guard relaxation was retained.
+
+Useful positive reduction: probe_literal_pool_order.py compiles the actual C
+writer plus synthetic far/near readers with ordinary private pool copies. All
+six input object orders produce the 24 OEM writer bytes without modifying
+compiler output. The full graph adds competing equal-value pools; reduce that
+difference before further linker changes. Detailed logs and failed approaches
+are recorded in pending_candidates/display_word_writers/README.md.
+
+The dispatcher claim is closed; six display and persistent-history claims
+remain active. Tools, shared data/headers and Jeff's tree untouched. No flashing,
+commit or push. All Alice jobs terminal. Overall zero-assembly goal remains
+active and incomplete.
+
+### 2026-11-14: Jeff, second LTO module for vendor word tables
+
+With the user's approval of per-unit `-mllvm` switches, the build gained a second LTO module, `ac6ltowordtables`.
+armlink accepts `--lto_llvm_options=-arm-synthesize-thumb-1-tbb=false`, but only for a whole module's code
+generation, and the SDK's hogpd_report_cfm_handler in the main module needs its Thumb-1 TBB table. The second module
+links after the main one, with the rebuilt image as context. six_way_command_dispatch_default_branch_at_8040
+(0x8040 plus the 0x8068 chunk) is now one C function in it, from Alice's candidate with a typed config pointer and
+case 5 before case 4. A stub-assembly fix lets a stub load of a word beyond the context stubs point back at its own
+identical literal, so armlink merges the module's literal into it as in V204. Full build canonical: 525 sections,
+450 units; audit 84 direct / 89 expanded. 0x86b8 is down to one register-order difference in the same module; 0x3ea0
+stays parked.
+
+### 2026-11-14: Jeff, three display digit writers in C
+
+0xaa4c (write_display_values_53_65_at_selected_offset), 0xaa68 (prefer_active_value_override_otherwise_derive_at_aa68)
+and 0xac20 (use_alternate_timing_source_derive_display_at_ac20) are ordinary C in the ac6lto module. 0xaa4c writes
+its two segment bytes with a two-byte `memcpy` from a string literal, which lowers to V204's second-store addressing
+(`adds r0,#64; strb r1,[r0,#1]`); separate stores do not. 0xaa68/0xac20 use a goto chain for V204's compare order.
+For 0xac20 the LTO relink now also treats a stub load that armlink merged into another stub's removed literal copy as
+a moved load, so the existing retry keeps V204's word at 0xac78. Full build canonical: 522 sections, 450 units;
+audit 81 direct / 86 expanded. Alice converted 0xaa4c in parallel in her tree (native form); one is kept at the merge.
+
+### 2026-11-14: fifth Jeff/Alice merge
+
+Done by Jeff while Alice was paused. Jeff's tree was the base, classified by modification time against the fourth
+merge. Alice's 0xc8b0, 0x519c, 0xee4c and native-context 0xab3c/0xab78/0xac7c conversions, her compiler fixes and
+tests, exporter fix and candidates came over; Jeff's second LTO module, 0x8040, 0xaa4c, 0xaa68 and 0xac20 went the
+other way. 0xaa4c keeps Jeff's memcpy form (Alice's native form is a pending candidate); arm_compilers.py keeps both
+stub-copy fixes. Alice's tree and the shared `../data/` were regenerated from Jeff's. Both trees: canonical payload
+and container, 516 sections, 450 units; audit 75 direct / 80 expanded.
+
+# Alice — two unsigned display formatters converted after fifth merge
+
+`format_display_value_from_shared_offset_8` (0xa9b4, 28 bytes) and
+`format_display_value_from_shared_offset_11` (0xaac8, 32 bytes) are ordinary C
+using canonical typed RAM declarations and byte views. Both are native objects
+in the existing ac6lto module; no compiler-support or parity-guard changes.
+**Alice standalone: 515 sections, 450 units; 75 direct / 78 expanded assembly
+units.** Expanded count falls from 80 at the fifth merge; direct count stays 75
+because these two used a header assembly macro. Jeff's subsequent conversions
+are separate and are not yet merged into Alice. This successful build also
+verifies Alice against the current shared header, superseding the earlier
+concurrent-build failure noted below.
+
+Final verification: `/tmp/sr08-alice-formatters-postmerge-typed-verification.json`.
+Export: `/tmp/sr08-alice-formatters-postmerge-typed-source-bundle` (579 inputs,
+all compared to workspace; no original image). Build/artifact stem:
+`/tmp/sr08-alice-formatters-postmerge-typed-standalone`. Full payload (67136 bytes)
+and OTA container (67200 bytes) directly equal OEM V204; hashes remain
+5020c236… / c7472495…. Optional differential emulation passes 780 synthetic
+cases across the six display candidates/installed functions; support tests 3/3.
+Keep the shared legacy formatter macro until Jeff merges these two conversions,
+then remove it: Jeff's current tree still uses it.
+
+Signed formatter retry still fails literal placement at 0xacb0. Four display
+candidates remain pending; no linker workarounds installed. Averager 0xcf80:
+720 scalar/order/volatility forms plus seven count-width forms gave no byte
+improvement. Initializer 0xd908: reuse the context pointer; pending ARM5 C now
+has 24 differing bytes at -O2 (136 bytes total), versus 108 at the old default
+baseline. Still not installable; neither optimization flags nor inexact output
+were promoted. Both remain claimed. See pending candidate notes for evidence.
+
+
+# Alice — advertising command builder is C (2026-11-15)
+
+`app_easy_gap_undirected_advertise_start_create_msg` (0x32bc) now matches all
+144 OEM bytes using ordinary native ARM6 C, including its three literal words.
+Reconstructed advertising types come from our SDK 6.0.24.1464. A volatile setup
+view preserves separate channel/mode stores and the store order; the host
+address annotation preserves SDK subobject addressing without runtime code.
+Snapshotting name length before scan-response length reproduces the final ADD
+operand order. No assembly/register bindings/output rewriting/guard changes.
+The device-name getter now shares a canonical one-argument prototype; its
+three former extra parameters were unused, and its instructions are unchanged.
+
+**Verified Alice standalone: 514 sections / 450 units; 74 direct / 77 expanded
+assembly units.** Both payload and full container directly equal OEM V204.
+All 581 source-export inputs compared equal to workspace at this checkpoint;
+no original firmware is in that export. Three support tests pass. Evidence:
+`exact_clang18_alice/pending_candidates/advertising_command/verification.json`,
+`standalone_build.log`, `installed_native.log`, `installed_audit.json` and
+README.md. Temporary export `/tmp/sr08-alice-advertising-source-bundle`;
+artifact stem `/tmp/sr08-alice-advertising-standalone`.
+Jeff's post-fifth-merge conversions remain separate. 0x32bc claim closed.
+
+
+# Alice — advertising and flash device-name path converted (2026-11-15)
+
+Two more assembly units are ordinary C in Alice's native ac6 groups:
+`app_easy_gap_undirected_advertise_start_create_msg` (0x32bc, full 144-byte
+region) and `validate_cached_text_payload_return_install_at_8fb0` (0x8fb0,
+full 84-byte region). All instructions, alignment and literal/string bytes
+match OEM. New additive headers provide SDK advertising types and the
+single-argument name-reader declaration; no compiler-support, shared data,
+linker guards or Jeff sources were changed.
+
+**Final standalone checkpoint: 513 sections / 450 units; 73 direct / 76
+expanded assembly units, no preprocessing failures.** This is two fewer than
+Alice's preceding 75/78 checkpoint. Payload (67136 bytes) and full OTA container
+(67200 bytes) directly equal OEM V204, hashes unchanged (5020c236… / c7472495…).
+All 581 exported inputs match workspace, and the bundle contains no original
+firmware. Support tests pass 3/3. Proof retained in:
+`exact_clang18_alice/pending_candidates/device_name_reader/verification.json`,
+`source_input_hashes.json`, `standalone_build.log`, `installed_audit.json` and
+`installed_native.log`. Earlier advertising-only proof is retained separately.
+Temporary export: `/tmp/sr08-alice-advertising-name-source-bundle`;
+artifact stem: `/tmp/sr08-alice-advertising-name-standalone`.
+
+The advertising builder needs an ordered volatile setup view and a host-address
+annotation. Snapshot name length before existing scan-response length to get
+the original final addition operand order. The reader needs a record-address
+annotation and a separate nonzero-length check annotation. Returning immediately
+on an invalid record fixes fallback ADR/MOV scheduling without another hint.
+Annotations emit no runtime instructions. Both claims closed; discarded source
+variants removed, decisions and byte-diff logs retained alongside both READMEs.
+
+Other claims remain pending. The initializer's additional 12 pointer/index
+lifetime variants do not beat the earlier 24-difference candidate. The 0xd2dc
+motion-filter routine was inspected but is not claimed or converted. Jeff's
+post-fifth-merge conversions are still separate; these counts describe Alice.
+
+
+# Alice — range-check C recovered; full-image literal regression parked (2026-11-15)
+
+Current normal sources/configuration are restored to the canonical checkpoint:
+**513 sections / 450 units; 73 direct / 76 expanded assembly units. No further
+assembly replacement was accepted in this batch.** The 0x8878 C candidate
+matches its complete 104-byte region in the shared module. A single hint on
+upper-bound/ID failures fixes the previous block-layout mismatch; positive
+source-only inversions fold the bounds and do not match.
+
+The FULL image guard rejects one byte elsewhere: existing C routine 0x82b0's
+LDR at 0x82b2 selects an earlier identical pointer instead of OEM's 0x867c pool.
+Excluding unused pools 0x8568 then 0x84e4 moves it to 0x832c, which three OEM
+routines actually need. A native-object compile of the existing C caller gives
+the same failing image. All new native flags/groups and pool exclusions were
+reverted. No compiler-output rewriting or weakened check. Keep the range C
+pending; do not repeat those four whole-image experiments unchanged.
+
+Restoration evidence is retained at
+`exact_clang18_alice/pending_candidates/range_validity/restoration_verification.json`:
+579 of 581 inputs are byte-identical to the last source-only canonical snapshot;
+the two remaining files differ only by CLAIMED comments, and both compile to
+byte-identical complete objects with the normal flags. Build configuration is
+byte-identical; the retained canonical OTA still directly equals OEM. This is
+restoration/object equivalence, not a fresh successful full build. Fresh audit
+has no preprocessing failures. Support tests pass 3/3.
+
+`range_validity/README.md` explains the instruction result and all failed link
+layouts, with retained logs/JSON and a reproducible OEM pool ownership check.
+`reading_acceptance/README.md` records 0x8500 aligned-copy, volatile-word,
+constant-one and base-alignment experiments. They remain inexact; original ASM
+stays installed. Both new claims remain Alice's, with consistent source markers.
+
+Next useful independent candidate: released 0x86b8/0x86e0 in the word-table
+module. Jeff's prior notes say only zero/16 materialization order differs; try
+C value-lifetime changes (e.g. a narrow annotation of the 16 value) before more
+compiler-flag sweeps. It is not claimed yet. For 0x8878, reduce the four-pool
+link-sharing example instead of adding exclusions to OEM-used pools.
+
+
+# Alice — full radio action dispatcher in C; module-gap placement fixed (2026-11-15)
+
+**Canonical standalone: 510 sections / 449 source units; 72 direct / 74 expanded
+assembly units.** Payload and full OTA directly equal OEM V204. All 581 exported
+inputs compare equal to workspace; bundle contains no original firmware.
+Artifacts: `/tmp/sr08-alice-radio-action-gap-standalone.{elf,payload.bin,bin}`;
+export `/tmp/sr08-alice-radio-action-gap-source-bundle`. Durable verification,
+source hashes, audit and build log are in
+`exact_clang18_alice/pending_candidates/radio_action_dispatch/` (verification.json,
+source_input_hashes.json, installed_audit.json, gap_standalone_build.log).
+Six support tests pass. Hashes remain 5020c236… / c7472495….
+
+`dispatch_radio_state_action_block_at_86b8` is now one ordinary C switch over
+all 188 bytes, absorbing the old 0x86e0 chunk. A zero-instruction signal fence
+before the 16 store fixes the zero/16 register-materialization order. Scalar
+annotations and volatility/lifetime variants did not. Parent's old assembly
+macro invocation and separate chunk source are gone; catalog/manifest updated,
+manual CSV marks the historical chunk absorbed. Alice ignores that obsolete
+split via LTO_ABSORBED_FUNCTION_STARTS; shared frozen layout/data untouched.
+
+New additive `include/sr08_sensor_field_state.h` reconciles the dispatcher's,
+publisher's, control action's and display override's RAM declarations. It covers
+the 0x68-byte arena with overlapping byte/wide views. All three existing readers
+compile to identical native output before/after; full parity also passes.
+
+The first whole build exposed a real linker-support bug: current-module
+functions separated by an omitted later-module function were laid out as +0
+neighbors. The publisher moved from 0x8774 to 0x86b8. Retained scatter/ELF
+confirmed it, not a source-code change. `separate_code_starts` now carries later
+module entry addresses from the manifest; lto_function_region_base anchors the
+next function and prevents an incorrect halfword host across that gap. The
+existing strict address/byte/overlap/hash checks remain intact. Regression tests
+use the actual 0x869c/0x86b8/0x8774 case; ordinary contiguous runs still use +0.
+
+Claim closed. Merge the parent source, retired-child deletion, manifest/catalog/
+manual CSV, shared header and its three Alice readers, build settings, compiler
+support, tests and notes together. Jeff's tree has not been changed. Keep the
+shared dispatch macro until Jeff has the C conversion; then remove it if unused.
+The previous range-validity and reading-acceptance claims remain pending; no
+pool-exclusion experiments from that batch were reinstated.
+
+
+# Alice — OTA patch-data handler in C; flash status API made explicit (2026-11-15)
+
+**Canonical standalone: 509 sections / 449 units; 71 direct / 73 expanded
+assembly units.** Complete payload (67136 bytes) and OTA container (67200)
+directly equal OEM V204. All 581 exported inputs match workspace; export has
+no original firmware. Six support tests pass, no preprocessing failures.
+Artifacts: `/tmp/sr08-alice-ota-data-standalone.{elf,payload.bin,bin}`;
+export `/tmp/sr08-alice-ota-data-source-bundle`. Durable checkpoint in
+`exact_clang18_alice/pending_candidates/ota_patch_data/verification.json`,
+source_input_hashes.json, installed_audit.json and standalone_build.log.
+Canonical hashes unchanged: 5020c236… / c7472495….
+
+`suotar_patch_data_ind_handler` (0xc148, full 424-byte region) is ordinary
+SDK/vendor C in the main ARM6 LTO module. Two compiler-only signal fences
+preserve code-size read, pending-copy store and image-length store order;
+neither emits an ARM instruction. Flash-write adapter is explicitly inline,
+matching the original call graph. Header validation, progress/error handling,
+XOR checksum, flash programming and 66-byte frame buffer/explicit trailing-byte
+clears are retained. Static assertions fix the 64-byte header layout. Claim closed.
+
+The old erase API was void while this handler checks its returned R0 status.
+Alice's actual wrapper is now `erase_flash_range_status`, explicitly returning
+the driver result, with a consistently renamed source/manifest/catalog/generator.
+All five active C callers use it; legacy `erase_flash_range` is a linker alias
+at the same 0x3e90 entry for remaining ASM. The shared header ADDS the status
+prototype and preserves the old void declaration for Jeff. No Jeff source or
+shared data was edited. Wrapper's 16 code bytes AND call relocation are identical;
+three standalone C callers also have identical native output. Full image covers
+both LTO callbacks. See status_api_changes.json, erase_status_codegen.json and
+status_callers_native_comparison.json. Merge wrapper rename, alias, header and
+all caller updates together; no duplicate implementation is emitted.
+
+No compiler-support, placement or hash-guard changes in this batch. The new
+ARM5 initializer barrier search (32 variants, O2/O3 and pointer/index forms)
+did not improve its existing 24-byte mismatch; ASM stays installed. Results are
+in `pending_candidates/control_initializer/`, with source generator and JSON.
+
+Useful next independent target: released 0x3ea0/0xbb94 SPI chip-select branches.
+Jeff found select-lowering drops branch weights and MBP flips a 50/50 tie.
+An UNTESTED possible construct is a compiler fence in only the pin-3 branch,
+keeping a real IR branch instead of a select, then source order/weights if needed.
+Do not repeat old unconditional ternary/__builtin_expect-only or compiler-flag
+sweeps. A fence before the common store alone would not address that IR issue.
+
+
+### Alice: modulo-five display and packed pattern writer (2026-11-15)
+
+Converted 0xa914 and 0xacb8 to ordinary native C, preserving OEM instructions
+and shared pools by linking the distant native reader with its pool owner.
+Full source-only build remains canonical: 504 sections, 449 units, 66 direct /
+68 expanded ASM, ten support tests pass. Both payload and OTA container equal
+V204 byte for byte. Evidence: pending_candidates/status_mod5/verification.json.
+
+### Alice: device-status dispatcher C (2026-11-15)
+
+Converted 0x80d8 to ordinary native C using distinct integer offset annotations
+to preserve the original address calculations and command/flag reload order.
+Full source-only build remains canonical and byte-identical to V204 payload
+and container: 503 sections, 449 units, 65 direct / 67 expanded ASM, ten support
+tests pass. Evidence: pending_candidates/status_dispatch_offset/verification.json.
+
+A separate 0xacd0 writer conversion passed its own region but changed six bytes
+elsewhere in the complete image; reverted that writer and its registrations.
+The final accepted build includes only the dispatcher conversion from this batch.
+
+### Alice: measurement-text C and preserved link boundary (2026-11-16)
+
+Finished 0xaae8 as ordinary C with four threshold stores and a bit-3 glyph
+selection. Converting the old context stub changed its following function's
+link boundary from fixed to relative; preserving the original ab3c boundary
+avoids a four-byte literal veneer. Added named fixed-unit placement support
+and a regression test, retaining every byte/value/overlap/hash guard.
+
+Fresh source-only payload and OTA container equal OEM V204 and both canonical
+hashes. 497 sections, 449 units, 59 direct / 61 expanded ASM; all 580 inputs
+match and 11 tests pass. Evidence: pending_candidates/measurement_text/verification.json.
+No instruction/literal patch, compiler-flag sweep, shared data/header, Tools,
+Jeff-tree, flash, commit or push changes.
+
+
+### 2026-11-14: Jeff, periph_init in C
+
+initialize_peripheral_state_and_interrupts (0xadf8, 360 bytes) is now C in the ac6lto module: the SDK template's
+periph_init with the vendor's pad setup (constant GPIO_ConfigurePin calls that LTO inlines, and the display pin
+loops), timer0 and its callback, the UART2 setup call, and the SPI flash interface (chip select, spi_enable,
+spi_initialize's register sequence), then the pad latch. Byte-exact with the SDK's two-path GLOBAL_INT_RESTORE (fenced)
+and a volatile chip-select store. 0xabb4 (pool words kept for asm stubs) and 0x7380 (one test pair swapped by
+Reassociate) were parked with candidates. Full build canonical: 515 sections, 450 units; audit 74 direct / 79 expanded.
+
+### 2026-11-14: Jeff, process_sensor_sample_and_maybe_save_record in C
+
+0xc728 (392 bytes) is now C in the ac6lto module. It counts the sample, advances the phase counters, marks whether
+the queued coordinate records are all equal, queues the time event, and runs the pending start check (1) or save
+check (2, which saves the received sensor reading to flash 0x61000). V204 forms the time-event pointer as
+`(base + 0x36) + 1`, which needs a field starting at 0x36. The shared `sr08_radio_configuration_state` now splits
+`reserved_2b_to_41` around `record_check { state; time_event; }` without changing the layout. 0x8134
+configure_command_record (register allocation) and 0xa84c/0xa89c/0xabb4 converted together (armlink picks other
+copies of shared literals) were parked. Full build canonical: 514 sections, 450 units; audit 73 direct / 78 expanded.
+
+Pulled three of Alice's byte-exact conversions into Jeff's tree, copied unchanged:
+- 0x32bc `app_easy_gap_undirected_advertise_start_create_msg` and 0x8fb0
+  `validate_cached_text_payload_return_install_at_8fb0`, both plain ac6;
+- the 0x86b8 radio-state dispatcher, a single C switch in ac6ltowordtables. It absorbs the old 0x86e0 chunk,
+  so that source and its manifest entry were removed.
+
+The merge brought along Alice's module-gap placement support:
+- `LTO_ABSORBED_FUNCTION_STARTS`;
+- `separate_code_starts`;
+- `lto_function_region_base` in arm_compilers.py.
+
+0x44a8 `update_clock_and_process_events` was fully decoded and parked; the candidate is in pending_candidates.
+
+Full build canonical: 509 sections, 449 units, payload 5020c236…, container equals V204.bin. Audit: 70 direct /
+74 expanded.
+
+0x1f34 turned out to be the SDK `WKUP_QUADEC_Handler`. It now builds from C as an LTO unit, under its SDK name, with
+the callback dispatch folded the way V204's whole-program link left it. 0x302c `app_db_init_next` came close: the
+inlined HOGPD block matched once k was tested explicitly, but it was parked on the `i` compare and the literal-pool
+order. Build: 508 sections, 449 units, canonical; audit 69 direct / 73 expanded.
+Alice's finished `suotar_patch_data_ind_handler`, the two SPI-flash helpers at 0xbb38/0xbb94 and her
+`erase_flash_range_status` rename were then merged unchanged. Build: 505 sections, canonical; audit 66 direct /
+70 expanded.
+Alice's 0x7380 (with the shared sensor_field_state declaration) was merged. 0x20f0, the battery service tick, was
+decoded and parked. Build: 504 sections, canonical; audit 65 direct / 69 expanded.
+0x1da8, the accelerometer probe, now builds from C. A compiler-only signal fence keeps V204's per-branch store
+(technique from Alice's 0xbb94). Build: 503 sections, canonical; audit 64 direct / 68 expanded.
+0x3d6c now builds from C. Volatile x/y locals fix the store order, one call per path matches V204's tail-merge,
+and `!(axes < 0)` gives its bmi. Build: 502 sections, canonical; audit 63 direct / 67 expanded.
+
+### 2026-11-15: Jeff, Alice's two display formatters merged
+
+0xa9b4 `format_display_value_from_shared_offset_8` and 0xaac8 `format_display_value_from_shared_offset_11`
+(byte-exact in Alice's tree) were copied unchanged into Jeff's tree. They join the ab3c/ab78/choose_display native
+group and LTO_NATIVE_UNITS. Full build canonical: 501 sections, 449 units; audit 63 direct / 65 expanded. 0xca68
+(step counter) and 0xd9c8 (pulse-rate estimate, ac5) were decoded and parked with candidates in pending_candidates.
+
+### 2026-11-16: Jeff, sixth merge with Alice
+
+Alice's accepted native C units were merged: 0x80d8 dispatch_enabled_indicator_fields_for_device_status (ac6), and
+0xa914 / 0xacb8 (main display native group). Also merged: her module-owned literal resolution fix in
+arm_compilers.py (with two tests), the 0x2568 event-ring types, the callback-samples header move and the
+erase_flash_range_status caller renames. Her 0xacd0 candidate was not merged. Alice's tree was then synced from this
+one. Build in both trees: 498 sections, canonical, `cmp` equal to V204.bin; audit 60 direct / 62 expanded.
+
+### 2026-11-16: Jeff, 0x1c18 BLE_WAKEUP_LP_Handler
+
+Alice's released 0x1c18 candidate was byte-exact once linked in the main LTO module: with 0x1f34 now C in the same
+module, armlink takes both merged_globals_5650 literals from 0x1f34's pool as in V204. The installed source keeps its
+SDK register-offset names, loses its two pinned loads, and takes its SDK name BLE_WAKEUP_LP_Handler. Build canonical;
+audit 59 direct / 61 expanded.
+
+### 2026-11-16: Jeff, Alice's 0xaae8 pulled
+
+Alice's finished 0xaae8 (ordinary native C plus the LTO_FIXED_UNITS boundary that keeps 0xab3c at its V204 entry
+during literal merging) was copied into this tree with all its support changes. Build: 497 sections, canonical;
+audit 58 direct / 60 expanded.

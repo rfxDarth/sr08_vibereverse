@@ -1,0 +1,143 @@
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_sensor_frame_batch_state.h"
+#include "firmware/reconstructed/include/sr08_shared_sensor_profile.h"
+
+/* The measurement and status algorithms reuse the arena at 0x07fd0b58.
+ * This typed view needs a fixed RAM alias when installed, rather than an
+ * incompatible redeclaration of the smaller sensor_status_context object.
+ */
+extern struct sr08_measurement_context measurement_context_storage;
+extern uint32_t clear_sensor_processing_history_tables(void);
+
+__attribute__((used,section(".text.initialize_sensor_processing_state")))
+uint32_t initialize_sensor_processing_state(void)
+{
+    uint32_t zero;
+    struct sr08_measurement_context *context = &measurement_context_storage;
+    uint16_t i;
+    sensor_frame_batch_state.context = context;
+    context->mode = 1;
+    i = 0;
+    context->value = i;
+    context->extra_byte_008 = i;
+    context->byte_00a = i;
+    context->status_byte_ca0 = 4;
+    context->byte_ca1 = i;
+    /* Preserve the initial counter value for later clears; its lifetime
+     * matters to ARM5 register allocation independently of the loop index. */
+    zero = i;
+    uint16_t default_half = sensor_frame_batch_state.word_08 % 3u + 97u;
+    for (; i < 8; ++i) {
+        context->words_288[i] = zero;
+        context->words_2d4[i] = zero;
+        context->halves_c74[i] = default_half;
+    }
+    context = sensor_frame_batch_state.context;
+    for (i = 0; i < 8; ++i) {
+        context->words_2a8[i] = zero;
+        context->words_2f4[i] = zero;
+    }
+    context = sensor_frame_batch_state.context;
+    /* Explicit clears preserve the vendor's access order and reserved gaps. */
+    context->words_034[0] = zero;
+    context->words_034[1] = zero;
+    context->words_034[2] = zero;
+    context->words_034[3] = zero;
+    context->words_034[4] = zero;
+    context->words_034[5] = zero;
+    context->words_034[6] = zero;
+    context->words_034[7] = zero;
+    context->words_034[8] = zero;
+    context->words_034[9] = zero;
+    context->words_00c[0] = zero;
+    context->words_00c[1] = zero;
+    context->words_00c[2] = zero;
+    context->words_00c[3] = zero;
+    context->words_00c[4] = zero;
+    context->words_00c[5] = zero;
+    context->words_00c[6] = zero;
+    context->words_00c[7] = zero;
+    context->words_00c[8] = zero;
+    context->words_00c[9] = zero;
+    for (i = 0; i < 7; ++i) {
+        context->words_250[i] = zero;
+        context->words_26c[i] = zero;
+    }
+    context = sensor_frame_batch_state.context;
+    context->words_320[0] = zero;
+    context->words_320[1] = zero;
+    context->words_320[2] = zero;
+    context->words_320[3] = zero;
+    context->words_320[4] = zero;
+    context->words_320[5] = zero;
+    context->words_320[6] = zero;
+    context->words_320[7] = zero;
+    context->words_344[0] = zero;
+    context->words_344[1] = zero;
+    context->words_344[2] = zero;
+    context->words_344[3] = zero;
+    context->words_344[4] = zero;
+    context->words_344[5] = zero;
+    context->words_344[6] = zero;
+    context->words_344[7] = zero;
+    context->words_344[8] = zero;
+    context->words_36c[0] = zero;
+    context->words_36c[1] = zero;
+    context->words_36c[2] = zero;
+    context->words_36c[3] = zero;
+    context->words_36c[4] = zero;
+    context->word_380 = zero;
+    context->word_384 = sensor_frame_batch_state.word_08 % 3u + 97u;
+    context->byte_009 = 99;
+    context->word_388 = 49u << 7;
+    uint32_t seed = shared_sensor_profile.profile_word_04;
+    context->word_390 = seed;
+    context->word_38c = seed - 102000u;
+    sensor_frame_batch_state.byte_01 = zero;
+    context->words_394[0] = zero;
+    context->words_394[1] = zero;
+    context->words_394[2] = zero;
+    context->words_394[3] = zero;
+    for (i = 0; i < 32; ++i) {
+        context->words_46c[i] = zero;
+        context->words_4ec[i] = zero;
+    }
+    context = sensor_frame_batch_state.context;
+    for (i = 0; i < 25; ++i) {
+        context->words_3a4[i] = zero;
+        context->words_408[i] = zero;
+    }
+    context = sensor_frame_batch_state.context;
+    context->bytes_c86[0] = zero;
+    context->bytes_c86[1] = zero;
+    context->extra_byte_c88 = zero;
+    context->bytes_c89[0] = zero;
+    context->bytes_c89[1] = zero;
+    context->bytes_c89[2] = zero;
+    context->word_c8c = zero;
+    for (i = 0; i < 100; ++i) {
+        context->halves_56c[i] = zero;
+        context->halves_634[i] = zero;
+        context->pairs_6fc[i].first = zero;
+        context->pairs_6fc[i].second = zero;
+    }
+    context = sensor_frame_batch_state.context;
+    for (i = 0; i < 150; ++i) context->words_a1c[i] = zero;
+    context = sensor_frame_batch_state.context;
+    context->byte_c90 = zero;
+    context->half_c92 = zero;
+    context->byte_c94 = zero;
+    for (i = 0; i < 100; ++i) context->levels_1ec[i] = 64;
+    context = sensor_frame_batch_state.context;
+    for (i = 0; i < 50; ++i) {
+        context->words_05c[i] = zero;
+        context->words_124[i] = zero;
+    }
+    context = sensor_frame_batch_state.context;
+    context->status_byte_c95 = zero;
+    context->words_36c[1] = 64;
+    context->word_c9c = zero;
+    context->word_c98 = seed - 101000u;
+    clear_sensor_processing_history_tables();
+    return 1;
+}

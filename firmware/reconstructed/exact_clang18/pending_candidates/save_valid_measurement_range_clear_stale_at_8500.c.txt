@@ -1,0 +1,44 @@
+/* Take over a fresh four-value sensor reading (first value neither 0xffff
+ * nor, together with the third, zero), log it as hex and mark the sensor
+ * valid; otherwise clear the stored reading and mark it invalid. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_radio_configuration.h"
+#include "firmware/reconstructed/include/sr08_time_event_queue.h"
+
+void format_byte_span_spaced_hexadecimal_line_at_b178(const uint8_t *bytes, uint32_t length);
+
+void save_valid_measurement_range_clear_stale_at_8500(void)
+{
+    struct time_event_queue_state *queue = &time_event_queue_state;
+    struct sr08_radio_configuration_state *state = (struct sr08_radio_configuration_state *)&device_control_state;
+
+    if (queue->sensor_reading_status == 1) {
+        uint16_t first = queue->sensor_reading.status;
+        uint16_t third;
+        if (first == 0) {
+            third = queue->sensor_reading.value_2;
+            if (third == 0)
+                goto invalid;
+        } else {
+            if (first == 0xffff)
+                goto invalid;
+            third = queue->sensor_reading.value_2;
+        }
+        state->sensor_reading.status = first;
+        state->sensor_reading.value_2 = third;
+        state->sensor_reading.value_1 = queue->sensor_reading.value_1;
+        state->sensor_reading.value_3 = queue->sensor_reading.value_3;
+        format_byte_span_spaced_hexadecimal_line_at_b178((const uint8_t *)&queue->sensor_reading,
+                                                          sizeof(queue->sensor_reading));
+        state->sensor_state_19 = 1;
+        state->sensor_state_1a = 0;
+        return;
+    }
+invalid:
+    state->sensor_reading.status = 0;
+    state->sensor_reading.value_3 = 0;
+    state->sensor_reading.value_1 = 0;
+    state->sensor_reading.value_2 = 0;
+    state->sensor_state_1a = 1;
+    state->sensor_state_19 = 0;
+}

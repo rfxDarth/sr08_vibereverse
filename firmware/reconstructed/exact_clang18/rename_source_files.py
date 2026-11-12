@@ -10,6 +10,7 @@ import argparse
 import csv
 import json
 import shutil
+from collections import Counter
 import tempfile
 from pathlib import Path
 
@@ -30,8 +31,13 @@ def main() -> None:
     with CATALOG.open(newline="") as stream:
         catalog = {int(row["address"], 16): row for row in csv.DictReader(stream)}
 
+    shared = Counter(item["source"] for item in manifest["sources"])
     moves: list[tuple[dict, Path, Path]] = []
     for item in manifest["sources"]:
+        # A file holding several units is one original translation unit; it
+        # keeps its own name.
+        if shared[item["source"]] > 1:
+            continue
         address = int(item["address"])
         row = catalog.get(address)
         if row is None:

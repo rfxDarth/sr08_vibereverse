@@ -1,0 +1,13 @@
+{
+  "method": "last canonical source bundle equality plus complete Clang18 object equivalence for sole claim comment",
+  "unchanged_inputs": 581,
+  "comment_only_changed_inputs": [
+    "firmware/reconstructed/exact_clang18/manual_sources/switch_display_state_and_run_hooks.c"
+  ],
+  "changed_object_bytes": 1852,
+  "changed_object_sha256": "119509953efd9becaf6c2b164d082aa54f8c165260692c1d0258217ea9e9098d",
+  "complete_object_equal": true,
+  "fresh_full_build": false,
+  "payload_artifact": "/tmp/sr08-alice-event-ring-types-standalone.payload.bin",
+  "payload_equals_oem": true
+}

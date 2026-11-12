@@ -1,0 +1,124 @@
+/* PARKED 2026-11-15 (Jeff): byte MISMATCH under ac5 (armcc 5.06, -O3), 492 vs 484 bytes, 295 bytes differ.
+ * The arithmetic and branch layout match. V204 has a 40-byte frame that uses only slots 0/12/20/32 (gender, age, bmi,
+ * height spill) and keeps gender in r0 with 2g/4g hoisted; this source gives a 16-byte frame.
+ * -O2/-O1/-Otime/-Ospace and int or field-direct locals are all further away. */
+/* Estimate systolic and diastolic blood pressure from the heart rate and the user profile (age,
+ * height, weight, gender and an optional reference reading), and store both estimates in the
+ * sensor status context. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_sensor_status_record.h"
+
+/* Profile bytes 8..13 of shared_sensor_profile, passed by value. */
+struct blood_pressure_profile {
+    uint8_t age;
+    uint8_t height;
+    uint8_t weight;
+    uint8_t gender;
+    uint8_t reference_systolic;
+    uint8_t reference_diastolic;
+};
+
+void compute_and_store_display_coordinates(uint8_t heart_rate, struct blood_pressure_profile profile)
+{
+    uint16_t bmi = 0;
+    uint8_t age = profile.age;
+    uint8_t gender = profile.gender;
+    int twice = gender * 2;
+    int four = gender * 4;
+    int systolic_base, diastolic_base;
+
+    if (age <= 25) {
+        systolic_base = 115 - four - gender;
+        diastolic_base = 73 - twice;
+    } else if (age <= 30) {
+        systolic_base = 115 - twice - gender;
+        diastolic_base = 75 - twice;
+    } else if (age <= 35) {
+        systolic_base = 117 - twice - gender;
+        diastolic_base = 76 - twice;
+    } else if (age <= 40) {
+        systolic_base = 120 - four;
+        diastolic_base = 80 - twice - gender;
+    } else if (age <= 45) {
+        systolic_base = 124 - twice;
+        diastolic_base = 81 - twice - gender;
+    } else if (age <= 50) {
+        systolic_base = 128;
+        diastolic_base = 82 - twice - gender;
+    } else if (age <= 55) {
+        systolic_base = 134;
+        diastolic_base = 84 - four;
+    } else if (age <= 60) {
+        systolic_base = 137 + twice;
+        diastolic_base = 84 - twice;
+    } else {
+        systolic_base = 148 - twice - gender;
+        diastolic_base = 86 - twice - gender;
+    }
+
+    int16_t systolic = ((heart_rate - 70) * 3) >> 1;
+    int16_t diastolic;
+    if (heart_rate < 65) {
+        if (heart_rate < 58) {
+            diastolic = heart_rate + 15;
+            systolic += 130;
+        } else {
+            diastolic = heart_rate + 5;
+            systolic += 120;
+        }
+    } else if (heart_rate > 85) {
+        systolic += 95;
+        diastolic = heart_rate % 10 + 73;
+    } else {
+        systolic += 110;
+        diastolic = heart_rate % 10 + 68;
+    }
+    if (systolic > 140)
+        systolic = heart_rate % 10 + 135;
+
+    if (profile.height != 0 && profile.weight != 0)
+        bmi = profile.weight * 80000 / (profile.height * profile.height);
+
+    if (age != 0) {
+        switch (gender) {
+        case 0:
+            if (age < 35) {
+                systolic = ((systolic - 115) >> 1) + systolic_base;
+                diastolic = ((diastolic - 74) >> 1) + diastolic_base;
+                if (bmi != 0 && bmi < 184 && heart_rate > 70)
+                    systolic -= 5;
+            } else {
+                systolic = (bmi - 184) * 46 / 80 + ((systolic - 115) >> 1) + systolic_base;
+                diastolic = ((diastolic - 74) >> 1) + diastolic_base;
+                if (profile.height < 165 && bmi > 200)
+                    systolic += 10;
+            }
+            break;
+        case 1:
+            if (age < 35) {
+                systolic = ((systolic - 110) >> 2) + systolic_base;
+                diastolic = ((diastolic - 72) >> 2) + diastolic_base;
+                if (bmi != 0 && bmi < 176)
+                    systolic -= 5;
+            } else {
+                systolic = ((systolic - 110) >> 1) + systolic_base + ((bmi - 184) >> 2);
+                diastolic = ((diastolic - 72) >> 1) + diastolic_base;
+            }
+            break;
+        }
+    }
+    if (profile.reference_systolic != 0 && profile.reference_diastolic != 0) {
+        switch (gender) {
+        case 0:
+            systolic = systolic - 118 + profile.reference_systolic;
+            diastolic = diastolic - 75 + profile.reference_diastolic;
+            break;
+        case 1:
+            systolic = systolic - 112 + profile.reference_systolic;
+            diastolic = diastolic - 70 + profile.reference_diastolic;
+            break;
+        }
+    }
+    sensor_status_record.context->systolic_estimate = systolic;
+    sensor_status_record.context->diastolic_estimate = diastolic;
+}

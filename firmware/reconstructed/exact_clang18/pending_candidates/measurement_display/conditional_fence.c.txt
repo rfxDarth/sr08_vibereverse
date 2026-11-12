@@ -1,0 +1,105 @@
+/* Record a measurement-result mode and, while it is not 1, update the per-ten-second
+ * result slot and run the display transitions whose timeouts have elapsed. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_display_state_switches.h"
+#include "firmware/reconstructed/include/sr08_mode_transition.h"
+
+void conditional_mode_updates_using_two_display_at_74a8(uint32_t flags);
+void build_event_header_and_fourteen_byte_scratch_area(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uint8_t e);
+
+/* Views of the fixed RAM objects this routine touches (offsets from V204's loads). */
+struct measurement_mode_view {            /* device_control_state, 0x07fd1e28 */
+    uint8_t reserved_00_to_08[9];
+    uint8_t event_arguments[4];           /* 0x09-0x0c */
+    uint8_t result_mode;                  /* 0x0d */
+    uint8_t reserved_0e_to_29[0x1c];
+    uint16_t result_value;                /* 0x2a */
+    uint8_t reserved_2c_to_5b[0x30];
+    uint32_t last_timestamp;              /* 0x5c */
+    uint32_t result_timestamp;            /* 0x60 */
+};
+struct clock_view {                       /* clock_timekeeping_state, 0x07fd0858 */
+    uint32_t current_timestamp;
+    uint32_t reserved_04_to_17[5];
+    int32_t calendar_second;              /* 0x18 */
+    uint32_t calendar_minute;             /* 0x1c */
+};
+struct context_view {                     /* sr08_shared_context, 0x07fd557c */
+    uint8_t reserved_00_to_01[2];
+    uint8_t last_event_argument;          /* 0x02 */
+    uint8_t reserved_03_to_08[6];
+    uint8_t result_slots_updated;         /* 0x09 */
+    uint8_t display_mode;                 /* 0x0a */
+    uint8_t reserved_0b_to_0e[4];
+    uint8_t display_option;               /* 0x0f */
+    uint8_t reserved_10_to_13[4];
+    uint32_t mode_flags;                  /* 0x14 */
+    uint32_t mode_timestamp;              /* 0x18 */
+    uint8_t reserved_1c_to_1f[4];
+    uint32_t state_timestamp;             /* 0x20 */
+    uint8_t reserved_24_to_9f[0x7c];
+    uint8_t result_slots[12];             /* 0xa0: one per ten seconds of a two-minute window */
+};
+extern struct measurement_mode_view device_control_state;
+extern struct clock_view clock_timekeeping_state;
+extern struct context_view sr08_shared_context;
+extern uint8_t sensor_field_state[];
+
+void update_measurement_display_and_mode_state(uint32_t mode) {
+    struct measurement_mode_view *state = &device_control_state;
+    struct context_view *context = &sr08_shared_context;
+    if (mode == 1 && state->result_mode == 1)
+        return;
+    state->result_mode = mode;
+    if (mode == 1) {
+        state->result_value = 0;
+        conditional_mode_updates_using_two_display_at_74a8(context->mode_flags);
+        return;
+    }
+    uint32_t now = clock_timekeeping_state.current_timestamp;
+    if (state->last_timestamp == now)
+        return;
+    state->last_timestamp = now;
+    if (now - state->result_timestamp >= 16)
+        state->result_value = 0;
+    conditional_mode_updates_using_two_display_at_74a8(context->mode_flags);
+    uint16_t value = state->result_value;
+    if (value) {
+        uint8_t slot = 6 * (clock_timekeeping_state.calendar_minute & 1) + clock_timekeeping_state.calendar_second / 10;
+        context->result_slots[slot] = value;
+        context->result_slots_updated = 1;
+    }
+    uint32_t flags = context->mode_flags;
+    if (flags & 4) {
+        if (clock_timekeeping_state.current_timestamp - context->mode_timestamp > 45
+            || (context->display_mode == 1 && ({ __atomic_signal_fence(__ATOMIC_SEQ_CST); value != 0; }))
+            || (context->display_mode - 1u <= 1 && context->display_option == 1)) {
+            update_mode_flags_and_transitions(1u << 18);
+            flags = context->mode_flags;
+        }
+    }
+    if (flags & 0x22) {
+        if (sensor_field_state[0x58] >= 3) {
+            build_event_header_and_fourteen_byte_scratch_area(context->last_event_argument, state->event_arguments[0],
+                                                              state->event_arguments[1], state->event_arguments[2],
+                                                              state->event_arguments[3]);
+            if (clock_timekeeping_state.current_timestamp - context->state_timestamp >= 45) {
+                update_mode_flags_and_transitions(1u << 17);
+                switch_display_state_and_run_hooks(13);
+            }
+        }
+        if (clock_timekeeping_state.current_timestamp - context->state_timestamp >= 45)
+            switch_display_state_and_run_hooks(22);
+    }
+    if ((uint8_t)context->mode_flags & 0x11) {
+        uint32_t elapsed = clock_timekeeping_state.current_timestamp - context->state_timestamp;
+        if (elapsed >= 23) {
+            if (state->result_value) {
+                switch_display_state_and_run_hooks(10);
+                elapsed = clock_timekeeping_state.current_timestamp - context->state_timestamp;
+            }
+            if (elapsed >= 46)
+                switch_display_state_and_run_hooks(22);
+        }
+    }
+}

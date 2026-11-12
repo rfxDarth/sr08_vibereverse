@@ -1,0 +1,15 @@
+test_rejects_unproven_copy_metadata (test_diagnostic_stub_copy.DiagnosticStubCopyTest.test_rejects_unproven_copy_metadata) ... ok
+test_uses_symbol_section_when_addresses_overlap (test_diagnostic_stub_copy.DiagnosticStubCopyTest.test_uses_symbol_section_when_addresses_overlap) ... ok
+test_actual_consecutive_functions_still_share_a_run (test_lto_region_gap.LtoRegionGapTest.test_actual_consecutive_functions_still_share_a_run) ... ok
+test_first_function_and_nonintervening_entries (test_lto_region_gap.LtoRegionGapTest.test_first_function_and_nonintervening_entries) ... ok
+test_publisher_after_radio_dispatcher_keeps_its_address (test_lto_region_gap.LtoRegionGapTest.test_publisher_after_radio_dispatcher_keeps_its_address) ... ok
+test_fixed_target_reuses_local_duplicate (test_stub_local_literal.LocalLiteralTest.test_fixed_target_reuses_local_duplicate) ... ok
+test_missing_local_word_keeps_copy_retry (test_stub_local_literal.LocalLiteralTest.test_missing_local_word_keeps_copy_retry) ... ok
+test_module_target_still_reuses_local_duplicate (test_stub_local_literal.LocalLiteralTest.test_module_target_still_reuses_local_duplicate) ... ok
+test_sealed_local_word_is_not_reused (test_stub_local_literal.LocalLiteralTest.test_sealed_local_word_is_not_reused) ... ok
+test_waits_for_compiler_not_background_descriptor_holder (test_wine_output_capture.WineOutputCaptureTest.test_waits_for_compiler_not_background_descriptor_holder) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.103s
+
+OK

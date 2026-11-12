@@ -1,0 +1,56 @@
+/* When the current record flag becomes one, queue the two 0xf6 records (the
+ * 0x17 0xcc configuration and the sensor profile bytes), the sensor command
+ * and status records, optionally dispatch request 11, and reset the
+ * transition state. The flag is remembered in the shared context. */
+#include <stdint.h>
+#include <string.h>
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+#include "firmware/reconstructed/include/sr08_shared_context.h"
+
+extern uint8_t read_current_record_value_byte(void);
+extern void search_queue_and_insert_limit_twenty(const void *record);
+extern void copy_six_profile_bytes_from_offsets_two_to_seven(uint8_t *destination);
+extern void build_sensor_command_packet_acquiring_shared_at_519c(void);
+extern void prepare_sensor_configuration_stack_record(void);
+extern void queue_computed_status_records(void);
+extern void initialize_and_dispatch_three_byte_request(uint8_t first, uint8_t second, uint8_t third);
+
+#define state_5650 ((uint8_t *)(void *)&merged_globals_5650)
+#define state_56d0 ((uint8_t *)(void *)&merged_globals_56d0)
+
+enum {
+    CONFIGURATION_RECORD = 0xf6,
+    REQUEST_RESUME = 11,
+};
+
+void handle_record_flag_and_queue_sensor_configuration(void)
+{
+    uint8_t flag = read_current_record_value_byte();
+
+    if (flag == 1 && sr08_shared_context.state_01 != 1) {
+        union {
+            uint32_t words[5];
+            uint8_t bytes[20];
+        } configuration;
+        uint8_t *record = configuration.bytes;
+
+        memset(&record[9], 0, 11);
+        record[8] = 0;
+        configuration.words[1] = 0x001700cc;
+        configuration.words[0] = CONFIGURATION_RECORD;
+        search_queue_and_insert_limit_twenty(record);
+        memset(&record[1], 0, 19);
+        record[0] = CONFIGURATION_RECORD;
+        copy_six_profile_bytes_from_offsets_two_to_seven(&record[1]);
+        search_queue_and_insert_limit_twenty(record);
+        build_sensor_command_packet_acquiring_shared_at_519c();
+        prepare_sensor_configuration_stack_record();
+        queue_computed_status_records();
+        if (state_5650[0x20] == 1)
+            initialize_and_dispatch_three_byte_request(REQUEST_RESUME, state_56d0[0x2c], state_5650[0x28]);
+        state_5650[0x35] = 1;
+        *(uint32_t *)(void *)state_56d0 = 0;
+        *(uint16_t *)(void *)(state_5650 + 0x36) = 0x600;
+    }
+    sr08_shared_context.state_01 = flag;
+}

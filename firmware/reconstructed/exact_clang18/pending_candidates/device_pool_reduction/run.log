@@ -1,0 +1,9 @@
+armlink failed for reduced four-pool object-order test:
+Error: L6029E: Relocation #REL:0 in early.o(.text.early_0) is wrt invalid/missing symbol.
+Error: L6029E: Relocation #REL:1 in early.o(.text.early_0) is wrt invalid/missing symbol.
+Error: L6029E: Relocation #REL:0 in early.o(.text.early_1) is wrt invalid/missing symbol.
+Error: L6029E: Relocation #REL:1 in early.o(.text.early_1) is wrt invalid/missing symbol.
+Error: L6029E: Relocation #REL:0 in early.o(.text.early_2) is wrt invalid/missing symbol.
+Error: L6029E: Relocation #REL:1 in early.o(.text.early_2) is wrt invalid/missing symbol.
+Finished: 0 information, 0 warning and 6 error messages.
+

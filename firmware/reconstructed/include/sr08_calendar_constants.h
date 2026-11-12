@@ -1,6 +1,8 @@
 #ifndef SR08_CALENDAR_CONSTANTS_H
 #define SR08_CALENDAR_CONSTANTS_H
 
+#include "firmware/reconstructed/include/sr08_static_assert.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -35,13 +37,13 @@ union sr08_calendar_conversion_constants {
     struct sr08_calendar_conversion_constants_view view;
 } __attribute__((packed));
 
-_Static_assert(offsetof(struct sr08_calendar_conversion_constants_view, common_year_month_lengths) == 24,
+SR08_STATIC_ASSERT(offsetof(struct sr08_calendar_conversion_constants_view, common_year_month_lengths) == 24,
                "common-year month lengths must remain at offset 24");
-_Static_assert(offsetof(struct sr08_calendar_conversion_constants_view, negative_seconds_per_hour) == 36,
+SR08_STATIC_ASSERT(offsetof(struct sr08_calendar_conversion_constants_view, negative_seconds_per_hour) == 36,
                "seconds-per-hour adjustment must remain at offset 36");
-_Static_assert(sizeof(struct sr08_calendar_conversion_constants_view) == 40,
+SR08_STATIC_ASSERT(sizeof(struct sr08_calendar_conversion_constants_view) == 40,
                "calendar conversion constants must remain 40 bytes");
-_Static_assert(sizeof(union sr08_calendar_conversion_constants) == 40,
+SR08_STATIC_ASSERT(sizeof(union sr08_calendar_conversion_constants) == 40,
                "calendar constants view must preserve its original section size");
 
 #endif

@@ -1,0 +1,35 @@
+{
+  "initialize_display_image_region_and_fixed_header": {
+    "before": {
+      "bytes": 68,
+      "sha256": "7cf018775e6cfb5cf833901f15ed26914703395d97dd6f053bd0503d3c3a42f9"
+    },
+    "after": {
+      "bytes": 68,
+      "sha256": "7cf018775e6cfb5cf833901f15ed26914703395d97dd6f053bd0503d3c3a42f9"
+    },
+    "native_output_identical": true
+  },
+  "stage_and_program_flash_region_3c000": {
+    "before": {
+      "bytes": 48,
+      "sha256": "d67ae8aab17084ab14bd5d14707073ffe949685a060a5c8e195f0a13a7c86f07"
+    },
+    "after": {
+      "bytes": 48,
+      "sha256": "d67ae8aab17084ab14bd5d14707073ffe949685a060a5c8e195f0a13a7c86f07"
+    },
+    "native_output_identical": true
+  },
+  "translate_rom_result_to_display_coordinates": {
+    "before": {
+      "bytes": 56,
+      "sha256": "1af113037a09b0cd8bf7265a5179f76ef979ad285cf71d6532eb538857642ca6"
+    },
+    "after": {
+      "bytes": 56,
+      "sha256": "1af113037a09b0cd8bf7265a5179f76ef979ad285cf71d6532eb538857642ca6"
+    },
+    "native_output_identical": true
+  }
+}

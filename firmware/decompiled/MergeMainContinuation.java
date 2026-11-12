@@ -17,7 +17,7 @@ public class MergeMainContinuation extends ghidra.app.script.GhidraScript {
     private static final long CONTINUATION = 0x7fc9da0L;
     private static final long SELF_CALL = 0x7fca5a4L;
     private static final Path OUTPUT = Path.of(
-        "/home/drath/Projects/personal/code/sr08_ai/firmware/decompiled/V204_main_merged.c");
+        "firmware/decompiled/V204_main_merged.c");
 
     @Override
     protected void run() throws Exception {

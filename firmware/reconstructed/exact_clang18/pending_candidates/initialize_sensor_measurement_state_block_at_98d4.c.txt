@@ -1,0 +1,728 @@
+/* PARKED (2026-11-16, Jeff): 0x98d4 = SDK 6.0.18 arch_main.c main() (one LTO function 0x07fc98d4-0x07fca64c, blocks
+ * 98d4/9cfc/9da0/a1a0/a538; probe with --absorb for the other four, and P6_SYMS from the ROM symbol file for the ROM
+ * variables plus TASK_DESC_APP=0x07fcf8f4, gap_cfg_user_var_struct=0x07fcf694, rom_func_addr_table_var=0x07fcf454,
+ * rom_cfg_table_var=0x07fcf5d8):
+ *   TASK_DESC_APP=0x07fcf8f4,gap_cfg_user_var_struct=0x07fcf694,rom_func_addr_table_var=0x07fcf454,rom_cfg_table_var=0x07fcf5d8,hci_cmd_desc_root_tab=0x07fd76fc,rom_hci_cmd_desc_root_tab=0x07f1ec58,use_h4tl=0x07fd76f9,gap_cfg_user=0x07fd7650,rom_func_addr_table=0x07fd7654,rom_cfg_table=0x07fd7658,ble_duplicate_filter_max=0x07fd76b4,ble_duplicate_filter_found=0x07fd76b5,llm_resolving_list_max=0x07fd76dd,BLE_TX_DESC_DATA_USER=0x07fd765c,BLE_TX_DESC_CNTL_USER=0x07fd7660,LLM_LE_ADV_DUMMY_IDX=0x07fd7664,LLM_LE_SCAN_CON_REQ_ADV_DIR_IDX=0x07fd7668,LLM_LE_SCAN_RSP_IDX=0x07fd766c,LLM_LE_ADV_IDX=0x07fd7670,REG_BLE_EM_RX_BUFFER_SIZE=0x07fd7648,REG_BLE_EM_TX_BUFFER_SIZE=0x07fd7644,_ble_base=0x07fd764c,rwip_env=0x07fd7758,sleep_env=0x07fd77b4,ke_env=0x07fd7e78
+ * Inlined: system_init (wdg_init, xtal16m check, hw_otpc init/read/disable, arch_rom_init, periph_init call,
+ * co_random_init, init_pwr_and_clk_ble for RCX20, ble_init), app_init and the vendor app_on_init, the main loop
+ * (schedule_while_ble_on, conditionally_run_radio_cals, vendor app_on_ble_powered: one-time state restore and timer
+ * registration, wake-up-key timing, the key event dispatch through display_state_descriptors, the 12 timing
+ * records), rwip_sleep (RCX20 branch, ASSERT_ERROR halt on sleep_duration >= 1000000) and arch_goto_sleep.
+ * ac6: 1554 vs 1553 lines, 457 register-normalized lines differ; with -mllvm -simplifycfg-hoist-common=false
+ * -mllvm -disable-lftr: 427. Real LTO link: 16 bytes long (ends at 0x07fca65c).
+ * Levers that helped: always_inline on the SDK helpers (otherwise the OTP power-on is outlined), ROM variables as
+ * extern symbols (one literal each, as V204), the timing-record loop bound written i != 192, the wake-up-key mode
+ * switch with case 0 falling into case 2, and the WKUP select/polarity loop as one pointer with sel[-4].
+ * Did not help: one key event per pass (if instead of while), i != 36 for the descriptor scan.
+ * Remaining: register and spill-slot choices throughout (V204 keeps 1/8/7/15/64/128 in spill slots), block order in
+ * the sleep path and around the key-event dispatch. Inline asm left: cpsid/cpsie (CMSIS __disable_irq/__enable_irq
+ * are asm in cmsis_armclang.h too) and nop/wfi, which can become __builtin_arm_nop/__builtin_arm_wfi. */
+/* SDK arch_main.c main() for V204 (0x07fc98d4-0x07fca64c, one LTO function; blocks 98d4/9cfc/9da0/a1a0/a538).
+ * system_init(), arch_rom_init(), init_pwr_and_clk_ble(), app_init() and the vendor app callbacks are inlined,
+ * as are schedule_while_ble_on(), rwip_sleep() and arch_goto_sleep(). Register names follow
+ * sdk/platform/include/da14585_586.h (SDK 6.0.18.1182.1); the vendor callbacks are decoded from V204. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+
+#define REG16(a) (*(volatile uint16_t *)(a))
+#define REG32(a) (*(volatile uint32_t *)(a))
+#define SetWord16(a, v) (REG16(a) = (v))
+#define GetWord16(a) REG16(a)
+#define SetWord32(a, v) (REG32(a) = (v))
+#define GetWord32(a) REG32(a)
+
+/* da14585_586.h */
+#define CLK_AMBA_REG 0x50000000
+#define CLK_FREQ_TRIM_REG 0x50000002
+#define CLK_PER_REG 0x50000004
+#define CLK_RADIO_REG 0x50000008
+#define CLK_CTRL_REG 0x5000000A
+#define PMU_CTRL_REG 0x50000010
+#define SYS_CTRL_REG 0x50000012
+#define SYS_STAT_REG 0x50000014
+#define TRIM_CTRL_REG 0x50000016
+#define CLK_32K_REG 0x50000020
+#define CLK_16M_REG 0x50000022
+#define CLK_RCX20K_REG 0x50000024
+#define ANA_STATUS_REG 0x5000002A
+#define POR_TIMER_REG 0x50000042
+#define DCDC_CTRL2_REG 0x50000082
+#define DCDC_CTRL3_REG 0x50000084
+#define WKUP_CTRL_REG 0x50000100
+#define WKUP_COMPARE_REG 0x50000102
+#define WKUP_RESET_IRQ_REG 0x50000104
+#define WKUP_RESET_CNTR_REG 0x50000108
+#define WKUP_POL_P0_REG 0x5000010A
+#define WKUP_POL_P3_REG 0x5000010E
+#define WKUP_SELECT_P0_REG 0x50000112
+#define WKUP_SELECT_P3_REG 0x50000116
+#define P0_DATA_REG 0x50003000
+#define P1_DATA_REG 0x50003020
+#define WATCHDOG_REG 0x50003100
+#define WATCHDOG_CTRL_REG 0x50003102
+#define SET_FREEZE_REG 0x50003300
+#define RESET_FREEZE_REG 0x50003302
+#define GP_CONTROL_REG 0x50003308
+#define BANDGAP_REG_SLP 0x5000330A
+#define BLE_RWBLECNTL_REG 0x40000000
+#define BLE_INTSTAT_REG 0x40000010
+#define BLE_BASETIMECNT_REG 0x4000001C
+#define BLE_FINETIMECNT_REG 0x40000020
+#define BLE_DEEPSLCNTL_REG 0x40000030
+#define BLE_ENBPRESET_REG 0x4000003C
+#define BLE_SAMPLECLK_REG 0x400000FC
+#define BLE_CNTL2_REG 0x40000200
+#define BLE_CNTL2_RET_REG 0x40000208
+#define OTPC_MODE_REG 0x07F40000
+#define OTPC_NWORDS_REG 0x07F40014
+#define OTPC_TIM1_REG 0x07F40028
+#define OTPC_TIM2_REG 0x07F4002C
+#define OTP_HDR_IQ_TRIM_VALUE_ADDR 0x07F8FE10
+#define SCB_SCR 0xE000ED10
+#define NVIC_IPR4 0xE000E410
+#define NVIC_ISER 0xE000E100
+
+#define SetBits16(a, mask, v) SetWord16((a), (GetWord16(a) & ~(uint16_t)(mask)) | (((v) << __builtin_ctz(mask)) & (mask)))
+#define SetBits32(a, mask, v) SetWord32((a), (GetWord32(a) & ~(uint32_t)(mask)) | (((v) << __builtin_ctz(mask)) & (mask)))
+
+#define G5650(type, off) (*(volatile type *)((uint8_t *)&merged_globals_5650 + (off)))
+#define G56D0(type, off) (*(volatile type *)((uint8_t *)&merged_globals_56d0 + (off)))
+#define G574C(type, off) (*(volatile type *)((uint8_t *)&merged_globals_574c + (off)))
+
+/* ROM and SDK data (addresses in V204's scatter / ROM symbol file). */
+#define ROM_DATA_BASE_ADDR 0x07FD7600
+#define SCT_BLE_BASE 0x07FD6C00
+extern uint8_t rwip_env[], sleep_env[], ke_env[];
+extern uint32_t *rom_cfg_table;
+extern uint32_t _ble_base;
+extern uint8_t hci_cmd_desc_root_tab[48];
+extern const uint8_t rom_hci_cmd_desc_root_tab[48];
+extern uint8_t use_h4tl, ble_duplicate_filter_max, ble_duplicate_filter_found, llm_resolving_list_max;
+extern const void *gap_cfg_user;
+extern const uint32_t *rom_func_addr_table;
+extern const uint8_t gap_cfg_user_var_struct[], rom_func_addr_table_var[], rom_cfg_table_var[];
+extern uint32_t BLE_TX_DESC_DATA_USER, BLE_TX_DESC_CNTL_USER, LLM_LE_ADV_DUMMY_IDX, LLM_LE_SCAN_CON_REQ_ADV_DIR_IDX,
+    LLM_LE_SCAN_RSP_IDX, LLM_LE_ADV_IDX, REG_BLE_EM_RX_BUFFER_SIZE, REG_BLE_EM_TX_BUFFER_SIZE;
+#define rwip_env_bytes ((volatile uint8_t *)rwip_env)
+#define sleep_env_slp_state (*(volatile uint8_t *)sleep_env)
+#define ke_env_queue_timer_first (*(void *volatile *)(ke_env + 40))
+
+extern uint8_t sr08_shared_context[];
+extern uint8_t clock_timekeeping_state[];
+extern uint8_t event_record_queue_state[];
+extern uint8_t time_event_queue_state[];
+extern uint8_t sensor_field_state[];
+extern uint8_t cycle_control_state[];
+extern uint8_t device_control_state[];
+extern uint8_t sensor_status_context[];
+extern uint8_t sr08_timing_records[];
+extern uint8_t nvds_data_storage[];
+extern struct sr08_merged_globals_53e4 merged_globals_53e4;
+extern const void *const display_state_descriptors[];
+extern const uint8_t TASK_DESC_APP[];
+
+extern void arch_asm_delay_us(uint32_t us);
+extern void patch_global_vars_init(void);
+extern void initialize_peripheral_state_and_interrupts(void);
+extern void dia_srand(uint32_t seed);
+extern void ble_init(uint32_t base);
+extern void calibrate_rcx20(void);
+extern void wait_sensor_readiness_combine_counter_words_at_b7d4(void);
+extern const uint8_t *validate_cached_text_payload_return_install_at_8fb0(uint32_t *length);
+extern void ke_task_create(uint32_t task, const void *desc);
+extern void ke_state_set(uint32_t id, uint32_t state);
+extern void copy_six_profile_bytes_from_offsets_two_to_seven(uint8_t *out);
+extern void perform_flash_memory_operation(void *buffer, uint32_t address, uint32_t length, uint32_t write);
+extern void lld_sleep_init_func(void);
+extern void rwip_schedule(void);
+extern int ea_sleep_check(uint32_t *sleep_duration, uint32_t wakeup_delay);
+extern uint16_t get_rc16m_count(void);
+extern int rf_calibration_585(void);
+extern void initialize_configuration_record_defaults(void);
+extern void save_valid_measurement_range_clear_stale_at_8500(void);
+extern void convert_timestamp_to_calendar_fields(uint32_t timestamp, void *fields);
+extern void write_indexed_timing_record(uint32_t index, uint32_t interval, void (*callback)(void));
+extern void start_or_stop_sensor_calibration(uint32_t start);
+extern void process_sensor_reading_and_update_state(void);
+extern void arch_printf(const char *format, ...);
+extern void switch_display_state_and_run_hooks(uint32_t state);
+extern void ke_timer_set(uint32_t timer, uint32_t task, uint32_t delay);
+extern int enqueue_ring_record_if_space(void *ring, const void *record);
+extern int peek_ring_buffer_entry(void *ring, uint32_t *record);
+extern void advance_queue_tail_if_nonempty(void *ring);
+extern uint32_t get_ble_base_time_ms(void);
+extern int ke_sleep_check(void);
+extern int ke_timer_sleep_check(uint32_t *sleep_duration, uint32_t wakeup_delay);
+extern void lld_sleep_enter(uint32_t sleep_duration, uint32_t ext_wakeup);
+extern void ble_regs_push(void);
+extern void conditionally_initialize_peripheral_and_schedule_service(void);
+extern const char uart_format_string_and_decimal[];
+extern const char uart_newline_string[];
+
+extern void process_sensor_sample_and_maybe_save_record(void);
+extern void process_measurement_records_and_sensor_state_block_at_b1b0(void);
+extern void process_motion_axes_and_activity_state_block_at_ca68(void);
+extern void return_without_action_at_31f4(void);
+extern void process_sensor_mode_and_update_display(void);
+extern void dispatch_sensor_and_display_events_block_at_25c4(void);
+extern void update_clock_and_process_events(void);
+extern void advance_sensor_cycle_and_toggle_mode_flags(void);
+
+struct display_event_handler {
+    uint32_t mask;
+    uint16_t next_state;
+    uint16_t reserved_06;
+    void (*handler)(uint32_t event);
+};
+struct display_state_descriptor {
+    uint16_t state;
+    uint16_t handler_count;
+    void (*enter)(uint32_t);
+    void (*leave)(uint32_t);
+    void (*render)(uint16_t *);
+    const struct display_event_handler *handlers;
+};
+struct timing_record {
+    uint8_t active;
+    uint8_t repeat;
+    uint8_t reserved_02[2];
+    uint32_t interval;
+    uint32_t last;
+    void (*callback)(void);
+};
+
+#define BLE_EVT_END 4
+#define TASK_APP 4
+#define APP_TIMER 0x413
+
+static inline __attribute__((always_inline)) void wdg_reload(uint16_t period) { SetWord16(WATCHDOG_REG, period); }
+
+extern void conditionally_initialize_peripheral_and_schedule_service(void);
+/* sdk/platform/driver/wkupct_quadec/wkupct_quadec.c */
+static inline __attribute__((always_inline)) void wkupct_enable_irq(uint32_t select, uint32_t polarity, uint16_t events_num, uint16_t deb_time)
+{
+    SetBits16(CLK_PER_REG, 0x0010, 1); /* WAKEUPCT_ENABLE */
+    *(void (*volatile *)(void))((uint8_t *)&merged_globals_5650 + 72) = conditionally_initialize_peripheral_and_schedule_service;
+    SetWord16(WKUP_COMPARE_REG, events_num);
+    volatile uint16_t *sel = (volatile uint16_t *)WKUP_SELECT_P0_REG;
+    for (uint32_t i = 0; i != 32; i += 8, sel++) {
+        *sel = (*sel & ~0xff) + (uint8_t)(select >> i);
+        sel[-4] = (sel[-4] & ~0xff) + (uint8_t)(polarity >> i);
+    }
+    REG16(WKUP_SELECT_P3_REG) &= 0xfcff;
+    REG16(WKUP_POL_P3_REG) &= 0xfcff;
+    SetWord16(WKUP_RESET_IRQ_REG, 1);
+    SetWord16(WKUP_RESET_CNTR_REG, 0);
+    SetBits16(WKUP_CTRL_REG, 0x3f, deb_time);
+    SetBits16(WKUP_CTRL_REG, 0x80, 1);
+    REG32(NVIC_IPR4) = (REG32(NVIC_IPR4) | 0x80) & ~0x7f;
+    REG32(NVIC_ISER) = 1u << 16;
+}
+
+/* sdk/platform/driver/hw_otpc/hw_otpc_585_586.c */
+static inline __attribute__((always_inline)) void hw_otpc_init_and_power_on(void)
+{
+    SetWord32(OTPC_MODE_REG, 0);
+    SetBits16(SYS_CTRL_REG, 0x0040, 1); /* OTPC_RESET_REQ */
+    SetBits16(SYS_CTRL_REG, 0x0040, 0);
+    SetWord32(OTPC_NWORDS_REG, 0);
+    SetWord32(OTPC_TIM1_REG, 0x1a104f20);
+    SetWord32(OTPC_TIM2_REG, 0x00010000);
+    SetBits16(CLK_AMBA_REG, 0x0080, 1); /* OTP_ENABLE */
+    for (volatile int i = 0; i < 100; i++)
+        ;
+}
+
+/* sdk/platform/arch/main/arch_system.c */
+static inline __attribute__((always_inline)) void set_xtal16m_trim_value(uint16_t trim_value)
+{
+    G5650(uint16_t, 0x3a) = trim_value; /* clk_freq_trim_reg_value */
+    SetBits16(CLK_16M_REG, 0x0001, 1);
+    arch_asm_delay_us(13);
+    SetBits16(CLK_CTRL_REG, 0x0003, 1);
+    while ((GetWord16(CLK_CTRL_REG) & 0x0040) == 0)
+        ;
+    SetWord16(CLK_FREQ_TRIM_REG, trim_value);
+    arch_asm_delay_us(1000);
+    SetBits16(CLK_CTRL_REG, 0x0003, 0);
+    while ((GetWord16(CLK_CTRL_REG) & 0x0080) == 0)
+        ;
+}
+
+static inline __attribute__((always_inline)) void init_pwr_and_clk_ble(void)
+{
+    SetBits16(CLK_RADIO_REG, 0x0030, 0);  /* BLE_DIV */
+    SetBits16(CLK_RADIO_REG, 0x0080, 1);  /* BLE_ENABLE */
+    SetBits16(CLK_RADIO_REG, 0x0003, 1);  /* RFCU_DIV */
+    SetBits16(CLK_RADIO_REG, 0x0008, 1);  /* RFCU_ENABLE */
+    SetBits16(CLK_32K_REG, 0x0080, 1);    /* RC32K_ENABLE */
+    SetBits16(SYS_CTRL_REG, 0x0008, 0);   /* CLK32_SOURCE */
+    SetBits16(CLK_RADIO_REG, 0x0040, 1);  /* BLE_LP_RESET */
+    SetBits16(PMU_CTRL_REG, 0x0004, 0);   /* RADIO_SLEEP */
+    while (!(GetWord16(SYS_STAT_REG) & 0x0002))
+        ;
+    SetBits16(CLK_RCX20K_REG, 0x00f0, 0xb); /* RCX20K_NTC */
+    SetBits16(CLK_RCX20K_REG, 0x0300, 0);   /* RCX20K_BIAS */
+    SetBits16(CLK_RCX20K_REG, 0x000f, 0);   /* RCX20K_TRIM */
+    SetBits16(CLK_RCX20K_REG, 0x0400, 1);   /* RCX20K_LOWF */
+    SetBits16(CLK_RCX20K_REG, 0x0800, 1);   /* RCX20K_ENABLE */
+    SetBits16(CLK_RCX20K_REG, 0x1000, 1);   /* RCX20K_SELECT */
+    SetBits16(SYS_CTRL_REG, 0x0008, 0);
+    SetBits16(CLK_32K_REG, 0x0001, 0);      /* XTAL32K_ENABLE */
+    SetBits16(CLK_32K_REG, 0x0080, 0);
+    SetBits16(CLK_RADIO_REG, 0x0040, 0);
+    if (GetWord16(ANA_STATUS_REG) & 0x0200)
+        SetWord16(DCDC_CTRL3_REG, 0x5);
+    SetBits32(BLE_RWBLECNTL_REG, 0x00000100, 0);
+    SetBits32(BLE_CNTL2_REG, 0x00007e00, 16);
+    SetBits32(BLE_CNTL2_REG, 0x00200000, 1);
+}
+
+/* sdk/platform/arch/main/arch_rom.c */
+static inline __attribute__((always_inline)) void arch_rom_init(void)
+{
+    __builtin_memset((void *)SCT_BLE_BASE, 0, 0x798);
+    __builtin_memset((void *)ROM_DATA_BASE_ADDR, 0, 0xa00);
+    patch_global_vars_init();
+    __builtin_memcpy(hci_cmd_desc_root_tab, rom_hci_cmd_desc_root_tab, 48);
+    use_h4tl = 0;
+    gap_cfg_user = gap_cfg_user_var_struct;
+    rom_func_addr_table = (const uint32_t *)rom_func_addr_table_var;
+    rom_cfg_table = (uint32_t *)rom_cfg_table_var;
+    ble_duplicate_filter_max = 10;
+    ble_duplicate_filter_found = 0;
+    llm_resolving_list_max = 50;
+    BLE_TX_DESC_DATA_USER = 5;
+    BLE_TX_DESC_CNTL_USER = 1;
+    LLM_LE_ADV_DUMMY_IDX = 5 + 1 - 1;
+    LLM_LE_SCAN_CON_REQ_ADV_DIR_IDX = LLM_LE_ADV_DUMMY_IDX + 1;
+    LLM_LE_SCAN_RSP_IDX = LLM_LE_SCAN_CON_REQ_ADV_DIR_IDX + 1;
+    LLM_LE_ADV_IDX = LLM_LE_SCAN_RSP_IDX + 1;
+    REG_BLE_EM_RX_BUFFER_SIZE = 38;
+    REG_BLE_EM_TX_BUFFER_SIZE = 38;
+    _ble_base = SCT_BLE_BASE;
+}
+
+static inline __attribute__((always_inline)) void system_init(void)
+{
+    SetWord16(WATCHDOG_REG, 200);
+    SetWord16(WATCHDOG_CTRL_REG, 1);
+    SetWord16(RESET_FREEZE_REG, 8);
+    (void)GetWord16(POR_TIMER_REG); /* reset_indication() */
+    __asm__ volatile("nop");
+    __asm__ volatile("nop");
+    SetBits16(DCDC_CTRL2_REG, 0x0007, 0); /* DCDC_AUTO_CAL */
+    if (GetWord16(ANA_STATUS_REG) & 0x0200) {
+        SetBits16(DCDC_CTRL2_REG, 0xf000, 0xa); /* DCDC_VOLT_LEV */
+        SetBits16(DCDC_CTRL2_REG, 0x0078, 0x8); /* DCDC_CUR_LIM */
+    }
+    uint16_t trimvalue = GetWord16(CLK_FREQ_TRIM_REG);
+    if (trimvalue == 0)
+        trimvalue = 0x652;
+    set_xtal16m_trim_value(trimvalue);
+    SetBits16(CLK_16M_REG, 0x0001, 0);
+    hw_otpc_init_and_power_on();
+    SetWord32(OTPC_MODE_REG, 1);
+    G5650(uint16_t, 0x3c) = REG16(OTP_HDR_IQ_TRIM_VALUE_ADDR);     /* iq_trim_bias_ctrl1_reg */
+    SetWord32(OTPC_MODE_REG, 0);
+    G5650(uint16_t, 0x3e) = REG16(OTP_HDR_IQ_TRIM_VALUE_ADDR + 2); /* iq_trim_rf_mixer_ctrl1_reg */
+    hw_otpc_init_and_power_on();
+    SetWord32(OTPC_MODE_REG, GetWord32(OTPC_MODE_REG) & ~7u);
+    SetBits16(CLK_AMBA_REG, 0x0080, 0);
+    arch_rom_init();
+    initialize_peripheral_state_and_interrupts(); /* periph_init() */
+    dia_srand(1);                                 /* co_random_init(1) */
+    init_pwr_and_clk_ble();
+    ble_init(_ble_base);
+    rwip_env_bytes[4] = 0; /* sleep_enable */
+    rwip_env_bytes[3] = 0; /* ext_wakeup_enable */
+    SetBits32(BLE_RWBLECNTL_REG, 0x00000100, 1);
+    calibrate_rcx20();
+    wait_sensor_readiness_combine_counter_words_at_b7d4();
+    G56D0(uint8_t, 100) = 0;
+    rwip_env_bytes[3] = 0;
+    sleep_env_slp_state = 0;
+    /* app_init() and the vendor app_on_init callback. */
+    G56D0(uint32_t, 88) = 0;
+    G56D0(uint32_t, 92) = 0;
+    G56D0(uint32_t, 96) = 0;
+    uint32_t length;
+    const uint8_t *name = validate_cached_text_payload_return_install_at_8fb0(&length);
+    G574C(uint8_t, 72) = (uint8_t)length;
+    __builtin_memcpy((uint8_t *)&merged_globals_574c + 73, name, (uint8_t)length);
+    G574C(uint16_t, 106) = 0;
+    ke_task_create(TASK_APP, TASK_DESC_APP);
+    ke_state_set(TASK_APP, 0);
+    G5650(uint8_t, 9) = 0;
+    G574C(uint16_t, 48) = 0x594a;
+    G574C(uint32_t, 40) = 0xfef50305;
+    G574C(uint32_t, 44) = 0xff0f1812;
+    uint8_t address[6];
+    copy_six_profile_bytes_from_offsets_two_to_seven(address);
+    __builtin_memcpy((uint8_t *)&merged_globals_574c + 50, address, 6);
+    G574C(uint16_t, 60) = 23;
+    G574C(uint32_t, 56) = 0x000100cc;
+    G5650(uint8_t, 10) = 1;
+    G5650(uint8_t, 20) = 0;
+    G56D0(uint32_t, 24) = 0;
+    G56D0(uint32_t, 28) = 0;
+    G56D0(uint32_t, 32) = 0;
+    G56D0(uint32_t, 36) = 0;
+    *(volatile uint32_t *)sensor_status_context = 0;
+    for (int i = 0; i < 10; i++) {
+        G56D0(uint8_t, 103 + 2 * i) = 4;
+        G56D0(uint8_t, 102 + 2 * i) = 255;
+    }
+    rwip_env_bytes[3] = 1;
+    sleep_env_slp_state = 1;
+    volatile uint16_t *settings = (volatile uint16_t *)&merged_globals_53e4;
+    perform_flash_memory_operation((void *)settings, 0x2d000, 126, 0);
+    if (settings[0] != 0x1236 || settings[62] != 0x4323)
+        __builtin_memset((uint8_t *)settings + 2, 0, 122);
+    lld_sleep_init_func();
+    SetWord16(TRIM_CTRL_REG, 0);
+    SetBits16(CLK_16M_REG, 0x00e0, 0x5);
+    wdg_reload(200);
+    SetWord16(RESET_FREEZE_REG, 8);
+    SetBits16(SYS_CTRL_REG, 0x0080, 0);
+    uint16_t marker = *(volatile uint16_t *)(nvds_data_storage + 0xe);
+    if (marker == 0x98ba)
+        G5650(uint8_t, 14) = 1;
+    if (*(volatile uint16_t *)(nvds_data_storage + 0xe) == 0x1212)
+        G5650(uint8_t, 14) = 2;
+}
+
+static inline __attribute__((always_inline)) uint32_t ble_basetime(void)
+{
+    SetWord32(BLE_SAMPLECLK_REG, 1);
+    while (GetWord32(BLE_SAMPLECLK_REG))
+        ;
+    return GetWord32(BLE_BASETIMECNT_REG);
+}
+
+/* sdk/platform/arch/main/arch_system.c conditionally_run_radio_cals() */
+static inline __attribute__((always_inline)) void conditionally_run_radio_cals(void)
+{
+    uint32_t current_time = ble_basetime();
+    uint32_t last = G5650(uint32_t, 68);
+    uint16_t count;
+    if (current_time < last) {
+        G5650(uint32_t, 68) = 0;
+        last = 0;
+    }
+    if (G5650(uint8_t, 1) == 1) {
+        G5650(uint32_t, 68) = current_time;
+        G5650(uint8_t, 1) = 0;
+        count = get_rc16m_count();
+    } else {
+        if (current_time - last <= 0xc7f)
+            return;
+        G5650(uint32_t, 68) = current_time;
+        count = get_rc16m_count();
+        uint16_t previous = G5650(uint16_t, 56);
+        uint16_t diff = previous >= count ? previous - count : count - previous;
+        if (diff < 24)
+            return;
+    }
+    G5650(uint16_t, 56) = count;
+    if (rf_calibration_585() == 0)
+        G5650(uint8_t, 1) = 1;
+}
+
+static inline __attribute__((always_inline)) void init_ring(uint8_t *ring, uint32_t size, uint32_t width, void *buffer)
+{
+    ((volatile uint32_t *)ring)[0] = 0;
+    ((volatile uint32_t *)ring)[1] = 0;
+    ((volatile uint32_t *)ring)[2] = size;
+    ((volatile uint32_t *)ring)[3] = width;
+    ((void *volatile *)ring)[4] = buffer;
+}
+
+/* Vendor app_on_ble_powered: one-time state restore and timer registration. */
+static inline __attribute__((always_inline)) void vendor_first_powered_init(void)
+{
+    init_ring(event_record_queue_state + 92, 16, 2, time_event_queue_state + 80);
+    initialize_configuration_record_defaults();
+    init_ring(event_record_queue_state + 32, 4, 2, cycle_control_state + 60);
+    init_ring(time_event_queue_state, 32, 1, sensor_field_state);
+    init_ring((uint8_t *)&merged_globals_574c, 4, 2, (uint8_t *)&merged_globals_56d0 + 70);
+    init_ring(time_event_queue_state + 40, 8, 1, cycle_control_state + 68);
+    perform_flash_memory_operation(time_event_queue_state + 60, 0x61000, 20, 0);
+    save_valid_measurement_range_clear_stale_at_8500();
+    device_control_state[6] = 0;
+    G5650(uint32_t, 104) = 0;
+    uint8_t *shared = sr08_shared_context;
+    __builtin_memset(shared, 0, 212);
+    shared[138] = 50;
+    shared[137] = 170;
+    *(uint16_t *)(shared + 148) = 12800;
+    *(uint16_t *)(shared + 54) = 62;
+    volatile uint32_t *clock = (volatile uint32_t *)clock_timekeeping_state;
+    clock[6] = 0;
+    clock[7] = 1;
+    clock[8] = 9;
+    clock[9] = 1;
+    clock[10] = 1;
+    clock[11] = 123;
+    clock[1] = 0x63da2a4c;
+    uint32_t stamp = 0;
+    perform_flash_memory_operation(&stamp, 0x3c000, 4, 0);
+    if (stamp != 0xffffffff) {
+        perform_flash_memory_operation(shared + 48, 0x3c000, 112, 0);
+        clock[1] = *(uint32_t *)(shared + 48);
+    }
+    const volatile uint8_t *nv = nvds_data_storage + 0xe;
+    uint8_t tag = nv[2];
+    int8_t level = (int8_t)nv[3];
+    uint32_t height = nv[4] + (nv[5] << 8);
+    if ((tag == 171 || tag == 59) && height <= 0xc4df) {
+        uint32_t time = (nv[9] << 24) + (nv[8] << 16) + (nv[7] << 8) + nv[6];
+        if ((uint8_t)level <= 100) {
+            int32_t saved = *(int32_t *)(shared + 156);
+            if (saved == level) {
+                G5650(uint8_t, 32) = 1;
+                G56D0(int32_t, 44) = level;
+            } else if ((uint32_t)saved <= 100 && *(uint16_t *)(shared + 152) == 0xaaaa) {
+                G5650(uint8_t, 32) = 1;
+                G56D0(int32_t, 44) = saved;
+            }
+        }
+        *(uint32_t *)(shared + 68) = height;
+        clock[1] = time + 3;
+    }
+    convert_timestamp_to_calendar_fields(clock[1], (void *)(clock + 6));
+    SetWord32(BLE_SAMPLECLK_REG, 1);
+    clock[0] = clock[1];
+    while (GetWord32(BLE_SAMPLECLK_REG))
+        ;
+    clock[5] = 0;
+    clock[4] = GetWord32(BLE_BASETIMECNT_REG);
+    write_indexed_timing_record(5, 1000, process_sensor_sample_and_maybe_save_record);
+    write_indexed_timing_record(3, 1, process_measurement_records_and_sensor_state_block_at_b1b0);
+    write_indexed_timing_record(2, 20, process_motion_axes_and_activity_state_block_at_ca68);
+    write_indexed_timing_record(1, 500, return_without_action_at_31f4);
+    write_indexed_timing_record(4, 1000, process_sensor_mode_and_update_display);
+    write_indexed_timing_record(7, 10, dispatch_sensor_and_display_events_block_at_25c4);
+    write_indexed_timing_record(8, 1, update_clock_and_process_events);
+    write_indexed_timing_record(6, 500, advance_sensor_cycle_and_toggle_mode_flags);
+    start_or_stop_sensor_calibration(1);
+    start_or_stop_sensor_calibration(0);
+    arch_printf("version=%d\n", 204);
+    process_sensor_reading_and_update_state();
+    uint8_t mac[8] = {0};
+    perform_flash_memory_operation(mac, 0x3042, 6, 0);
+    arch_printf("nvds mac 0x%x:0x%x:0x%x:0x%x:0x%x:0x%x\n", mac[5], mac[4], mac[3], mac[2], mac[1], mac[0]);
+    arch_printf("rsf=%d\n", G5650(uint8_t, 14));
+    uint32_t state;
+    if (G5650(uint8_t, 14) == 1)
+        state = 30;
+    else
+        state = (G5650(uint8_t, 14) == 2) << 5;
+    switch_display_state_and_run_hooks(state);
+    G5650(uint8_t, 13) = 1;
+}
+
+static inline __attribute__((always_inline)) void vendor_powered_tick(void)
+{
+    if (G5650(uint8_t, 13) == 0)
+        vendor_first_powered_init();
+    uint32_t delay;
+    if (sr08_timing_records[0] == 1 || G5650(uint8_t, 52) != 0)
+        delay = 1;
+    else if (G5650(uint8_t, 40) == 0)
+        delay = 100;
+    else
+        delay = 11;
+    ke_timer_set(APP_TIMER, TASK_APP, delay);
+    uint8_t mode = G5650(uint8_t, 15);
+    if (!(GetWord16(P1_DATA_REG) & 0x20)) {
+        if (mode == 2) {
+            arch_printf(uart_format_string_and_decimal, uart_newline_string, 335);
+            uint32_t event = 1;
+            enqueue_ring_record_if_space(&merged_globals_574c, &event);
+            G5650(uint8_t, 15) = 0;
+        }
+    } else {
+        switch (mode) {
+        case 0:
+            G5650(uint8_t, 15) = 2;
+            G5650(uint32_t, 108) = ble_basetime();
+            /* fall through */
+        case 2: {
+            uint32_t now = ble_basetime();
+            uint32_t last = G5650(uint32_t, 108);
+            if ((now >= last ? now : now + 0x5000000) - last >= 0x1450) {
+                arch_printf(uart_format_string_and_decimal, uart_newline_string, 325);
+                uint32_t event = 8;
+                enqueue_ring_record_if_space(&merged_globals_574c, &event);
+                G5650(uint8_t, 15) = 4;
+            }
+            break;
+        }
+        }
+    }
+    wkupct_enable_irq(0x2000, 0x2000, 1, 0);
+}
+
+static inline __attribute__((always_inline)) void vendor_process_events(void)
+{
+    uint32_t event = 0;
+    while (peek_ring_buffer_entry(&merged_globals_574c, &event)) {
+        advance_queue_tail_if_nonempty(&merged_globals_574c);
+        arch_printf("k=%d\n", event);
+        if (event == 8 || event == 1)
+            G5650(uint16_t, 64) = 6;
+        uint8_t current = G5650(uint8_t, 12);
+        for (uint32_t i = 0; i < 36; i++) {
+            const struct display_state_descriptor *desc = display_state_descriptors[i];
+            if (desc->state != current)
+                continue;
+            const struct display_event_handler *h = desc->handlers;
+            for (uint32_t n = desc->handler_count; n; n--, h++) {
+                if (h->mask & event) {
+                    if (h->handler)
+                        h->handler(event);
+                    if (h->next_state != 0xffff)
+                        switch_display_state_and_run_hooks(h->next_state);
+                    break;
+                }
+            }
+            break;
+        }
+        event = 0;
+    }
+    for (uint32_t i = 0; i != 192; i += 16) {
+        struct timing_record *rec = (struct timing_record *)(sr08_timing_records + i);
+        if (rec->active != 1)
+            continue;
+        uint32_t now = get_ble_base_time_ms();
+        uint32_t elapsed = (now >= rec->last ? now : now + 0x5000000) - rec->last;
+        if (elapsed >= rec->interval) {
+            rec->last = now;
+            rec->callback();
+            if (rec->repeat == 0)
+                sr08_timing_records[i] = 0;
+        }
+    }
+}
+
+/* sdk/platform/core_modules/rwip/src/rwip.c rwip_sleep() and arch_main.c arch_goto_sleep(), RCX20 build. */
+static inline __attribute__((always_inline)) void sleep_and_resume(void)
+{
+    __asm__ volatile("cpsid i");
+    uint32_t sleep_duration = rwip_env_bytes[4] == 2 ? 0 : rom_cfg_table[10];
+    if (GetWord16(GP_CONTROL_REG) & 1)
+        goto active;
+    if (!ke_sleep_check())
+        goto active;
+    if (!rwip_env_bytes[3])
+        goto idle;
+    if (!(GetWord16(SYS_STAT_REG) & 1)) {
+        if (*(volatile uint16_t *)rwip_env_bytes != 0)
+            goto idle;
+        if (ke_env_queue_timer_first != 0)
+            sleep_duration = rom_cfg_table[10];
+        if (!ke_timer_sleep_check(&sleep_duration, rwip_env_bytes[2]))
+            goto idle;
+        if (GetWord32(BLE_INTSTAT_REG) & 0x40)
+            goto idle;
+        if (!ea_sleep_check(&sleep_duration, rwip_env_bytes[2]))
+            goto idle;
+        if (sleep_duration && GetWord32(BLE_FINETIMECNT_REG) - 312 <= 218)
+            sleep_duration--;
+        uint32_t lp = G56D0(uint32_t, 8);
+        uint32_t twirq_set_value = (3357 * lp + 500000) / 1000000;
+        uint32_t twirq_reset_value = (2900 * lp + 500000) / 1000000;
+        SetWord32(BLE_ENBPRESET_REG, (GetWord32(BLE_ENBPRESET_REG) & ~0x3ffu) | (twirq_set_value - twirq_reset_value));
+        uint32_t twext_value = (sleep_env_slp_state == 2 ? 35 : 18) + twirq_set_value;
+        SetWord32(BLE_ENBPRESET_REG, (GetWord32(BLE_ENBPRESET_REG) & 0xffe003ff) | (twext_value << 10));
+        SetWord32(BLE_ENBPRESET_REG, (GetWord32(BLE_ENBPRESET_REG) & 0x1fffff) + (twirq_set_value << 21));
+        if (sleep_duration >= 1000000) {
+            wdg_reload(200);
+            SetWord16(RESET_FREEZE_REG, 8);
+            while (1)
+                ;
+        }
+        uint64_t scaled = (uint64_t)(G56D0(uint32_t, 80) | ((uint64_t)G56D0(uint32_t, 84) << 32)) * sleep_duration;
+        uint32_t sleep_lp_cycles = (uint32_t)(scaled >> 20) - 1;
+        if (sleep_lp_cycles == twext_value + 1)
+            sleep_lp_cycles = twext_value;
+        lld_sleep_enter(sleep_lp_cycles, rwip_env_bytes[4] != 0);
+        (*(void (**)(void))(0x07FD7FB4 + 44))();
+        while (!(GetWord32(BLE_DEEPSLCNTL_REG) & 0x8000))
+            ;
+        while (!(GetWord32(BLE_CNTL2_REG) & 0x100))
+            ;
+        SetWord32(BLE_CNTL2_REG, GetWord32(BLE_CNTL2_REG) & ~0x80u);
+        uint16_t bandgap = GetWord16(BANDGAP_REG_SLP);
+        if (bandgap <= 69) {
+            SetWord16(BANDGAP_REG_SLP, 70);
+            G5650(uint32_t, 80) = 70 - bandgap;
+        }
+        ble_regs_push();
+        G5650(uint32_t, 84) = GetWord32(BLE_CNTL2_RET_REG);
+        while (!(GetWord32(BLE_CNTL2_REG) & 0x80))
+            ;
+        SetBits16(CLK_RADIO_REG, 0x0080, 0);
+    }
+    /* arch_goto_sleep() */
+    SetBits16(PMU_CTRL_REG, 0x0004, 1);
+    REG32(SCB_SCR) |= 4;
+    SetBits16(SYS_CTRL_REG, 0x0020, 0);
+    SetBits16(PMU_CTRL_REG, 0x0002, 1);
+    if (sleep_env_slp_state == 1) {
+        SetBits16(SYS_CTRL_REG, 0x0010, 0);
+    } else {
+        SetBits16(SYS_CTRL_REG, 0x0f00, 0);
+        hw_otpc_init_and_power_on();
+        SetBits16(SYS_CTRL_REG, 0x0010, 1);
+        SetWord32(OTPC_NWORDS_REG, ((0x000104c0 + 0x07fc0130 + 0xf8040003) >> 2) - 1);
+        SetBits16(CLK_AMBA_REG, 0x0080, 0);
+    }
+    REG16(PMU_CTRL_REG) |= 0x0f00;
+    SetBits16(CLK_16M_REG, 0x0100, 0);
+    SetBits16(CLK_16M_REG, 0x0001, 1);
+    arch_asm_delay_us(13);
+    SetBits16(CLK_CTRL_REG, 0x0003, 1);
+    while ((GetWord16(CLK_CTRL_REG) & 0x0040) == 0)
+        ;
+    SetWord16(CLK_FREQ_TRIM_REG, 0);
+    if (GetWord16(SYS_STAT_REG) & 0x20)
+        SetWord16(SET_FREEZE_REG, 8);
+    __asm__ volatile("wfi");
+    if (GetWord16(SYS_STAT_REG) & 0x20)
+        SetWord16(RESET_FREEZE_REG, 8);
+    REG32(SCB_SCR) &= ~4u;
+    goto active;
+idle:
+    __asm__ volatile("wfi");
+active:
+    __asm__ volatile("cpsie i");
+}
+
+__attribute__((used, section(".text.initialize_sensor_measurement_state_block_at_98d4"))) void
+initialize_sensor_measurement_state_block_at_98d4(void)
+{
+    system_init();
+    while (1) {
+        if ((GetWord16(CLK_RADIO_REG) & 0x80) && !(GetWord32(BLE_DEEPSLCNTL_REG) & 0x8000) &&
+            !(*(volatile uint16_t *)rwip_env_bytes & 1)) {
+            rwip_schedule();
+            if (G5650(uint8_t, 3) == BLE_EVT_END) {
+                wait_sensor_readiness_combine_counter_words_at_b7d4(); /* rcx20_read_freq() */
+                uint32_t sleep_duration = 0;
+                if (ea_sleep_check(&sleep_duration, 4))
+                    conditionally_run_radio_cals();
+            }
+            vendor_powered_tick();
+            vendor_process_events();
+            if (G5650(uint32_t, 120) != 0) {
+                __asm__ volatile("wfi");
+                wdg_reload(200);
+                continue;
+            }
+        }
+        sleep_and_resume();
+        wdg_reload(200);
+    }
+}

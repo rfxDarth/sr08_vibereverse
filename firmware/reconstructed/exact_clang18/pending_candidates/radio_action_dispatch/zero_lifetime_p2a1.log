@@ -1,0 +1,33 @@
+0x07fc86b8-0x07fc8774 dispatch_radio_state_action_block_at_86b8 (188 bytes)
+--- V204
++++ candidate
+@@ -40,18 +40,18 @@
+ 7fc870c:	2105      	movs	r1, #5
+ 7fc870e:	7381      	strb	r1, [r0, #14]
+-7fc8710:	2100      	movs	r1, #0
+-7fc8712:	2210      	movs	r2, #16
+-7fc8714:	8182      	strh	r2, [r0, #12]
++7fc8710:	2110      	movs	r1, #16
++7fc8712:	8181      	strh	r1, [r0, #12]
++7fc8714:	2100      	movs	r1, #0
+ 7fc8716:	2401      	movs	r4, #1
+ 7fc8718:	04a2      	lsls	r2, r4, #18
+ 7fc871a:	6041      	str	r1, [r0, #4]
+ 7fc871c:	6082      	str	r2, [r0, #8]
+-7fc871e:	8041      	strh	r1, [r0, #2]
+-7fc8720:	6101      	str	r1, [r0, #16]
+-7fc8722:	6141      	str	r1, [r0, #20]
+-7fc8724:	6181      	str	r1, [r0, #24]
+-7fc8726:	7701      	strb	r1, [r0, #28]
+-7fc8728:	4911      	ldr	r1, [pc, #68]	@ (0x7fc8770)
+-7fc872a:	83c1      	strh	r1, [r0, #30]
++7fc871e:	4a14      	ldr	r2, [pc, #80]	@ (0x7fc8770)
++7fc8720:	83c2      	strh	r2, [r0, #30]
++7fc8722:	7701      	strb	r1, [r0, #28]
++7fc8724:	6101      	str	r1, [r0, #16]
++7fc8726:	6141      	str	r1, [r0, #20]
++7fc8728:	6181      	str	r1, [r0, #24]
++7fc872a:	8041      	strh	r1, [r0, #2]
+ 7fc872c:	f7ff fc6a 	bl	0x7fc8004
+ 7fc8730:	f000 f820 	bl	0x7fc8774
+MISMATCH

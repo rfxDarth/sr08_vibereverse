@@ -1,38 +1,25 @@
-/* Validate a stored sample against the latest reading and clear stale data. */
-__attribute__((used, naked, section(".text.validate_stored_sample_against_latest_reading_at_5600"))) int
-validate_stored_sample_against_latest_reading_at_5600(void) {
-    __asm__ volatile("push {r4, r5, r6, lr}\n"
-                     "mov r4, r2\n"
-                     "mov r6, r1\n"
-                     "mov r5, r0\n"
-                     "ldr r1, [pc, #64]\n"
-                     "bl __aeabi_uidiv\n"
-                     "movs r1, #7\n"
-                     "bl __aeabi_uidiv\n"
-                     "movs r2, #36\n"
-                     "muls r6, r2\n"
-                     "lsls r0, r1, #13\n"
-                     "adds r0, r6, r0\n"
-                     "movs r1, #23\n"
-                     "lsls r1, r1, #13\n"
-                     "adds r1, r0, r1\n"
-                     "movs r6, #0\n"
-                     "mov r0, r4\n"
-                     "mov r3, r6\n"
-                     "bl perform_flash_memory_operation\n"
-                     "ldr r1, [r4, #0]\n"
-                     "subs r0, r5, r1\n"
-                     "bcs .Ldifference_ready\n"
-                     "subs r0, r1, r5\n"
-                     ".Ldifference_ready: adds r1, r1, #1\n"
-                     "beq .Lclear_stale_sample\n"
-                     "ldr r1, [pc, #20]\n"
-                     "cmp r0, r1\n"
-                     "bcc .Lreturn_result\n"
-                     ".Lclear_stale_sample: movs r1, #36\n"
-                     "mov r0, r4\n"
-                     "bl __aeabi_memclr\n"
-                     "movs r6, #255\n"
-                     ".Lreturn_result: sxtb r0, r6\n"
-                     "pop {r4, r5, r6, pc}\n");
+/* Read slot SLOT of the weekday flash area for TIMESTAMP into SAMPLE (36 bytes).
+ * Clear it and return -1 when it is erased or more than a day and a minute
+ * away from TIMESTAMP; otherwise return 0. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_arm_eabi.h"
+#include "firmware/reconstructed/include/sr08_flash_operation.h"
+
+enum { SECONDS_PER_DAY = 86400, WEEKDAY_SAMPLE_SIZE = 36 };
+
+int8_t validate_stored_sample_against_latest_reading_at_5600(uint32_t timestamp, uint32_t slot, uint32_t *sample)
+{
+    uint32_t weekday = timestamp / SECONDS_PER_DAY % 7;
+    int8_t result = 0;
+    perform_flash_memory_operation((uint8_t *)sample, slot * WEEKDAY_SAMPLE_SIZE + weekday * 0x2000 + 0x2e000,
+                                   WEEKDAY_SAMPLE_SIZE, SR08_FLASH_READ);
+    uint32_t stored = sample[0];
+    uint32_t difference = timestamp - stored;
+    if (timestamp < stored)
+        difference = stored - timestamp;
+    if ((stored == 0xffffffff) | (difference >= SECONDS_PER_DAY + 61)) {
+        __aeabi_memclr(sample, WEEKDAY_SAMPLE_SIZE);
+        result = -1;
+    }
+    return result;
 }

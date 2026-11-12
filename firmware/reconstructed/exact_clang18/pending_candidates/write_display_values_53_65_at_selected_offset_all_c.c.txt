@@ -1,0 +1,12 @@
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+__attribute__((used,section(".text.write_display_values_53_65_at_selected_offset"))) void
+write_display_values_53_65_at_selected_offset(void){
+ const volatile uint8_t *config=(const volatile uint8_t *)&merged_globals_5650;
+ uint32_t slot=config[0x30]&3u;
+ volatile uint8_t *display=(volatile uint8_t *)&merged_globals_56d0;
+ display+=slot;
+ display[0x40]=0x53;
+ display+=0x40;
+ display[1]=0x65;
+}

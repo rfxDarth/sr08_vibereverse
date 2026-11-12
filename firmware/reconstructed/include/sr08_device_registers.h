@@ -36,7 +36,7 @@ enum {
 #define SR08_NVIC_PENDING_CLEAR_REGISTER ((uint32_t *)0xe000e280u)
 
 void initialize_peripheral_state_and_interrupts(void);
-void initialize_ring_display_and_sensor_registers(void);
+void rf_regs(void);
 int set_pending_flag_if_status_bit_7_clear(void);
 void program_peripheral_registers_from_descriptor(const struct sr08_peripheral_register_profile *profile);
 

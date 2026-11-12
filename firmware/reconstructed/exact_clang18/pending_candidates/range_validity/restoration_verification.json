@@ -1,0 +1,23 @@
+{
+  "status": "restored canonical compiled inputs",
+  "verified_source_snapshot": "/tmp/sr08-alice-advertising-name-source-bundle",
+  "input_files": 581,
+  "byte_identical_input_files": 579,
+  "comment_only_files": [
+    "firmware/reconstructed/exact_clang18/manual_sources/apply_range_mode_validity_checks_preserving_at_8878.c",
+    "firmware/reconstructed/exact_clang18/manual_sources/save_valid_measurement_range_clear_stale_at_8500.c"
+  ],
+  "comment_only_files_compile_to_identical_objects": [
+    {
+      "source": "apply_range_mode_validity_checks_preserving_at_8878.c",
+      "identical_object_sha256": "7a5988bf41da3b677cdef064dab1340c4698e3dab0d67f8643ca166d500d85b9"
+    },
+    {
+      "source": "save_valid_measurement_range_clear_stale_at_8500.c",
+      "identical_object_sha256": "03adbb356130388b270e3b821ebd69572f638a0489134a98ae0cc0d7daca6255"
+    }
+  ],
+  "build_configuration_identical": true,
+  "canonical_container_sha256": "c747249568a75dc9925a7d25de7baffca2ae5ff42cd2ffd7dfddf8ee42b5e8e8",
+  "fresh_full_build": false
+}

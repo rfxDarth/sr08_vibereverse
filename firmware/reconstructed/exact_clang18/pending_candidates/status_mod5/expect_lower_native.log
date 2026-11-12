@@ -1,0 +1,58 @@
+group 0x07fca914-0x07fca968 (84 bytes)
+MISMATCH: 34 differing bytes
+--- V204
++++ candidate
+@@ -1,5 +1,5 @@
+ 7fca914:	b5b0      	push	{r4, r5, r7, lr}
+ 7fca916:	2440      	movs	r4, #64	@ 0x40
+-7fca918:	4deb      	ldr	r5, [pc, #940]	@ (0x7fcacc8)
++7fca918:	4d11      	ldr	r5, [pc, #68]	@ (0x7fca960)
+ 7fca91a:	2053      	movs	r0, #83	@ 0x53
+ 7fca91c:	5528      	strb	r0, [r5, r4]
+@@ -9,5 +9,5 @@
+ 7fca924:	7101      	strb	r1, [r0, #4]
+ 7fca926:	2030      	movs	r0, #48	@ 0x30
+-7fca928:	49e1      	ldr	r1, [pc, #900]	@ (0x7fcacb0)
++7fca928:	490e      	ldr	r1, [pc, #56]	@ (0x7fca964)
+ 7fca92a:	5c08      	ldrb	r0, [r1, r0]
+ 7fca92c:	2105      	movs	r1, #5
+@@ -20,22 +20,22 @@
+ 7fca93c:	e001      	b.n	0x7fca942
+ 7fca93e:	2903      	cmp	r1, #3
+-7fca940:	d108      	bne.n	0x7fca954
++7fca940:	d103      	bne.n	0x7fca94a
+ 7fca942:	2042      	movs	r0, #66	@ 0x42
+ 7fca944:	2108      	movs	r1, #8
+ 7fca946:	5429      	strb	r1, [r5, r0]
+-7fca948:	2041      	movs	r0, #65	@ 0x41
+-7fca94a:	2108      	movs	r1, #8
+-7fca94c:	5429      	strb	r1, [r5, r0]
+-7fca94e:	205b      	movs	r0, #91	@ 0x5b
+-7fca950:	5528      	strb	r0, [r5, r4]
+-7fca952:	bdb0      	pop	{r4, r5, r7, pc}
+-7fca954:	2902      	cmp	r1, #2
+-7fca956:	d2f7      	bcs.n	0x7fca948
+-7fca958:	2900      	cmp	r1, #0
+-7fca95a:	d1f8      	bne.n	0x7fca94e
+-7fca95c:	e7f9      	b.n	0x7fca952
+-7fca95e:	46c0      	nop			@ (mov r8, r8)
+-7fca960:	b580      	push	{r7, lr}
+-7fca962:	4860      	ldr	r0, [pc, #384]	@ (0x7fcaae4)
+-7fca964:	8d40      	ldrh	r0, [r0, #42]	@ 0x2a
+-7fca966:	2800      	cmp	r0, #0
++7fca948:	e001      	b.n	0x7fca94e
++7fca94a:	2901      	cmp	r1, #1
++7fca94c:	d905      	bls.n	0x7fca95a
++7fca94e:	2041      	movs	r0, #65	@ 0x41
++7fca950:	2108      	movs	r1, #8
++7fca952:	5429      	strb	r1, [r5, r0]
++7fca954:	205b      	movs	r0, #91	@ 0x5b
++7fca956:	5528      	strb	r0, [r5, r4]
++7fca958:	bdb0      	pop	{r4, r5, r7, pc}
++7fca95a:	2900      	cmp	r1, #0
++7fca95c:	d1fa      	bne.n	0x7fca954
++7fca95e:	e7fb      	b.n	0x7fca958
++7fca960:	56d0      	ldrsb	r0, [r2, r3]
++7fca962:	07fd      	lsls	r5, r7, #31
++7fca964:	5650      	ldrsb	r0, [r2, r1]
++7fca966:	07fd      	lsls	r5, r7, #31

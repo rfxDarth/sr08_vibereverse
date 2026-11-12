@@ -1,0 +1,12 @@
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_display_value_formatters.h"
+extern uint8_t sr08_shared_context[];
+extern uint8_t merged_globals_56d0[];
+
+__attribute__((used, section(".text.format_display_value_from_shared_offset_8"))) void
+format_display_value_from_shared_offset_8(void) {
+    uint32_t value = ((volatile uint8_t *)sr08_shared_context)[8];
+    volatile uint8_t *display = merged_globals_56d0;
+    convert_quotient_remainder_sequence_ring_s_at_3148(value, display + 0x40, 3, 1);
+    display[0x45] = 0x10;
+}

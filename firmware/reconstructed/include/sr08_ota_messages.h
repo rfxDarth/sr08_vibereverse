@@ -1,6 +1,8 @@
 #ifndef SR08_OTA_MESSAGES_H
 #define SR08_OTA_MESSAGES_H
 
+#include "firmware/reconstructed/include/sr08_static_assert.h"
+
 #include <stddef.h>
 #include <stdint.h>
 #include "firmware/reconstructed/include/sr08_kernel_message.h"
@@ -20,9 +22,9 @@ struct sr08_ota_transfer_status {
     uint8_t reserved_suffix;
 };
 
-_Static_assert(offsetof(struct sr08_ota_transfer_status, status_code) == 2,
+SR08_STATIC_ASSERT(offsetof(struct sr08_ota_transfer_status, status_code) == 2,
                "OTA transfer status must remain at payload offset two");
-_Static_assert(sizeof(struct sr08_ota_transfer_status) == SR08_OTA_TRANSFER_RECORD_PAYLOAD_SIZE,
+SR08_STATIC_ASSERT(sizeof(struct sr08_ota_transfer_status) == SR08_OTA_TRANSFER_RECORD_PAYLOAD_SIZE,
                "OTA transfer status payload must remain four bytes");
 
 /* Allocate a transfer message from the OTA profile for the application task. */

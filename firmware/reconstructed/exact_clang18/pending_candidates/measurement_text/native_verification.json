@@ -1,0 +1,19 @@
+{
+  "status": "instruction match except three LDR literal offsets",
+  "code_range": [
+    "0x07fcaae8",
+    "0x07fcab38"
+  ],
+  "original_region_bytes": 84,
+  "standalone_candidate_bytes": 92,
+  "changed_instructions": [
+    "-7fcaaec:\t49be      \tldr\tr1, [pc, #760]\t@ (0x7fcade8)",
+    "+7fcaaec:\t4912      \tldr\tr1, [pc, #72]\t@ (0x7fcab38)",
+    "-7fcab02:\t489c      \tldr\tr0, [pc, #624]\t@ (0x7fcad74)",
+    "+7fcab02:\t480e      \tldr\tr0, [pc, #56]\t@ (0x7fcab3c)",
+    "-7fcab06:\t4a0c      \tldr\tr2, [pc, #48]\t@ (0x7fcab38)",
+    "+7fcab06:\t4a0e      \tldr\tr2, [pc, #56]\t@ (0x7fcab40)"
+  ],
+  "source_sha256": "781aa1668cb2ebd8cf356a8bfdd0f166a85cf04f01768b02aef1f2bca9273c0a",
+  "installed": false
+}

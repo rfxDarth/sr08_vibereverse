@@ -3,8 +3,9 @@
 This probe compiles the Ghidra 12.1.4 pseudocode for V204 `FUN_07fcdd68`
 (`V204.payload.bin`, SHA-256
 `5020c236a289544d878196bec3e21b005835237bc2fc34935927533bcd1c8570`). Ghidra
-reports four disjoint function ranges totaling 3,592 bytes, with 82 unrelated
-bytes between them. The probe concatenates only the function ranges in address
+reports four disjoint code ranges totaling 3,592 bytes, with 82 bytes of
+this routine's literal pools and padding between them (confirmed against the
+reconstructed layout and pool words). The probe concatenates only the function ranges in address
 order and excludes the gaps. This remains a linear diagnostic and cannot
 align basic blocks laid out differently by a compiler.
 

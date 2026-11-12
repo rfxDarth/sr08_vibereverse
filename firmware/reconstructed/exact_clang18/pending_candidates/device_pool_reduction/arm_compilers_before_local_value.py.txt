@@ -1,0 +1,1126 @@
+"""Compile and place C units with V204's original Arm compilers.
+
+V204 mixes two toolchains: ARM Compiler 5.06u7 (``armcc``) and ARM Compiler
+6.16 (``armclang``). Both run natively in MDK-Lite mode, selected through
+``ARM_TOOL_VARIANT=mdk_lite`` and MDK 5.36's product definitions. MDK-Lite
+objects are encrypted, so only Arm's own ``armlink`` and ``fromelf`` read
+them.
+
+Each group of consecutive functions is linked by one ``armlink`` run at the
+group's V204 address, with a symdefs file for external references. Linking
+the group together lets armlink merge identical literal-pool constants
+across functions, as V204's link did. The plain-ELF read-only region is then
+wrapped as one GNU object section, ``.text.<first symbol>``, for the
+fixed-address GNU link.
+
+Expected layout under the tools directory (default: ``<repo>/Tools``):
+
+- ``armcc506/``: ARM Compiler 5.06u7 (build 960) for Linux.
+- ``armclang616/``: ARM Compiler 6.16 for Linux.
+- ``mdk_lite/mappings/``: ``ARM/sw/mappings`` extracted from Keil
+  ``MDK536.EXE`` (a PE wrapper around a zip archive; ``7z x`` reads it).
+
+V204's armclang half was linked with link-time optimisation, which MDK-Lite
+refuses. Units that need it use ``ac6lto``: the ARM Compiler 6.16 bundled
+with a licensed Keil MDK Professional 5.36 installed under Wine, at
+``$WINEPREFIX/drive_c/Keil_v5`` (override with ``SR08_KEIL_DIR``). Its
+non-LTO output is identical to the native 6.16.
+
+All ``ac6lto`` units form one module, linked by a single ``armlink --lto``
+run (``place_lto_module``): link-time optimisation derives facts about each
+function from the bodies of the functions it calls, so a unit only compiles
+as in V204 when its callees are part of the same link. A scatter file gives
+every function its own execution region at its V204 address.
+"""
+from __future__ import annotations
+
+import hashlib
+import os
+import shutil
+import re
+import subprocess
+import tempfile
+from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass
+from pathlib import Path
+
+COMPILERS = {
+    "ac5": ("armcc506/bin64", "armcc",
+            ["--c99", "--cpu=Cortex-M0", "--thumb", "-O3"]),
+    # -Oz is required by crc32_update_one_byte's loop; other units match at
+    # several levels.
+    "ac6": ("armclang616/bin", "armclang",
+            ["--target=arm-arm-none-eabi", "-mcpu=cortex-m0", "-mthumb", "-Oz"]),
+    # V204's NVDS getter uses a word table. Keep other LTO switches unchanged.
+    "ac6wordtables": ("armclang616/bin", "armclang",
+                      ["--target=arm-arm-none-eabi", "-mcpu=cortex-m0", "-mthumb", "-Oz",
+                       "-mllvm", "-arm-synthesize-thumb-1-tbb=false"]),
+    # Preserve the six-byte copy's source-order pointer/counter updates.
+    "ac6source": ("armclang616/bin", "armclang",
+                  ["--target=arm-arm-none-eabi", "-mcpu=cortex-m0", "-mthumb", "-Oz",
+                   "-mllvm", "-pre-RA-sched=source"]),
+    # This no-argument initializer uses a four-byte outgoing stack frame in
+    # V204. APCS reproduces it without naked functions or inline assembly.
+    "ac6apcs": ("armclang616/bin", "armclang",
+                ["--target=arm-arm-none-eabi", "-mcpu=cortex-m0", "-mthumb", "-Oz", "-mabi=apcs-gnu"]),
+    # Runs under Wine from the Keil install (see the module docstring). The
+    # SDK's Keil projects enable "Short enums/wchar" (vShortEn), so enums
+    # such as adc_config_t's mode take one byte.
+    "ac6lto": (None, "armclang",
+               ["--target=arm-arm-none-eabi", "-mcpu=cortex-m0", "-mthumb", "-Oz", "-flto",
+                "-fshort-enums", "-fshort-wchar"]),
+    # A second LTO module, linked after "ac6lto" (see build_v204.main), for
+    # vendor switches that V204 lowers to word jump tables. armlink's LTO
+    # code generation takes the option for the whole module, and the SDK's
+    # hogpd_report_cfm_handler in "ac6lto" keeps its Thumb-1 TBB table.
+    "ac6ltowordtables": (None, "armclang",
+                         ["--target=arm-arm-none-eabi", "-mcpu=cortex-m0", "-mthumb", "-Oz", "-flto",
+                          "-fshort-enums", "-fshort-wchar"]),
+}
+WINE_COMPILERS = {"ac6lto", "ac6ltowordtables"}
+LTO_COMPILERS = ("ac6lto", "ac6ltowordtables")  # in link order
+# armlink options for each LTO module's code generation.
+LTO_LINK_FLAGS = {"ac6ltowordtables": ["--lto_llvm_options=-arm-synthesize-thumb-1-tbb=false"]}
+# The DA14585 ROM exports these alignment-specialised helpers at the same
+# addresses as their generic forms (SDK da14585_symbols.lds).
+ROM_RUNTIME_ALIASES = {
+    "__aeabi_memcpy4": "__aeabi_memcpy", "__aeabi_memcpy8": "__aeabi_memcpy",
+    "__aeabi_memset4": "__aeabi_memset", "__aeabi_memset8": "__aeabi_memset",
+    "__aeabi_memclr4": "__aeabi_memclr", "__aeabi_memclr8": "__aeabi_memclr",
+    "__aeabi_uidivmod": "__aeabi_uidiv", "__aeabi_idivmod": "__aeabi_idiv",
+}
+# fromelf -s rows; long names wrap the remaining columns onto the next line.
+REFERENCE_RE = re.compile(r"^\s*\d+\s+(\S+)\s+0x[0-9a-fA-F]+\s+(Gb|Wk)\s+Ref\s+(Code|Data|--)", re.M)
+WRAPPED_NAME_RE = re.compile(r"^(\s*\d+\s+\S+)\s*\n\s+(0x)", re.M)
+SECTION_RE = re.compile(r"^\s*\[\s*\d+\]\s+(\S+)\s+\S+\s+[0-9a-f]+\s+[0-9a-f]+\s+([0-9a-f]+)\s+\S+\s+(\S*A\S*)",
+                        re.M)
+CODE_SECTION_RE = re.compile(r"^\s*\[\s*\d+\]\s+(\S+)\s+PROGBITS\s+\S+\s+\S+\s+([0-9a-f]+)\s+\S+\s+AX", re.M)
+GLOBAL_FUNC_RE = re.compile(r"^\s*\d+:\s+([0-9a-f]{8})\s+\d+\s+FUNC\s+GLOBAL\s+\S+\s+(\d+)\s+(\S+)$", re.M)
+# Allocated non-code library sections that V204 does not link at this
+# location (entry2.o's reset vector pair; V204's vector table is fixed data).
+DISCARDED_LIBRARY_SECTIONS = ["--remove-section=__vectab_stack_and_reset_area"]
+# Data objects defined in a linked image's own sections (symdefs entries are ABS).
+DATA_SYMBOL_RE = re.compile(r"^\s*\d+:\s+([0-9a-f]{8})\s+\d+\s+OBJECT\s+GLOBAL\s+\S+\s+(\d+)\s+(\S+)$", re.M)
+ZI_SECTION_RE = re.compile(r"^\s*\[\s*\d+\]\s+(ER_ZI)\s+NOBITS\s+([0-9a-f]+)\s", re.M)
+SECTION_INDEX_RE = re.compile(r"^\s*\[\s*(\d+)\]\s+(\S+)\s", re.M)
+DATA_SECTION_RE = re.compile(r"^\s*\[\s*\d+\]\s+(\S+)\s+PROGBITS\s+([0-9a-f]+)\s+([0-9a-f]+)\s+([0-9a-f]+)\s", re.M)
+SYMBOL_RE = re.compile(r"^\s*\d+:\s+([0-9a-f]{8})\s+\d+\s+FUNC\s+\S+\s+\S+\s+\S+\s+(\S+)$", re.M)
+
+
+def lto_function_region_base(address: int, previous_module_address: int | None,
+                             separate_code_starts=()) -> str:
+    """Keep consecutive functions relative, but preserve a different module's gap.
+
+    A later-linked module has no context stub yet. Its absence must not make
+    the functions on either side look contiguous in the current link.
+    """
+    if previous_module_address is not None and not any(
+            previous_module_address < start < address for start in separate_code_starts):
+        return "+0"
+    return f"0x{address:08x} FIXED"
+
+
+class _MovedStubLoads(Exception):
+    """armlink moved stub loads of these module literals to another literal."""
+
+    def __init__(self, targets: set[int], sites: dict[int, int] = None):
+        super().__init__("armlink moved stub loads of the module literals at "
+                         + ", ".join(f"0x{target:08x}" for target in sorted(targets)))
+        self.targets = set(targets)
+        # The stub loads that moved: address -> the module literal they loaded.
+        self.sites = dict(sites or {})
+
+
+class _DroppedLiterals(Exception):
+    """The module did not emit these literals, which stub loads use."""
+
+    def __init__(self, targets: set[int]):
+        super().__init__("the LTO module dropped the literals at "
+                         + ", ".join(f"0x{target:08x}" for target in sorted(targets)))
+        self.targets = set(targets)
+
+
+class _SealedStubLiterals(Exception):
+    """armlink merged module loads into these stub literals, which V204's link did not."""
+
+    def __init__(self, targets: set[int]):
+        super().__init__("armlink merged module loads into the stub literals at "
+                         + ", ".join(f"0x{target:08x}" for target in sorted(targets)))
+        self.targets = set(targets)
+
+
+@dataclass
+class PlacedGroup:
+    symbols: list[str]
+    start: int
+    end: int
+    obj: Path
+    # Initial contents of RAM objects the group defines: (address, bytes).
+    data: tuple[tuple[int, bytes], ...] = ()
+
+
+class ArmCompilers:
+    def __init__(self, tools_dir: Path):
+        mappings = tools_dir / "mdk_lite" / "mappings"
+        if not (mappings / "mdk_lite.elmap").is_file():
+            raise SystemExit(f"MDK-Lite product definitions not found in {mappings}")
+        self.bins = {name: tools_dir / subdir for name, (subdir, _, _) in COMPILERS.items() if subdir}
+        self.env = dict(os.environ, ARM_TOOL_VARIANT="mdk_lite", ARM_PRODUCT_PATH=str(mappings))
+        self.env.pop("ARMLMD_LICENSE_FILE", None)
+        # The Keil install's TOOLS.INI selects its licensed variant; the
+        # MDK-Lite overrides above must not reach it.
+        keil = Path(os.environ.get("SR08_KEIL_DIR") or
+                    Path(os.environ.get("WINEPREFIX") or Path.home() / ".wine") / "drive_c" / "Keil_v5")
+        for compiler in LTO_COMPILERS:
+            self.bins[compiler] = keil / "ARM" / "ARMCLANG" / "bin"
+        self.wine_env = {key: value for key, value in os.environ.items()
+                         if key not in ("ARM_TOOL_VARIANT", "ARM_PRODUCT_PATH", "ARMLMD_LICENSE_FILE")}
+        self.wine_env["WINEDEBUG"] = "-all"
+
+    def run(self, compiler: str, tool: str, *args: str, label: str) -> str:
+        wine = compiler in WINE_COMPILERS
+        executable = self.bins[compiler] / (tool + ".exe" if wine else tool)
+        if not executable.is_file():
+            if wine:
+                raise SystemExit(f"{executable} not found (needed for {label}): this group needs link-time "
+                                 "optimisation, which only a licensed Keil MDK Professional 5.36 under Wine "
+                                 "provides; set SR08_KEIL_DIR to its Keil_v5 directory")
+            raise SystemExit(f"{executable} not found (needed for {label})")
+        via = None
+        if wine:
+            # Wine maps the Unix root to drive Z:.
+            args = tuple(f"Z:{arg}" if arg.startswith("/") else arg for arg in args)
+            if tool == "armlink" and sum(len(arg) + 1 for arg in args) > 24000:
+                # A Windows command line holds at most 32767 characters; a long
+                # link (the LTO module) passes its arguments in a via file.
+                via = Path(tempfile.mkstemp(prefix="armlink-", suffix=".via")[1])
+                via.write_text("\n".join(f'"{arg}"' for arg in args) + "\n")
+                args = (f"--via=Z:{via}",)
+            command = ["wine", str(executable), *args]
+        else:
+            command = [str(executable), *args]
+        try:
+            if wine:
+                # Wine's background winedevice processes can inherit stderr.
+                # A captured pipe then waits for EOF after the compiler has
+                # exited. Regular temporary files let us wait for the actual
+                # compiler and read its diagnostics without waiting for those
+                # unrelated Wine processes to terminate.
+                with tempfile.TemporaryFile(mode="w+", encoding="utf-8") as output, \
+                     tempfile.TemporaryFile(mode="w+", encoding="utf-8") as errors:
+                    result = subprocess.run(command, stdout=output, stderr=errors,
+                                            text=True, env=self.wine_env)
+                    output.seek(0)
+                    errors.seek(0)
+                    result.stdout = output.read()
+                    result.stderr = errors.read()
+            else:
+                result = subprocess.run(command, capture_output=True, text=True,
+                                        env=self.env)
+        finally:
+            if via is not None:
+                via.unlink()
+        if result.returncode:
+            raise SystemExit(f"{tool} failed for {label}:\n{(result.stdout + result.stderr)[-3000:]}")
+        return result.stdout
+
+    def place_group(self, compiler: str, units: list[tuple[str, int, str]], include_dir: Path,
+                    temp: Path, symbols: dict[str, int], data_symbols: set[str],
+                    objcopy: str, readelf: str) -> PlacedGroup:
+        """Compile ``units`` (symbol, V204 address, C code) and link them in order.
+
+        ``symbols`` gives fixed addresses for external references; names in
+        ``data_symbols`` are data objects, all others are Thumb code.
+        """
+        if compiler not in COMPILERS or compiler in WINE_COMPILERS:
+            raise SystemExit(f"Arm compiler {compiler!r} cannot build a separately linked group")
+        _, driver, flags = COMPILERS[compiler]
+        first, start, _ = units[0]
+        label = f"0x{start:08x} ({first})"
+        group_symbols = {symbol for symbol, _, _ in units}
+        objects, references = [], {}
+        # Units that share one source file (an original translation unit
+        # defining several functions with one literal pool) compile once.
+        compiled_code = set()
+        for symbol, _, code in units:
+            if code in compiled_code:
+                continue
+            compiled_code.add(code)
+            source = temp / f"{compiler}_{symbol}.c"
+            obj = temp / f"{compiler}_{symbol}.o"
+            source.write_text(code)
+            self.run(compiler, driver, *flags, "-I", str(include_dir), "-c", str(source), "-o", str(obj),
+                     label=f"{symbol} ({compiler})")
+            objects.append(str(obj))
+            listing = WRAPPED_NAME_RE.sub(r"\1 \2", self.run(compiler, "fromelf", "-s", str(obj), label=symbol))
+            for name, binding, kind in REFERENCE_RE.findall(listing):
+                if name not in group_symbols:
+                    if kind == "--":
+                        kind = "Data" if name in data_symbols else "Code"
+                    references[name] = (binding, kind)
+
+        lines = ["#<SYMDEFS># ARM Linker: V204 fixed addresses"]
+        missing = []
+        for name, (binding, kind) in sorted(references.items()):
+            target = ROM_RUNTIME_ALIASES.get(name, name)
+            if target in symbols:
+                lines.append(f"0x{symbols[target]:08x} {'T' if kind == 'Code' else 'D'} {name}")
+            elif binding != "Wk":
+                missing.append(name)
+        if missing:
+            raise SystemExit(f"{label}: unresolved references: {', '.join(missing)}")
+        symdefs = temp / f"{compiler}_{first}.symdefs"
+        symdefs.write_text("\n".join(lines) + "\n")
+        image = temp / f"{compiler}_{first}.axf"
+        # Keep each unit by symbol rather than --noremove: every object also
+        # carries an empty, word-aligned .text section that would otherwise pad
+        # between 2-byte-aligned functions. ObjectCode keeps command-line order
+        # instead of sorting code sections by name.
+        keeps = [f"--keep={symbol}" for symbol, _, _ in units]
+
+        def link(bases: dict[str, int]) -> tuple[str, str]:
+            options = {"ER_RW": "--rw-base", "ER_ZI": "--zi_base"}
+            placement = [f"{options[region]}=0x{base:08x}" for region, base in sorted(bases.items())]
+            self.run(compiler, "armlink", "--cpu=Cortex-M0", "--no_startup", *keeps, "--sort=ObjectCode",
+                     f"--ro-base=0x{start:08x}", *placement, f"--entry={first}", "--diag_suppress=6304,6314",
+                     *objects, str(symdefs), "-o", str(image), label=label)
+            return (subprocess.run([readelf, "-SW", str(image)], check=True, capture_output=True,
+                                   text=True).stdout,
+                    subprocess.run([readelf, "-sW", str(image)], check=True, capture_output=True,
+                                   text=True).stdout)
+
+        def defined_data(headers: str, table: str) -> dict[str, tuple[str, int]]:
+            regions = dict(SECTION_INDEX_RE.findall(headers))
+            return {name: (regions.get(index, "?"), int(value, 16))
+                    for value, index, name in DATA_SYMBOL_RE.findall(table) if name in data_symbols}
+
+        # A group may define fixed RAM objects (named in data_symbols), as V204's
+        # armcc units did: armcc then addresses objects of one translation unit
+        # through a shared base. Link once to see where armlink puts each RW
+        # and ZI region, then again with the regions moved so the objects land
+        # at their V204 addresses. Only the code is emitted; the RW objects'
+        # initial contents are returned for checking against V204.
+        headers, table = link({})
+        defined = defined_data(headers, table)
+        data: list[tuple[int, bytes]] = []
+        if defined:
+            bases = {}
+            region_starts = {name: int(address, 16) for name, address, _, _ in DATA_SECTION_RE.findall(headers)}
+            region_starts.update({name: int(address, 16) for name, address in ZI_SECTION_RE.findall(headers)})
+            for region in {region for region, _ in defined.values()}:
+                deltas = {symbols[name] - value for name, (where, value) in defined.items() if where == region}
+                if region not in ("ER_RW", "ER_ZI") or len(deltas) != 1:
+                    raise SystemExit(f"{label}: defined RAM objects in {region} are not laid out as in V204: "
+                                     f"{sorted(defined)}")
+                bases[region] = region_starts[region] + next(iter(deltas))
+            headers, table = link(bases)
+            wrong = sorted(name for name, (_, value) in defined_data(headers, table).items()
+                           if value != symbols[name])
+            if wrong:
+                raise SystemExit(f"{label}: RAM objects not at their V204 addresses: {', '.join(wrong)}")
+            for name, address, offset, size in DATA_SECTION_RE.findall(headers):
+                if name == "ER_RW" and int(size, 16):
+                    blob = image.read_bytes()[int(offset, 16):int(offset, 16) + int(size, 16)]
+                    data.append((int(address, 16), blob))
+
+        allocated = {name: int(size, 16) for name, size, _ in SECTION_RE.findall(headers)}
+        unexpected = {name for name, size in allocated.items() if name != "ER_RO" and size}
+        if defined:
+            unexpected -= {"ER_RW", "ER_ZI"}
+        if unexpected or not allocated.get("ER_RO"):
+            raise SystemExit(f"{label}: group must link to read-only code only; got {sorted(allocated)}")
+        linked = {name: int(value, 16) & ~1 for value, name in SYMBOL_RE.findall(table)}
+        for symbol, address, _ in units:
+            if linked.get(symbol) != address:
+                found = "missing" if symbol not in linked else f"0x{linked[symbol]:08x}"
+                raise SystemExit(f"{label}: {symbol} linked at {found}, expected 0x{address:08x}")
+
+        raw = temp / f"{compiler}_{first}.bin"
+        subprocess.run([objcopy, "-O", "binary", "-j", "ER_RO", str(image), str(raw)], check=True)
+        wrapped = temp / f"{compiler}_{first}.wrapped.o"
+        section = ".text." + first
+        subprocess.run([objcopy, "-I", "binary", "-O", "elf32-littlearm", "-B", "arm",
+                        "--rename-section", f".data={section},alloc,load,readonly,code,contents",
+                        raw.name, str(wrapped)], check=True, cwd=temp)
+        local_symbols = [f"{symbol}={section}:0x{address - start:x},function,local"
+                         for symbol, address, _ in units]
+        subprocess.run([objcopy, "--strip-all", "--add-symbol", f"$t={section}:0,local",
+                        *[arg for item in local_symbols for arg in ("--add-symbol", item)],
+                        str(wrapped)], check=True)
+        mark_eabi5(wrapped)
+        return PlacedGroup([symbol for symbol, _, _ in units], start, start + raw.stat().st_size, wrapped,
+                           tuple(data))
+
+    def place_assembly(self, source: Path, options: list[str], entry: str, units: list[tuple[str, int]],
+                       start: int, temp: Path, symbols: dict[str, int], objcopy: str,
+                       readelf: str) -> PlacedGroup:
+        """Assemble an official armasm ``source`` and link the code area defining ``entry`` at ``start``.
+
+        ``units`` are the (symbol, V204 address) entries that the area's code
+        replaces; their addresses come from the manifest, since the SDK file
+        may export none of them. Imports resolve to ``symbols`` (Thumb code).
+        """
+        label = f"0x{start:08x} ({source.name})"
+        obj = temp / f"asm_{source.stem}.o"
+        self.run("ac6", "armasm", "--cpu=Cortex-M0", *options, "-o", str(obj), str(source), label=label)
+        listing = WRAPPED_NAME_RE.sub(r"\1 \2", self.run("ac6", "fromelf", "-s", str(obj), label=label))
+        imports = sorted({name for name, binding, _ in REFERENCE_RE.findall(listing) if binding != "Wk"})
+        missing = [name for name in imports if name not in symbols]
+        if missing:
+            raise SystemExit(f"{label}: unresolved references: {', '.join(missing)}")
+        symdefs = temp / f"asm_{source.stem}.symdefs"
+        symdefs.write_text("#<SYMDEFS># ARM Linker: V204 fixed addresses\n"
+                           + "".join(f"0x{symbols[name]:08x} T {name}\n" for name in imports))
+        image = temp / f"asm_{source.stem}.axf"
+        # The entry keeps only the area that defines it: the vector table,
+        # stack and heap areas are unreferenced and removed (V204 builds the
+        # vector table as data).
+        self.run("ac6", "armlink", "--cpu=Cortex-M0", "--no_startup", f"--entry={entry}",
+                 "--sort=ObjectCode", f"--ro-base=0x{start:08x}", "--diag_suppress=6304,6314",
+                 str(obj), str(symdefs), "-o", str(image), label=label)
+        headers = subprocess.run([readelf, "-SW", str(image)], check=True, capture_output=True, text=True).stdout
+        allocated = {name: int(size, 16) for name, size, _ in SECTION_RE.findall(headers)}
+        if set(name for name, size in allocated.items() if size) != {"ER_RO"}:
+            raise SystemExit(f"{label}: expected read-only code only; got {sorted(allocated)}")
+        raw = temp / f"asm_{source.stem}.bin"
+        subprocess.run([objcopy, "-O", "binary", "-j", "ER_RO", str(image), str(raw)], check=True)
+        end = start + raw.stat().st_size
+        if not all(start <= address < end for _, address in units):
+            raise SystemExit(f"{label}: code 0x{start:08x}-0x{end:08x} does not cover its units")
+        wrapped = temp / f"asm_{source.stem}.wrapped.o"
+        section = ".text." + units[0][0]
+        subprocess.run([objcopy, "-I", "binary", "-O", "elf32-littlearm", "-B", "arm",
+                        "--rename-section", f".data={section},alloc,load,readonly,code,contents",
+                        raw.name, str(wrapped)], check=True, cwd=temp)
+        local_symbols = [f"{symbol}={section}:0x{address - start:x},function,local" for symbol, address in units]
+        subprocess.run([objcopy, "--strip-all", "--add-symbol", f"$t={section}:0,local",
+                        *[arg for item in local_symbols for arg in ("--add-symbol", item)],
+                        str(wrapped)], check=True)
+        mark_eabi5(wrapped)
+        return PlacedGroup([symbol for symbol, _ in units], start, end, wrapped)
+
+    def place_lto_module(self, *args, **kwargs) -> list[PlacedGroup]:
+        """Link the LTO module (see ``_place_lto_module``), relinking while armlink
+        moves a stub's load of a module literal.
+
+        A stub load of a module literal normally gets a copy that armlink merges
+        back (see ``stub_assembly``). armlink judges ranges on the pre-merge
+        layout, which the fixed regions do not reproduce, so it can merge the
+        copy into an identical literal further on instead. V204 then kept the
+        module's word for that stub load. The relink first leaves the load
+        without a copy (the module may keep the word for its own loads), then,
+        if the module drops the word, places it as a pinned stub word.
+        """
+        dropped_units = set(os.environ.get("SR08_LTO_DROP", "").split()) - {""}
+        if dropped_units:
+            # Debugging aid: leave these units out, as fixed symbols, so that a
+            # neighbour that does not fit yet can be inspected.
+            units, symbols = args[0], dict(args[4])
+            symbols.update({symbol: address for symbol, address, _ in units if symbol in dropped_units})
+            args = (([unit for unit in units if unit[0] not in dropped_units],) + args[1:4] + (symbols,)
+                    + args[5:])
+        raw_loads: set[int] = set()
+        kept_for_stubs: set[int] = set()
+        raw_sites: dict[int, int] = {}
+        # Stub literals that V204's link did not merge earlier loads into (see
+        # build_v204.LTO_SEALED_STUB_LITERALS); they start sealed.
+        sealed: set[int] = set(kwargs.pop("sealed_literals", ()))
+        while True:
+            if os.environ.get("SR08_LTO_TRACE"):
+                print("LTO link: raw loads", sorted(map(hex, raw_loads)), "kept for stubs",
+                      sorted(map(hex, kept_for_stubs)), "raw load sites", sorted(map(hex, raw_sites)),
+                      flush=True)
+            try:
+                return self._place_lto_module(*args, **kwargs, raw_loads=frozenset(raw_loads),
+                                              kept_for_stubs=frozenset(kept_for_stubs),
+                                              raw_sites=frozenset(raw_sites),
+                                              site_targets=frozenset(raw_sites.values()),
+                                              sealed=frozenset(sealed))
+            except _SealedStubLiterals as merged:
+                if merged.targets <= sealed:
+                    raise SystemExit(str(merged)) from None
+                sealed |= merged.targets
+            except _MovedStubLoads as moved:
+                fresh = moved.targets - raw_loads - kept_for_stubs - set(raw_sites.values())
+                if fresh and moved.sites:
+                    # First let only the moved loads stand without a copy: other
+                    # stub loads of the literal still merge their copies into it,
+                    # so the module keeps it, as V204's link did.
+                    raw_sites.update({site: target for site, target in moved.sites.items() if target in fresh})
+                    continue
+                # Then every stub load of it: the module may keep the literal for
+                # its own loads.
+                if moved.targets <= raw_loads | kept_for_stubs:
+                    raise SystemExit(str(moved)) from None
+                raw_loads |= moved.targets - kept_for_stubs
+            except _DroppedLiterals as dropped:
+                hit = dropped.targets & set(raw_sites.values())
+                if hit:
+                    # The single raw loads did not keep it; fall back to the
+                    # literal-wide retry for those literals.
+                    raw_sites = {site: target for site, target in raw_sites.items() if target not in hit}
+                    raw_loads |= hit
+                    continue
+                # The module did not keep it: V204 kept it for the stub load alone.
+                raw_loads -= dropped.targets
+                kept_for_stubs |= dropped.targets
+
+    def _place_lto_module(self, units: list[tuple[str, int, str]], support: list[tuple[str, str]],
+                          include_dir: Path, temp: Path, symbols: dict[str, int], data_symbols: set[str],
+                          objcopy: str, readelf: str,
+                          stubs: list[tuple[int, bytes]] = (),
+                          pool_words: set[int] = frozenset(),
+                          readonly_units: list[tuple[str, int, str, str]] = (),
+                          context_word=lambda address: None,
+                          internal: set[str] = frozenset(),
+                          native_units: set[str] = frozenset(),
+                          raw_loads: frozenset[int] = frozenset(),
+                          kept_for_stubs: frozenset[int] = frozenset(),
+                          raw_sites: frozenset[int] = frozenset(),
+                          site_targets: frozenset[int] = frozenset(),
+                          sealed: frozenset[int] = frozenset(),
+                          separate_code_starts: frozenset[int] = frozenset(),
+                          compiler: str = "ac6lto") -> list[PlacedGroup]:
+        """Compile ``units`` (symbol, V204 address, C code) and link them as one LTO module.
+
+        Each unit is one function, placed in its own execution region at its
+        V204 address; the result has one placed range per unit. ``symbols``
+        gives fixed addresses for everything outside the module. ``support``
+        (name, C code) adds translation units whose functions V204's link
+        inlined into their callers; they must leave no code of their own.
+
+        ``native_units`` compiles selected C units without -flto, then links
+        their ordinary objects alongside the LTO units. This preserves native
+        instruction selection while sharing literal pools through the same
+        linker. All region and context checks apply unchanged.
+
+        ``separate_code_starts`` marks functions belonging to later-linked
+        modules. Their absent context must still break relative-placement runs.
+
+        ``readonly_units`` (symbol, address, input section, C code) defines
+        immutable objects visible to LTO. Each produces a separate data-only
+        GNU object at its verified address. Temporary execution-region padding
+        is excluded using the data symbol's size; object bytes are not patched.
+
+        ``stubs`` (address, bytes) are the finished bytes of code outside the
+        module. armlink redirects a literal load to an identical literal in a
+        later pool when one is in range, so the module's functions only come
+        out as in V204 when the surrounding pools take part in the link. Each
+        stub is assembled as fixed instructions and literal words at its
+        address; it is not part of the result. ``pool_words`` are addresses
+        in the stubs known to hold literals. ``context_word`` reads a word of
+        the surrounding image (the source-built one), for stub loads of the
+        module's literals.
+        """
+        _, driver, flags = COMPILERS[compiler]
+        units = sorted(units, key=lambda unit: unit[1])
+        module_symbols = {symbol for symbol, _, _ in units}
+        if native_units - module_symbols:
+            raise SystemExit("native context units are outside the module: "
+                             + ", ".join(sorted(native_units - module_symbols)))
+        native_code = {code for symbol, _, code in units if symbol in native_units}
+        if native_code & {code for symbol, _, code in units if symbol not in native_units}:
+            raise SystemExit("one C translation unit cannot use both native and LTO compilation")
+        sources: dict[str, Path] = {}
+        for symbol, _, code in units:
+            if code not in sources:
+                source = temp / f"lto_{symbol}.c"
+                source.write_text(code)
+                sources[code] = source
+        for name, code in support:
+            source = temp / f"lto_support_{name}.c"
+            source.write_text(code)
+            sources[code] = source
+
+        readonly_names = {name for name, _, _, _ in readonly_units}
+        if readonly_names & module_symbols:
+            raise SystemExit("LTO code and read-only data symbols overlap")
+        for name, address, _, code in readonly_units:
+            source = temp / f"lto_data_{name}.c"
+            padding = address % 4
+            if padding:
+                code = (f'__attribute__((used, section(".lto_padding.{name}"), aligned(1))) '
+                        f'const unsigned char __lto_padding_{name}[{padding}] = {{0}};\n' + code)
+            source.write_text(code)
+            sources[code] = source
+
+        def compile_unit(source: Path) -> str:
+            obj = source.with_suffix(".o")
+            unit_flags = [flag for flag in flags if flag != "-flto"] if source.read_text() in native_code else flags
+            self.run(compiler, driver, *unit_flags, "-I", str(include_dir), "-c", str(source), "-o", str(obj),
+                     label=f"{source.stem[4:]} ({compiler})")
+            return str(obj)
+
+        # Words that any load in the fixed code points at, wherever the load is.
+        pool_words = set(pool_words)
+        for address, data in stubs:
+            for offset in range(0, len(data) - 1, 2):
+                half = int.from_bytes(data[offset:offset + 2], "little")
+                if (half & 0xF800) == 0x4800:
+                    pool_words.add(((address + offset + 4) & ~3) + (half & 0xFF) * 4)
+
+        def image_word(address: int) -> int | None:
+            for start, data in stubs:
+                if start <= address and address + 4 <= start + len(data):
+                    return int.from_bytes(data[address - start:address - start + 4], "little")
+            # Fixed code beyond the context stubs: a stub load of it may still have
+            # an identical literal of its own range (see stub_assembly).
+            return None if in_module(address) else context_word(address)
+
+        unit_starts = sorted((address, symbol) for symbol, address, _ in units)
+        stub_spans = [(address, address + len(data)) for address, data in stubs]
+
+        def in_module(target: int) -> bool:
+            """Whether ``target`` lies in a module function's region (not in a stub)."""
+            owner = [address for address, _ in unit_starts if address <= target]
+            if not owner or any(low <= target < high for low, high in stub_spans):
+                return False
+            following = [start for start, _ in unit_starts if start > owner[-1]]
+            following += [low for low, _ in stub_spans if low > owner[-1]]
+            return not following or target < min(following)
+
+        def word_at(address: int) -> int | None:
+            return context_word(address) if in_module(address) else image_word(address)
+
+        # Module literals kept for stub loads alone (see place_lto_module).
+        if kept_for_stubs:
+            stubs = sorted(stubs + [(target, context_word(target).to_bytes(4, "little"))
+                                    for target in kept_for_stubs])
+            stub_spans = [(address, address + len(data)) for address, data in stubs]
+
+        # A literal holding a data object's address carries a relocation; armlink
+        # only merges it with literals that refer to the same symbol.
+        data_at = {}
+        for name in sorted(data_symbols & symbols.keys()):
+            data_at.setdefault(symbols[name], []).append(name)
+        data_at = {address: names[0] for address, names in data_at.items() if len(names) == 1}
+        stub_regions = {}
+        stub_sources = []
+        for address, data in stubs:
+            name = f"v204_stub_{address:08x}"
+            stub_regions[f"ER_{address:08x}"] = (name, address)
+            source = temp / f"lto_{name}.s"
+            source.write_text(stub_assembly(name, address, data, pool_words, image_word,
+                                            lambda target: in_module(target) and target not in raw_loads,
+                                            context_word, data_at.get,
+                                            lambda target: next((f"__arm_cp.{start:x}_{target-start:x}"
+                                                for start, contents in stubs
+                                                if start <= target and target + 4 <= start + len(contents)
+                                                and target in pool_words and target not in sealed), None),
+                                            lambda site: site in raw_sites,
+                                            lambda target: target in sealed))
+            stub_sources.append(source)
+
+        def assemble_stub(source: Path) -> str:
+            obj = source.with_suffix(".o")
+            self.run(compiler, driver, *[flag for flag in flags if flag != "-flto"], "-c", str(source),
+                     "-o", str(obj), label=source.stem[4:])
+            return str(obj)
+
+        with ThreadPoolExecutor(max_workers=os.cpu_count() or 4) as pool:
+            objects = list(pool.map(compile_unit, sources.values()))
+            objects += list(pool.map(assemble_stub, stub_sources))
+
+        lines = ["#<SYMDEFS># ARM Linker: V204 fixed addresses"]
+        for name in sorted({*symbols, *ROM_RUNTIME_ALIASES}):
+            target = ROM_RUNTIME_ALIASES.get(name, name)
+            # Linker-generated names (Region$$Table$$Base) would make armlink build its own tables.
+            if name not in module_symbols | readonly_names and target in symbols and "$$" not in name:
+                lines.append(f"0x{symbols[target]:08x} {'D' if name in data_symbols else 'T'} {name}")
+        symdefs = temp / "lto_module.symdefs"
+        symdefs.write_text("\n".join(lines) + "\n")
+        regions = {f"ER_{address:08x}": (symbol, address) for symbol, address, _ in units}
+        readonly_regions = {f"ER_DATA_{address:08x}": (name, address)
+                            for name, address, _, _ in readonly_units}
+        readonly_sections = {name: section for name, _, section, _ in readonly_units}
+        readonly_selectors = {
+            name: (f"*(.lto_padding.{name}) " if address % 4 else "") + f"*({section})"
+            for name, address, section, _ in readonly_units}
+        if len(readonly_regions) != len(readonly_units) or len(readonly_names) != len(readonly_units):
+            raise SystemExit("duplicate LTO read-only data address or symbol")
+        scatter = temp / "lto_module.scat"
+        every_region = sorted({**regions, **stub_regions, **readonly_regions}.items(),
+                              key=lambda item: item[1][1])
+        # V204's link laid its functions out one after another and chose each
+        # literal load's (shared) target on that layout, while every function
+        # still had all its own literals. A run of module functions is placed
+        # the same way, each region following the previous one (the linked
+        # addresses are checked below); stubs are V204's finished bytes, so
+        # the region after one is fixed at its address.
+        def base(index: int, region: str, address: int) -> str:
+            if region in regions:
+                previous = (every_region[index - 1][1][1] if index and
+                            every_region[index - 1][0] in regions else None)
+                return lto_function_region_base(address, previous, separate_code_starts)
+            return f"0x{address - (address % 4 if region in readonly_regions else 0):08x} FIXED"
+        # Execution regions are word-aligned, so a module function at a
+        # halfword address (one without a literal pool, which V204's link
+        # placed straight after the previous function) shares the previous
+        # module function's region; its bytes are cut out by address below.
+        host: dict[str, str] = {}
+        for index, (region, (symbol, address)) in enumerate(every_region):
+            if (region in regions and address % 4 and index and
+                    every_region[index - 1][0] in regions and
+                    base(index, region, address) == "+0"):
+                previous = every_region[index - 1][0]
+                host[region] = host.get(previous, previous)
+        members = {region: [region] + [guest for guest in regions if host.get(guest) == region]
+                   for region in regions if region not in host}
+        def selector(region: str, symbol: str) -> str:
+            if region in members:
+                return " ".join(f"*(.text.{regions[member][0]})"
+                                for member in sorted(members[region], key=lambda r: regions[r][1]))
+            return readonly_selectors.get(symbol, '*(.text.' + symbol + ')')
+        scatter.write_text(f"LR_V204 0x{every_region[0][1][1]:08x} {{\n" + "".join(
+            f"  {region} {base(index, region, address)}"
+            + f" {{ {selector(region, symbol)} }}\n"
+            for index, (region, (symbol, address)) in enumerate(every_region) if region not in host)
+            # Debugging aid: collect sections that no region names (such as a
+            # function that V204 inlined but the candidate did not) at this
+            # address, so that the link completes and they can be inspected.
+            + (f"  ER_SPILL {os.environ['SR08_LTO_SPILL']} FIXED {{ *(+RO) }}\n"
+               if os.environ.get("SR08_LTO_SPILL") else "") + "}\n")
+        image = temp / "lto_module.axf"
+        label = f"the LTO module ({len(units)} units)"
+        link_args = ["--lto", "--cpu=Cortex-M0", "--no_startup",
+                     # Keep external entries; internal units may specialise.
+                     *[f"--keep={symbol}" for symbol in sorted(module_symbols - internal)],
+                     *[f"--keep={symbol}" for symbol in readonly_names],
+                     *[f"--keep={name}" for name, _ in stub_regions.values()], f"--scatter={scatter}",
+                     f"--entry={units[0][0]}", "--diag_suppress=6304,6314", *objects, str(symdefs),
+                     *LTO_LINK_FLAGS.get(compiler, ()),
+                     *os.environ.get("SR08_ARMLINK_FLAGS", "").split(), "-o", str(image)]
+        overlap_error = None
+        try:
+            try:
+                self.run(compiler, "armlink", *link_args, label=label)
+            except SystemExit as error:
+                codes = re.findall(r"Error: (L[0-9]+E):", str(error))
+                if not codes or set(codes) - {"L6291E", "L6221E"}:
+                    raise
+                # A surviving temporary literal can grow a context stub before
+                # the validator has a chance to request its raw-load retry.
+                # Inspect a diagnostic image, but NEVER return its placements.
+                overlap_error = str(error)
+                if os.environ.get("SR08_LTO_TRACE"):
+                    print("LTO link: inspecting temporary overlaps for a retry", flush=True)
+                self.run(compiler, "armlink", *link_args, "--diag_warning=6291,6221", label=label)
+        finally:
+            if os.environ.get("SR08_LTO_KEEP"):
+                shutil.copytree(temp, os.environ["SR08_LTO_KEEP"], dirs_exist_ok=True)
+        headers = subprocess.run([readelf, "-SW", str(image)], check=True, capture_output=True, text=True).stdout
+        table = subprocess.run([readelf, "-sW", str(image)], check=True, capture_output=True, text=True).stdout
+        allocated = {name: int(size, 16) for name, size, _ in SECTION_RE.findall(headers)}
+        unexpected = sorted(name for name, size in allocated.items()
+                            if name not in regions and name not in stub_regions
+                            and name not in readonly_regions and size)
+        if unexpected:
+            raise SystemExit(f"{label}: sections outside the per-function regions: {', '.join(unexpected)}")
+        linked = {name: int(value, 16) & ~1 for value, name in SYMBOL_RE.findall(table)}
+        placed = []
+        for region, (symbol, address) in regions.items():
+            container = host.get(region, region)
+            if not allocated.get(container):
+                raise SystemExit(f"{label}: {symbol} produced no code (is it defined, with external linkage?)")
+            if linked.get(symbol) != address:
+                # A chained (+0) function comes early when armlink merged away the
+                # preceding function's last literals. If stub code loads those
+                # words, V204 kept them for the stub loads alone.
+                gap = set(range(linked[symbol], address, 4)) if linked.get(symbol, address) < address else set()
+                if gap and gap <= pool_words and all(in_module(word) for word in gap) \
+                        and not gap & kept_for_stubs:
+                    raise _DroppedLiterals(gap)
+                found = "missing" if symbol not in linked else f"0x{linked[symbol]:08x}"
+                raise SystemExit(f"{label}: {symbol} linked at {found}, expected 0x{address:08x}")
+            raw = temp / f"lto_{symbol}.bin"
+            subprocess.run([objcopy, "-O", "binary", "-j", container, str(image), str(raw)], check=True)
+            if len(members.get(container, ())) > 1:
+                # Cut this function's bytes out of the shared region.
+                container_address = regions[container][1]
+                following = [regions[m][1] for m in members[container] if regions[m][1] > address]
+                contents = raw.read_bytes()
+                stop = min(following) - container_address if following else len(contents)
+                raw.write_bytes(contents[address - container_address:stop])
+            # Literals kept for stub loads that directly follow the function belong to its output.
+            end = address + raw.stat().st_size
+            while end in kept_for_stubs:
+                raw.write_bytes(raw.read_bytes() + dict(stubs)[end])
+                end += 4
+            wrapped = temp / f"lto_{symbol}.wrapped.o"
+            section = ".text." + symbol
+            subprocess.run([objcopy, "-I", "binary", "-O", "elf32-littlearm", "-B", "arm",
+                            "--rename-section", f".data={section},alloc,load,readonly,code,contents",
+                            raw.name, str(wrapped)], check=True, cwd=temp)
+            subprocess.run([objcopy, "--strip-all", "--add-symbol", f"$t={section}:0,local",
+                            "--add-symbol", f"{symbol}={section}:0x0,function,local", str(wrapped)], check=True)
+            mark_eabi5(wrapped)
+            placed.append(PlacedGroup([symbol], address, address + raw.stat().st_size, wrapped))
+        for region, (name, address) in readonly_regions.items():
+            if not allocated.get(region):
+                raise SystemExit(f"{label}: read-only object {name} produced no data")
+            flags = next(flags for section, _, flags in SECTION_RE.findall(headers) if section == region)
+            if "W" in flags or "X" in flags:
+                raise SystemExit(f"{label}: read-only object {name} has writable or executable section flags")
+            objects = re.findall(r"^\s*\d+:\s+([0-9a-f]{8})\s+(\d+)\s+OBJECT\s+\S+\s+\S+\s+\S+\s+(\S+)$",
+                                 table, re.M)
+            object_symbols = {symbol: (int(value, 16), int(size)) for value, size, symbol in objects}
+            if object_symbols.get(name, (None, 0))[0] != address:
+                raise SystemExit(f"{label}: read-only object {name} is not at 0x{address:08x}")
+            size = object_symbols[name][1]
+            raw = temp / f"lto_data_{name}.bin"
+            subprocess.run([objcopy, "-O", "binary", "-j", region, str(image), str(raw)], check=True)
+            # The aligned execution-region prefix exists only for armlink;
+            # retain the object's bytes at its verified, possibly unaligned VMA.
+            contents = raw.read_bytes()
+            offset = address % 4
+            if not size or offset + size > len(contents):
+                raise SystemExit(f"{label}: read-only object {name} exceeds its execution region")
+            raw.write_bytes(contents[offset:offset + size])
+            wrapped = temp / f"lto_data_{name}.wrapped.o"
+            section = readonly_sections[name]
+            subprocess.run([objcopy, "-I", "binary", "-O", "elf32-littlearm", "-B", "arm",
+                            "--rename-section", f".data={section},alloc,load,readonly,data,contents",
+                            raw.name, str(wrapped)], check=True, cwd=temp)
+            subprocess.run([objcopy, "--strip-all", "--add-symbol",
+                            f"{name}={section}:0,object,global", str(wrapped)], check=True)
+            mark_eabi5(wrapped)
+            placed.append(PlacedGroup([name], address, address + raw.stat().st_size, wrapped))
+        if os.environ.get("SR08_LTO_KEEP"):
+            shutil.copytree(temp, os.environ["SR08_LTO_KEEP"], dirs_exist_ok=True)
+        emitted_ranges = [(group.start, (temp / (
+            ("lto_data_" if group.symbols[0] in readonly_names else "lto_")
+            + group.symbols[0] + ".bin")).read_bytes()) for group in placed]
+
+        def emitted_word(target):
+            for start, contents in emitted_ranges:
+                if start <= target and target + 4 <= start + len(contents):
+                    return int.from_bytes(contents[target-start:target-start+4], "little")
+            return word_at(target)
+
+        # Another stub's literal copy (see stub_assembly) that armlink merged a
+        # load into and then removed leaves only its label, which names the
+        # copied word.
+        copy_labels = {int(label, 16): int(word, 16) for label, word in re.findall(
+            r"^\s*\d+:\s+([0-9a-f]{8})\s+\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
+            r"__arm_cp\.[0-9a-f]+_copy_([0-9a-f]{8})$", table, re.M)}
+
+        actual_stubs = {}
+        for region, (name, address) in stub_regions.items():
+            raw = temp / f"lto_{name}.bin"
+            subprocess.run([objcopy, "-O", "binary", "-j", region, str(image), str(raw)], check=True)
+            actual_stubs[region] = (address, len(dict(stubs)[address]), raw.read_bytes())
+        # A diagnostic overlap may put one stub's temporary copied literal
+        # over the next stub's code. Resolve that copy by its ELF section and
+        # generated symbol, not the overlapping virtual address. It can only
+        # request the existing raw-load retry; diagnostic links never return.
+        diagnostic_copies = temporary_stub_copy_words(headers, table, actual_stubs) if overlap_error else {}
+        moved_loads = set()
+        moved_sites = {}
+        for region, (name, address) in stub_regions.items():
+            actual = actual_stubs[region][2]
+            raw = temp / f"lto_{name}.bin"
+            expected = dict(stubs)[address]
+            if actual != expected:
+                # Stubs are link context, never output. Literal coalescing may
+                # retarget their LDRs only if the emitted destination supplies
+                # the original loaded word and no instructions move. Candidate
+                # module pools may move before a probe becomes byte-exact.
+                equivalent_loads = len(actual) >= len(expected) and (
+                    len(expected) % 2 == 0 or actual[-1:] == expected[-1:])
+                for offset in range(0, len(expected) - 1, 2):
+                    before = int.from_bytes(expected[offset:offset + 2], "little")
+                    after = int.from_bytes(actual[offset:offset + 2], "little")
+                    if before == after:
+                        continue
+                    base = (address + offset + 4) & ~3
+                    old_word = word_at(base + (before & 255) * 4)
+                    new_target = base + (after & 255) * 4
+                    new_word = emitted_word(new_target)
+                    if new_target in diagnostic_copies and in_module(base + (before & 255) * 4):
+                        new_word = diagnostic_copies[new_target]
+                    # A temporary copy can survive literal coalescing. Inspect
+                    # that copy only to trigger a raw-load retry; unequal stub
+                    # lengths are never accepted as finished context.
+                    if address + len(expected) <= new_target and new_target + 4 <= address + len(actual):
+                        new_word = int.from_bytes(actual[new_target-address:new_target-address+4], "little")
+                    elif new_target in copy_labels and new_word != old_word:
+                        new_word = copy_labels[new_target]
+                    if (before & 0xf800) != 0x4800 or (before & 0xff00) != (after & 0xff00) \
+                            or old_word is None or new_word != old_word:
+                        equivalent_loads = False
+                        break
+                if equivalent_loads:
+                    moved = set()
+                    for offset in range(0, len(expected) - 1, 2):
+                        before = int.from_bytes(expected[offset:offset + 2], "little")
+                        if (before & 0xf800) == 0x4800 and (
+                                before != int.from_bytes(actual[offset:offset + 2], "little")
+                                or len(actual) > len(expected)):
+                            target = ((address + offset + 4) & ~3) + (before & 255) * 4
+                            if in_module(target):
+                                moved.add(target)
+                                moved_sites[address + offset] = target
+                                if os.environ.get("SR08_LTO_TRACE"):
+                                    after = int.from_bytes(actual[offset:offset + 2], "little")
+                                    print(f"LTO link: stub load at 0x{address + offset:08x} of 0x{target:08x}"
+                                          f" now loads 0x{((address + offset + 4) & ~3) + (after & 255) * 4:08x}",
+                                          flush=True)
+                    if moved:
+                        moved_loads |= moved
+                    if moved or len(actual) == len(expected):
+                        continue
+                changed = [index for index, (ours, theirs) in enumerate(zip(raw.read_bytes(), dict(stubs)[address]))
+                           if ours != theirs]
+                detail = ", ".join(
+                    f"0x{address + index:08x}: {dict(stubs)[address][index]:02x} -> {raw.read_bytes()[index]:02x}"
+                    for index in changed[:8])
+                if os.environ.get("SR08_STUB_DEBUG"):
+                    print(f"stub 0x{address:08x} changed: {detail}")
+                    continue
+                raise SystemExit(f"{label}: armlink changed the fixed code at 0x{address:08x} "
+                                 f"({len(raw.read_bytes())} bytes for {len(dict(stubs)[address])}; {detail})")
+        if moved_loads:
+            raise _MovedStubLoads(moved_loads, moved_sites)
+        # armlink judges a literal's range on the pre-merge layout, in which
+        # every module function still had its own copy of each literal that it
+        # now loads from elsewhere. A module load merged into a stub word that
+        # lies out of range on that layout cannot have been V204's: such a
+        # word is sealed (it becomes plain code to armlink), unless another
+        # module load reaches it on the pre-merge layout too.
+        functions = []
+        for group in sorted(placed, key=lambda group: group.start):
+            if group.symbols[0] in readonly_names:
+                continue
+            ours = (temp / f"lto_{group.symbols[0]}.bin").read_bytes()
+            loads, offset, pool = [], 0, len(ours)
+            while offset < min(pool, len(ours) - 1):
+                half = int.from_bytes(ours[offset:offset + 2], "little")
+                if (half & 0xF800) == 0x4800:
+                    target = ((group.start + offset + 4) & ~3) + (half & 0xFF) * 4
+                    loads.append((group.start + offset, target))
+                    if group.start <= target < group.start + len(ours):
+                        pool = min(pool, target - group.start)
+                offset += 4 if (half & 0xF800) in (0xF000, 0xF800, 0xE800) else 2
+            elsewhere = {emitted_word(target) for _, target in loads
+                         if not group.start <= target < group.start + len(ours)}
+            functions.append((group.start, len(elsewhere) * 4, loads))
+        reaching, too_far = set(), set()
+        for start, _, loads in functions:
+            for site, target in loads:
+                if not any(low <= target < high for low, high in stub_spans):
+                    continue
+                shift = sum(extra for other, extra, _ in functions if start <= other < target)
+                if target + shift - ((site + 4) & ~3) > 1020:
+                    too_far.add(target)
+                else:
+                    reaching.add(target)
+        if too_far - reaching - sealed:
+            raise _SealedStubLiterals(too_far - reaching)
+        dropped = {target for target in raw_loads | site_targets
+                   if not any(group.start <= target and target + 4 <= group.end for group in placed)
+                   or emitted_word(target) != context_word(target)}
+        if dropped:
+            raise _DroppedLiterals(dropped)
+        if overlap_error is not None:
+            # Only a recognised validator retry can escape the diagnostic link.
+            # A successful placement must come from a subsequent strict link.
+            raise SystemExit(overlap_error)
+        return placed
+
+
+def temporary_stub_copy_words(headers: str, symbols: str,
+                              sections: dict[str, tuple[int, int, bytes]]) -> dict[int, int]:
+    """Resolve generated trailing copies in an overlapping diagnostic image.
+
+    Exact fixed-region bytes and the strict link remain authoritative. Only
+    a named four-byte copy outside its stub's original range can trigger a
+    retry; a word at the same address in another ELF section is not that copy.
+    """
+    names = dict(SECTION_INDEX_RE.findall(headers))
+    copies = {}
+    pattern = r"^\s*\d+:\s+([0-9a-f]{8})\s+4\s+NOTYPE\s+\S+\s+\S+\s+(\d+)\s+(__arm_cp\.\S+_copy_([0-9a-f]{8}))$"
+    for address, index, _, expected in re.findall(pattern, symbols, re.M):
+        section = sections.get(names.get(index))
+        if section is None:
+            continue
+        start, original_size, contents = section
+        offset = int(address, 16) - start
+        if original_size <= offset and offset + 4 <= len(contents):
+            value = int.from_bytes(contents[offset:offset + 4], "little")
+            if value == int(expected, 16):
+                copies[int(address, 16)] = value
+    return copies
+
+
+def place_library_members(tools_dir: Path, archives: dict[str, str], members: list[tuple[str, str]],
+                          units: list[str], start: int, section: str, temp: Path, ld: str, objcopy: str,
+                          readelf: str) -> tuple[PlacedGroup, dict[str, int]]:
+    """Combine Arm C library members into one ``section`` starting at ``start``.
+
+    Code sections are ordered as armlink orders them: ``.ARM.Collect$$$$N``
+    fragments (microlib's ``__main``) by N, others in archive order. Returns
+    the placed range and the fixed addresses of the members' global functions.
+    """
+    pieces = []  # (sort key, object, section name, size)
+    exported_offsets: list[tuple[str, Path, str, int]] = []
+    for position, (archive, member) in enumerate(members):
+        path = tools_dir / "armclang616" / "lib" / "armlib" / archive
+        if not path.is_file():
+            raise SystemExit(f"Arm C library {path} not found")
+        if hashlib.sha256(path.read_bytes()).hexdigest() != archives[archive]:
+            raise SystemExit(f"{path} differs from the verified ARM Compiler 6.16 archive")
+        obj = temp / f"lib_{archive}_{member}"
+        obj.write_bytes(subprocess.check_output(["arm-none-eabi-ar", "p", str(path), member]))
+        headers = subprocess.run([readelf, "-SW", str(obj)], check=True, capture_output=True, text=True).stdout
+        index_names = {match.group(1): match.group(2)
+                       for match in re.finditer(r"^\s*\[\s*(\d+)\]\s+(\S+)", headers, re.M)}
+        for order, (name, size) in enumerate(CODE_SECTION_RE.findall(headers)):
+            collect = re.fullmatch(r"\.ARM\.Collect\$\$\$\$([0-9A-Fa-f]+)", name)
+            key = (0, int(collect.group(1), 16), 0) if collect else (1, position, order)
+            pieces.append((key, obj, name, int(size, 16)))
+        table = subprocess.run([readelf, "-sW", str(obj)], check=True, capture_output=True, text=True).stdout
+        for value, index, name in GLOBAL_FUNC_RE.findall(table):
+            if index in index_names:
+                exported_offsets.append((name, obj, index_names[index], int(value, 16) & ~1))
+    pieces.sort(key=lambda piece: piece[0])
+
+    offsets, offset, script = {}, 0, []
+    for number, (_, obj, name, size) in enumerate(pieces):
+        offsets[(obj, name)] = offset
+        offset += size
+        # Give every piece a unique, script-safe name before the combining link.
+        renamed = f".v204lib.{number:03}"
+        subprocess.run([objcopy, "--rename-section", f"{name}={renamed}", str(obj)], check=True)
+        script.append(f"KEEP(*({renamed}))")
+    exported = {name: start + offsets[(obj, original)] + value
+                for name, obj, original, value in exported_offsets if (obj, original) in offsets}
+    for obj in {obj for _, obj, _, _ in pieces}:
+        subprocess.run([objcopy, "--strip-debug", "--remove-section=.arm_vfe_header",
+                        "--remove-section=.ARM.attributes", *DISCARDED_LIBRARY_SECTIONS, str(obj)], check=True)
+    combined = temp / f"lib_{units[0]}.o"
+    layout = temp / f"lib_{units[0]}.ld"
+    layout.write_text(f"SECTIONS {{ {section} : {{ {' '.join(script)} }} }}\n")
+    subprocess.run([ld, "-r", "-T", str(layout), "-o", str(combined),
+                    *sorted({str(obj) for _, obj, _, _ in pieces})], check=True)
+    return PlacedGroup(units, start, start + offset, combined), exported
+
+
+def stub_assembly(name: str, address: int, data: bytes, pool_words: set[int] = frozenset(),
+                  image_word=lambda address: None, in_module=lambda address: False,
+                  context_word=lambda address: None, data_symbol=lambda value: None,
+                  external_literal=lambda address: None, raw_site=lambda address: False,
+                  sealed=lambda address: False) -> str:
+    """Write ``data`` (finished Thumb code at ``address``) as armclang would have written it before linking.
+
+    armlink finds literals through the relocation that a symbolic literal
+    load leaves, and redirects each load to an identical literal in a later
+    pool when one is in range. Finished code only shows the redirected
+    loads. Each load is therefore pointed back at an identical literal of
+    its own range when there is one, so that armlink sees the entry and
+    repeats its redirection. ``pool_words`` are addresses known to hold
+    literals (targets of loads anywhere in the image); words that a load in
+    this range points at are found here; ``image_word`` reads a word of
+    fixed code outside this range. A load of a literal in a module function
+    (``in_module`` tells those addresses) gets a copy of the
+    literal (read with ``context_word``) after the range for armlink to
+    merge. Literals that hold a data object's address are written against
+    ``data_symbol``, as armlink only merges literals with equal relocations.
+    ``external_literal`` resolves a literal owned by another context stub.
+    A load at an address for which ``raw_site`` holds gets no copy (it stays
+    a raw load of the module's literal). A literal for which ``sealed`` holds
+    is written as plain code, so that armlink merges no module load into it,
+    and the loads of it stay raw.
+    Its PC8 relocation uses an explicit narrow instruction, so an unresolved
+    cross-object label cannot cause the assembler to widen a Thumb load.
+    Everything else is emitted as 16-bit instructions.
+    """
+    def word(offset: int) -> int:
+        return int.from_bytes(data[offset:offset + 4], "little")
+
+    loads = {}
+    for offset in range(0, len(data) - 1, 2):
+        half = int.from_bytes(data[offset:offset + 2], "little")
+        if (half & 0xF800) == 0x4800:
+            loads[offset] = ((half >> 8) & 7, ((address + offset + 4) & ~3) + (half & 0xFF) * 4 - address)
+    literals = {target for _, target in loads.values() if 0 <= target and target + 4 <= len(data)}
+    literals |= {pool - address for pool in pool_words if address <= pool and pool + 4 <= address + len(data)}
+    # A "load" that lies inside a literal word is data, not an instruction.
+    loads = {offset: load for offset, load in loads.items()
+             if not any(literal <= offset < literal + 4 for literal in literals)}
+    copies = {}
+    lines = ["    .syntax unified", "    .thumb", f'    .section .text.{name},"ax",%progbits', "    .balign 2",
+             f"    .global {name}", f"    .type {name},%function", "    .thumb_func", f"{name}:"]
+    offset = 0
+    while offset < len(data):
+        if offset in literals and sealed(address + offset):
+            lines += [f"    .inst.n 0x{int.from_bytes(data[offset + half:offset + half + 2], 'little'):04x}"
+                      for half in (0, 2)]
+            offset += 4
+            continue
+        if offset in literals:
+            label = f"__arm_cp.{address:x}_{offset:x}"
+            # Every literal of V204's code must survive; armlink keeps a literal
+            # that has a reference it cannot redirect (loads from code outside
+            # the link are invisible to it).
+            symbol = data_symbol(word(offset))
+            lines += [f"    .global {label}", f"{label}:", f"    .long {symbol}" if symbol else f"    .long 0x{word(offset):08x}",
+                      f"    .size {label}, 4",
+                      f"    .reloc {name}, R_ARM_NONE, {label}"]
+            offset += 4
+            continue
+        if offset in loads:
+            register, target = loads[offset]
+            base = (offset + 4) & ~3 if address % 4 == 0 else ((address + offset + 4) & ~3) - address
+            value = word(target) if 0 <= target and target + 4 <= len(data) else image_word(address + target)
+            own = sorted(literal for literal in literals
+                         if value is not None and word(literal) == value and 0 <= literal - base <= 1020
+                         and not sealed(address + literal))
+            if 0 <= target < len(data) and sealed(address + target):
+                own = []
+            if own:
+                lines.append(f"    ldr r{register}, __arm_cp.{address:x}_{own[0]:x}")
+                offset += 2
+                continue
+            external = external_literal(address + target)
+            if external and not 0 <= target < len(data):
+                # PC8's implicit addend is -4; retain the 16-bit load form.
+                lines += [f"    .global {external}",
+                          f"    .inst.n 0x{0x48ff | (register << 8):04x}",
+                          f"    .reloc .-2, R_ARM_THM_PC8, {external}"]
+                offset += 2
+                continue
+            if value is None and not 0 <= target < len(data) and in_module(address + target):
+                value = context_word(address + target)
+            if (value is not None and not 0 <= target < len(data) and (address + len(data)) % 4 == 0
+                    and in_module(address + target) and not raw_site(address + offset)):
+                # A load of a module function's literal. armlink only keeps that
+                # literal while it knows of a load it cannot redirect elsewhere, as
+                # it did when this code was compiled with its own copy and armlink
+                # merged it. Recreate that copy after the end of the range; armlink
+                # merges it into the module's literal and drops it again.
+                label = f"__arm_cp.{address:x}_copy_{value:08x}"
+                copies[label] = value
+                lines.append(f"    ldr r{register}, {label}")
+                offset += 2
+                continue
+        if offset + 2 <= len(data):
+            lines.append(f"    .inst.n 0x{int.from_bytes(data[offset:offset + 2], 'little'):04x}")
+            offset += 2
+        else:
+            lines.append(f"    .byte 0x{data[offset]:02x}")
+            offset += 1
+    for label, value in copies.items():
+        symbol = data_symbol(value)
+        lines += [f"{label}:", f"    .long {symbol}" if symbol else f"    .long 0x{value:08x}", f"    .size {label}, 4"]
+    return "\n".join(lines) + "\n"
+
+
+def mark_eabi5(path: Path) -> None:
+    """Set the ARM ELF header flags to EABI version 5, as Arm and GNU objects use.
+
+    ``objcopy -I binary`` leaves ``e_flags`` zero, which GNU ld refuses to
+    merge with EABI version 5 objects.
+    """
+    data = bytearray(path.read_bytes())
+    data[36:40] = (0x05000000).to_bytes(4, "little")
+    path.write_bytes(data)

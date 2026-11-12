@@ -1,38 +1,33 @@
-/* Recovered behavior:
- * Process two packed input bytes, update state, and optionally append status.
- */
+/* Write one sensor register over I2C: send `register_address` then `value`,
+ * wait for the transfer to finish, report a transmit abort with V204's debug
+ * print (source line 234) and clear the abort status, returning the read.
+ * Register names are the DA14585's (SDK datasheet header). */
 #include <stdint.h>
+#include "firmware/reconstructed/include/sr08_format.h"
 
-/*
- * Consume the low byte of each incoming word, send both bytes to the radio,
- * and append a status marker when the corresponding mode flag is set.
- */
-__attribute__((used, naked, section(".text.process_two_packed_input_bytes_update_at_8ad8"))) uint16_t
-process_two_packed_input_bytes_update_at_8ad8(uint32_t first_value __attribute__((unused)),
-                                              uint32_t second_value __attribute__((unused))) {
-    __asm__ volatile("push {r2, r3, r4, r5, r6, lr}\n"
-                     "add r4, sp, #4\n"
-                     "strb r1, [r4, #1]\n"
-                     "strb r0, [r4, #0]\n"
-                     "movs r5, #2\n"
-                     "ldr r6, [pc, #48]\n"
-                     ".Lsend_next_input_byte: bl wait_for_status_mask_0x02_set_minimum_8\n"
-                     "ldrb r0, [r4, #0]\n"
-                     "strh r0, [r6, #0]\n"
-                     "adds r4, r4, #1\n"
-                     "subs r5, r5, #1\n"
-                     "lsls r0, r5, #16\n"
-                     "bne .Lsend_next_input_byte\n"
-                     "bl wait_for_status_mask_0x04_set_minimum_32\n"
-                     "bl wait_for_status_mask_0x20_clear_minimum_8\n"
-                     "ldr r4, [pc, #24]\n"
-                     "ldrh r0, [r4, #44]\n"
-                     "lsls r0, r0, #31\n"
-                     "beq .Lreturn_result\n"
-                     "ldr r0, [pc, #20]\n"
-                     "movs r1, #234\n"
-                     "movs r2, #1\n"
-                     "bl format_and_send_uart_message\n"
-                     ".Lreturn_result: ldrh r0, [r4, #0]\n"
-                     "pop {r2, r3, r4, r5, r6, pc}\n");
+#define I2C_DATA_CMD_REG        (*(volatile uint16_t *)0x50001310u)
+#define I2C_CLR_TX_ABRT_REG     (*(volatile uint16_t *)0x50001354u)
+#define I2C_TX_ABRT_SOURCE_REG  (*(volatile uint16_t *)0x50001380u)
+#define ABRT_7B_ADDR_NOACK      0x0001u
+
+extern void wait_for_status_mask_0x02_set_minimum_8(void);
+extern void wait_for_status_mask_0x04_set_minimum_32(void);
+extern void wait_for_status_mask_0x20_clear_minimum_8(void);
+extern const char i2c_ack_format[]; /* "%d,ack0x%x\n" */
+
+uint16_t process_two_packed_input_bytes_update_at_8ad8(uint32_t register_address, uint32_t value)
+{
+    uint8_t bytes[2] = {(uint8_t)register_address, (uint8_t)value};
+    const uint8_t *next = bytes;
+
+    uint16_t count = 2;
+    do {
+        wait_for_status_mask_0x02_set_minimum_8();
+        I2C_DATA_CMD_REG = *next++;
+    } while (--count != 0);
+    wait_for_status_mask_0x04_set_minimum_32();
+    wait_for_status_mask_0x20_clear_minimum_8();
+    if (I2C_TX_ABRT_SOURCE_REG & ABRT_7B_ADDR_NOACK)
+        arch_printf((const uint8_t *)i2c_ack_format, 234, 1);
+    return I2C_CLR_TX_ABRT_REG;
 }

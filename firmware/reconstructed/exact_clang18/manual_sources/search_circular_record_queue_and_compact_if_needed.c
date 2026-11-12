@@ -1,72 +1,50 @@
-/* Search the circular record queue, compact it when needed, and submit a record. */
+/* Deduplicate the event record queue: an identical record already queued at the oldest position stays; an
+ * identical later record is removed by shifting its successors down; then the record is submitted.
+ * Plain ac6 object together with initialize_configuration_record_defaults (V204 keeps their literals
+ * out of the LTO module's literal sharing). The first loop reads queue->element_size inside the loop so
+ * Reassociate orders the multiply as size * index, as V204 does. */
 #include <stdint.h>
-__attribute__((used, naked, section(".text.search_circular_record_queue_and_compact_if_needed"))) void
-search_circular_record_queue_and_compact_if_needed(const void *record) {
-    __asm__ volatile("push {r4, r5, r6, r7, lr}\n"
-                     "sub sp, #20\n"
-                     "str r0, [sp, #12]\n"
-                     "ldr r1, [pc, #172]\n"
-                     "ldr r0, [r1, #52]\n"
-                     "str r0, [sp, #16]\n"
-                     "ldr r6, [r1, #56]\n"
-                     "mov r7, r1\n"
-                     "adds r7, #60\n"
-                     "ldmia r7, {r0, r4, r7} /* ldmia r7!, {r0, r4, r7} */\n"
-                     "subs r0, r0, #1 /* subs r0, r0, #1 */\n"
-                     "str r0, [sp, #8]\n"
-                     "movs r5, #0\n"
-                     "str r6, [sp, #4]\n"
-                     ".Lscan: ldr r0, [sp, #16]\n"
-                     "cmp r6, r0\n"
-                     "beq .Lflush\n"
-                     "mov r0, r6\n"
-                     "muls r0, r4\n"
-                     "adds r0, r7, r0\n"
-                     "movs r2, #20\n"
-                     "ldr r1, [sp, #12]\n"
-                     "bl memcmp\n"
-                     "cmp r0, #0\n"
-                     "beq .Lnot_found\n"
-                     "adds r6, r6, #1 /* adds r6, r6, #1 */\n"
-                     "ldr r0, [sp, #8]\n"
-                     "ands r6, r0\n"
-                     "adds r5, r5, #1 /* adds r5, r5, #1 */\n"
-                     "b .Lscan\n"
-                     ".Lnot_found: ldr r1, [sp, #4]\n"
-                     "cmp r6, r1\n"
-                     "beq .Lreturn\n"
-                     "ldr r0, [sp, #16]\n"
-                     "subs r0, r0, r1\n"
-                     "ldr r1, [sp, #8]\n"
-                     "ands r0, r1\n"
-                     "cmp r0, r5\n"
-                     "bls .Lflush\n"
-                     "ldr r0, [sp, #4]\n"
-                     "adds r4, r0, r5\n"
-                     "ldr r1, [sp, #8]\n"
-                     "ands r4, r1\n"
-                     "ldr r0, [sp, #16]\n"
-                     "subs r5, r0, #1 /* subs r5, r0, #1 */\n"
-                     "ands r5, r1\n"
-                     "ldr r7, [pc, #84]\n"
-                     ".Lcompact: cmp r4, r5\n"
-                     "beq .Lcompact_done\n"
-                     "mov r3, r7\n"
-                     "adds r3, #60\n"
-                     "ldmia r3, {r1, r2, r3} /* ldmia r3!, {r1, r2, r3} */\n"
-                     "adds r6, r4, #1 /* adds r6, r4, #1 */\n"
-                     "muls r4, r2\n"
-                     "adds r0, r3, r4\n"
-                     "subs r4, r1, #1 /* subs r4, r1, #1 */\n"
-                     "ands r4, r6\n"
-                     "mov r1, r2\n"
-                     "muls r1, r4\n"
-                     "adds r1, r3, r1\n"
-                     "bl __aeabi_memcpy\n"
-                     "b .Lcompact\n"
-                     ".Lcompact_done: str r5, [r7, #52]\n"
-                     ".Lflush: ldr r0, [sp, #12]\n"
-                     "bl advance_ring_s_queue_and_submit_entry\n"
-                     ".Lreturn: add sp, #20\n"
-                     "pop {r4, r5, r6, r7, pc}\n");
+#include <string.h>
+#include "firmware/reconstructed/include/sr08_arm_eabi.h"
+#include "firmware/reconstructed/include/sr08_event_record_queue.h"
+
+extern void advance_ring_s_queue_and_submit_entry(const void *record);
+
+/* Keep an identical oldest record in place. An identical later record is
+ * removed by shifting its successors, then submitted at the queue's tail.
+ * The queue helper also handles a record absent from the queue.
+ */
+__attribute__((used,section(".text.search_circular_record_queue_and_compact_if_needed")))
+void search_circular_record_queue_and_compact_if_needed(const void *record)
+{
+    struct sr08_ring_buffer *queue = &event_record_queue_state.ring;
+    uint32_t head = queue->head;
+    uint32_t index = queue->tail;
+    uint32_t mask = queue->capacity - 1;
+    uint32_t size = queue->element_size;
+    uint8_t *base = (uint8_t *)queue->storage_base;
+    uint32_t traversed = 0;
+    uint32_t tail = index;
+    while (index != head) {
+        if (memcmp(base + index * queue->element_size, record, EVENT_RECORD_SIZE) == 0) break;
+        index = (index + 1) & mask;
+        ++traversed;
+    }
+    if (index != head) {
+        if (index == tail) return;
+        if (((head - tail) & mask) > traversed) {
+            uint32_t last = (head - 1) & mask;
+            uint32_t destination = (tail + traversed) & mask;
+            while (destination != last) {
+                uint32_t capacity = queue->capacity;
+                uint32_t element_size = queue->element_size;
+                uint8_t *storage = (uint8_t *)queue->storage_base;
+                uint8_t *output = storage + destination * element_size;
+                destination = (destination + 1) & (capacity - 1);
+                __aeabi_memcpy(output, storage + destination * element_size, element_size);
+            }
+            queue->head = last;
+        }
+    }
+    advance_ring_s_queue_and_submit_entry(record);
 }

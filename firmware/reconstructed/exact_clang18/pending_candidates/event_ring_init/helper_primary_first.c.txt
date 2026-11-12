@@ -1,0 +1,9 @@
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_event_record_queue.h"
+static __attribute__((always_inline)) inline void init_ring(struct sr08_ring_buffer *ring, uintptr_t storage, uint32_t bytes, uint32_t count) {
+ ring->head = 0; ring->tail = 0; ring->capacity = count; ring->element_size = bytes; ring->storage_base = storage;
+}
+void initialize_configuration_record_defaults(void) {
+    init_ring(&event_record_queue_state.ring,(uintptr_t)event_record_storage,EVENT_RECORD_SIZE,EVENT_RECORD_COUNT);
+    init_ring(&event_record_queue_state.secondary_ring,(uintptr_t)secondary_event_record_storage,EVENT_RECORD_SIZE,SECONDARY_EVENT_RECORD_COUNT);
+}

@@ -1,0 +1,39 @@
+group 0x07fc8fb0-0x07fc9004 (84 bytes)
+MISMATCH: 22 differing bytes
+--- V204
++++ candidate
+@@ -4,15 +4,15 @@
+ 7fc8fb6:	7003      	strb	r3, [r0, #0]
+ 7fc8fb8:	4e0f      	ldr	r6, [pc, #60]	@ (0x7fc8ff8)
+-7fc8fba:	4635      	mov	r5, r6
+-7fc8fbc:	3514      	adds	r5, #20
+-7fc8fbe:	2019      	movs	r0, #25
+-7fc8fc0:	0381      	lsls	r1, r0, #14
++7fc8fba:	4630      	mov	r0, r6
++7fc8fbc:	3014      	adds	r0, #20
++7fc8fbe:	2119      	movs	r1, #25
++7fc8fc0:	0389      	lsls	r1, r1, #14
+ 7fc8fc2:	2214      	movs	r2, #20
+-7fc8fc4:	4628      	mov	r0, r5
+-7fc8fc6:	f7fa ff6b 	bl	0x7fc3ea0
+-7fc8fca:	7d30      	ldrb	r0, [r6, #20]
+-7fc8fcc:	282b      	cmp	r0, #43	@ 0x2b
+-7fc8fce:	d10b      	bne.n	0x7fc8fe8
+-7fc8fd0:	7cef      	ldrb	r7, [r5, #19]
++7fc8fc4:	f7fa ff6c 	bl	0x7fc3ea0
++7fc8fc8:	7d30      	ldrb	r0, [r6, #20]
++7fc8fca:	282b      	cmp	r0, #43	@ 0x2b
++7fc8fcc:	d10c      	bne.n	0x7fc8fe8
++7fc8fce:	2027      	movs	r0, #39	@ 0x27
++7fc8fd0:	5c37      	ldrb	r7, [r6, r0]
+ 7fc8fd2:	2f00      	cmp	r7, #0
+ 7fc8fd4:	d008      	beq.n	0x7fc8fe8
+@@ -27,6 +27,6 @@
+ 7fc8fe8:	2084      	movs	r0, #132	@ 0x84
+ 7fc8fea:	7530      	strb	r0, [r6, #20]
+-7fc8fec:	a503      	add	r5, pc, #12	@ (adr r5, 0x7fc8ffc)
+-7fc8fee:	2704      	movs	r7, #4
++7fc8fec:	2704      	movs	r7, #4
++7fc8fee:	a503      	add	r5, pc, #12	@ (adr r5, 0x7fc8ffc)
+ 7fc8ff0:	7027      	strb	r7, [r4, #0]
+ 7fc8ff2:	4628      	mov	r0, r5

@@ -1,0 +1,21 @@
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_event_record_queue.h"
+void initialize_configuration_record_defaults(void) {
+    struct event_record_queue_state *state = &event_record_queue_state;
+    uintptr_t primary = __builtin_annotation((uintptr_t)event_record_storage,"primary storage");
+    uint32_t element_size = __builtin_annotation(EVENT_RECORD_SIZE,"element bytes");
+    uint32_t capacity = __builtin_annotation(EVENT_RECORD_COUNT,"primary count");
+    uintptr_t secondary = __builtin_annotation((uintptr_t)secondary_event_record_storage,"secondary storage");
+    state->secondary_ring.element_size = element_size;
+    state->secondary_ring.storage_base = secondary;
+    uint32_t secondary_capacity = SECONDARY_EVENT_RECORD_COUNT;
+    uint32_t zero = 0;
+    state->ring.head = zero;
+    state->ring.tail = zero;
+    state->ring.capacity = capacity;
+    state->ring.element_size = element_size;
+    state->ring.storage_base = primary;
+    state->secondary_ring.head = zero;
+    state->secondary_ring.tail = zero;
+    state->secondary_ring.capacity = secondary_capacity;
+}

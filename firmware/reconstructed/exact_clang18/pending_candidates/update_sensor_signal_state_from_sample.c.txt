@@ -1,0 +1,215 @@
+/* PARKED (2026-11-15, Jeff): 0xd4f8 update_sensor_signal_state_from_sample, ac5 (armcc 5.06u7 -O3).
+ * probe: 444 vs 443 instructions; 41 register-normalized lines differ, all armcc choices:
+ *  - loop 1 hoists 512 (V204) vs 384 (here); V204 rematerializes 384 per iteration and subtracts 512 as
+ *    immediates; loop 2 rematerializes 512;
+ *  - V204 loads the sine-table base after the uxtb and issues both ldrb after `cmp phase, #128`;
+ *  - frame: V204 sub sp #92 (top_rate sp+4, top_bin +24, top_power +36, max +76, spill +80) vs 84 here, same
+ *    relative order. Unused locals are dropped, so the gaps are armcc's spill layout.
+ * Levers that helped: the shift with b/a locals and one count read for the 38/40/50 tests; the swapped
+ * quadrant code; (uint8_t)(127 - idx); store orders S(24),S(28),S(20) and S(48),S(44),S(40); level locals;
+ * a record pointer plus one count read after the peak loops.
+ * Install needs: FIXED_DATA_SYMBOLS "v204_data_07fcf23c": 0x07fcf23c (sine quarter-wave table, additive).
+ * Behaviour: despike the raw sample (3-tap, +-20000), track the baseline (re-anchored past 20000), two 2nd-order
+ * IIR band-pass stages (-109/51 and -83/42, >>6) -> S(48). From sample 51 on, 40 quadrature bins (phase step
+ * i+16 of 512) accumulate S(48)>>3 * cos/sin into history_pairs; from 171 on, the value 120 samples back is
+ * subtracted through history_b (a sliding DFT). Every 25th sample from 170 on, the 6 strongest local peaks of
+ * (re>>18)^2+(im>>18)^2 give rate = (bin+15)*192000>>16; sample 200 seeds levels and counter_04 = rate*8; later
+ * the level follows within +-2 per step, counter_04 = (3*counter + 8*level)/4, and measurement_status =
+ * counter_04>>3. Past sample 400, a nonzero rate with no blood-pressure estimate yet calls
+ * compute_and_store_display_coordinates(rate, profile at sensor_status_record+8). */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_sensor_status_record.h"
+
+extern const uint8_t v204_data_07fcf23c[];
+struct blood_pressure_profile {
+    uint8_t age;
+    uint8_t height;
+    uint8_t weight;
+    uint8_t gender;
+    uint8_t reference_systolic;
+    uint8_t reference_diastolic;
+    uint8_t pad[2];
+};
+extern void compute_and_store_display_coordinates(uint8_t heart_rate, struct blood_pressure_profile profile);
+
+#define S(off) (*(int32_t *)((uint8_t *)ctx + (off)))
+#define PROFILE (*(struct blood_pressure_profile *)((uint8_t *)&sensor_status_record + 8))
+
+#define QUADRATURE(phase, sin_v, cos_v)                                  \
+    do {                                                                 \
+        uint8_t idx_;                                                    \
+        if ((phase) >= 384)                                              \
+            idx_ = (phase) - 384;                                        \
+        else if ((phase) >= 256)                                         \
+            idx_ = (phase) - 256;                                        \
+        else if ((phase) >= 128)                                         \
+            idx_ = (phase) - 128;                                        \
+        else                                                             \
+            idx_ = (phase);                                              \
+        sin_v = v204_data_07fcf23c[idx_];                                \
+        cos_v = v204_data_07fcf23c[(uint8_t)(127 - idx_)];                         \
+        if ((phase) >= 128) {                                            \
+            int32_t t_;                                                  \
+            if ((phase) < 256) {                                         \
+                t_ = sin_v;                                              \
+                sin_v = cos_v;                                           \
+                cos_v = -t_;                                             \
+            } else if ((phase) < 384) {                                  \
+                sin_v = -sin_v;                                          \
+                cos_v = -cos_v;                                          \
+            } else {                                                     \
+                t_ = sin_v;                                              \
+                sin_v = -cos_v;                                          \
+                cos_v = t_;                                              \
+            }                                                            \
+        }                                                                \
+    } while (0)
+
+uint8_t update_sensor_signal_state_from_sample(int32_t sample)
+{
+    uint16_t i = 0;
+    uint16_t top_bin[6] = {0};
+    uint32_t max_power = 0;
+    uint16_t top_rate[6] = {0};
+    uint32_t top_power[6] = {0};
+    struct sr08_sensor_status_context *ctx = sensor_status_record.context;
+    int32_t x = sample;
+    int32_t y;
+
+    uint32_t n;
+    int32_t a, b;
+    S(64) = S(60);
+    b = S(56);
+    S(60) = b;
+    a = S(52);
+    S(52) = sample;
+    S(56) = a;
+    n = ctx->current_value;
+    if (n > 38) {
+        if ((a - b > 20000 && a - sample > 20000) || (a - b < -20000 && a - sample < -20000)) {
+            x = b;
+            S(56) = b;
+        } else {
+            x = a;
+        }
+    }
+    if (n > 40) {
+        int32_t d = x - S(68) - S(72);
+        if (d < 0)
+            d = -d;
+        if (d > 20000)
+            S(68) = x - S(72);
+        y = x - S(68);
+    } else {
+        y = x;
+    }
+    S(76) = x;
+    S(72) = y;
+    if (n == 40) {
+        S(12) = S(56);
+        S(16) = S(56);
+    } else if (n > 40) {
+        int32_t d = y - S(16);
+        int32_t t, v, u, w;
+        S(16) = S(12);
+        S(12) = y;
+        t = S(20);
+        v = d - ((t * -109 + S(24) * 51) >> 6);
+        S(24) = t;
+        S(28) = v;
+        S(20) = v;
+        d = v - S(36);
+        S(36) = S(32);
+        S(32) = v;
+        u = S(40);
+        w = d - ((u * -83 + S(44) * 42) >> 6);
+        S(48) = w;
+        S(44) = u;
+        S(40) = w;
+    }
+    if (n > 50) {
+        for (; i < 40; i++) {
+            uint16_t phase;
+            int32_t sin_v, cos_v;
+            ctx->history_a[i] += i + 16;
+            if (ctx->history_a[i] >= 512)
+                ctx->history_a[i] -= 512;
+            phase = ctx->history_a[i];
+            QUADRATURE(phase, sin_v, cos_v);
+            ctx->history_pairs[i].first += (S(48) >> 3) * cos_v;
+            ctx->history_pairs[i].second += (S(48) >> 3) * sin_v;
+        }
+    }
+    if (ctx->current_value > 170) {
+        for (i = 0; i < 40; i++) {
+            uint16_t phase;
+            int32_t sin_v, cos_v;
+            ctx->history_b[i] += i + 16;
+            if (ctx->history_b[i] >= 512)
+                ctx->history_b[i] -= 512;
+            phase = ctx->history_b[i];
+            QUADRATURE(phase, sin_v, cos_v);
+            ctx->history_pairs[i].first -= ((int32_t)ctx->samples[ctx->flag_50] >> 3) * cos_v;
+            ctx->history_pairs[i].second -= ((int32_t)ctx->samples[ctx->flag_50] >> 3) * sin_v;
+        }
+    }
+    if (ctx->current_value > 50) {
+        ctx->samples[ctx->flag_50] = S(48);
+        if (++ctx->flag_50 > 119)
+            ctx->flag_50 = 0;
+    }
+    if (ctx->current_value % 25 == 0 && ctx->current_value >= 170) {
+        uint32_t previous = 3600000000u;
+        uint32_t before_previous = 3700000000u;
+        uint16_t j;
+        uint32_t count;
+        struct sr08_sensor_status_record *record;
+        for (i = 0; i < 40; i++) {
+            uint32_t power = ((int32_t)ctx->history_pairs[i].first >> 18) * ((int32_t)ctx->history_pairs[i].first >> 18) +
+                             ((int32_t)ctx->history_pairs[i].second >> 18) * ((int32_t)ctx->history_pairs[i].second >> 18);
+            if (power < previous && previous >= before_previous) {
+                for (j = 0; j < 6; j++) {
+                    if (top_power[j] < previous) {
+                        if (j != 0) {
+                            top_bin[j - 1] = top_bin[j];
+                            top_power[j - 1] = top_power[j];
+                            top_rate[j - 1] = top_rate[j];
+                        }
+                        top_bin[j] = i;
+                        top_power[j] = previous;
+                        top_rate[j] = (i + 15) * 192000 >> 16;
+                    }
+                }
+            }
+            before_previous = previous;
+            previous = power;
+            if (power > max_power)
+                max_power = power;
+        }
+        for (j = 0; j < 6; j++)
+            ;
+        count = ctx->current_value;
+        record = &sensor_status_record;
+        if (count == 200) {
+            uint8_t rate = top_rate[5];
+            ctx->default_level_a = rate;
+            ctx->default_level_b = rate;
+            record->state = 2;
+            ctx->counter_04 = rate * 8;
+        } else if (count > 200) {
+            uint8_t rate = top_rate[5];
+            ctx->default_level_a = rate;
+            if (ctx->default_level_b - 2 > rate)
+                ctx->default_level_a = ctx->default_level_b - 2;
+            else if (ctx->default_level_b + 2 < rate)
+                ctx->default_level_a = ctx->default_level_b + 2;
+            ctx->counter_04 = (ctx->counter_04 * 3 + ctx->default_level_a * 8) >> 2;
+            ctx->default_level_b = ctx->default_level_a;
+        }
+        ctx->measurement_status = ctx->counter_04 >> 3;
+        if (count > 400 && ctx->measurement_status != 0 && ctx->systolic_estimate == 0)
+            compute_and_store_display_coordinates(ctx->measurement_status, *(struct blood_pressure_profile *)((uint8_t *)record + 8));
+    }
+    sensor_status_record.context->current_value++;
+    return 1;
+}

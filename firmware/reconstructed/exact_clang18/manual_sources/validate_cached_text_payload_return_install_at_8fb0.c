@@ -1,45 +1,37 @@
-/* Validate the cached text payload and return it, or install the fallback text. */
+/* Load the device-name record from flash 0x64000 and return its name and
+ * length when it is valid (marker '+', 1-17 bytes, matching the string
+ * length); otherwise mark the record 0x84 and return the default name "SR08". */
 #include <stdint.h>
+#include "firmware/reconstructed/include/sr08_device_name.h"
 #include "firmware/reconstructed/include/sr08_flash_operation.h"
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
 
-__attribute__((used, naked, section(".text.validate_cached_text_payload_return_install_at_8fb0"))) const uint8_t *
-validate_cached_text_payload_return_install_at_8fb0(uint8_t *output_length, uint32_t unused_abi_argument_2,
-                                                    uint32_t unused_abi_argument_3,
-                                                    enum sr08_flash_operation operation) {
-    /* r4 retains output_length, r6 is the cache record, r5 the selected text, and r7 its length. */
-    /* Record offsets: marker 0x14, text 0x15, length 0x27. Accept 1-17 bytes matching strlen. */
-    __asm__ volatile("push {r3, r4, r5, r6, r7, lr}\n"
-                     "mov r4, r0\n"
-                     "movs r3, #0\n"
-                     "strb r3, [r0, #0]\n"
-                     "ldr r6, [pc, #60]\n"
-                     "mov r5, r6\n"
-                     "adds r5, #20\n"
-                     "movs r0, #25\n"
-                     "lsls r1, r0, #14\n"
-                     "movs r2, #20\n"
-                     "mov r0, r5\n"
-                     "bl perform_flash_memory_operation\n"
-                     "ldrb r0, [r6, #20]\n"
-                     "cmp r0, #43\n"
-                     "bne .L_invalid_cached_text\n"
-                     "ldrb r7, [r5, #19]\n"
-                     "cmp r7, #0\n"
-                     "beq .L_invalid_cached_text\n"
-                     "cmp r7, #17\n"
-                     "bhi .L_invalid_cached_text\n"
-                     "mov r5, r6\n"
-                     "adds r5, #21\n"
-                     "mov r0, r5\n"
-                     "bl nul_terminated_string_length\n"
-                     "cmp r0, r7\n"
-                     "beq .L_finish_cached_text_validation\n"
-                     ".L_invalid_cached_text: movs r0, #132\n"
-                     "strb r0, [r6, #20]\n"
-                     ".set .Lfallback_text, .+16\n"
-                     "adr r5, .Lfallback_text /* fallback text at 0x07fc8ffc */\n"
-                     "movs r7, #4\n"
-                     ".L_finish_cached_text_validation: strb r7, [r4, #0]\n"
-                     "mov r0, r5\n"
-                     "pop {r3, r4, r5, r6, r7, pc}\n");
+uint32_t nul_terminated_string_length(const uint8_t *text);
+
+enum { DEVICE_NAME_FLASH_ADDRESS = 0x64000, DEVICE_NAME_VALID = '+', DEVICE_NAME_INVALID = 0x84 };
+
+__attribute__((used, section(".text.validate_cached_text_payload_return_install_at_8fb0"))) const uint8_t *
+validate_cached_text_payload_return_install_at_8fb0(uint8_t *length) {
+    /* Retain the flash record subobject as a pointer across the read call.
+     * These annotations return their inputs unchanged and emit no code.
+     */
+    struct sr08_device_name_record *record = (struct sr08_device_name_record *)__builtin_annotation(
+        (uintptr_t)&merged_globals_574c.device_name, "flash name record");
+    const uint8_t *name;
+    uint8_t name_length;
+
+    *length = 0;
+    perform_flash_memory_operation((uint8_t *)record, DEVICE_NAME_FLASH_ADDRESS, sizeof(*record), SR08_FLASH_READ);
+    if (merged_globals_574c.device_name.marker == DEVICE_NAME_VALID && (name_length = record->length) != 0 &&
+        __builtin_annotation((uint32_t)name_length, "nonzero name length") <= 17 &&
+        nul_terminated_string_length(merged_globals_574c.device_name.name) == name_length) {
+        name = merged_globals_574c.device_name.name;
+    } else {
+        merged_globals_574c.device_name.marker = DEVICE_NAME_INVALID;
+        name = (const uint8_t *)"SR08";
+        *length = 4;
+        return name;
+    }
+    *length = name_length;
+    return name;
 }

@@ -1,0 +1,114 @@
+{
+  "annotate_eight_only_native.log": [
+    "group 0x07fcbb94-0x07fcbbc0 (44 bytes)",
+    "MISMATCH: 39 differing bytes"
+  ],
+  "annotate_one_only_native.log": [
+    "group 0x07fcbb94-0x07fcbbc4 (48 bytes)",
+    "BYTE_EXACT"
+  ],
+  "baseline_native.log": [
+    "group 0x07fcbb94-0x07fcbbc4 (48 bytes)",
+    "MISMATCH: 4 differing bytes"
+  ],
+  "derive_eight_native.log": [
+    "group 0x07fcbb94-0x07fcbbc4 (48 bytes)",
+    "BYTE_EXACT"
+  ],
+  "derive_one_native.log": [
+    "group 0x07fcbb94-0x07fcbbc4 (48 bytes)",
+    "MISMATCH: 6 differing bytes"
+  ],
+  "false_first_hint_native.log": [
+    "group 0x07fcbb94-0x07fcbbc4 (48 bytes)",
+    "MISMATCH: 35 differing bytes"
+  ],
+  "false_first_native.log": [
+    "group 0x07fcbb94-0x07fcbbc0 (44 bytes)",
+    "MISMATCH: 40 differing bytes"
+  ],
+  "fence_both_native.log": [
+    "group 0x07fcbb94-0x07fcbbc8 (52 bytes)",
+    "MISMATCH: 44 differing bytes"
+  ],
+  "fence_false_likely_native.log": [
+    "group 0x07fcbb94-0x07fcbbc8 (52 bytes)",
+    "MISMATCH: 41 differing bytes"
+  ],
+  "fence_false_native.log": [
+    "group 0x07fcbb94-0x07fcbbc4 (48 bytes)",
+    "MISMATCH: 6 differing bytes"
+  ],
+  "fence_false_unlikely_native.log": [
+    "group 0x07fcbb94-0x07fcbbc4 (48 bytes)",
+    "MISMATCH: 10 differing bytes"
+  ],
+  "flag_first_hint_native.log": [
+    "group 0x07fcbb94-0x07fcbbc4 (48 bytes)",
+    "MISMATCH: 36 differing bytes"
+  ],
+  "invert_condition_native.log": [
+    "group 0x07fcbb94-0x07fcbbc4 (48 bytes)",
+    "MISMATCH: 10 differing bytes"
+  ],
+  "reverse_params_native.log": [
+    "group 0x07fcbb94-0x07fcbbc4 (48 bytes)",
+    "MISMATCH: 6 differing bytes"
+  ],
+  "values_r0f0o0_native.log": [
+    "group 0x07fcbb94-0x07fcbbc4 (48 bytes)",
+    "MISMATCH: 4 differing bytes"
+  ],
+  "values_r0f0o1_native.log": [
+    "group 0x07fcbb94-0x07fcbbc4 (48 bytes)",
+    "MISMATCH: 4 differing bytes"
+  ],
+  "values_r0f1o0_native.log": [
+    "group 0x07fcbb94-0x07fcbbc4 (48 bytes)",
+    "MISMATCH: 10 differing bytes"
+  ],
+  "values_r0f1o1_native.log": [
+    "group 0x07fcbb94-0x07fcbbc4 (48 bytes)",
+    "MISMATCH: 10 differing bytes"
+  ],
+  "values_r1f0o0_native.log": [
+    "group 0x07fcbb94-0x07fcbbc4 (48 bytes)",
+    "MISMATCH: 4 differing bytes"
+  ],
+  "values_r1f0o1_native.log": [
+    "group 0x07fcbb94-0x07fcbbc4 (48 bytes)",
+    "MISMATCH: 4 differing bytes"
+  ],
+  "values_r1f1o0_native.log": [
+    "group 0x07fcbb94-0x07fcbbc4 (48 bytes)",
+    "MISMATCH: 10 differing bytes"
+  ],
+  "values_r1f1o1_native.log": [
+    "group 0x07fcbb94-0x07fcbbc4 (48 bytes)",
+    "MISMATCH: 10 differing bytes"
+  ],
+  "weighted_expect0_native.log": [
+    "group 0x07fcbb94-0x07fcbbc4 (48 bytes)",
+    "MISMATCH: 10 differing bytes"
+  ],
+  "weighted_expect1_native.log": [
+    "group 0x07fcbb94-0x07fcbbc8 (52 bytes)",
+    "MISMATCH: 39 differing bytes"
+  ],
+  "weighted_p10_native.log": [
+    "group 0x07fcbb94-0x07fcbbc4 (48 bytes)",
+    "MISMATCH: 10 differing bytes"
+  ],
+  "weighted_p49_native.log": [
+    "group 0x07fcbb94-0x07fcbbc4 (48 bytes)",
+    "MISMATCH: 4 differing bytes"
+  ],
+  "weighted_p51_native.log": [
+    "group 0x07fcbb94-0x07fcbbc4 (48 bytes)",
+    "MISMATCH: 4 differing bytes"
+  ],
+  "weighted_p90_native.log": [
+    "group 0x07fcbb94-0x07fcbbc8 (52 bytes)",
+    "MISMATCH: 39 differing bytes"
+  ]
+}

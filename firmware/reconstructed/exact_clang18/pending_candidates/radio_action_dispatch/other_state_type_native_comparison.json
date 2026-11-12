@@ -1,0 +1,24 @@
+{
+  "apply_sensor_control_action": {
+    "before": {
+      "bytes": 244,
+      "sha256": "cdc5d470aa8a5408500a8a6cfdb15b91ecb1697b317de25c014adbf4a641ad0d"
+    },
+    "after": {
+      "bytes": 244,
+      "sha256": "cdc5d470aa8a5408500a8a6cfdb15b91ecb1697b317de25c014adbf4a641ad0d"
+    },
+    "native_output_identical": true
+  },
+  "prefer_active_value_override_otherwise_derive_at_aa68": {
+    "before": {
+      "bytes": 104,
+      "sha256": "3aa1562eb94f68d04ffae16f0fe79e9d2874955dda14d9a0ff0403a88b42b704"
+    },
+    "after": {
+      "bytes": 104,
+      "sha256": "3aa1562eb94f68d04ffae16f0fe79e9d2874955dda14d9a0ff0403a88b42b704"
+    },
+    "native_output_identical": true
+  }
+}

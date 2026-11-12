@@ -1,6 +1,8 @@
 #ifndef SR08_INDEXED_SENSOR_STATE_H
 #define SR08_INDEXED_SENSOR_STATE_H
 
+#include "firmware/reconstructed/include/sr08_static_assert.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -17,13 +19,13 @@ struct sr08_indexed_sensor_state_view {
     uint8_t measurement_available;
 };
 
-_Static_assert(offsetof(struct sr08_indexed_sensor_state_view, measurement_status) == 0x58,
+SR08_STATIC_ASSERT(offsetof(struct sr08_indexed_sensor_state_view, measurement_status) == 0x58,
                "indexed measurement status must remain at offset 0x58");
-_Static_assert(offsetof(struct sr08_indexed_sensor_state_view, slot_index) == 0x5a,
+SR08_STATIC_ASSERT(offsetof(struct sr08_indexed_sensor_state_view, slot_index) == 0x5a,
                "indexed slot number must remain at offset 0x5a");
-_Static_assert(offsetof(struct sr08_indexed_sensor_state_view, measurement_available) == 0x5b,
+SR08_STATIC_ASSERT(offsetof(struct sr08_indexed_sensor_state_view, measurement_available) == 0x5b,
                "measurement availability must remain at offset 0x5b");
-_Static_assert(sizeof(struct sr08_indexed_sensor_state_view) == 0x5c,
+SR08_STATIC_ASSERT(sizeof(struct sr08_indexed_sensor_state_view) == 0x5c,
                "indexed sensor-state view must extend through byte 0x5b");
 
 #endif

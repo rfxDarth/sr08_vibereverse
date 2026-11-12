@@ -1,0 +1,60 @@
+/* Refresh the mode-one callback values (+0x3e and +0x40 of the radio state),
+ * then the mode-zero ones. With notification enabled (+0x1d) and the two
+ * mode-one values different, store their difference against the reference
+ * value (or +0x46 in profile mode) and lower the reference when the second
+ * value is 50 below it. When the values agree (and are nonzero) for the
+ * first time in profile mode, send 0x9c/7 and 0x70/0 and enable
+ * notification. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_cycle_control_state.h"
+#include "firmware/reconstructed/include/sr08_radio_commands.h"
+#include "firmware/reconstructed/include/sr08_radio_configuration.h"
+
+extern uint16_t read_callback_pair_for_mode_window_39_3a(uint8_t mode);
+extern uint16_t read_callback_pair_for_mode_window_42_43(uint8_t mode);
+extern struct sr08_cycle_control_state cycle_control_state;
+
+#define radio_byte(offset) (((volatile uint8_t *)&device_control_state)[offset])
+#define radio_half(offset) (*(volatile uint16_t *)(void *)((volatile uint8_t *)&device_control_state + (offset)))
+
+enum {
+    PROFILE_MODE = 0x19,
+    VALUES_DIFFER = 0x1b,
+    NOTIFY_ENABLED = 0x1d,
+    FIRST_VALUE = 0x3e,
+    SECOND_VALUE = 0x40,
+    REFERENCE_VALUE = 0x46,
+};
+
+void synchronize_callback_values_and_notify(void)
+{
+    uint16_t first, second;
+    uint8_t settled = 0;
+
+    radio_half(FIRST_VALUE) = read_callback_pair_for_mode_window_39_3a(1);
+    radio_half(SECOND_VALUE) = read_callback_pair_for_mode_window_42_43(1);
+    read_callback_pair_for_mode_window_39_3a(0);
+    read_callback_pair_for_mode_window_42_43(0);
+    second = radio_half(SECOND_VALUE);
+    first = radio_half(FIRST_VALUE);
+    if (first == 0 && second == 0) {
+        radio_byte(VALUES_DIFFER) = 0;
+        settled = radio_byte(NOTIFY_ENABLED);
+    } else if (radio_byte(NOTIFY_ENABLED) != 0) {
+        if (first != second) {
+            int16_t reference = radio_half(REFERENCE_VALUE);
+            uint8_t profile = radio_byte(PROFILE_MODE);
+
+            radio_byte(VALUES_DIFFER) = 1;
+            cycle_control_state.measurement_value = (int16_t)first - (int16_t)(profile ? reference : second);
+            if (profile == 1 && reference - 50 > (int16_t)second)
+                radio_half(REFERENCE_VALUE) = second;
+        }
+        settled = 1;
+    }
+    if (__builtin_annotation((uint32_t)first,"final first") == __builtin_annotation((uint32_t)second,"final second") && !settled && first != 0 && radio_byte(PROFILE_MODE) != 0) {
+        send_device_command_pair(0x9c, 7);
+        send_device_command_pair(0x70, 0);
+        radio_byte(NOTIFY_ENABLED) = 1;
+    }
+}

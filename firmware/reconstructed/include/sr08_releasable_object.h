@@ -1,6 +1,8 @@
 #ifndef SR08_RELEASABLE_OBJECT_H
 #define SR08_RELEASABLE_OBJECT_H
 
+#include "firmware/reconstructed/include/sr08_static_assert.h"
+
 #include <stddef.h>
 #include <stdint.h>
 #include "firmware/reconstructed/include/sr08_kernel_allocator.h"
@@ -18,8 +20,8 @@ sr08_release_and_clear_object_handle(struct sr08_releasable_object *object) {
     ke_free((void *)handle);
 }
 
-_Static_assert(offsetof(struct sr08_releasable_object, handle) == 0x10,
+SR08_STATIC_ASSERT(offsetof(struct sr08_releasable_object, handle) == 0x10,
                "releasable object handle offset must remain 0x10");
-_Static_assert(sizeof(struct sr08_releasable_object) == 0x14, "releasable object layout must remain five words");
+SR08_STATIC_ASSERT(sizeof(struct sr08_releasable_object) == 0x14, "releasable object layout must remain five words");
 
 #endif

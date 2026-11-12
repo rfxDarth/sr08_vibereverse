@@ -1,0 +1,12 @@
+{
+  "scope": "manifest source text and C-preprocessed local headers",
+  "preprocessor": "arm-none-eabi-gcc",
+  "manifest_units": 449,
+  "preprocessing_failures": [],
+  "units_with_direct_assembly": 65,
+  "units_with_expanded_assembly": 67,
+  "units_exposed_by_preprocessing": [
+    "update_mode_bits_and_notify_display_service",
+    "update_companion_mode_bits_and_notify_display"
+  ]
+}

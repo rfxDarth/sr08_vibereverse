@@ -1,0 +1,70 @@
+group 0x07fcad78-0x07fcadfc (132 bytes)
+MISMATCH: 25 differing bytes
+--- V204
++++ candidate
+@@ -2,10 +2,10 @@
+ 7fcad7a:	f7f9 fb61 	bl	0x7fc4440
+ 7fcad7e:	4604      	mov	r4, r0
+-7fcad80:	4885      	ldr	r0, [pc, #532]	@ (0x7fcaf98)
++7fcad80:	4818      	ldr	r0, [pc, #96]	@ (0x7fcade4)
+ 7fcad82:	7801      	ldrb	r1, [r0, #0]
+ 7fcad84:	2000      	movs	r0, #0
+ 7fcad86:	2900      	cmp	r1, #0
+ 7fcad88:	d028      	beq.n	0x7fcaddc
+-7fcad8a:	4916      	ldr	r1, [pc, #88]	@ (0x7fcade4)
++7fcad8a:	4917      	ldr	r1, [pc, #92]	@ (0x7fcade8)
+ 7fcad8c:	8989      	ldrh	r1, [r1, #12]
+ 7fcad8e:	294f      	cmp	r1, #79	@ 0x4f
+@@ -14,5 +14,5 @@
+ 7fcad94:	0600      	lsls	r0, r0, #24
+ 7fcad96:	1826      	adds	r6, r4, r0
+-7fcad98:	4d6e      	ldr	r5, [pc, #440]	@ (0x7fcaf54)
++7fcad98:	4d14      	ldr	r5, [pc, #80]	@ (0x7fcadec)
+ 7fcad9a:	6f28      	ldr	r0, [r5, #112]	@ 0x70
+ 7fcad9c:	4284      	cmp	r4, r0
+@@ -21,5 +21,5 @@
+ 7fcada2:	4621      	mov	r1, r4
+ 7fcada4:	1a08      	subs	r0, r1, r0
+-7fcada6:	4911      	ldr	r1, [pc, #68]	@ (0x7fcadec)
++7fcada6:	4912      	ldr	r1, [pc, #72]	@ (0x7fcadf0)
+ 7fcada8:	4288      	cmp	r0, r1
+ 7fcadaa:	d313      	bcc.n	0x7fcadd4
+@@ -32,5 +32,5 @@
+ 7fcadba:	4626      	mov	r6, r4
+ 7fcadbc:	1a30      	subs	r0, r6, r0
+-7fcadbe:	490c      	ldr	r1, [pc, #48]	@ (0x7fcadf0)
++7fcadbe:	490d      	ldr	r1, [pc, #52]	@ (0x7fcadf4)
+ 7fcadc0:	4288      	cmp	r0, r1
+ 7fcadc2:	d307      	bcc.n	0x7fcadd4
+@@ -42,20 +42,20 @@
+ 7fcadd2:	6728      	str	r0, [r5, #112]	@ 0x70
+ 7fcadd4:	20c8      	movs	r0, #200	@ 0xc8
+-7fcadd6:	4907      	ldr	r1, [pc, #28]	@ (0x7fcadf4)
++7fcadd6:	4908      	ldr	r1, [pc, #32]	@ (0x7fcadf8)
+ 7fcadd8:	f7f8 fb04 	bl	0x7fc33e4
+-7fcaddc:	495d      	ldr	r1, [pc, #372]	@ (0x7fcaf54)
++7fcaddc:	4903      	ldr	r1, [pc, #12]	@ (0x7fcadec)
+ 7fcadde:	7248      	strb	r0, [r1, #9]
+ 7fcade0:	bd70      	pop	{r4, r5, r6, pc}
+ 7fcade2:	46c0      	nop			@ (mov r8, r8)
+-7fcade4:	05ae      	lsls	r6, r5, #22
++7fcade4:	557c      	strb	r4, [r7, r5]
+ 7fcade6:	07fd      	lsls	r5, r7, #31
+-7fcade8:	5650      	ldrsb	r0, [r2, r1]
++7fcade8:	05ae      	lsls	r6, r5, #22
+ 7fcadea:	07fd      	lsls	r5, r7, #31
+-7fcadec:	1771      	asrs	r1, r6, #29
+-7fcadee:	0000      	movs	r0, r0
+-7fcadf0:	0fa1      	lsrs	r1, r4, #30
++7fcadec:	5650      	ldrsb	r0, [r2, r1]
++7fcadee:	07fd      	lsls	r5, r7, #31
++7fcadf0:	1771      	asrs	r1, r6, #29
+ 7fcadf2:	0000      	movs	r0, r0
+-7fcadf4:	ad79      	add	r5, sp, #484	@ 0x1e4
+-7fcadf6:	07fc      	lsls	r4, r7, #31
+-7fcadf8:	b5f0      	push	{r4, r5, r6, r7, lr}
+-7fcadfa:	b087      	sub	sp, #28
++7fcadf4:	0fa1      	lsrs	r1, r4, #30
++7fcadf6:	0000      	movs	r0, r0
++7fcadf8:	ad79      	add	r5, sp, #484	@ 0x1e4
++7fcadfa:	07fc      	lsls	r4, r7, #31

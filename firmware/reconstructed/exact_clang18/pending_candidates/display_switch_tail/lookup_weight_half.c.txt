@@ -1,0 +1,146 @@
+/* PARKED (Jeff, 2026-11-15), improved: switch_display_state_and_run_hooks (0x07fc3b78) as plain ("ac6", [...]).
+ * The two constant-hoisting blockers are solved: an opaque `__builtin_annotation(1, ...)` before the
+ * display_pins_driven test (shared by the pin flag, the high level, 1 << SWTIM_IRQn and the TIMER0 enable), and a
+ * second one for the 1 << 26/11/27 mode flags. A compiler-only fence keeps V204's 0xff-then-clear store order.
+ * Remaining (probe, plain ac6): one register choice. V204 keeps `enter` in its stack slot to the end and reloads it
+ * into r1 just before the call; armclang reloads it into r4 before the "systate" printf (ldr r4,[sp,#16] ... blx r4,
+ * 6 bytes). Not changed by: fences around the tail, a uint8_t previous, an if/else around the call, (void) casts,
+ * a volatile enter (114 differences). ac6lto inlines update_state_bits_and_publish_empty_status(0, 8) here and
+ * grows the region.
+ */
+/* Switch the device's display/system state. */
+#include <stdbool.h>
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+#include "firmware/reconstructed/include/sr08_sdk_da14585.h"
+#include "firmware/reconstructed/include/sr08_sdk_gpio.h"
+
+typedef void (*display_hook)(uint32_t);
+
+struct display_state_descriptor {
+    uint16_t state;
+    uint16_t reserved_02;
+    void (*enter)(uint32_t previous_state);
+    void (*leave)(uint32_t next_state);
+};
+
+struct gpio_pin_ref {
+    uint8_t port;
+    uint8_t pin;
+};
+
+#define DISPLAY_STATE_COUNT 36
+#define DISPLAY_STATE_DESCRIPTORS 35
+#define DISPLAY_STATE_LOCKED 0x1e
+#define DISPLAY_STATE_LAST_ACTIVE 21
+#define DISPLAY_STATE_0X20 0x20
+
+extern const struct display_state_descriptor *const display_state_descriptors[DISPLAY_STATE_DESCRIPTORS];
+extern const struct gpio_pin_ref display_low_pins[7];
+extern const struct gpio_pin_ref display_high_pins[6];
+
+extern void arch_printf(const char *format, ...);
+extern void GPIO_ConfigurePin(GPIO_PORT port, GPIO_PIN pin, GPIO_PUPD mode, GPIO_FUNCTION function, const bool high);
+extern void reset_transition_state_and_store_scaled_value(void);
+extern void update_state_bits_and_publish_empty_status(uint32_t clear_bits, uint32_t bits_to_update);
+extern void disable_interrupt_mask_0x8000_and_publish_control_state(void);
+extern uint32_t update_indexed_delay_entry_if_changed(uint32_t entry_index, uint32_t timing_value);
+extern void update_mode_flags_and_transitions(uint32_t flags);
+
+#define G5650(type, offset) (*(type *)(void *)((uint8_t *)&merged_globals_5650 + (offset)))
+#define G56D0(type, offset) (*(type *)(void *)((uint8_t *)&merged_globals_56d0 + (offset)))
+#define current_state G5650(uint8_t, 0x0c)
+#define state_byte_2c G5650(uint8_t, 0x2c)
+#define state_byte_30 G5650(uint8_t, 0x30)
+#define display_pins_driven G5650(uint8_t, 0x34)
+#define state_timeout G5650(volatile uint16_t, 0x40)
+#define counter_40 G56D0(uint32_t, 0x40)
+#define counter_44 G56D0(uint16_t, 0x44)
+
+#define TIMER0_CTRL_REG (*(volatile uint16_t *)0x50003400)
+#define TIM0_CTRL 0x0001
+
+void switch_display_state_and_run_hooks(uint32_t state)
+{
+    if (state >= DISPLAY_STATE_COUNT) {
+        arch_printf("newstate error %d,%d\n", state, DISPLAY_STATE_COUNT);
+        return;
+    }
+    uint32_t old = current_state;
+    if (old == DISPLAY_STATE_LOCKED)
+        return;
+
+    void (*enter)(uint32_t) = 0;
+    for (uint32_t i = 0; i < DISPLAY_STATE_DESCRIPTORS; i++) {
+        if (__builtin_expect_with_probability(display_state_descriptors[i]->state == state, 1, 0.5)) {
+            enter = display_state_descriptors[i]->enter;
+            break;
+        }
+    }
+    display_hook volatile saved_enter = enter;
+    void (*leave)(uint32_t) = 0;
+    for (uint32_t i = 0; i < DISPLAY_STATE_DESCRIPTORS; i++) {
+        if (display_state_descriptors[i]->state == old) {
+            leave = display_state_descriptors[i]->leave;
+            break;
+        }
+    }
+    if (old != state)
+        state_byte_30 = 0;
+
+    if (state <= DISPLAY_STATE_LAST_ACTIVE) {
+        reset_transition_state_and_store_scaled_value();
+        /* Preserve V204's shared constant 1 (pin flag, high level, IRQ bit, timer enable). */
+        uint32_t one = __builtin_annotation(1, "shared one");
+        if (display_pins_driven == 0) {
+            update_state_bits_and_publish_empty_status(0, 8);
+            display_pins_driven = one;
+        }
+        disable_interrupt_mask_0x8000_and_publish_control_state();
+        counter_44 = 0;
+        counter_40 = 0;
+        for (uint32_t i = 0; i < 7; i++)
+            GPIO_ConfigurePin((GPIO_PORT)display_low_pins[i].port, (GPIO_PIN)display_low_pins[i].pin, OUTPUT, PID_GPIO, false);
+        for (uint32_t i = 0; i < 6; i++)
+            GPIO_ConfigurePin((GPIO_PORT)display_high_pins[i].port, (GPIO_PIN)display_high_pins[i].pin, OUTPUT, PID_GPIO, one);
+        reset_transition_state_and_store_scaled_value();
+        state_byte_2c = 0xff;
+        NVIC->ISER[0] = one << SWTIM_IRQn;
+        TIMER0_CTRL_REG |= one;
+        update_state_bits_and_publish_empty_status(0, 2);
+    } else {
+        if (display_pins_driven == 1) {
+            disable_interrupt_mask_0x8000_and_publish_control_state();
+            for (uint32_t i = 0; i < 7; i++)
+                GPIO_ConfigurePin((GPIO_PORT)display_low_pins[i].port, (GPIO_PIN)display_low_pins[i].pin, INPUT_PULLDOWN, PID_GPIO, false);
+            for (uint32_t i = 0; i < 6; i++)
+                GPIO_ConfigurePin((GPIO_PORT)display_high_pins[i].port, (GPIO_PIN)display_high_pins[i].pin, INPUT_PULLDOWN, PID_GPIO, true);
+            update_state_bits_and_publish_empty_status(1, 8);
+            state_byte_2c = 0xff;
+            /* Keep V204's store order (compiler-only fence; no ARM instruction). */
+            __atomic_signal_fence(__ATOMIC_SEQ_CST);
+            display_pins_driven = 0;
+        }
+        state_timeout = 15;
+        /* Preserve V204's shared constant 1 for the three mode flags. */
+        uint32_t one = __builtin_annotation(1, "mode flag one");
+        uint32_t leave_display = one << 26;
+        if (state == DISPLAY_STATE_0X20) {
+            state_timeout = 180;
+            update_mode_flags_and_transitions(leave_display);
+            update_mode_flags_and_transitions(one << 11);
+        } else {
+            update_mode_flags_and_transitions(leave_display);
+            update_mode_flags_and_transitions(one << 27);
+        }
+    }
+    arch_printf("systate %d switch to %d\n", current_state, state);
+    update_indexed_delay_entry_if_changed(1, 0);
+    if (leave)
+        leave(state);
+    uint32_t previous = current_state;
+    current_state = (uint8_t)state;
+    display_hook selected_enter = saved_enter;
+    if (selected_enter)
+        selected_enter(previous);
+}

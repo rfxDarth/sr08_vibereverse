@@ -1,0 +1,157 @@
+{
+  "ac618_volatile_copy.log": [
+    "group 0x07fc3b78-0x07fc3d6c (500 bytes)",
+    "MISMATCH: 6 differing bytes",
+    "--- V204"
+  ],
+  "address_annotation_native.log": [
+    "group 0x07fc3b78-0x07fc3d6c (500 bytes)",
+    "MISMATCH: 78 differing bytes",
+    "--- V204"
+  ],
+  "address_offset_native.log": [
+    "group 0x07fc3b78-0x07fc3d6c (500 bytes)",
+    "MISMATCH: 78 differing bytes",
+    "--- V204"
+  ],
+  "baseline_native.log": [
+    "group 0x07fc3b78-0x07fc3d6c (500 bytes)",
+    "MISMATCH: 34 differing bytes",
+    "--- V204"
+  ],
+  "branch_store_f0_native.log": [
+    "group 0x07fc3b78-0x07fc3d6c (500 bytes)",
+    "MISMATCH: 78 differing bytes",
+    "--- V204"
+  ],
+  "branch_store_f1_native.log": [
+    "group 0x07fc3b78-0x07fc3d6c (500 bytes)",
+    "MISMATCH: 384 differing bytes",
+    "--- V204"
+  ],
+  "clang14_gnu11_volatile_copy.log": [
+    "group 0x07fc3b78-0x07fc3d74 (508 bytes)",
+    "MISMATCH: 438 differing bytes",
+    "--- V204"
+  ],
+  "clang14_volatile_copy.log": [
+    "/usr/bin/clang-14 failed for switch_display_state_and_run_hooks (clang14):",
+    "/tmp/v204-arm-probe-nmm5_q0m/clang14_switch_display_state_and_run_hooks.c:74:10: error: GCC does not allow variable declarations in for loop initializers before C99 [-Werror,-Wgcc-compat]",
+    "    for (uint32_t i = 0; i < DISPLAY_STATE_DESCRIPTORS; i++) {"
+  ],
+  "clang18_gnu11_volatile_copy.log": [
+    "group 0x07fc3b78-0x07fc3d74 (508 bytes)",
+    "MISMATCH: 441 differing bytes",
+    "--- V204"
+  ],
+  "clang18_volatile_copy.log": [
+    "/usr/bin/clang-18 failed for switch_display_state_and_run_hooks (clang18):",
+    "/tmp/v204-arm-probe-zz7nu51y/clang18_switch_display_state_and_run_hooks.c:74:10: error: GCC does not allow variable declarations in for loop initializers before C99 [-Werror,-Wgcc-compat]",
+    "   74 |     for (uint32_t i = 0; i < DISPLAY_STATE_DESCRIPTORS; i++) {"
+  ],
+  "default_o0_f0_native.log": [
+    "group 0x07fc3b78-0x07fc3d6c (500 bytes)",
+    "MISMATCH: 78 differing bytes",
+    "--- V204"
+  ],
+  "default_o0_f1_native.log": [
+    "group 0x07fc3b78-0x07fc3d6c (500 bytes)",
+    "MISMATCH: 384 differing bytes",
+    "--- V204"
+  ],
+  "default_o1_f0_native.log": [
+    "group 0x07fc3b78-0x07fc3d6c (500 bytes)",
+    "MISMATCH: 78 differing bytes",
+    "--- V204"
+  ],
+  "default_o1_f1_native.log": [
+    "group 0x07fc3b78-0x07fc3d6c (500 bytes)",
+    "MISMATCH: 384 differing bytes",
+    "--- V204"
+  ],
+  "disable-phi-elim-edge-splitting_native.log": [
+    "group 0x07fc3b78-0x07fc3d68 (496 bytes)",
+    "MISMATCH: 445 differing bytes",
+    "--- V204"
+  ],
+  "dup_cost_native.log": [
+    "group 0x07fc3b78-0x07fc3d6c (500 bytes)",
+    "MISMATCH: 6 differing bytes",
+    "--- V204"
+  ],
+  "dup_place_native.log": [
+    "group 0x07fc3b78-0x07fc3d6c (500 bytes)",
+    "MISMATCH: 6 differing bytes",
+    "--- V204"
+  ],
+  "dup_size_native.log": [
+    "group 0x07fc3b78-0x07fc3d6c (500 bytes)",
+    "MISMATCH: 6 differing bytes",
+    "--- V204"
+  ],
+  "index_store_absent_native.log": [
+    "group 0x07fc3b78-0x07fc3d70 (504 bytes)",
+    "MISMATCH: 457 differing bytes",
+    "--- V204"
+  ],
+  "index_store_found_native.log": [
+    "group 0x07fc3b78-0x07fc3d70 (504 bytes)",
+    "MISMATCH: 457 differing bytes",
+    "--- V204"
+  ],
+  "index_store_none_native.log": [
+    "group 0x07fc3b78-0x07fc3d6c (500 bytes)",
+    "MISMATCH: 385 differing bytes",
+    "--- V204"
+  ],
+  "late_opaque_native.log": [
+    "group 0x07fc3b78-0x07fc3d6c (500 bytes)",
+    "MISMATCH: 34 differing bytes",
+    "--- V204"
+  ],
+  "late_slot_fence_native.log": [
+    "group 0x07fc3b78-0x07fc3d68 (496 bytes)",
+    "MISMATCH: 435 differing bytes",
+    "--- V204"
+  ],
+  "late_slot_native.log": [
+    "group 0x07fc3b78-0x07fc3d68 (496 bytes)",
+    "MISMATCH: 435 differing bytes",
+    "--- V204"
+  ],
+  "no-phi-elim-live-out-early-exit_native.log": [
+    "group 0x07fc3b78-0x07fc3d6c (500 bytes)",
+    "MISMATCH: 6 differing bytes",
+    "--- V204"
+  ],
+  "no_cond_store_merge_native.log": [
+    "group 0x07fc3b78-0x07fc3d6c (500 bytes)",
+    "MISMATCH: 78 differing bytes",
+    "--- V204"
+  ],
+  "no_sink_native.log": [
+    "group 0x07fc3b78-0x07fc3d6c (500 bytes)",
+    "MISMATCH: 78 differing bytes",
+    "--- V204"
+  ],
+  "no_tail_merge_native.log": [
+    "group 0x07fc3b78-0x07fc3d70 (504 bytes)",
+    "MISMATCH: 151 differing bytes",
+    "--- V204"
+  ],
+  "phi-elim-split-all-critical-edges_native.log": [
+    "group 0x07fc3b78-0x07fc3d6c (500 bytes)",
+    "MISMATCH: 6 differing bytes",
+    "--- V204"
+  ],
+  "volatile_after_search_native.log": [
+    "group 0x07fc3b78-0x07fc3d70 (504 bytes)",
+    "MISMATCH: 430 differing bytes",
+    "--- V204"
+  ],
+  "volatile_copy_native.log": [
+    "group 0x07fc3b78-0x07fc3d6c (500 bytes)",
+    "MISMATCH: 6 differing bytes",
+    "--- V204"
+  ]
+}

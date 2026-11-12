@@ -1,0 +1,26 @@
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+#include "firmware/reconstructed/include/sr08_radio_configuration.h"
+#include "firmware/reconstructed/include/sr08_display_value_formatters.h"
+
+/* V204 reads a halfword at device_control_state+0x2a. Its physical meaning
+ * is not established; do not infer seconds or measurement units from the
+ * previous function name. A zero value selects the mode-marker display.
+ * Marker stores are ordered from digit 2 down to digit 0, and do not clear
+ * the other digits. The tag is written on every path.
+ */
+__attribute__((used,section(".text.use_supplied_timing_value_derive_display_at_a960")))
+void use_supplied_timing_value_derive_display_at_a960(void)
+{
+    volatile uint8_t *display = (volatile uint8_t *)&merged_globals_56d0;
+    uint32_t value = *(volatile uint16_t *)((volatile uint8_t *)&device_control_state + 0x2a);
+    if (value != 0) {
+        convert_quotient_remainder_sequence_ring_s_at_3148(value, display + 0x40, 3, 1);
+    } else {
+        uint32_t mode = ((volatile uint8_t *)&merged_globals_5650)[0x30] & 3u;
+        if (mode == 3) display[0x42] = 8;
+        if (mode >= 2) display[0x41] = 8;
+        if (mode != 0) display[0x40] = 8;
+    }
+    display[0x45] = 0x10;
+}

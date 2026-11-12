@@ -1,40 +1,24 @@
-/* Recreate the display/status indicator update selected by the sensor result. */
-__attribute__((used, naked, section(".text.recreate_display_status_indicator_update_selected_at_a914"))) void
+/* Alice: modulo-five status display. Native C; linked with the shared display pools.
+ * The offset annotation preserves base+64 followed by an immediate +4 store.
+ * Unsigned subtraction without borrow means remainder >= 2. Expressing that
+ * predicate explicitly preserves the OEM CMP #2 / BCS instruction pair.
+ */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+__attribute__((used, section(".text.recreate_display_status_indicator_update_selected_at_a914"))) void
 recreate_display_status_indicator_update_selected_at_a914(void) {
-    __asm__ volatile("push {r4, r5, r7, lr}\n"
-                     "movs r4, #64\n"
-                     "ldr r5, [pc, #940]\n"
-                     "movs r0, #83\n"
-                     "strb r0, [r5, r4]\n"
-                     "mov r0, r5\n"
-                     "adds r0, #64\n"
-                     "movs r1, #101\n"
-                     "strb r1, [r0, #4]\n"
-                     "movs r0, #48\n"
-                     "ldr r1, [pc, #900]\n"
-                     "ldrb r0, [r1, r0]\n"
-                     "movs r1, #5\n"
-                     "bl __aeabi_uidiv\n"
-                     "cmp r1, #4\n"
-                     "bcc .Lcheck_remainder_three\n"
-                     "movs r0, #67\n"
-                     "movs r1, #8\n"
-                     "strb r1, [r5, r0]\n"
-                     "b .Lwrite_status_slot_66\n"
-                     ".Lcheck_remainder_three: cmp r1, #3\n"
-                     "bne .Lcheck_remainder_two_or_lower\n"
-                     ".Lwrite_status_slot_66: movs r0, #66\n"
-                     "movs r1, #8\n"
-                     "strb r1, [r5, r0]\n"
-                     ".Lwrite_status_slot_65: movs r0, #65\n"
-                     "movs r1, #8\n"
-                     "strb r1, [r5, r0]\n"
-                     ".Lwrite_completion_marker: movs r0, #91\n"
-                     "strb r0, [r5, r4]\n"
-                     ".Lreturn: pop {r4, r5, r7, pc}\n"
-                     ".Lcheck_remainder_two_or_lower: cmp r1, #2\n"
-                     "bcs .Lwrite_status_slot_65\n"
-                     "cmp r1, #0\n"
-                     "bne .Lwrite_completion_marker\n"
-                     "b .Lreturn\n");
+    volatile uint8_t *base = (volatile uint8_t *)&merged_globals_56d0;
+    uint32_t offset = __builtin_annotation(64, "digit offset");
+    base[offset] = 83;
+    volatile uint8_t *digits = base + offset;
+    digits[4] = 101;
+    uint32_t difference;
+    uint32_t remainder = ((volatile uint8_t *)&merged_globals_5650)[48] % 5;
+    if (remainder >= 4) { base[67] = 8; goto third; }
+    if (remainder == 3) {
+third: base[66] = 8;
+second: base[65] = 8;
+    } else if (!__builtin_sub_overflow(remainder, 2u, &difference)) { goto second; }
+    else if (remainder == 0) { return; }
+    base[64] = 91;
 }

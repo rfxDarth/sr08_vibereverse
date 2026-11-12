@@ -1,0 +1,341 @@
+/* PARKED (2026-11-15, Jeff): 0xb1b0 process_measurement_records_and_sensor_state_block_at_b1b0 (+ its split
+ * tail 0xb5d0, absorbed), ac6lto. Under the real LTO link (build/lto_relink/lt2.sh b1b0 b770) the size matches
+ * (686 lines); 604 raw / 186 register-normalized lines differ.
+ * Install needs: RAM symbol "hourly_record_bitmap": "0x07fd07f0" (data/V204_ram_symbols.json and
+ * build_v204.py FIXED_DATA_SYMBOLS), group ("ac6lto", [b1b0]) after process_sensor_sample_and_maybe_save_record,
+ * and the b5d0 unit absorbed (probe --absorb ..._b5d0).
+ * Levers that helped: testing mode == 1 before mode == 2 (halved the diff); __builtin_expect(h > 23, 0);
+ * goto-merged store_end/found tails; swapped adjacent store orders (RUN_END/RUN_OFFSET, packet[0]/sample.flag,
+ * SYNC_ACTIVE/SYNC_SLOT); loading STEPS_TOTAL before STEPS_SAVED.
+ * Remaining: block layout. V204 places the live-step (nodata) block far from `send`, so its branches are relaxed
+ * (`bhi L; b L`, `cmp #58; ble L; b L`), and the 15-byte live-sum loop sits elsewhere. Mine places them inline
+ * (`bls`, `cmp #59; bge`). Also memcpy argument setup (V204 computes packet+5, mine reloads a spill), a doubled
+ * uxtb on the clamped index, and mode-2 spills around the 0xc0 load and the -1 initializers. */
+/* History sync tick (custom profile 0xfd).
+ * - No record value yet: reset the configuration record defaults.
+ * - While the custom profile is busy (state 1): nothing.
+ * - A queued 20-byte event record is sent first, as a CUSTS1_VAL_NTF_REQ on handle 4.
+ * - Quarter-hour sync (byte 0x0b): find the next slot of the day (bit clear in the inverted 16-byte flash
+ *   bitmap, or the slot that contains the current time while steps are pending) and queue its 0x10/0x11 record
+ *   (stamp + 15 values; the current slot gets the live step counts at 0x5c). Slot 95 ends the sync.
+ * - Activity-history sync (mode byte 0xac): mode 1 scans the 2-minute bitmap (24 x 30 bits) for the next run of
+ *   recorded minutes and announces it (0xaa); mode 2 reads the run's 12-byte flash records and sends them (0xa0),
+ *   back to mode 1 at the run's end. */
+#include <stdbool.h>
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_calendar_time.h"
+#include "firmware/reconstructed/include/sr08_clock_literal_pool.h"
+#include "firmware/reconstructed/include/sr08_event_record_queue.h"
+#include "firmware/reconstructed/include/sr08_flash_operation.h"
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+#include "firmware/reconstructed/include/sr08_ring_buffer.h"
+#include "firmware/reconstructed/include/sr08_sdk_custs1.h"
+#include "firmware/reconstructed/include/sr08_sdk_kernel.h"
+#include "firmware/reconstructed/include/sr08_shared_context.h"
+
+extern uint8_t read_current_record_value_byte(void);
+extern void initialize_configuration_record_defaults(void);
+extern ke_task_id_t prf_get_task_from_id(ke_task_id_t task_id);
+extern void ke_timer_set(ke_msg_id_t const timer_id, ke_task_id_t const task, uint32_t const delay);
+extern void arch_printf(const char *format, ...);
+extern void format_byte_span_spaced_hexadecimal_line_at_b178(const uint8_t *bytes, uint32_t length);
+extern uint32_t get_ble_base_time_ms(void);
+extern void store_measurement_value_divided_by_1000(void);
+extern void replace_state_timer_with_600_delay(void);
+extern void gate_periodic_record_creation_sensor_mode_at_2dc4(void);
+extern void search_queue_and_insert_limit_twenty(const void *record);
+extern int8_t validate_stored_sample_against_latest_reading_at_5600(uint32_t timestamp, uint32_t slot,
+                                                                     uint32_t *sample);
+extern const char v204_time_value_format[];
+extern struct event_record_queue_state event_record_queue_state;
+extern struct sr08_clock_timekeeping_state clock_timekeeping_state;
+extern uint32_t hourly_record_bitmap[24];
+
+#define ctx_u8(o) (*(uint8_t *)((uint8_t *)&sr08_shared_context + (o)))
+#define ctx_u16(o) (*(uint16_t *)((uint8_t *)&sr08_shared_context + (o)))
+#define ctx_u32(o) (*(uint32_t *)((uint8_t *)&sr08_shared_context + (o)))
+#define app_conidx (((uint8_t *)&merged_globals_56d0)[0x5a])
+
+enum {
+    SYNC_ACTIVE = 0x0b,
+    SYNC_SLOT = 0x0c,
+    DAY_START = 0x28,
+    STEPS_TOTAL = 0x38,
+    WEAR_TIME = 0x44,
+    STEPS_SAVED = 0x50,
+    LIVE_VALUES = 0x5c,
+    HISTORY_MODE = 0xac,
+    HISTORY_RUN_LIMIT = 0xad,
+    HISTORY_RUNS = 0xae,
+    HISTORY_SEQUENCE = 0xb0,
+    RUN_START_HOUR = 0xb2,
+    RUN_START_MINUTE = 0xb4,
+    SCAN_HOUR = 0xb6,
+    SCAN_MINUTE = 0xb8,
+    RUN_OFFSET = 0xba,
+    RUN_END = 0xbc,
+    RUN_LENGTH = 0xbe,
+    HISTORY_DAY_START = 0xc0,
+    SYNC_TIMER = 0x413,
+    QUARTER = 900,
+};
+
+struct quarter_sample {
+    uint32_t timestamp;
+    uint8_t flag;
+    uint8_t reserved;
+    uint8_t values[30];
+};
+
+void process_measurement_records_and_sensor_state_block_at_b1b0(void)
+{
+    if (read_current_record_value_byte() == 0) {
+        initialize_configuration_record_defaults();
+        return;
+    }
+    struct custs1_env_tag *env = PRF_ENV_GET(CUSTS1, custs1);
+    if (ke_state_get(env->prf_env.prf_task & 0x7fff) == 1)
+        return;
+
+    uint8_t record[EVENT_RECORD_SIZE];
+    __builtin_memset(record, 0, sizeof(record));
+    struct sr08_ring_buffer *ring = &event_record_queue_state.ring;
+    if (((ring->head - ring->tail) & (ring->capacity - 1)) != 0) {
+        uint8_t out[EVENT_RECORD_SIZE];
+        peek_ring_buffer_entry(ring, record);
+        advance_queue_tail_if_nonempty(ring);
+        out[0] = record[0];
+        __builtin_memcpy(&out[1], &record[1], EVENT_RECORD_SIZE - 1);
+        arch_printf("s:");
+        format_byte_span_spaced_hexadecimal_line_at_b178(out, EVENT_RECORD_SIZE);
+        arch_printf(v204_time_value_format, get_ble_base_time_ms());
+        store_measurement_value_divided_by_1000();
+        struct custs1_val_ntf_ind_req *req = KE_MSG_ALLOC_DYN(CUSTS1_VAL_NTF_REQ,
+                                                              prf_get_task_from_id(TASK_ID_CUSTS1),
+                                                              TASK_APP,
+                                                              custs1_val_ntf_ind_req,
+                                                              EVENT_RECORD_SIZE);
+        req->length = EVENT_RECORD_SIZE;
+        req->handle = 4;
+        req->notification = true;
+        req->conidx = app_conidx;
+        __builtin_memcpy(req->value, out, EVENT_RECORD_SIZE);
+        replace_state_timer_with_600_delay();
+        ke_msg_send(req);
+        return;
+    }
+
+    if (ctx_u8(SYNC_ACTIVE) != 0) {
+        uint8_t packet[EVENT_RECORD_SIZE];
+        struct sr08_calendar_time calendar;
+        uint32_t filled[4];
+        struct quarter_sample sample;
+
+        get_ble_base_time_ms();
+        gate_periodic_record_creation_sensor_mode_at_2dc4();
+        ke_timer_set(SYNC_TIMER, TASK_APP, 1);
+        __builtin_memset(&packet[5], 0, 15);
+        convert_timestamp_to_calendar_fields(ctx_u32(DAY_START), &calendar);
+        packet[0] = 0x10;
+        perform_flash_memory_operation((uint8_t *)filled, ctx_u32(DAY_START) / 86400 % 7 * 0x2000 + 0x2ffec, 16,
+                                       SR08_FLASH_READ);
+        for (int i = 0; i < 4; i++)
+            filled[i] = ~filled[i];
+        uint32_t slot = ctx_u8(SYNC_SLOT);
+        uint32_t start = ctx_u32(DAY_START) + slot * QUARTER;
+        uint32_t now = clock_timekeeping_state.current_timestamp;
+        while (slot <= 94 && !((filled[slot >> 5] >> (slot & 31)) & 1) &&
+               (now >= start + QUARTER || ctx_u32(STEPS_TOTAL) == ctx_u32(STEPS_SAVED) || now < start)) {
+            start += QUARTER;
+            slot++;
+        }
+        ctx_u8(SYNC_SLOT) = slot;
+        arch_printf("e id=%d\n", slot);
+        uint32_t day_start = ctx_u32(DAY_START);
+        uint32_t stamp = day_start - day_start % 86400 + ctx_u8(SYNC_SLOT) * QUARTER;
+        packet[1] = stamp;
+        packet[4] = stamp >> 24;
+        packet[3] = stamp >> 16;
+        packet[2] = stamp >> 8;
+        if (validate_stored_sample_against_latest_reading_at_5600(day_start, ctx_u8(SYNC_SLOT),
+                                                                   (uint32_t *)&sample) < 0) {
+            arch_printf("nodata\n");
+            uint32_t begin = ctx_u8(SYNC_SLOT) * QUARTER + ctx_u32(DAY_START);
+            uint32_t current = clock_timekeeping_state.current_timestamp;
+            if (current >= begin && current < begin + QUARTER) {
+                uint32_t total = ctx_u32(STEPS_TOTAL);
+                uint32_t saved = ctx_u32(STEPS_SAVED);
+                if (total != saved) {
+                    uint32_t sum = 0;
+                    for (int i = LIVE_VALUES; i != LIVE_VALUES + 15; i++)
+                        sum += ctx_u8(i);
+                    __builtin_memcpy(&packet[5], &ctx_u8(LIVE_VALUES), 15);
+                    uint32_t steps = total - saved;
+                    if (sum < steps && (int32_t)clock_timekeeping_state.calendar_second <= 58) {
+                        uint8_t index = (current - begin) / 60 + 4;
+                        if (index >= 18)
+                            index = 18;
+                        packet[index + 1] += steps - sum;
+                    }
+                    goto send;
+                }
+            }
+        } else if (sample.flag == 1) {
+            packet[0] = 0x11;
+            if (ctx_u32(WEAR_TIME) <= 9000) {
+                packet[0] = 0x10;
+                sample.flag = 0;
+                __builtin_memset(&sample.values[0], 0, 30);
+                __builtin_memset(&packet[5], 0, 15);
+            } else {
+                __builtin_memcpy(&packet[5], &sample.values[0], 15);
+                goto send;
+            }
+        } else {
+            for (int i = 0; i < 15; i++) {
+                if (sample.values[i] != 0) {
+                    __builtin_memcpy(&packet[5], &sample.values[0], 15);
+                    goto send;
+                }
+            }
+            __builtin_memcpy(&packet[5], &sample.values[0], 15);
+        }
+        if (ctx_u8(SYNC_SLOT) != 95)
+            goto next;
+    send:
+        search_queue_and_insert_limit_twenty(packet);
+    next:
+        if (++ctx_u8(SYNC_SLOT) >= 96) {
+            ctx_u8(SYNC_ACTIVE) = 0;
+            ctx_u8(SYNC_SLOT) = 0;
+        }
+        return;
+    }
+
+    if (ctx_u8(HISTORY_MODE) == 0)
+        return;
+    uint8_t out[EVENT_RECORD_SIZE];
+    get_ble_base_time_ms();
+    gate_periodic_record_creation_sensor_mode_at_2dc4();
+    ke_timer_set(SYNC_TIMER, TASK_APP, 1);
+    __builtin_memset(&out[1], 0, EVENT_RECORD_SIZE - 1);
+    if (ctx_u8(HISTORY_MODE) == 1) {
+        uint16_t runs = ctx_u16(HISTORY_RUNS);
+        if (runs >= ctx_u8(HISTORY_RUN_LIMIT)) {
+            ctx_u8(HISTORY_MODE) = 0;
+            return;
+        }
+        ctx_u32(RUN_END) = 0;
+        ctx_u16(RUN_OFFSET) = 0;
+        ctx_u16(RUN_START_MINUTE) = 0;
+        ctx_u16(RUN_START_HOUR) = 0;
+        uint32_t minute = ctx_u8(SCAN_MINUTE);
+        uint32_t hour = ctx_u8(SCAN_HOUR);
+        uint32_t hour_base = hour * 30;
+        uint16_t length = 0;
+        uint16_t offset = 0;
+        uint32_t previous = 0;
+        uint16_t end;
+        for (;; hour++, hour_base += 30, minute = 0) {
+            uint8_t h = hour;
+            if (__builtin_expect(h > 23, 0)) {
+                if (offset != 0) {
+                    ctx_u16(SCAN_MINUTE) = (uint8_t)minute;
+                    ctx_u16(SCAN_HOUR) = h;
+                    end = (h * 30 + (uint8_t)minute) * 12;
+                    ctx_u16(RUN_END) = end;
+                    goto found;
+                }
+                for (int i = 0; i < 24; i++)
+                    if (hourly_record_bitmap[i] != 0x3fffffff) {
+                        ctx_u16(HISTORY_SEQUENCE) = 0;
+                        ctx_u8(HISTORY_MODE) = 0;
+                        return;
+                    }
+                end = 720 * 12;
+                goto store_end;
+            }
+            uint32_t *bits = &hourly_record_bitmap[h];
+            uint8_t m;
+            for (m = minute; m <= 29; m++) {
+                uint32_t set = *bits & (1u << m);
+                if (set) {
+                    if (previous == 0) {
+                        ctx_u16(RUN_START_MINUTE) = m;
+                        ctx_u16(RUN_START_HOUR) = h;
+                        ctx_u16(HISTORY_RUNS) = ++runs;
+                        offset = (hour_base + m) * 12;
+                        ctx_u16(RUN_OFFSET) = offset;
+                    }
+                    ctx_u16(RUN_LENGTH) = ++length;
+                } else if (previous != 0) {
+                    ctx_u16(SCAN_MINUTE) = m;
+                    ctx_u16(SCAN_HOUR) = h;
+                    end = (hour_base + m) * 12;
+                    goto store_end;
+                }
+                previous = set;
+            }
+        }
+    store_end:
+        ctx_u16(RUN_END) = end;
+    found:
+        ctx_u16(HISTORY_SEQUENCE) = 0;
+        if (offset >= end) {
+            ctx_u8(HISTORY_MODE) = 0;
+            return;
+        }
+        ctx_u8(HISTORY_MODE) = 2;
+        out[7] = length;
+        out[2] = runs;
+        out[1] = 0xaa;
+        out[8] = length >> 8;
+        uint32_t time = ctx_u32(HISTORY_DAY_START) + offset * 10;
+        out[3] = time;
+        out[6] = time >> 24;
+        out[5] = time >> 16;
+        out[4] = time >> 8;
+        goto queue;
+    } else if (ctx_u8(HISTORY_MODE) == 2) {
+        uint16_t offset = ctx_u16(RUN_OFFSET);
+        if (offset < ctx_u16(RUN_END)) {
+            uint8_t values[12];
+            uint32_t day_mark;
+            __builtin_memset(values, 0xff, sizeof(values));
+            uint32_t day_start = ctx_u32(HISTORY_DAY_START);
+            day_mark = 0xffffffff;
+            uint32_t area = day_start / 86400 % 7 * 0x3000;
+            perform_flash_memory_operation((uint8_t *)&day_mark, area + 0x4eff0, 4, SR08_FLASH_READ);
+            if (day_start - day_mark < 86400) {
+                perform_flash_memory_operation(values, offset + area + 0x4c000, 12, SR08_FLASH_READ);
+                uint8_t fill = 0xff;
+                for (int i = 0; i < 12; i++)
+                    if (values[i] != 0 && values[i] != 0xff)
+                        fill = values[i];
+                if (fill != 0 && fill != 0xff)
+                    for (int i = 0; i < 12; i++)
+                        if (values[i] == 0xff || values[i] == 0)
+                            values[i] = fill;
+            }
+            out[1] = 0xa0;
+            uint16_t sequence = ctx_u16(HISTORY_SEQUENCE);
+            *(uint16_t *)&out[6] = sequence;
+            uint32_t time = ctx_u32(HISTORY_DAY_START) + ctx_u16(RUN_OFFSET) * 10;
+            out[2] = time;
+            out[5] = time >> 24;
+            out[4] = time >> 16;
+            out[3] = time >> 8;
+            __builtin_memcpy(&out[8], values, 12);
+            ctx_u16(HISTORY_SEQUENCE) = sequence + 1;
+            uint16_t next = ctx_u16(RUN_OFFSET) + 12;
+            ctx_u16(RUN_OFFSET) = next;
+            if (next >= ctx_u16(RUN_END))
+                ctx_u8(HISTORY_MODE) = 1;
+        }
+    }
+    if (ctx_u8(HISTORY_MODE) == 0)
+        return;
+queue:
+    out[0] = 0x16;
+    search_queue_and_insert_limit_twenty(out);
+}

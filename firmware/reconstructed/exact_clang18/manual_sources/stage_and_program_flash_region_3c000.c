@@ -1,7 +1,10 @@
 /* Stage and program the flash image beginning at address 0x3c000. */
+#include "firmware/reconstructed/include/sr08_clock_literal_pool.h"
 #include <stddef.h>
 #include <stdint.h>
+#include "firmware/reconstructed/include/sr08_shared_context.h"
 #include "firmware/reconstructed/include/sr08_flash_operation.h"
+extern struct sr08_clock_timekeeping_state clock_timekeeping_state;
 
 struct sr08_flash_staging_area {
     uint32_t reserved_prefix[12];
@@ -19,12 +22,12 @@ stage_and_program_flash_region_3c000(void) {
     volatile struct sr08_flash_staging_area *staging;
     uint32_t value;
 
-    __asm__ volatile("ldr %[source], [pc, #36]" : [source] "=r"(source) : : "memory");
+    source = (volatile uint32_t *)&clock_timekeeping_state.current_timestamp;
     value = *source;
-    __asm__ volatile("ldr %[staging], [pc, #748]" : [staging] "=r"(staging) : : "memory");
+    staging = (volatile struct sr08_flash_staging_area *)&sr08_shared_context;
     staging->program_words[0] = value;
 
-    erase_flash_range(0x3c000, 0x2000);
+    erase_flash_range_status(0x3c000, 0x2000);
     perform_flash_memory_operation((uint8_t *)staging->program_words, 0x3c000, sizeof(staging->program_words),
                                    SR08_FLASH_PROGRAM);
 }

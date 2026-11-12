@@ -1,0 +1,17 @@
+{
+  "status": "accepted: full source-only payload and container equal OEM and canonical hashes",
+  "region": [
+    "0x07fcaae8",
+    "0x07fcab3c"
+  ],
+  "bytes": 84,
+  "final_source_sha256": "229e5d08abfeda6c36593b02cbb7675303e14a95d190bcd34183268ad09f775a",
+  "fixed_following_unit": "update_status_display_using_remainder_rom_at_ab3c",
+  "fixed_following_address": "0x07fcab3c",
+  "guard_changes": false,
+  "literal_patches": false,
+  "instructions_patched": false,
+  "analysis_objects_reused": true,
+  "normal_acceptance_requires_fresh_full_build": false,
+  "full_build_verification": "verification.json"
+}

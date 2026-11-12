@@ -1,0 +1,178 @@
+/* PARKED candidate for 0x07fc3838 start_or_stop_sensor_calibration (Jeff, 2026-11-17), plain "ac6" with no switches.
+ * 40 normalized lines differ (was 42 with -disable-constant-hoisting). Changes from the 2026-11-16 candidate:
+ *  - 0x3fc/0x1fe come from one annotated 0xff (`m << 2`, `m << 1`), as in V204's 255 spill slot, so constant
+ *    hoisting can stay on;
+ *  - loop weights 0.55 (step count) / 0.7 (low < high) / 0.97 (|value| > 5000) make greedy keep 5000 in r7 and
+ *    rematerialize the device_control_state base in r5 (V204).
+ * Left: V204 spills `high` (sp+8) and keeps `low` in r6; ours keeps high in r6 and spills low. Very sensitive to the
+ * three weights (neighbouring values give 42-64). No change from ~40 regalloc/sched/sink/LICM switches,
+ * if/else selects, select weights, declaration order, or a 400-variant random weight search.
+ */
+/* PARKED candidate for 0x07fc3838 start_or_stop_sensor_calibration (Jeff, 2026-11-16). Plain ac6 with the per-unit
+ * switch -mllvm -disable-constant-hoisting. Not byte-exact: the instruction stream matches V204 apart from register
+ * choice for the device_control_state base (ours r7 for the whole case; V204 r5, rematerialised around the loop's
+ * constant-1 and the else branch's constant-2) and the 5000 tolerance (V204 hoists it into r7; ours reloads it at
+ * each compare). Steps that brought it here, each checked with IR edits compiled codegen-only:
+ *  - `high` declared before `low`: Reassociate rank then orders the midpoint add as high + low (V204 adds r0, r0, r1);
+ *  - uint32_t middle/result plus a no-code __builtin_assume in the break path: keeps the break exit block non-empty
+ *    during SimplifyCFG, so the result phi coalesces with the spilled zero (V204 `ldr r6, [sp]` / `mov r6, r4`)
+ *    instead of with middle. A uint16_t result cannot do this: LICM clones the free trunc into the break block;
+ *  - -disable-constant-hoisting: otherwise the i32 510 compare is grouped with 1020 (V204 derives 510 as 255 << 1).
+ * Still open: greedy gives the base r7. No luck from ~75 regalloc/sched/CGP switches, __builtin_expect(_with_probability),
+ * switch/branch orders, store orders, char/volatile stores, callee prototypes, armclang 6.14/6.7, LTO (20 bytes long).
+ * Needs flat.h / tq.h next to it (start_or_stop_sensor_calibration_{flat,tq}.h.txt). */
+/* PARKED candidate for 0x07fc3838 start_or_stop_sensor_calibration (Jeff). Not byte-exact:
+ * 54 normalized diff lines in a plain armclang compile, all register/spill assignment.
+ * It needs three things beyond plain C:
+ *  - `__builtin_expect(active, 0)` on the "already active" guard: without it LLVM's zero-compare heuristic makes
+ *    the early return the fall-through, whereas V204 falls into the start path;
+ *  - flat uint16_t fields for device_control_state's reading at 0x42-0x49 (this file includes a local "flat.h");
+ *    V204 addresses 0x46 as its own offset, and the shared sub-struct `sensor_reading` makes it (base+66)+4;
+ *  - the received reading at time_event_queue_state+0x48..0x4f as named fields ("tq.h"; additive, past the
+ *    current struct end).
+ * The mode dispatch is a switch with the 0x40 case first (V204 tests 0x4000, then 0x40).
+ * Copies of flat.h and tq.h are next to this file as *.h.txt. */
+/* Start or stop a sensor control mode. Stopping (mode 0) clears the active flag and, when a
+ * mode was running, resets the timing records, counters and radio profile. Starting mode 0x4000
+ * binary-searches the 10-bit calibration value until the sensor reads within +-5000 (at most 100
+ * steps), stores the result in the sensor reading, and queues it for the save check; mode 0x40
+ * starts the periodic state cycle; other modes go to apply_sensor_control_action. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_cycle_control_state.h"
+#include "firmware/reconstructed/include/sr08_mode_transition.h"
+#include "firmware/reconstructed/include/sr08_radio_commands.h"
+#include "flat.h"
+#include "firmware/reconstructed/include/sr08_timing_record.h"
+#include "tq.h"
+
+extern struct sr08_cycle_control_state cycle_control_state;
+extern uint8_t sr08_shared_context[];
+extern uint32_t retry_radio_command_until_status_0x27(void);
+extern int write_indexed_timing_record(int slot_index, uint32_t timing_value, uint32_t data_word);
+extern void advance_state_cycle_and_dispatch_action(void);
+extern void clear_state_counter_at_offset_four(void);
+extern void configure_radio_state_from_profile(void);
+extern void configure_radio_state_and_send_command_6a(void);
+extern void wait_shared_timer_delta_exceed_requested_at_4458(uint32_t delay);
+extern void write_two_bytes_from_packed_value(uint32_t packed_value);
+extern int16_t read_callback_pair_for_mode_window_39_3a(uint8_t mode);
+extern void apply_sensor_control_action(uint32_t action_code);
+extern void format_byte_span_spaced_hexadecimal_line_at_b178(const uint8_t *bytes, uint32_t length);
+extern void save_valid_measurement_range_clear_stale_at_8500(void);
+
+#define WATCHDOG_REG ((volatile uint16_t *)0x50003100u) /* SDK da14585_586.h */
+#define calibration_active (*(uint8_t *)0x07fd5578u)
+#define calibration_default_word (*(uint32_t *)0x07fd0858u)
+#define radio_state ((uint8_t *)&device_control_state)
+#define timing_bytes ((uint8_t *)(void *)sr08_timing_records)
+#define time_queue_bytes ((uint8_t *)(void *)&time_event_queue_state)
+
+enum {
+    MODE_CALIBRATE = 0x4000,
+    MODE_STATE_CYCLE = 0x40,
+    CALIBRATION_HIGH = 0x3fc,
+    CALIBRATION_FAILED = 0x1fe,
+    CALIBRATION_STEPS = 100,
+    CALIBRATION_TOLERANCE = 5000,
+};
+
+void start_or_stop_sensor_calibration(uint32_t mode)
+{
+    uint8_t active = calibration_active;
+
+    if (mode != 0) {
+        if (__builtin_expect(active, 0))
+            return;
+        calibration_active = 1;
+        if (retry_radio_command_until_status_0x27()) {
+            cycle_control_state.active_control_mode = mode;
+            switch (mode) {
+            case MODE_STATE_CYCLE:
+                cycle_control_state.cycle_counter = 0;
+                write_indexed_timing_record(10, 500, (uint32_t)(uintptr_t)advance_state_cycle_and_dispatch_action);
+                break;
+            case MODE_CALIBRATE: {
+                radio_state[0x19] = 0;
+                if (retry_radio_command_until_status_0x27()) {
+                    send_device_command_pair(24, 64);
+                    send_device_command_pair(25, 1);
+                    configure_radio_state_and_send_command_6a();
+                }
+                wait_shared_timer_delta_exceed_requested_at_4458(100);
+                send_device_command_pair(143, 7);
+                uint32_t m = __builtin_annotation(0xffu, "m");
+                uint32_t high = m << 2;
+                uint32_t low = 0;
+                uint32_t result = 0;
+                for (radio_state[0x1c] = 0; __builtin_expect_with_probability(radio_state[0x1c] < CALIBRATION_STEPS, 1, 0.55) && __builtin_expect_with_probability((uint16_t)low < (uint16_t)high, 1, 0.7); radio_state[0x1c]++) {
+                    *WATCHDOG_REG = 200;
+                    uint32_t middle = ((uint16_t)high + (uint16_t)low) >> 1;
+                    write_two_bytes_from_packed_value(middle);
+                    wait_shared_timer_delta_exceed_requested_at_4458(32);
+                    read_callback_pair_for_mode_window_39_3a(1);
+                    wait_shared_timer_delta_exceed_requested_at_4458(33);
+                    int16_t value = read_callback_pair_for_mode_window_39_3a(1);
+                    if (__builtin_expect_with_probability((uint16_t)(value < 0 ? -value : value) > CALIBRATION_TOLERANCE, 1, 0.97)) {
+                        low = value > CALIBRATION_TOLERANCE ? middle + 1 : low;
+                        high = value > CALIBRATION_TOLERANCE ? high : middle - 1;
+                    } else {
+                        __builtin_assume(middle != 65535);
+                        result = middle;
+                        break;
+                    }
+                }
+                int16_t reading = read_callback_pair_for_mode_window_39_3a(1);
+                *(int16_t *)(void *)(radio_state + 0x46) = reading;
+                *(uint16_t *)(void *)(radio_state + 0x42) = result;
+                if (result == m << 1 && reading == 0) {
+                    device_control_state.record_check.state = 0;
+                } else {
+                    time_event_queue_state.received_status = result;
+                    device_control_state.record_check.state = 2;
+                    time_event_queue_state.received_value_2 = reading;
+                    time_event_queue_state.received_value_1 = *(uint16_t *)(void *)(radio_state + 0x44);
+                    time_event_queue_state.received_value_3 = *(uint16_t *)(void *)(radio_state + 0x48);
+                    time_event_queue_state.ring.head = 0;
+                    time_event_queue_state.ring.tail = 0;
+                    time_event_queue_state.ring.capacity = 8;
+                    time_event_queue_state.ring.element_size = 1;
+                    time_event_queue_state.ring.storage_base = (uintptr_t)&cycle_control_state + 0x44;
+                    format_byte_span_spaced_hexadecimal_line_at_b178((const uint8_t *)&time_event_queue_state.received_status, 8);
+                }
+                if (radio_state[0x13] == 39) {
+                    retry_radio_command_until_status_0x27();
+                    save_valid_measurement_range_clear_stale_at_8500();
+                    configure_radio_state_and_send_command_6a();
+                } else {
+                    save_valid_measurement_range_clear_stale_at_8500();
+                    if (retry_radio_command_until_status_0x27())
+                        configure_radio_state_and_send_command_6a();
+                }
+                update_mode_flags_and_transitions(1u << 30);
+                break;
+            }
+            default:
+                apply_sensor_control_action(mode);
+                break;
+            }
+        }
+        *(uint32_t *)(void *)(radio_state + 0x58) = 0;
+        sr08_shared_context[10] = 0;
+        *(uint32_t *)(void *)(radio_state + 0x60) = calibration_default_word;
+        
+    } else if (active) {
+        calibration_active = 0;
+        if (cycle_control_state.active_control_mode != 0) {
+            timing_bytes[0xa0] = 0;
+            timing_bytes[0] = 0;
+            clear_state_counter_at_offset_four();
+            *(uint16_t *)(void *)(radio_state + 0x14) = 0;
+            configure_radio_state_from_profile();
+            radio_state[0x17] = 0;
+            radio_state[0x18] = 0;
+            clear_state_counter_at_offset_four();
+            cycle_control_state.active_control_mode = 0;
+        }
+        *(uint16_t *)(void *)(radio_state + 0x2a) = 0;
+    }
+}

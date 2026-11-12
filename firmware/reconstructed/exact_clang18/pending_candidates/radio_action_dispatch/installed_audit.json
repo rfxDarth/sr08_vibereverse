@@ -1,0 +1,384 @@
+{
+  "scope": "manifest source text and C-preprocessed local headers",
+  "preprocessor": "arm-none-eabi-gcc",
+  "manifest_units": 449,
+  "preprocessing_failures": [],
+  "units_with_direct_assembly": 72,
+  "units_with_expanded_assembly": 74,
+  "units_exposed_by_preprocessing": [
+    "update_mode_bits_and_notify_display_service",
+    "update_companion_mode_bits_and_notify_display"
+  ],
+  "affected_units": [
+    {
+      "symbol": "write_literal_halfword_to_shared_state_offset_0x40",
+      "direct": 2,
+      "expanded": 2
+    },
+    {
+      "symbol": "write_shared_state_byte_44_and_word_40",
+      "direct": 2,
+      "expanded": 2
+    },
+    {
+      "symbol": "write_shared_state_byte_45_and_word_40",
+      "direct": 2,
+      "expanded": 2
+    },
+    {
+      "symbol": "format_signed_state_byte_as_three_display_digits",
+      "direct": 2,
+      "expanded": 2
+    },
+    {
+      "symbol": "drive_ring_s_output_state_machine",
+      "direct": 4,
+      "expanded": 4
+    },
+    {
+      "symbol": "update_mode_dependent_output_state_during_flash_transfer",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "initialize_configuration_record_defaults",
+      "direct": 3,
+      "expanded": 3
+    },
+    {
+      "symbol": "average_top_three_nonzero_sample_values_by_frequency",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "handle_matched_device_state_send_corresponding_at_1da8",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "wait_shared_timer_delta_exceed_requested_at_4458",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "recreate_display_status_indicator_update_selected_at_a914",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "update_mode_bits_and_notify_display_service",
+      "direct": 0,
+      "expanded": 1
+    },
+    {
+      "symbol": "update_companion_mode_bits_and_notify_display",
+      "direct": 0,
+      "expanded": 1
+    },
+    {
+      "symbol": "select_measurement_text_update_per_result_at_aae8",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "select_measurement_marker_value_according_active_at_abb4",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "apply_range_mode_validity_checks_preserving_at_8878",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "use_supplied_timing_value_derive_display_at_a960",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "dispatch_enabled_indicator_fields_for_device_status",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "convert_elapsed_sensor_time_minute_second_at_ace8",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "save_valid_measurement_range_clear_stale_at_8500",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "clear_interrupt_status_bits_dispatch_corresponding_at_1f34",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "optionally_calculate_three_axis_magnitude_dispatching_at_3d6c",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "render_current_time_charging_measurement_markers_at_a9d0",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "search_circular_record_queue_and_compact_if_needed",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "configure_command_record",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "update_clock_and_process_events",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "process_sensor_frame_entry_dd68",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "sensor_frame_rate_continuation_e194",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "sensor_frame_state_continuation_e6b0",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "process_sensor_frame_and_update_state_block_at_eb78",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "run_sensor_measurement_state_cycle_block_at_9da0",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "run_sensor_measurement_state_cycle_block_at_a1a0",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "run_sensor_measurement_state_cycle_block_at_a538",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "dispatch_sensor_and_display_events_block_at_25c4",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "dispatch_sensor_and_display_events_block_at_26ac",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "dispatch_sensor_and_display_events_block_at_2770",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "dispatch_sensor_and_display_events_block_at_2b70",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "dispatch_sensor_and_display_events_block_at_2bd8",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "dispatch_radio_and_sensor_state_events_block_at_9104",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "dispatch_radio_and_sensor_state_events_block_at_91a8",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "dispatch_radio_and_sensor_state_events_block_at_9538",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "process_measurement_records_and_sensor_state_block_at_b1b0",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "process_measurement_records_and_sensor_state_block_at_b5d0",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "process_motion_axes_and_activity_state_block_at_ca68",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "process_motion_axes_and_activity_state_block_at_ce6c",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "load_and_update_persistent_measurement_state_block_at_48a8",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "load_and_update_persistent_measurement_state_block_at_4cb0",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "initialize_sensor_measurement_state_block_at_98d4",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "initialize_sensor_measurement_state_block_at_9cfc",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "estimate_pulse_rate_from_sample_window",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "update_sensor_signal_state_from_sample",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "process_sensor_reading_and_update_state",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "process_sensor_mode_and_update_display",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "filter_accelerometer_sample_and_classify_level",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "initialize_sensor_processing_state",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "perform_flash_memory_operation",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "compute_and_store_display_coordinates",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "start_or_stop_sensor_calibration",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "dispatch_timed_state_callbacks",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "update_motion_sample_history_and_activity_flags",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "suotar_patch_data_ind_handler",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "switch_display_state_and_run_hooks",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "read_three_byte_samples_and_update_history",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "process_sensor_sample_and_maybe_save_record",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "initialize_peripheral_state_and_interrupts",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "advance_registration_data_transfers",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "update_measurement_display_and_mode_state",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "configure_peripheral_and_wait_for_status_flags",
+      "direct": 2,
+      "expanded": 2
+    },
+    {
+      "symbol": "app_db_init_next",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "handle_record_flag_and_queue_sensor_configuration",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "find_latest_valid_record_within_bitset",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "synchronize_callback_values_and_notify",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "convert_timestamp_to_calendar_fields",
+      "direct": 1,
+      "expanded": 1
+    },
+    {
+      "symbol": "initialize_shared_control_state_tables",
+      "direct": 1,
+      "expanded": 1
+    }
+  ]
+}

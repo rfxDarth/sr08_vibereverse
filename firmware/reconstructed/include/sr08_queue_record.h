@@ -1,6 +1,8 @@
 #ifndef SR08_QUEUE_RECORD_H
 #define SR08_QUEUE_RECORD_H
 
+#include "firmware/reconstructed/include/sr08_static_assert.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -29,14 +31,14 @@ union sr08_queue_record {
     } sensor_configuration;
 };
 
-_Static_assert(offsetof(union sr08_queue_record, three_byte_request.second) == 1,
+SR08_STATIC_ASSERT(offsetof(union sr08_queue_record, three_byte_request.second) == 1,
                "three-byte request fields must remain contiguous");
-_Static_assert(offsetof(union sr08_queue_record, typed_operation.value) == 1,
+SR08_STATIC_ASSERT(offsetof(union sr08_queue_record, typed_operation.value) == 1,
                "typed operation value must remain at byte one");
-_Static_assert(offsetof(union sr08_queue_record, sensor_configuration.marker) == 8,
+SR08_STATIC_ASSERT(offsetof(union sr08_queue_record, sensor_configuration.marker) == 8,
                "sensor configuration marker must remain at byte eight");
-_Static_assert(offsetof(union sr08_queue_record, sensor_configuration.reserved) == 10,
+SR08_STATIC_ASSERT(offsetof(union sr08_queue_record, sensor_configuration.reserved) == 10,
                "sensor configuration scratch area must remain at byte ten");
-_Static_assert(sizeof(union sr08_queue_record) == 20, "queue records must remain twenty bytes");
+SR08_STATIC_ASSERT(sizeof(union sr08_queue_record) == 20, "queue records must remain twenty bytes");
 
 #endif

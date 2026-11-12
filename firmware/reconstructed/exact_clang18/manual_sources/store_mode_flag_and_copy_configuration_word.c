@@ -2,8 +2,11 @@
  * Set mode flag four, store the input byte at state offset 15, and copy a configuration word to
  * byte offset 24.
  */
+#include "firmware/reconstructed/include/sr08_clock_literal_pool.h"
 #include <stddef.h>
 #include <stdint.h>
+#include "firmware/reconstructed/include/sr08_shared_context.h"
+extern struct sr08_clock_timekeeping_state clock_timekeeping_state;
 extern void update_mode_flags_and_transitions(uint32_t);
 
 struct sr08_mode_configuration_state {
@@ -23,9 +26,9 @@ store_mode_flag_and_copy_configuration_word(uint8_t input) {
     const uint32_t *source;
     uint32_t value;
     update_mode_flags_and_transitions(4);
-    __asm__ volatile("ldr %[state], [pc, #988]" : [state] "=r"(state) : : "memory");
+    state = (volatile struct sr08_mode_configuration_state *)&sr08_shared_context;
     state->mode = input;
-    __asm__ volatile("ldr %[source], [pc, #128]" : [source] "=r"(source) : : "memory");
+    source = (const uint32_t *)&clock_timekeeping_state.current_timestamp;
     value = *source;
     state->configuration_word = value;
 }

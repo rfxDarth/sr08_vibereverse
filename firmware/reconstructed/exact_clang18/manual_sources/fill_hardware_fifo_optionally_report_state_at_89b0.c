@@ -1,46 +1,38 @@
-/* Fill the hardware FIFO, optionally report state, and copy results out. */
+/* Read byte_count bytes from the I2C device after sending command: queue one
+ * read command per byte, report a transmit abort with V204's debug print
+ * (source line 158), then collect the received bytes into destination.
+ */
 #include <stdint.h>
+#include "firmware/reconstructed/include/sr08_format.h"
 
-__attribute__((used, naked, section(".text.fill_hardware_fifo_optionally_report_state_at_89b0"))) void
-fill_hardware_fifo_optionally_report_state_at_89b0(uint32_t command __attribute__((unused)),
-                                                   uint8_t *destination __attribute__((unused)),
-                                                   uint32_t byte_count __attribute__((unused))) {
-    __asm__ volatile("push {r3, r4, r5, r6, r7, lr}\n"
-                     "mov r4, r2\n"
-                     "mov r5, r1\n"
-                     "mov r6, r0\n"
-                     "bl wait_for_status_mask_0x02_set_minimum_8\n"
-                     "ldr r7, [pc, #340]\n"
-                     "strh r6, [r7, #0]\n"
-                     "movs r6, #0\n"
-                     ".Lwrite_fifo_loop: cmp r6, r4\n"
-                     "bcs .Lbegin_readback\n"
-                     "bl wait_for_status_mask_0x02_set_minimum_8\n"
-                     "movs r0, #1\n"
-                     "lsls r0, r0, #8\n"
-                     "strh r0, [r7, #0]\n"
-                     "adds r6, r6, #1\n"
-                     "b .Lwrite_fifo_loop\n"
-                     ".Lbegin_readback: bl wait_for_status_mask_0x04_set_minimum_32\n"
-                     "ldr r6, [pc, #316]\n"
-                     "ldrh r0, [r6, #44]\n"
-                     "lsls r0, r0, #31\n"
-                     "beq .Lreadback_start\n"
-                     "ldr r0, [pc, #312]\n"
-                     "movs r1, #158\n"
-                     "movs r2, #1\n"
-                     "bl format_and_send_uart_message\n"
-                     ".Lreadback_start: ldrh r0, [r6, #0]\n"
-                     "movs r6, #0\n"
-                     ".Lreadback_loop: cmp r6, r4\n"
-                     "bcs .Ldone\n"
-                     "bl wait_for_any_status_bit_or_elapsed_200\n"
-                     "ldrh r0, [r7, #0]\n"
-                     "strb r0, [r5, #0]\n"
-                     "adds r6, r6, #1\n"
-                     "adds r5, r5, #1\n"
-                     "b .Lreadback_loop\n"
-                     ".Ldone: bl wait_for_status_mask_0x04_set_minimum_32\n"
-                     "bl wait_for_status_mask_0x20_clear_minimum_8\n"
-                     "pop {r3, r4, r5, r6, r7, pc}\n");
+#define I2C_DATA_CMD_REG        (*(volatile uint16_t *)0x50001310u)
+#define I2C_CLR_TX_ABRT_REG     (*(volatile uint16_t *)0x50001354u)
+#define I2C_TX_ABRT_SOURCE_REG  (*(volatile uint16_t *)0x50001380u)
+#define I2C_CMD_READ            0x0100u
+#define ABRT_7B_ADDR_NOACK      0x0001u
+
+extern void wait_for_status_mask_0x02_set_minimum_8(void);
+extern void wait_for_status_mask_0x04_set_minimum_32(void);
+extern void wait_for_status_mask_0x20_clear_minimum_8(void);
+extern void wait_i2c_rx_fifo_or_timeout(void);
+extern const char i2c_ack_format[]; /* "%d,ack0x%x\n" */
+
+void fill_hardware_fifo_optionally_report_state_at_89b0(uint32_t command, uint8_t *destination, uint16_t byte_count)
+{
+    wait_for_status_mask_0x02_set_minimum_8();
+    I2C_DATA_CMD_REG = command;
+    for (uint16_t i = 0; i < byte_count; i++) {
+        wait_for_status_mask_0x02_set_minimum_8();
+        I2C_DATA_CMD_REG = I2C_CMD_READ;
+    }
+    wait_for_status_mask_0x04_set_minimum_32();
+    if (I2C_TX_ABRT_SOURCE_REG & ABRT_7B_ADDR_NOACK)
+        arch_printf((const uint8_t *)i2c_ack_format, 158, 1);
+    (void)I2C_CLR_TX_ABRT_REG;
+    for (uint16_t i = 0; i < byte_count; i++) {
+        wait_i2c_rx_fifo_or_timeout();
+        *destination++ = I2C_DATA_CMD_REG;
+    }
+    wait_for_status_mask_0x04_set_minimum_32();
+    wait_for_status_mask_0x20_clear_minimum_8();
 }

@@ -1,9 +1,11 @@
 /* Update the device settings record and run its conditional mode callback. */
 #include <stdint.h>
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+#include "firmware/reconstructed/include/sr08_device_settings.h"
 #include "firmware/reconstructed/include/sr08_device_setting_state.h"
 #include "firmware/reconstructed/include/sr08_device_state.h"
 
-extern uint32_t request_sensor_sample_then_scale_result(void);
+extern uint32_t get_ble_base_time_ms(void);
 extern void replace_state_timer_with_600_delay(void);
 
 __attribute__((used, section(".text.update_device_settings_and_timeout_if_value_low"))) void
@@ -11,12 +13,12 @@ update_device_settings_and_timeout_if_value_low(uint32_t value, uint16_t setting
     volatile struct sr08_device_setting_state *state;
     volatile struct sr08_device_state *shared_state;
 
-    request_sensor_sample_then_scale_result();
+    get_ble_base_time_ms();
     /* Preserve the mode update's original encoding, then restart the periodic-record interval. */
-    __asm__ volatile("ldr %[state], [pc, #964]" : [state] "=r"(shared_state));
+    shared_state = (volatile struct sr08_device_state *)&merged_globals_5650;
     shared_state->active_mode_setting = mode;
     shared_state->last_periodic_record_timestamp = 0;
-    __asm__ volatile("ldr %[state], [pc, #24]" : [state] "=r"(state));
+    state = (volatile struct sr08_device_setting_state *)&device_settings;
     state->setting = setting;
     state->current_value = (uint16_t)value;
     if (value < state->minimum_value)

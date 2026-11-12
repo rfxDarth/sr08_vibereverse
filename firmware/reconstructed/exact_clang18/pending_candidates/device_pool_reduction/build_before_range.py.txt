@@ -1,0 +1,1112 @@
+#!/usr/bin/env python3
+"""Build the checked-in V204 source reconstruction at its assigned VMAs."""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import re
+import subprocess
+import tempfile
+from pathlib import Path
+
+import arm_compilers
+
+ROOT = Path(__file__).resolve().parents[3]
+DATA_DIR = ROOT / "firmware" / "reconstructed" / "data"
+EXACT_DIR = Path(__file__).resolve().parent
+MANIFEST = EXACT_DIR / "V204_source_manifest.json"
+RAM_SYMBOLS = DATA_DIR / "V204_ram_symbols.json"
+BASE = 0x7FC0000
+# The source-defined flash map spans 0x7fc0000 through 0x7fd063f.
+IMAGE_SIZE = 0x10640
+CANONICAL_PAYLOAD_SHA256 = "5020c236a289544d878196bec3e21b005835237bc2fc34935927533bcd1c8570"
+CANONICAL_CONTAINER_SHA256 = "c747249568a75dc9925a7d25de7baffca2ae5ff42cd2ffd7dfddf8ee42b5e8e8"
+FLAGS = ["--target=arm-none-eabi", "-mcpu=cortex-m0", "-mthumb",
+         "-std=gnu89", "-ffreestanding", "-fno-builtin",
+         "-ffunction-sections", "-fdata-sections", "-I", str(ROOT),
+         "-Werror", "-Werror=implicit-function-declaration", "-Os",
+         "-fomit-frame-pointer"]
+GCC_FLAGS = ["-mcpu=cortex-m0", "-mthumb", "-std=gnu89", "-ffreestanding",
+             "-fno-short-enums", "-Wa,--noexecstack",
+             "-fno-builtin", "-ffunction-sections", "-fdata-sections",
+             "-I", str(ROOT), "-Werror", "-Werror=implicit-function-declaration",
+             "-Os", "-fomit-frame-pointer"]
+GCC_TRANSLATION_UNITS = {"reinitialize_sensor_processing_state"}
+# These controls preserve V204's loop structure without assembly branches.
+KEEP_LOOP_HEAD = ["-mllvm", "-rotation-max-header-size=0"]
+KEEP_LOOP_INDUCTION = ["-mllvm", "-disable-lsr"]
+KEEP_SOURCE_SCHEDULE = ["-mllvm", "-pre-RA-sched=source"]
+SOURCE_FLAGS = {
+    # Reuse the interrupt-mask constant without a spill, and retain V204's
+    # two separate PRIMASK restore/return paths.
+    "set_pending_flag_if_status_bit_7_clear": [
+        "-mllvm", "-aggressive-machine-cse", "-mllvm", "-enable-tail-merge=false"],
+    "gate_mode_activation_on_sensor_flags": ["-mllvm", "-disable-block-placement"],
+    "app_easy_timer": KEEP_LOOP_HEAD + KEEP_LOOP_INDUCTION,
+    "ba431_get_rand_func": KEEP_LOOP_HEAD,
+    "transmit_uart_buffer": KEEP_LOOP_HEAD + KEEP_SOURCE_SCHEDULE,
+    "crc32_update_one_byte": KEEP_LOOP_HEAD,
+    "nul_terminated_string_length": KEEP_LOOP_INDUCTION,
+    "scan_pair_table_until_terminator":
+        KEEP_LOOP_HEAD + KEEP_LOOP_INDUCTION + KEEP_SOURCE_SCHEDULE,
+    "custs1_destroy": KEEP_LOOP_HEAD,
+    "adc_usDelay": KEEP_LOOP_HEAD,
+}
+# Function groups built with V204's original Arm compilers (arm_compilers.py):
+# "ac5" is ARM Compiler 5.06u7; "ac6" is ARM Compiler 6.16 ("ac6apcs"
+# selects its four-byte-stack APCS profile for one no-argument initializer). "ac6lto" is
+# ARM Compiler 6.16 with link-time optimisation (Keil MDK Professional under
+# Wine; V204's armclang half was linked this way). All "ac6lto" units are
+# linked together as one module, each at its own address. "ac6ltowordtables"
+# units form a second LTO module, linked after it, whose code generation keeps
+# V204's vendor word jump tables (arm_compilers.LTO_LINK_FLAGS). Each other group lists
+# consecutive source units in address order; one armlink run places them at
+# the first unit's address so identical literal-pool constants are merged as
+# in V204. A group's linked region replaces the V204 data sections it covers.
+ARM_COMPILER_GROUPS = [
+    ("ac6", ["configure_peripheral_and_wait_for_status_flags"]),
+    ("ac6lto", ["GPIO0_Handler"]),
+    ("ac6lto", ["GPIO1_Handler"]),
+    ("ac6lto", ["GPIO2_Handler"]),
+    ("ac6lto", ["GPIO3_Handler"]),
+    ("ac6lto", ["GPIO4_Handler"]),
+    ("ac6lto", ["GPIO_ConfigurePin"]),
+    ("ac6lto", ["GPIOn_Handler"]),
+    ("ac6lto", ["process_radio_state_if_active"]),
+    ("ac6", ["integer_square_root_restoring"]),
+    ("ac6lto", ["UART2_Handler"]),
+    ("ac6lto", [
+        "wait_for_status_mask_0x04_set_minimum_32",
+        "wait_for_status_mask_0x20_clear_minimum_8",
+        "store_measurement_value_divided_by_1000",
+        "clear_radio_flag_and_configure_state",
+    ]),
+    ("ac6lto", ["adc_get_sample"]),
+    ("ac6lto", ["adc_get_p0_1_sample"]),
+    ("ac6lto", ["adc_init"]),
+    ("ac6lto", ["adv_data_update_timer_cb"]),
+    ("ac6lto", ["gate_mode_activation_on_sensor_flags"]),
+    ("ac6lto", ["search_queue_and_insert_limit_twenty"]),
+    ("ac6lto", ["search_queue_and_insert_limit_one"]),
+    ("ac6lto", ["read_state_word_at_10_with_record_flag_clamp", "switch_to_display_state_zero_if_fourteen"]),
+    ("ac6lto", ["gate_periodic_record_creation_sensor_mode_at_2dc4"]),
+    ("ac6lto", ["update_device_settings_and_timeout_if_value_low"]),
+    ("ac6lto", ["replace_state_timer_with_600_delay"]),
+    ("ac6lto", ["advance_ring_s_queue_and_submit_entry"]),
+    ("ac6lto", ["search_circular_record_queue_insert_missing_at_2f2c"]),
+    ("ac6lto", ["copy_ring_buffer_entry_if_index_available"]),
+    ("ac6", ["peek_ring_buffer_entry"]),
+    ("ac6lto", ["app_custs1_create_db"]),
+    ("ac6", ["convert_quotient_remainder_sequence_ring_s_at_3148"]),
+    ("ac6lto", ["reset_transition_state_and_store_scaled_value"]),
+    ("ac6lto", ["app_easy_gap_confirm"]),
+    ("ac6lto", ["app_easy_gap_disconnect"]),
+    ("ac6", ["allocate_initialize_record_first_use_release_at_3254"]),
+    ("ac6", ["app_easy_gap_undirected_advertise_start_create_msg"]),
+    ("ac6", ["validate_cached_text_payload_return_install_at_8fb0"]),
+    ("ac6", ["update_mode_dependent_output_state_during_flash_transfer"]),
+    ("ac6", ["drive_ring_s_output_state_machine"]),
+    ("ac6lto", ["app_easy_security_accept_encryption"]),
+    ("ac6", ["app_easy_security_encrypt_cfm"]),
+    ("ac6lto", ["app_easy_security_reject_encryption"]),
+    ("ac6", ["app_easy_timer", "app_easy_timer_cancel"]),
+    ("ac6", ["app_entry_point_handler"]),
+    ("ac6", ["app_fill_random_byte_array"]),
+    ("ac6lto", ["app_gap_process_handler"]),
+    ("ac6lto", ["derive_active_sensor_range_flags_notify_at_37d0"]),
+    ("ac6lto", ["store_mode_flag_and_copy_configuration_word"]),
+    ("ac6lto", ["update_mode_flags_and_transitions"]),
+    ("ac6lto", ["allocate_ble_data_record_and_send"]),
+    ("ac6", ["copy_three_signed_coordinates_to_display_state"]),
+    ("ac6lto", ["app_msg_utils_api_process_handler"]),
+    ("ac6lto", ["app_sec_process_handler"]),
+    ("ac6lto", ["update_state_bits_and_publish_empty_status"]),
+    ("ac6lto", ["app_std_process_event"]),
+    ("ac6lto", ["app_suotar_process_handler"]),
+    ("ac6lto", ["map_elapsed_ticks_to_firmware_time_units"]),
+    ("ac6lto", ["build_mode_status_record_select_corresponding_at_43a4"]),
+    ("ac6lto", ["serialize_status_and_global_values_with_word"]),
+    ("ac6lto", ["get_ble_base_time_ms"]),
+    ("ac6lto", ["app_timer_api_process_handler"]),
+    ("ac6lto", ["advance_display_timing_and_serialize_interval_changes"]),
+    ("ac6lto", ["reset_mode_state_and_publish_status_records"]),
+    ("ac6lto", ["reset_related_capture_sensor_state_control_at_4fc8"]),
+    ("ac6lto", ["build_event_header_and_fourteen_byte_scratch_area"]),
+    ("ac6lto", ["emit_event_packet_when_active_mode_changes"]),
+    ("ac6lto", ["queue_computed_status_records"]),
+    ("ac6lto", ["stage_and_program_flash_region_3c000"]),
+    ("ac6", ["prepare_sensor_configuration_stack_record"]),
+    ("ac6lto", ["format_integer_radix_zero_padded"]),
+    ("ac6", ["arch_printf"]),
+    ("ac6", ["switch_to_display_state_1b_when_word_44_is_100"]),
+    ("ac6lto", ["initialize_display_image_region_and_fixed_header"]),
+    ("ac6lto", ["translate_rom_result_to_display_coordinates"]),
+    ("ac6lto", ["validate_stored_sample_against_latest_reading_at_5600"]),
+    ("ac6", ["increment_character_by_ten_wrap_at_d"]),
+    ("ac6", ["crc32_update_buffer"]),
+    ("ac6", ["crc32_update_one_byte"]),
+    ("ac6", ["create_timer"]),
+    ("ac6lto", [
+        "custs1_get_att_handle",
+        "custs1_get_att_idx",
+        "custs1_att_info_rsp_handler",
+        "custs1_att_get_value",
+        "custs1_destroy",
+        "custs1_att_set_value",
+        "custs1_create",
+        "custs1_cleanup",
+        "custs1_init",
+        "custs1_exe_operation",
+        "custs1_set_ccc_value",
+        "custs1_val_ind_req_handler",
+        "custs1_val_ntf_req_handler",
+    ]),
+    ("ac6", ["custs1_value_req_rsp_handler"]),
+    ("ac6", ["print_exception_context_to_uart"]),
+    ("ac6", ["encrypt_cfm_create_msg"]),
+    ("ac6", ["log_message_with_code_17_and_enqueue_operation_one"]),
+    ("ac6lto", ["gapc_bond_ind_handler"]),
+    ("ac6lto", ["gapc_bond_req_ind_handler"]),
+    ("ac6lto", ["gapc_cmp_evt_handler"]),
+    ("ac6lto", ["gapc_connection_req_ind_handler"]),
+    ("ac6lto", ["gapc_disconnect_ind_handler"]),
+    ("ac6lto", ["gapc_encrypt_ind_handler"]),
+    ("ac6lto", ["gapc_encrypt_req_ind_handler"]),
+    ("ac6lto", ["gapc_get_dev_info_req_ind_handler"]),
+    ("ac6lto", ["gapc_set_dev_info_req_ind_handler"]),
+    ("ac6lto", ["gapm_cmp_evt_handler"]),
+    ("ac6lto", ["gapm_device_ready_ind_handler"]),
+    ("ac6lto", ["custs1_gattc_att_info_req_ind_handler"]),
+    ("ac6lto", ["hogpd_gattc_att_info_req_ind_handler"]),
+    ("ac6lto", ["hogpd_gattc_cmp_evt_handler"]),
+    ("ac6lto", ["custs1_gattc_read_req_ind_handler"]),
+    ("ac6lto", ["suotar_gattc_read_req_ind_handler"]),
+    ("ac6lto", ["hogpd_gattc_read_req_ind_handler"]),
+    ("ac6lto", ["custs1_gattc_write_req_ind_handler"]),
+    ("ac6lto", ["suotar_gattc_write_req_ind_handler"]),
+    ("ac6lto", ["hogpd_gattc_write_req_ind_handler"]),
+    ("ac6", ["get_cfg_handle"]),
+    ("ac6source", ["copy_six_profile_bytes_from_offsets_two_to_seven"]),
+    ("ac6", ["get_user_prf_srv_perm"]),
+    ("ac6lto", ["update_measurement_display_and_mode_state"]),
+    ("ac6lto", ["conditional_mode_updates_using_two_display_at_74a8"]),
+    ("ac6lto", ["hogpd_cleanup"]),
+    ("ac6lto", ["hogpd_create"]),
+    ("ac6lto", ["hogpd_destroy"]),
+    ("ac6lto", ["hogpd_enable_req_handler"]),
+    ("ac6lto", ["hogpd_get_att_handle"]),
+    ("ac6lto", ["hogpd_get_att_idx"]),
+    ("ac6lto", ["hogpd_init"]),
+    ("ac6lto", ["hogpd_proto_mode_cfm_handler"]),
+    ("ac6lto", ["hogpd_report_cfm_handler"]),
+    ("ac6lto", ["hogpd_report_upd_req_handler"]),
+    ("ac6lto", ["retry_radio_command_until_status_0x27"]),
+    ("ac6lto", ["send_four_adjacent_field_updates_via_callback"]),
+    ("ac6lto", ["configure_radio_profile_and_mark_state_ready"]),
+    ("ac6lto", ["configure_radio_state_and_send_command_6a"]),
+    ("ac6lto", ["ensure_radio_profile_then_exchange_word"]),
+    ("ac6lto", ["read_three_callback_values_between_mode_at_85a0"]),
+    ("ac6lto", ["ensure_radio_profile_then_scan_paired_bytes"]),
+    ("ac6lto", ["initialize_radio_scan_and_mark_state_ready"]),
+    ("ac6lto", ["publish_enabled_sensor_field_trigger_periodic_at_8774"]),
+    ("ac6lto", ["scan_bounded_record_range_until_callback_at_87f4"]),
+    ("ac6lto", ["program_peripheral_registers_from_descriptor"]),
+    ("ac6lto", ["fill_hardware_fifo_optionally_report_state_at_89b0"]),
+    ("ac6lto", ["exchange_one_radio_word"]),
+    ("ac6", ["poll_status_until_match_or_ble_timeout"]),
+    ("ac6lto", ["process_two_packed_input_bytes_update_at_8ad8"]),
+    ("ac6lto", ["set_shared_halfword_40_to_000b"]),
+    ("ac6lto", ["dispatch_transition_0x10_when_control_0x01_clear_then_set_dash_state"]),
+    ("ac6lto", ["set_shared_halfword_40_to_0005"]),
+    ("ac6lto", ["set_shared_halfword_40_to_001e"]),
+    ("ac6lto", ["set_shared_halfword_40_to_0006_at_8b60"]),
+    ("ac6lto", ["dispatch_transition_0x20_when_control_0x02_clear_then_set_dash_state"]),
+    ("ac6lto", ["set_shared_halfword_40_to_0005_at_8b88"]),
+    ("ac6lto", ["set_shared_halfword_40_to_001e_at_8b94"]),
+    ("ac6lto", ["set_shared_halfword_40_to_0006_at_8ba0"]),
+    ("ac6lto", ["set_shared_halfword_40_to_0002_at_8bac"]),
+    ("ac6lto", ["set_shared_halfword_40_to_0006_at_8bb8"]),
+    ("ac6lto", ["set_shared_halfword_40_to_0002_at_8bc4"]),
+    ("ac6lto", ["set_shared_halfword_40_to_0002_at_8bd0"]),
+    ("ac6lto", ["accumulate_two_timing_deltas_update_wrapped_at_8bdc"]),
+    ("ac6", ["is_gregorian_leap_year", "disable_interrupt_mask_0x8000_and_publish_control_state"]),
+    ("ac6lto", ["apply_sensor_control_action"]),
+    ("ac6", ["clear_cached_sensor_fields_refresh_calibration_at_8f48"]),
+    ("ac6", [
+        "switch_to_display_state_three_if_flag_clear",
+        "switch_display_state_to_one",
+        "select_operation_four_and_reset_state",
+        "switch_to_display_state_four_if_flag_clear",
+    ]),
+    ("ac6", [
+        "lld_sleep_compensate_func",
+        "lld_sleep_init_func",
+        "lld_sleep_lpcycles_2_us_rcx_func",
+        "lld_sleep_us_2_lpcycles_rcx_func",
+        "ltk_exch_create_msg",
+    ]),
+    ("ac6lto", ["nvds_del_func"]),
+    ("ac6wordtables", ["nvds_get_func"]),
+    ("ac6ltowordtables", ["six_way_command_dispatch_default_branch_at_8040"]),
+    ("ac6ltowordtables", ["dispatch_radio_state_action_block_at_86b8"]),
+    ("ac6lto", ["suotar_patch_data_ind_handler"]),
+    ("ac6lto", ["nvds_init_func"]),
+    ("ac6lto", ["nvds_put_func"]),
+    ("ac6lto", ["write_display_values_53_65_at_selected_offset"]),
+    ("ac6lto", ["prefer_active_value_override_otherwise_derive_at_aa68"]),
+    ("ac6lto", ["use_alternate_timing_source_derive_display_at_ac20"]),
+    ("ac6lto", [
+        "update_status_display_using_remainder_rom_at_ab3c",
+        "select_two_display_patterns_mode_flag_at_ab78",
+        "choose_display_state_bytes_from_mode",
+        "format_display_value_from_shared_offset_8",
+        "format_display_value_from_shared_offset_11",
+    ]),
+    ("ac6lto", ["format_shared_value_and_set_flag_40"]),
+    ("ac6lto", ["param_update_request_timer_cb"]),
+    ("ac6", ["set_state_flag_and_switch_to_twenty_two"]),
+    ("ac6lto", [
+        "prf_add_profile_func",
+        "prf_cleanup_func",
+        "prf_create_func",
+        "prf_env_get",
+        "prf_get_id_from_task_func",
+        "prf_get_task_from_id_func",
+        "prf_init_func",
+    ]),
+    ("ac6", ["format_byte_span_spaced_hexadecimal_line_at_b178"]),
+    ("ac6lto", ["wait_sensor_readiness_combine_counter_words_at_b7d4"]),
+    ("ac6lto", ["rf_init_func"]),
+    ("ac6lto", ["rf_regs"]),
+    ("ac6lto", ["rwble_isr"]),
+    ("ac6lto", ["spi_access"]),
+    ("ac6lto", ["spi_flash_wait_till_ready"]),
+    ("ac6", ["clear_shared_flag_and_switch_to_state_zero", "switch_to_state_zero_unless_flag_is_one"]),
+    ("ac6", ["suotar_cleanup"]),
+    ("ac6lto", ["register_custom_gatt_service_and_initialize_state"]),
+    ("ac6lto", ["suotar_mem_info_update_req_handler"]),
+    ("ac6lto", ["suotar_patch_len_ind_handler"]),
+    ("ac6lto", ["suotar_patch_mem_dev_ind_handler"]),
+    ("ac6lto", ["suotar_status_update_req_handler"]),
+    ("ac6", ["quiesce_irq_source_wait_pending_bit_at_c4b0"]),
+    ("ac6", ["advance_sensor_cycle_and_toggle_mode_flags"]),
+    ("ac6", ["build_sensor_command_packet_acquiring_shared_at_519c"]),
+    ("ac6lto", ["uart_rx_isr"]),
+    ("ac6lto", ["user_app_adv_start"]),
+    ("ac6lto", ["user_catch_rest_hndl"]),
+    ("ac6", ["update_indexed_delay_entry_if_changed"]),
+    ("ac6", ["schedule_callback_in_slot_eleven"]),
+    ("ac6", ["advance_state_cycle_and_dispatch_action"]),
+    ("ac6", ["write_indexed_timing_record"]),
+    ("ac6", ["transmit_uart_buffer"]),
+    ("ac5", ["integer_square_root_newton_iteration"]),
+    ("ac5", ["dispatch_batch_item_three_sign_extended_at_ee4c"]),
+    ("ac5", ["clear_state_counter_at_offset_four"]),
+    ("ac5", ["build_and_copy_compact_sensor_status_reply"]),
+    ("ac6apcs", ["initialize_state_and_return_one"]),
+    ("ac5", ["apply_pending_record_operation_to_items_while_active"]),
+    ("ac5", ["clear_state_word_at_offset_1c"]),
+    ("ac5", ["serialize_measurement_record_by_mode"]),
+    ("ac5", ["find_signed_byte_maximum_in_first_100"]),
+    ("ac5", ["copy_incoming_fields_to_shared_command_record"]),
+    ("ac5", ["write_shared_sensor_profile_fields"]),
+    ("ac5", ["clear_sensor_processing_history_tables"]),
+    ("ac5", ["compute_fixed_point_normalized_cross_correlation"]),
+    ("ac6", ["SystemInit"]),
+]
+# Arm C library (microlib) members that V204 linked unchanged, taken from the
+# ARM Compiler 6.16 installation: (V204 address, [(archive, member)], replaced
+# source units). The members' code replaces everything in its address range.
+ARM_LIBRARY_ARCHIVES = {
+    "mc_p.l": "5f808e0e505fe9aa8838b63e2b2f551872139b5a09a70a8037d956f2e29d10c4",
+    "mf_p.l": "391e52503aa30e93729ca9605ac05c6555d29894cf78083c447bc47a28504e72",
+}
+ARM_LIBRARY_MEMBERS = [
+    # microlib __main: set SP, scatter-load, then jump to main. entry.o only
+    # defines the empty __main label and references unused optional
+    # fragments, so __main is defined below instead.
+    (0x07fc0130, [("mc_p.l", "entry2.o"), ("mc_p.l", "entry5.o"), ("mc_p.l", "entry9a.o")],
+     ["reset_entry_stack_setup_startup_callback_at_0130", "initialize_sensor_measurement_state_entry_thunk"]),
+    (0x07fc18f4, [("mc_p.l", "strlen.o")], ["nul_terminated_string_length"]),
+    (0x07fc1904, [("mc_p.l", "init.o")], ["call_registered_startup_callbacks_then_transfer_to_rom"]),
+    (0x07fc1928, [("mc_p.l", "uldiv.o")], ["divide_u64_restoring"]),
+    (0x07fc1988, [("mf_p.l", "fadd.o")], ["add_v204_software_float_values", "flip_sign_bit_and_tail_call_float_add"]),
+    (0x07fc1a3a, [("mf_p.l", "fmul.o")], ["multiply_v204_software_float_values"]),
+    (0x07fc1ab4, [("mf_p.l", "fdiv.o")], ["divide_v204_software_float_values"]),
+    (0x07fc1b30, [("mf_p.l", "ffltui.o")], ["convert_unsigned_integer_to_float_bits"]),
+    (0x07fc1b3e, [("mf_p.l", "ffixui.o")], ["convert_float32_bits_to_unsigned_integer"]),
+    (0x07fc1b66, [("mc_p.l", "llushr.o")], ["shift_unsigned_64_right"]),
+    (0x07fc1b88, [("mf_p.l", "fepilogue.o")], ["round_v204_float_value_from_status", "normalize_and_round_v204_software_float"]),
+    (0x07fcd0aa, [("mc_p.l", "handlers.o")], ["zero_word_buffer_by_byte_count"]),
+]
+# Library references resolved by armlink in V204: the scatter-load region
+# table and the entry point reached after scatter-loading.
+# `__I$use$fp` is a marker that armlink defines when floating point is used.
+ARM_LIBRARY_LINKER_SYMBOLS = {"Region$$Table$$Base": 0x07fd0340, "Region$$Table$$Limit": 0x07fd0360,
+                              "__initial_sp": 0x07fd2668, "__main": 0x07fc0130, "__I$use$fp": 0}
+ARM_LIBRARY_SYMBOL_ALIASES = {"main": "initialize_sensor_measurement_state"}
+# These C units use native instruction selection, then share literal pools
+# with the existing module through the same armlink invocation. LTO otherwise
+# removes their address annotations before native instruction selection.
+LTO_NATIVE_UNITS = {
+    "update_status_display_using_remainder_rom_at_ab3c",
+    "select_two_display_patterns_mode_flag_at_ab78",
+    "choose_display_state_bytes_from_mode",
+    "format_display_value_from_shared_offset_8",
+    "format_display_value_from_shared_offset_11",
+}
+
+# Translation units linked into the "ac6lto" module that are not units of
+# their own: SDK functions that V204's link-time optimisation inlined into
+# their only caller.
+# LTO units that only other LTO units call (no other source, data or fixed
+# code refers to them). armlink does not keep them, so whole-program
+# optimisation may specialise them, as in V204 (app_easy_gap_confirm's
+# constant svc_changed_ind_enable).
+# Literal words of context stubs that no earlier code shares in V204, although
+# earlier module loads of the same word had them in range: V204 kept those
+# loads on their own (or a nearer) pool. armlink would otherwise merge such
+# loads into the stub's word, so these words are written as plain code to it.
+# - 0x07fc9194-0x07fc91a4: the mid-routine island of
+#   dispatch_radio_and_sensor_state_events (only its own loads use it), which
+#   apply_sensor_control_action's sensor_field_state and device_control_state
+#   loads (0x07fc8e5e, 0x07fc8ed6, 0x07fc8efc) passed over.
+LTO_SEALED_STUB_LITERALS: frozenset[int] = frozenset(range(0x07fc9194, 0x07fc91a8, 4))
+
+LTO_INTERNAL_UNITS: set[str] = {
+    "app_easy_gap_confirm",
+    "GPIOn_Handler",
+    "uart_rx_isr",
+}
+LTO_SUPPORT_SOURCES: list[str] = [
+    "firmware/reconstructed/exact_clang18/lto_support/custom_common.c",
+    "firmware/reconstructed/exact_clang18/lto_support/hogpd_ntf_send.c",
+    "firmware/reconstructed/exact_clang18/lto_support/hogpd_ntf_cfg_ind_send.c",
+    "firmware/reconstructed/exact_clang18/lto_support/app.c",
+    "firmware/reconstructed/exact_clang18/lto_support/app_default_handlers.c",
+    "firmware/reconstructed/exact_clang18/lto_support/user_app_adv_undirect_complete.c",
+    "firmware/reconstructed/exact_clang18/lto_support/user_app_on_encrypt_req_ind.c",
+    "firmware/reconstructed/exact_clang18/lto_support/app_easy_security.c",
+    "firmware/reconstructed/exact_clang18/lto_support/user_app_connection.c",
+    "firmware/reconstructed/exact_clang18/lto_support/user_app_disconnect.c",
+    "firmware/reconstructed/exact_clang18/lto_support/user_app_on_pairing_succeeded.c",
+    "firmware/reconstructed/exact_clang18/lto_support/app_customs.c",
+]
+ARM_COMPILER_UNITS = {symbol for _, symbols in ARM_COMPILER_GROUPS for symbol in symbols}
+ARM_LIBRARY_UNITS = {symbol for _, _, symbols in ARM_LIBRARY_MEMBERS for symbol in symbols}
+ARM_TOOLS_DIR = ROOT / "Tools"
+SDK_ARCHIVE = ROOT / "firmware/reconstructed/third_party/renesas_sdk_6.0.22.1401/da14585_586.lib"
+SDK_ARCHIVE_SHA256 = "94c3329310e02625f910900faf15d4cd660fb7da43e0139cd975a390a19622a0"
+SDK_UNITS = {
+    "arch_asm_delay_us": "arch_asm.o",
+    "PATCHED_smpc_dhkey_calc_start": "smpc_util.o",
+}
+SDK_COVERED_UNITS = {"JT_llm_p256_start_func"}
+# The SDK's DA14585 ROM symbol definitions (sdk/common_project_files/misc).
+SDK_ROM_SYMBOLS = ROOT / "firmware/reconstructed/third_party/renesas_sdk_6.0.22.1401/da14585_symbols.txt"
+# Of the text with LF line ends: the SDK ships it with CRLF, which git's
+# autocrlf normalisation may change on checkout.
+SDK_ROM_SYMBOLS_SHA256 = "d222597931795e4e2b91ee6008148fa822638066c22c00c34f7aa2b260db3a39"
+# Official library members that V204 linked unchanged from an older SDK:
+# (archive, member, {section: V204 address}). Each section is linked whole at
+# its address and replaces every source unit and data section it covers.
+SDK_6018_ARCHIVE = ROOT / "firmware/reconstructed/third_party/renesas_sdk_6.0.18.1182.1/da14585_586.lib"
+SDK_ARCHIVE_HASHES = {
+    SDK_ARCHIVE: SDK_ARCHIVE_SHA256,
+    SDK_6018_ARCHIVE: "b80bc142db1e045bd4f049112c06955797484970ba6164ca4b4dbcd8ab0afda3",
+}
+SDK_MEMBERS = [
+    (SDK_6018_ARCHIVE, "patch.o", {".text": 0x07fc01b4, ".constdata": 0x07fcf15c}),
+    (SDK_6018_ARCHIVE, "rf_calibration.o", {".text": 0x07fc16f8}),
+]
+SDK_REPLACED_DATA_SECTIONS = [".v204.auto.07fc18e6"]
+# Official SDK assembly sources V204 assembled unchanged with armasm:
+# (V204 address, source, SHA-256, armasm options, exported entry symbol,
+# replaced source units). The code area that defines the entry symbol (with
+# its literal pool) replaces everything in its range.
+SDK_ASSEMBLY_SOURCES = [
+    (0x07fc0144, ROOT / "firmware/reconstructed/third_party/renesas_sdk_6.0.18.1182.1/startup_DA14585_586.s",
+     "8ba065061346605d01af13c8e08c5ab0b03cbf9620675d5a2f555aee0e23af9e", ["--predefine=__MICROLIB SETA 1"],
+     "Reset_Handler", ["Reset_Handler", "NMI_Handler", "HardFault_Handler", "SVC_Handler", "PendSV_Handler",
+               "SysTick_Handler", "Default_Handler"]),
+]
+SDK_ASSEMBLY_UNITS = {symbol for *_, units in SDK_ASSEMBLY_SOURCES for symbol in units}
+SDK_LINKER_SYMBOLS = {"gapc_env": 0x07fd7e2c}
+
+SECTION_RE = re.compile(r"^\s*\d+\s+(\.v204\.(?:data|auto|func)\.[0-9a-fA-F]+)\s+"
+                        r"([0-9a-fA-F]+)\s+([0-9a-fA-F]+)\s", re.M)
+DATA_SECTION_RE = re.compile(r"^\s*\d+\s+(\.v204\.(?:data|auto)\.[0-9a-fA-F]+)\s+"
+                             r"([0-9a-fA-F]+)\s+([0-9a-fA-F]+)\s", re.M)
+LAYOUT_ENTRY_RE = re.compile(r"^\s*\.v204\.\w+\.[0-9a-f]+ 0x([0-9a-f]+) : \{ KEEP\(\*\(([^)]+)\)\) \}", re.M)
+COMMENT_RE = re.compile(r"/\*.*?\*/|//[^\n]*", re.S)
+ROM_RE = re.compile(r"\bfunc_0x([0-9a-fA-F]{8})\b")
+IDENTIFIER_RE = re.compile(r"\b[A-Za-z_][A-Za-z0-9_]*\b")
+
+
+def validate_compiler_configuration(manifest: dict) -> None:
+    """Reject stale per-function compiler settings after source renaming."""
+    symbols = {row["symbol"] for row in manifest["sources"]}
+    configured = (GCC_TRANSLATION_UNITS | SOURCE_FLAGS.keys() | SDK_UNITS.keys()
+                  | SDK_COVERED_UNITS | ARM_COMPILER_UNITS | ARM_LIBRARY_UNITS | SDK_ASSEMBLY_UNITS)
+    unknown = configured - symbols
+    if unknown:
+        raise SystemExit("compiler settings name unknown source functions: "
+                         + ", ".join(sorted(unknown)))
+
+
+def read_source_units(manifest: dict) -> list[tuple[dict, Path, str]]:
+    """Read the manifested code units and reject duplicate section addresses."""
+    units = [{"address": f"0x{item['address']:08x}",
+              "function": item["symbol"], "kind": item["kind"],
+              "source": item["source"]} for item in manifest["sources"]]
+    addresses = [int(unit["address"], 16) for unit in units]
+    if len(addresses) != len(set(addresses)):
+        raise SystemExit("duplicate exact function starts in source manifests")
+    source_root = ROOT / "firmware" / "reconstructed"
+    source_units = []
+    for unit in units:
+        source = (ROOT / unit["source"]).resolve()
+        if not source.is_relative_to(source_root.resolve()):
+            raise SystemExit(f"manifest source is outside reconstruction tree: {unit['source']}")
+        source_units.append((unit, source, source.read_text(errors="replace")))
+    return source_units
+
+
+def resolve_linker_symbols(manifest: dict, source_units: list[tuple[dict, Path, str]]) -> dict[str, int]:
+    """Resolve source references to fixed firmware and ROM addresses."""
+    function_addresses = {item["symbol"]: item["address"] for item in manifest["sources"]}
+    aliases = manifest["function_aliases"]
+    conflicts = {name for name, address in aliases.items()
+                 if name in function_addresses and function_addresses[name] != address}
+    if conflicts:
+        raise SystemExit(f"function aliases conflict with source entries: {', '.join(sorted(conflicts))}")
+    function_addresses.update(aliases)
+    rom_addresses = manifest["rom_symbols"]
+    referenced_functions: set[str] = set()
+    referenced_rom: set[str] = set()
+    identifiers: set[str] = set()
+    for _, _, code in source_units:
+        clean = COMMENT_RE.sub("", code)
+        names = set(IDENTIFIER_RE.findall(clean))
+        referenced_functions.update(names & function_addresses.keys())
+        referenced_rom.update(f"func_0x{address.lower()}" for address in ROM_RE.findall(clean))
+        identifiers.update(names)
+
+    definitions = {name: function_addresses[name] for name in referenced_functions}
+    definitions.update({name: int(name.rsplit("_", 1)[1], 16) for name in referenced_rom})
+    definitions.update({name: rom_addresses[name] for name in identifiers & rom_addresses.keys()})
+    return definitions
+
+
+def compile_source(cc: str, source: Path, output: Path, *, contents: str | None = None,
+                   description: str | None = None, flags: list[str] = FLAGS) -> None:
+    """Compile one source file with the exact-build target and warning policy."""
+    if contents is not None:
+        source.write_text(contents)
+    build = subprocess.run([cc, *flags, "-c", str(source), "-o", str(output)],
+                           capture_output=True, text=True)
+    if build.returncode:
+        label = description or str(source)
+        raise SystemExit(f"compile failed for {label}:\n{build.stderr[-2000:]}")
+
+
+FIXED_DATA_SYMBOLS = {"display_state_descriptors": 0x07fcfc54, "display_low_pins": 0x07fcfab8,
+                      "display_high_pins": 0x07fcfaac, "nvds_data_storage": 0x07fc0110, "custs1_default_handler": 0x07fcf748, "app_gap_process_handlers": 0x07fcf914,
+                      "app_sec_process_handlers": 0x07fcf984, "app_suotar_process_handlers": 0x07fcf9bc,
+                      "app_hid_report_cfg": 0x07fcfba8, "app_hid_report_map": 0x07fcfbc0,
+                      "v204_time_value_format": 0x07fd0310, "custs1_service_uuid": 0x07fcfa78,
+                      "v204_profile_record": 0x07fc0110,
+                      "i2c_ack_format": 0x07fd0320, "event_record_queue_state": 0x07fd1f1c,
+                      "reset_status_record": 0x07fd7ff0, "boot_mode_marker": 0x07fd7ffe,
+                      "clock_timekeeping_state": 0x07fd0858, "event_record_storage": 0x07fd0610,
+                      "secondary_event_record_storage": 0x07fd0750, "time_event_queue_state": 0x07fd1f8c,
+                      "suotar_default_handler": 0x07fcf780, "hids_att_db": 0x07fcf788, "hogpd_default_handler": 0x07fcf8ec,
+                      "sensor_field_state": 0x07fd1ffc}
+
+
+def ram_symbols() -> dict[str, int]:
+    """Return the fixed RAM objects that Arm compiler units reference by name."""
+    return {name: int(value, 16) for name, value in json.loads(RAM_SYMBOLS.read_text())["symbols"].items()}
+
+
+def all_fixed_symbols(manifest: dict) -> dict[str, int]:
+    """Return every function, alias, ROM, and SDK symbol with a fixed address."""
+    symbols = {item["symbol"]: item["address"] for item in manifest["sources"]}
+    symbols.update(manifest["function_aliases"])
+    symbols.update(manifest["rom_symbols"])
+    symbols.update(SDK_LINKER_SYMBOLS)
+    ram = ram_symbols()
+    clashes = ram.keys() & symbols.keys()
+    if clashes:
+        raise SystemExit(f"RAM symbols clash with code symbols: {', '.join(sorted(clashes))}")
+    symbols.update(ram)
+    symbols.update(FIXED_DATA_SYMBOLS)
+    return symbols
+
+
+def layout_pool_words() -> set[int]:
+    """Addresses of the words in the layout's data sections (literal pools, when between functions)."""
+    layout = (DATA_DIR / "V204_data_sections.ld").read_text()
+    entries = sorted((int(address, 16), kind) for kind, address in
+                     re.findall(r"^\s*\.v204\.(func|auto|data)\.([0-9a-f]{8}) ", layout, re.M))
+    words = set()
+    for (address, kind), (end, _) in zip(entries, entries[1:]):
+        if kind != "func":
+            words.update(range((address + 3) & ~3, end - 3, 4))
+    return words
+
+
+def lto_support_sources() -> list[tuple[str, str]]:
+    """Read the LTO module's support translation units (LTO_SUPPORT_SOURCES)."""
+    return [(Path(source).stem, (ROOT / source).read_text()) for source in LTO_SUPPORT_SOURCES]
+
+
+def check_lto_internal(source_specs, lto_symbols: set[str]) -> None:
+    """Refuse an internal LTO unit that a source outside the module names."""
+    if not LTO_INTERNAL_UNITS <= lto_symbols:
+        raise SystemExit(f"internal LTO units outside the module: {sorted(LTO_INTERNAL_UNITS - lto_symbols)}")
+    for row, _, code in source_specs:
+        if row["function"] in lto_symbols:
+            continue
+        for name in LTO_INTERNAL_UNITS:
+            if re.search(rf"\b{re.escape(name)}\b", code):
+                raise SystemExit(f"{row['function']} refers to internal LTO unit {name}")
+
+
+# The shared frozen layout retains this old disassembly split. Alice's C
+# dispatcher implements both ranges as one function; it is not a new entry.
+LTO_ABSORBED_FUNCTION_STARTS = {0x07fc86e0}
+
+
+def layout_function_starts() -> list[int]:
+    """Start addresses of the layout's function sections."""
+    layout = (DATA_DIR / "V204_data_sections.ld").read_text()
+    return sorted(int(address, 16) for address in re.findall(r"^\s*\.v204\.func\.([0-9a-f]{8}) ", layout, re.M)
+                  if int(address, 16) not in LTO_ABSORBED_FUNCTION_STARTS)
+
+
+def lto_regions(func_starts: list[int], addresses: set[int]) -> list[tuple[int, int]]:
+    """Each LTO function's V204 region, up to the next function section (its pool included),
+    and each LTO read-only object's, up to the next layout section."""
+    ends = func_starts + [BASE + IMAGE_SIZE]
+    regions = [(address, next(end for end in ends if end > address)) for address in sorted(addresses)]
+    sections = sorted(layout_input_sections()) + [BASE + IMAGE_SIZE]
+    regions += [(address, next(end for end in sections if end > address))
+                for _, address, _, _ in LTO_READONLY_SOURCES]
+    return sorted(regions)
+
+
+def loads_into(image: bytes, start: int, end: int, regions: list[tuple[int, int]]) -> bool:
+    """Whether a Thumb literal load in [start, end) of ``image`` points into one of ``regions``."""
+    for address in range(start & ~1, end - 1, 2):
+        half = int.from_bytes(image[address - BASE:address - BASE + 2], "little")
+        if (half & 0xF800) == 0x4800:
+            target = ((address + 4) & ~3) + (half & 0xFF) * 4
+            if any(low <= target < high for low, high in regions):
+                return True
+    return False
+
+
+def lto_context_pools(image: bytes, func_starts: list[int], exclusions: list[tuple[int, int]]) -> list[tuple[int, bytes]]:
+    """The code and pools within 1 KiB after each LTO region, as (address, bytes) stubs.
+
+    armlink retargets a literal load to an identical word in a later in-range
+    pool, so the LTO module only links as in V204 when those surroundings take
+    part in the link. Earlier code that loads a literal from a module region
+    takes part as well, so that armlink keeps that literal. ``image`` is the payload; ``exclusions`` are the module's
+    regions. Function boundaries are preserved: combining unrelated pools into
+    one input section permits armlink to delete pool words.
+    """
+    boundaries = {BASE, BASE + IMAGE_SIZE}
+    boundaries.update(address for address in func_starts if address % 4 == 0)
+    for start, end in exclusions:
+        boundaries.update((start, end))
+    boundaries = sorted(boundaries)
+    pools = []
+    for start, end in zip(boundaries, boundaries[1:]):
+        if any(start < high and low < end for low, high in exclusions):
+            continue
+        if not any(high <= start < high + 1024 for _, high in exclusions) and \
+                not loads_into(image, start, end, exclusions):
+            continue
+        aligned_start = (start + 3) & ~3
+        aligned_end = end & ~3
+        if aligned_end > aligned_start:
+            pools.append((aligned_start, bytes(image[aligned_start - BASE:aligned_end - BASE])))
+    return pools
+
+
+LTO_READONLY_SOURCES = [
+    ("nvds_data_storage", 0x07fc0110, ".v204.auto.07fc0110", "firmware/reconstructed/data/V204_nvds.c"),
+    ("cust_prf_funcs", 0x07fc3110, ".v204.auto.07fc3110", "firmware/reconstructed/data/V204_user_custs_config.c"),
+    ("user_security_conf", 0x07fcf9f4, ".v204.auto.07fcf9f4", "firmware/reconstructed/data/V204_user_config.c"),
+    ("custs1_att_db", 0x07fcf9fc, ".v204.auto.07fcf9fc", "firmware/reconstructed/data/V204_custs1_attributes.c"),
+    ("custs1_uuid_storage", 0x07fcfa74, ".v204.auto.07fcfa74", "firmware/reconstructed/data/V204_custs1_uuids.c"),
+]
+
+
+def lto_readonly_sources():
+    return [(symbol, address, section, (ROOT / source).read_text())
+            for symbol, address, section, source in LTO_READONLY_SOURCES]
+
+
+def place_arm_compiler_groups(compilers: arm_compilers.ArmCompilers, objcopy: str, temp: Path,
+                              source_units: list[tuple[dict, Path, str]],
+                              symbols: dict[str, int]) -> list[arm_compilers.PlacedGroup]:
+    """Compile and link each Arm compiler group at its V204 address."""
+    units = {row["function"]: (int(row["address"], 16), code) for row, _, code in source_units}
+    if len(ARM_COMPILER_UNITS) != sum(len(group) for _, group in ARM_COMPILER_GROUPS):
+        raise SystemExit("a source unit appears in more than one Arm compiler group")
+    placed = []
+    lto_module = []
+    for compiler, group in ARM_COMPILER_GROUPS:
+        members = [(symbol, *units[symbol]) for symbol in group]
+        if compiler in arm_compilers.LTO_COMPILERS:
+            lto_module.extend(members)
+            continue
+        if [address for _, address, _ in members] != sorted(address for _, address, _ in members):
+            raise SystemExit(f"Arm compiler group {group[0]} is not in address order")
+        placed.append(compilers.place_group(compiler, members, ROOT, temp, symbols, set(ram_symbols()) | FIXED_DATA_SYMBOLS.keys(),
+                                            objcopy, "arm-none-eabi-readelf"))
+    # The LTO modules are linked later, once the surrounding code exists (see main).
+    return placed
+
+
+def layout_input_sections() -> dict[int, str]:
+    """Map each fixed address in the linker layout to its input section name."""
+    layout = (DATA_DIR / "V204_data_sections.ld").read_text()
+    return {int(address, 16): selector for address, selector in LAYOUT_ENTRY_RE.findall(layout)}
+
+
+def place_arm_library_members(tools_dir: Path, objcopy: str, temp: Path, manifest: dict
+                              ) -> tuple[list[arm_compilers.PlacedGroup], dict[str, int]]:
+    """Extract the microlib members V204 linked and return their ranges and globals."""
+    selectors = layout_input_sections()
+    addresses = {row["symbol"]: row["address"] for row in manifest["sources"]}
+    if len(ARM_LIBRARY_UNITS) != sum(len(units) for _, _, units in ARM_LIBRARY_MEMBERS) \
+            or ARM_LIBRARY_UNITS & ARM_COMPILER_UNITS:
+        raise SystemExit("a source unit is replaced more than once")
+    placed, exported = [], {}
+    for start, members, units in ARM_LIBRARY_MEMBERS:
+        group, symbols = arm_compilers.place_library_members(
+            tools_dir, ARM_LIBRARY_ARCHIVES, members, units, start, selectors[start], temp,
+            "arm-none-eabi-ld", objcopy, "arm-none-eabi-readelf")
+        if not all(group.start <= addresses[unit] < group.end for unit in units):
+            raise SystemExit(f"{members} do not cover their replaced units")
+        placed.append(group)
+        exported.update(symbols)
+    return placed, exported
+
+
+def place_sdk_assembly(compilers: arm_compilers.ArmCompilers, objcopy: str, temp: Path, manifest: dict,
+                       fixed: dict[str, int]) -> list[arm_compilers.PlacedGroup]:
+    """Assemble the official SDK assembly sources V204 used (SDK_ASSEMBLY_SOURCES)."""
+    addresses = {row["symbol"]: row["address"] for row in manifest["sources"]}
+    if SDK_ASSEMBLY_UNITS & (ARM_COMPILER_UNITS | ARM_LIBRARY_UNITS | SDK_UNITS.keys() | SDK_COVERED_UNITS):
+        raise SystemExit("an SDK assembly source replaces a unit that is already replaced")
+    placed = []
+    for start, source, digest, options, entry, units in SDK_ASSEMBLY_SOURCES:
+        if hashlib.sha256(source.read_bytes()).hexdigest() != digest:
+            raise SystemExit(f"{source} differs from the verified SDK file")
+        placed.append(compilers.place_assembly(source, options, entry, [(unit, addresses[unit]) for unit in units],
+                                               start, temp, fixed, objcopy, "arm-none-eabi-readelf"))
+    return placed
+
+
+def sdk_rom_symbols() -> dict[str, tuple[int, bool]]:
+    """Read the SDK's ROM symbol definitions as name -> (address, is Thumb code)."""
+    data = SDK_ROM_SYMBOLS.read_bytes().replace(b"\r\n", b"\n")
+    if hashlib.sha256(data).hexdigest() != SDK_ROM_SYMBOLS_SHA256:
+        raise SystemExit(f"{SDK_ROM_SYMBOLS} differs from the verified SDK file")
+    return {name: (int(address, 16) & (~1 if kind == "T" else ~0), kind == "T")
+            for address, kind, name in re.findall(r"^0x([0-9a-fA-F]+) ([TDN]) (\S+)\s*$", data.decode(), re.M)}
+
+
+def lto_link_symbols(fixed: dict[str, int]) -> tuple[dict[str, int], set[str]]:
+    """Fixed symbols and data-symbol names for the LTO module link.
+
+    Adds the ROM's data objects from the SDK symbol file (such as
+    ``_ble_base``) to ``fixed``, so module code can name them as the SDK does.
+    """
+    symbols = dict(fixed)
+    rom_data = {name: address for name, (address, thumb) in sdk_rom_symbols().items()
+                if not thumb and name not in symbols}
+    symbols.update(rom_data)
+    return symbols, set(ram_symbols()) | FIXED_DATA_SYMBOLS.keys() | rom_data.keys()
+
+
+def verified_sdk_archive(archive: Path) -> Path:
+    """Return ``archive`` after checking it against its recorded SHA-256."""
+    if hashlib.sha256(archive.read_bytes()).hexdigest() != SDK_ARCHIVE_HASHES[archive]:
+        raise SystemExit(f"{archive} differs from the verified SDK library")
+    return archive
+
+
+def place_sdk_members(objcopy: str, temp: Path, manifest: dict, fixed: dict[str, int]
+                      ) -> tuple[list[arm_compilers.PlacedGroup], set[str]]:
+    """Link official SDK library members at their V204 addresses (SDK_MEMBERS)."""
+    selectors = layout_input_sections()
+    rom = sdk_rom_symbols()
+    addresses = {row["symbol"]: row["address"] for row in manifest["sources"]}
+    functions = addresses.keys() | manifest["function_aliases"].keys()
+    sources = {row["symbol"]: row["source"] for row in manifest["sources"]}
+    placed, replaced = [], set()
+    for archive, member, sections in SDK_MEMBERS:
+        stem = f"sdk_{archive.parent.name}_{member}"
+        obj = temp / stem
+        obj.write_bytes(subprocess.check_output(["arm-none-eabi-ar", "p", str(verified_sdk_archive(archive)),
+                                                 member]))
+        headers = subprocess.run(["arm-none-eabi-readelf", "-SW", str(obj)], check=True,
+                                 capture_output=True, text=True).stdout
+        # Out-of-line copies of ROM helpers (armcc's i.<name> sections) go to the
+        # helper's ROM address, so calls to them resolve as V204's do.
+        helpers = re.findall(r"^\s*\[\s*\d+\]\s+i\.(\S+)\s+PROGBITS", headers, re.M)
+        table = subprocess.run(["arm-none-eabi-readelf", "-sW", str(obj)], check=True,
+                               capture_output=True, text=True).stdout
+        undefined = set(re.findall(r"^\s*\d+:\s+0+\s+\d+\s+\w+\s+\w+\s+\w+\s+UND\s+(\S+)$", table, re.M))
+        relocations = subprocess.run(["arm-none-eabi-readelf", "-rW", str(obj)], check=True,
+                                     capture_output=True, text=True).stdout
+        referenced = set(re.findall(r"^[0-9a-f]{8}\s+[0-9a-f]+\s+\S+\s+[0-9a-f]+\s+(\S+)", relocations, re.M))
+        defsyms = []
+        for name in sorted(undefined):
+            target = arm_compilers.ROM_RUNTIME_ALIASES.get(name, name)
+            if target in fixed:
+                # Thumb code addresses carry bit zero in data pointers.
+                address = fixed[target] | (target in functions or rom.get(target, (0, False))[1])
+            elif target in rom:
+                address = rom[target][0] | rom[target][1]
+            elif name in referenced:
+                raise SystemExit(f"{member}: unresolved reference to {name}")
+            else:
+                continue
+            defsyms.append(f"--defsym={name}=0x{address:x}")
+        script = [f"{section} 0x{address:x} : {{ *({section}) }}" for section, address in sections.items()]
+        script += [f"i.{name} 0x{rom[name][0]:x} : {{ *(i.{name}) }}" for name in helpers]
+        layout = temp / f"{stem}.ld"
+        layout.write_text("SECTIONS { " + " ".join(script) + " /DISCARD/ : { *(*) } }\n")
+        image = temp / f"{stem}.elf"
+        subprocess.run(["arm-none-eabi-ld", "-T", str(layout), *defsyms, str(obj), "-o", str(image)], check=True)
+        for section, start in sections.items():
+            raw = temp / f"{stem}{section}.bin"
+            subprocess.run([objcopy, "-O", "binary", "-j", section, str(image), str(raw)], check=True)
+            end = start + raw.stat().st_size
+            units = sorted((symbol for symbol, address in addresses.items() if start <= address < end),
+                           key=addresses.get)
+            code = section == ".text"
+            if code and (not units or addresses[units[0]] != start):
+                raise SystemExit(f"{member} {section} at 0x{start:08x} must start at a source unit")
+            if not code and units:
+                raise SystemExit(f"{member} {section} covers source units {units}")
+            selector = selectors[start]
+            wrapped = temp / f"{stem}{section}.o"
+            flags = "alloc,load,readonly," + ("code," if code else "data,") + "contents"
+            subprocess.run([objcopy, "-I", "binary", "-O", "elf32-littlearm", "-B", "arm",
+                            "--rename-section", f".data={selector},{flags}", raw.name, str(wrapped)],
+                           check=True, cwd=temp)
+            local_symbols = [f"{unit}={selector}:0x{addresses[unit] - start:x},function,local" for unit in units]
+            # Inline assembly in other units may still branch to address-named
+            # labels inside the range; define them at those addresses.
+            labels = set()
+            for symbol, source in sources.items():
+                if symbol not in units:
+                    labels.update(re.findall(r"\b(\w+_(07f[0-9a-f]{5}))\b", (ROOT / source).read_text()))
+            for label, address in sorted(labels):
+                if start <= int(address, 16) < end and label not in addresses:
+                    local_symbols.append(f"{label}={selector}:0x{int(address, 16) - start:x},function,global")
+            marker = ["--add-symbol", f"$t={selector}:0,local"] if code else []
+            subprocess.run([objcopy, "--strip-all", *marker,
+                            *[arg for item in local_symbols for arg in ("--add-symbol", item)], str(wrapped)],
+                           check=True)
+            arm_compilers.mark_eabi5(wrapped)
+            placed.append(arm_compilers.PlacedGroup(units, start, end, wrapped))
+            replaced.update(units)
+    return placed, replaced
+
+
+def covered_by(placed: list[arm_compilers.PlacedGroup], start: int, size: int, label: str) -> bool:
+    """Report whether a V204 range lies inside a placed group; reject partial overlap."""
+    for group in placed:
+        if group.start <= start and start + size <= group.end:
+            return True
+        if start < group.end and group.start < start + size:
+            raise SystemExit(f"{label} partially overlaps compiled group {group.symbols[0]} "
+                             f"(0x{group.start:08x}-0x{group.end:08x})")
+    return False
+
+
+def compile_source_units(cc: str, gcc: str, temp: Path,
+                         source_units: list[tuple[dict, Path, str]],
+                         placed: list[arm_compilers.PlacedGroup], sdk_slice_units: set[str]) -> list[Path]:
+    """Compile manifested functions and fixed data into temporary objects."""
+    objects = [group.obj for group in placed]
+    native_ranges = []
+    for number, (row, source, code) in enumerate(source_units):
+        cfile = temp / f"function_{number:03}.c"
+        obj = temp / f"function_{number:03}.o"
+        if row["function"] in (SDK_COVERED_UNITS | ARM_COMPILER_UNITS | ARM_LIBRARY_UNITS | SDK_ASSEMBLY_UNITS
+                               | sdk_slice_units):
+            continue
+        if covered_by(placed, int(row["address"], 16), 1, f"source unit {row['function']}"):
+            raise SystemExit(f"source unit {row['function']} lies inside a placed Arm group "
+                             "but is not a member of it")
+        if row["function"] in SDK_UNITS:
+            obj.write_bytes(subprocess.check_output(
+                ["arm-none-eabi-ar", "p", str(verified_sdk_archive(SDK_ARCHIVE)), SDK_UNITS[row["function"]]]))
+            subprocess.run(["arm-none-eabi-objcopy", "--strip-debug", "--rename-section",
+                            ".text=.text." + row["function"], str(obj)], check=True)
+            objects.append(obj)
+            continue
+        use_gcc = row["function"] in GCC_TRANSLATION_UNITS
+        compile_source(gcc if use_gcc else cc, cfile, obj, contents=code,
+                       description=f"{row['address']} ({source})",
+                       flags=(GCC_FLAGS if use_gcc else FLAGS) + SOURCE_FLAGS.get(row["function"], []))
+        objects.append(obj)
+        # Native C may emit its own literal pool inside the function section.
+        # Treat that emitted range like an Arm compiler group when removing
+        # separately maintained data that it now owns. Partial overlaps still
+        # fail, and the complete image must pass the canonical hash check.
+        section_headers = subprocess.run(["arm-none-eabi-objdump", "-h", str(obj)],
+                                         check=True, capture_output=True, text=True).stdout
+        text_size = re.search(r"^\s*\d+\s+\.text\." + re.escape(row["function"])
+                              + r"\s+([0-9a-fA-F]+)\s", section_headers, re.M)
+        if text_size:
+            start = int(row["address"], 16)
+            native_ranges.append(arm_compilers.PlacedGroup(
+                [row["function"]], start, start + int(text_size.group(1), 16), obj))
+
+    data_owners = placed + native_ranges
+    for number, source in enumerate((DATA_DIR / "V204_tables.c",
+                                     DATA_DIR / "V204_auto_data.c")):
+        obj = temp / f"data_{number}.o"
+        compile_source(cc, source, obj)
+        headers = subprocess.run(["arm-none-eabi-objdump", "-h", str(obj)], check=True,
+                                 capture_output=True, text=True).stdout
+        replaced = list(SDK_REPLACED_DATA_SECTIONS)
+        for name, size_hex, _ in DATA_SECTION_RE.findall(headers):
+            if covered_by(data_owners, int(name.rsplit(".", 1)[1], 16), int(size_hex, 16),
+                          f"data section {name}"):
+                replaced.append(name)
+        subprocess.run(["arm-none-eabi-objcopy",
+                        *["--remove-section=" + name for name in replaced],
+                        str(obj)], check=True)
+        objects.append(obj)
+    return objects
+
+
+def link_source_objects(ld: str, objdump: str, output: Path, temp: Path,
+                        objects: list[Path], linker_symbols: dict[str, int]) -> list[tuple[str, str, str]]:
+    """Link exact sections at their fixed VMAs and return the section map."""
+    linker_script = temp / "V204_data_sections.ld"
+    linker_script.write_text((DATA_DIR / "V204_data_sections.ld").read_text())
+    command = [ld, "-T", str(linker_script)]
+    command.extend(f"--defsym={name}=0x{address:x}"
+                   for name, address in sorted(linker_symbols.items()))
+    command.extend(str(obj) for obj in objects)
+    command.extend(["-o", str(output)])
+    link = subprocess.run(command, capture_output=True, text=True)
+    if link.returncode:
+        raise SystemExit(f"link failed:\n{link.stderr[-4000:]}")
+
+    headers = subprocess.run([objdump, "-h", str(output)], check=True,
+                             capture_output=True, text=True).stdout
+    sections = SECTION_RE.findall(headers)
+    if not sections:
+        raise SystemExit("no V204 exact sections in linked ELF")
+    return sections
+
+
+def reconstruct_payload(objcopy: str, output: Path, temp: Path,
+                        sections: list[tuple[str, str, str]],
+                        reference_payload: bytes | None) -> tuple[bytearray, int]:
+    """Extract linked sections, verify their layout, and assemble the payload."""
+    coverage = bytearray(IMAGE_SIZE)
+    reconstructed = bytearray(IMAGE_SIZE)
+    for name, size_hex, vma_hex in sections:
+        address, size, vma = int(name.rsplit(".", 1)[1], 16), \
+                             int(size_hex, 16), int(vma_hex, 16)
+        if address != vma:
+            raise SystemExit(f"{name}: VMA 0x{vma:x} != address 0x{address:x}")
+        if address < BASE or address + size > BASE + IMAGE_SIZE:
+            raise SystemExit(f"{name}: outside V204 payload")
+        offset = address - BASE
+        end = offset + size
+        if any(coverage[offset:end]):
+            raise SystemExit(f"overlapping linked sections at {name}")
+        coverage[offset:end] = b"\x01" * size
+
+        section_file = temp / f"{address:08x}.bin"
+        subprocess.run([objcopy, "-O", "binary", "-j", name,
+                        str(output), str(section_file)], check=True)
+        actual = section_file.read_bytes()
+        if reference_payload is not None:
+            expected = reference_payload[offset:end]
+            if actual != expected:
+                raise SystemExit(f"{name}: bytes differ from V204 payload")
+        reconstructed[offset:end] = actual
+
+    covered = sum(coverage)
+    if covered != IMAGE_SIZE:
+        raise SystemExit(f"linked payload is incomplete: {IMAGE_SIZE - covered} "
+                         "payload bytes are uncovered")
+    if reference_payload is not None and reconstructed != reference_payload:
+        raise SystemExit("reconstructed payload differs from reference payload")
+    payload_hash = hashlib.sha256(reconstructed).hexdigest()
+    if payload_hash != CANONICAL_PAYLOAD_SHA256:
+        raise SystemExit(f"payload SHA-256 {payload_hash} does not match canonical V204")
+    return reconstructed, covered
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--cc", default="clang-18")
+    parser.add_argument("--gcc", default="arm-none-eabi-gcc",
+                        help="GNU Arm compiler for C units pinned to its code generation")
+    parser.add_argument("--arm-tools-dir", type=Path, default=ARM_TOOLS_DIR,
+                        help="directory with armcc506/, armclang616/, and mdk_lite/ (see arm_compilers.py)")
+    parser.add_argument("--ld", default="arm-none-eabi-ld")
+    parser.add_argument("--objcopy", default="arm-none-eabi-objcopy")
+    parser.add_argument("--objdump", default="arm-none-eabi-objdump")
+    parser.add_argument("--output", type=Path,
+                        default=Path(tempfile.gettempdir()) / "V204_exact.elf",
+                        help="write the linked ELF here (default: system temp directory)")
+    parser.add_argument("--flat-output", type=Path,
+                        help="write a raw image from linked sections; requires complete coverage")
+    parser.add_argument("--container-output", type=Path,
+                        help="prepend the source-defined 64-byte SUOTA header")
+    parser.add_argument("--verify-payload", type=Path,
+                        help="optionally compare linked bytes against a reference payload")
+    parser.add_argument("--verify-container", type=Path,
+                        help="optionally compare the generated container against a reference image")
+    args = parser.parse_args()
+    reference_payload = args.verify_payload.read_bytes() if args.verify_payload else None
+    if reference_payload is not None and len(reference_payload) != IMAGE_SIZE:
+        raise SystemExit(f"reference payload must be {IMAGE_SIZE} bytes")
+    manifest = json.loads(MANIFEST.read_text())
+    if manifest.get("format") != 2:
+        raise SystemExit("unsupported source manifest format")
+    if manifest["image_base"] != BASE or manifest["image_size"] != IMAGE_SIZE:
+        raise SystemExit("source manifest flash map does not match the linker map")
+    validate_compiler_configuration(manifest)
+    source_specs = read_source_units(manifest)
+    functions = [row for row, _, _ in source_specs]
+    defs = resolve_linker_symbols(manifest, source_specs)
+    defs.update(manifest["rom_symbols"])
+    defs.update(SDK_LINKER_SYMBOLS)
+    defs.update(FIXED_DATA_SYMBOLS)
+
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="v204-source-build-") as directory:
+        temp = Path(directory)
+        placed, library_symbols = place_arm_library_members(args.arm_tools_dir, args.objcopy, temp, manifest)
+        fixed = all_fixed_symbols(manifest)
+        fixed.update(library_symbols)
+        fixed.update(ARM_LIBRARY_LINKER_SYMBOLS)
+        placed += place_sdk_assembly(arm_compilers.ArmCompilers(args.arm_tools_dir), args.objcopy, temp,
+                                     manifest, fixed)
+        if ARM_COMPILER_GROUPS:
+            placed += place_arm_compiler_groups(arm_compilers.ArmCompilers(args.arm_tools_dir),
+                                                args.objcopy, temp, source_specs, fixed)
+        defs.update(ARM_LIBRARY_LINKER_SYMBOLS)
+        # Aliases name Thumb functions; library literals store them with bit zero set.
+        defs.update({name: fixed[target] | 1 for name, target in ARM_LIBRARY_SYMBOL_ALIASES.items()})
+        for name in library_symbols:
+            defs.pop(name, None)
+        slices, sdk_slice_units = place_sdk_members(args.objcopy, temp, manifest, fixed)
+        if sdk_slice_units & (SDK_UNITS.keys() | SDK_COVERED_UNITS | ARM_COMPILER_UNITS | ARM_LIBRARY_UNITS):
+            raise SystemExit("an SDK library member replaces a unit that is already replaced")
+        placed += slices
+        objects = compile_source_units(args.cc, args.gcc, temp, source_specs, placed, sdk_slice_units)
+        sections = link_source_objects(args.ld, args.objdump, args.output,
+                                       temp, objects, defs)
+        # The first link leaves out the LTO module (its functions are fixed
+        # symbols). armlink then gets the source-built surrounding code and
+        # pools, just as the original whole-image link did, and links the
+        # module; the final link adds it. No firmware reference supplies bytes.
+        # A second module ("ac6ltowordtables") links the same way once the first
+        # one's code is in the image; regions of modules not linked yet take no
+        # part as context.
+        for lto_compiler in arm_compilers.LTO_COMPILERS:
+            lto_symbols = {symbol for compiler, group in ARM_COMPILER_GROUPS
+                           if compiler == lto_compiler for symbol in group}
+            if not lto_symbols:
+                continue
+            main_module = lto_compiler == "ac6lto"
+            later_symbols = {symbol for compiler, group in ARM_COMPILER_GROUPS
+                             if compiler in arm_compilers.LTO_COMPILERS[
+                                 arm_compilers.LTO_COMPILERS.index(lto_compiler) + 1:]
+                             for symbol in group}
+            module_temp = temp if main_module else temp / lto_compiler
+            module_temp.mkdir(exist_ok=True)
+            context = bytearray(IMAGE_SIZE)
+            for name, size, address in sections:
+                raw_pool = temp / (name + ".context.bin")
+                subprocess.run([args.objcopy, "-O", "binary", "-j", name,
+                                str(args.output), str(raw_pool)], check=True)
+                start = int(address, 16) - BASE
+                context[start:start + int(size, 16)] = raw_pool.read_bytes()
+            func_starts = layout_function_starts()
+            exclusions = lto_regions(func_starts, {int(row["address"], 16) for row, _, _ in source_specs
+                                                   if row["function"] in lto_symbols | later_symbols})
+            pools = lto_context_pools(context, func_starts, exclusions)
+            module = [(row["function"], int(row["address"], 16), code)
+                      for row, _, code in source_specs if row["function"] in lto_symbols]
+            if main_module:
+                check_lto_internal(source_specs, lto_symbols)
+            rebuilt = arm_compilers.ArmCompilers(args.arm_tools_dir).place_lto_module(
+                module, lto_support_sources() if main_module else [], ROOT, module_temp,
+                *lto_link_symbols(fixed),
+                args.objcopy, "arm-none-eabi-readelf", pools, layout_pool_words(),
+                readonly_units=lto_readonly_sources() if main_module else [],
+                context_word=lambda address: int.from_bytes(context[address - BASE:address - BASE + 4], "little"),
+                internal=LTO_INTERNAL_UNITS if main_module else set(),
+                native_units=LTO_NATIVE_UNITS if main_module else set(),
+                sealed_literals=LTO_SEALED_STUB_LITERALS if main_module else (),
+                separate_code_starts=frozenset(int(row["address"], 16)
+                                              for row, _, _ in source_specs
+                                              if row["function"] in later_symbols),
+                compiler=lto_compiler)
+            # Recompile without the data sections the module's regions now cover.
+            placed += rebuilt
+            objects = compile_source_units(args.cc, args.gcc, temp, source_specs, placed, sdk_slice_units)
+            sections = link_source_objects(args.ld, args.objdump, args.output, temp, objects, defs)
+        reconstructed, covered = reconstruct_payload(
+            args.objcopy, args.output, temp, sections, reference_payload)
+        if args.flat_output:
+            args.flat_output.parent.mkdir(parents=True, exist_ok=True)
+            args.flat_output.write_bytes(reconstructed)
+            print(f"flat image: {args.flat_output} ({len(reconstructed)} bytes)")
+        if args.container_output or args.verify_container:
+            header_source = DATA_DIR / "V204_ota_header.c"
+            header_obj = temp / "v204_ota_header.o"
+            compile_source(args.cc, header_source, header_obj)
+            header_path = temp / "v204_ota_header.bin"
+            subprocess.run([args.objcopy, "-O", "binary", "-j", ".v204.header",
+                            str(header_obj), str(header_path)], check=True)
+            header = header_path.read_bytes()
+            if len(header) != 64:
+                raise SystemExit("compiled C container header is not 64 bytes")
+            container = header + reconstructed
+            if args.verify_container:
+                original = args.verify_container.read_bytes()
+                if container != original:
+                    raise SystemExit("reconstructed OTA container differs from reference image")
+            container_hash = hashlib.sha256(container).hexdigest()
+            if container_hash != CANONICAL_CONTAINER_SHA256:
+                raise SystemExit(f"container SHA-256 {container_hash} does not match canonical V204")
+            if args.container_output:
+                args.container_output.parent.mkdir(parents=True, exist_ok=True)
+                args.container_output.write_bytes(container)
+                print(f"OTA container: {args.container_output} ({len(container)} bytes)")
+        if reference_payload is not None:
+            verification = "verified against reference and canonical hash"
+        else:
+            verification = "matches canonical hash"
+        print(f"linked {len(sections)} sections, {covered} bytes "
+              f"({100 * covered / IMAGE_SIZE:.2f}% of payload; {verification}); "
+              f"{len(functions)} source units")
+        print(f"ELF: {args.output}")
+
+
+if __name__ == "__main__":
+    main()

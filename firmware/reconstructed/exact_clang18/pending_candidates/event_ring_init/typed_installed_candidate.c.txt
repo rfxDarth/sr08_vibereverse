@@ -1,0 +1,42 @@
+/* CLAIMED: Alice event-ring register scheduling; see WORK_CLAIMS.md. */
+/* Initialize the primary 16-record event ring and secondary eight-record
+ * ring. Both hold 20-byte records. Store order is retained from V204.
+ */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_event_record_queue.h"
+
+__attribute__((used, section(".text.initialize_configuration_record_defaults"))) void
+initialize_configuration_record_defaults(void) {
+    /* Remaining assembly preserves OEM register allocation while the pure-C
+     * candidates in pending_candidates/event_ring_init remain inexact. */
+    __asm__ volatile("" : : : "r5", "r7", "lr");
+    volatile struct event_record_queue_state *state;
+    uintptr_t primary_storage;
+    uint32_t element_size;
+    uint32_t primary_count;
+    uintptr_t secondary_storage;
+
+    __asm__ volatile("ldr %[state], [pc, #36]\n\t"
+                     "ldr %[primary], [pc, #36]\n\t"
+                     "movs %[bytes], #20\n\t"
+                     "movs %[count], #16\n\t"
+                     "ldr %[secondary], [pc, #36]"
+                     : [state] "=r"(state), [primary] "=r"(primary_storage),
+                       [bytes] "=r"(element_size), [count] "=r"(primary_count),
+                       [secondary] "=r"(secondary_storage));
+
+    state->secondary_ring.element_size = element_size;
+    state->secondary_ring.storage_base = secondary_storage;
+    uint32_t secondary_count;
+    __asm__ volatile("movs %[count], #8" : [count] "=r"(secondary_count));
+
+    uint32_t zero = 0;
+    state->ring.head = zero;
+    state->ring.tail = zero;
+    state->ring.capacity = primary_count;
+    state->ring.element_size = element_size;
+    state->ring.storage_base = primary_storage;
+    state->secondary_ring.head = zero;
+    state->secondary_ring.tail = zero;
+    state->secondary_ring.capacity = secondary_count;
+}

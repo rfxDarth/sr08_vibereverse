@@ -1,0 +1,116 @@
+
+/tmp/sr08-alice-measurement-text-context-retained/lto_module.axf:     file format elf32-littlearm
+
+
+Disassembly of section ER_07fcaae8:
+
+07fcaae8 <select_measurement_text_update_per_result_at_aae8>:
+ 7fcaae8:	b580      	push	{r7, lr}
+ 7fcaaea:	2030      	movs	r0, #48	@ 0x30
+ 7fcaaec:	49be      	ldr	r1, [pc, #760]	@ (7fcade8 <__arm_cp.141_2>)
+ 7fcaaee:	5c08      	ldrb	r0, [r1, r0]
+ 7fcaaf0:	2106      	movs	r1, #6
+ 7fcaaf2:	f753 fa61 	bl	7f1dfb8 <__aeabi_uidiv>
+ 7fcaaf6:	2904      	cmp	r1, #4
+ 7fcaaf8:	d801      	bhi.n	7fcaafe <select_measurement_text_update_per_result_at_aae8+0x16>
+ 7fcaafa:	2265      	movs	r2, #101	@ 0x65
+ 7fcaafc:	e000      	b.n	7fcab00 <select_measurement_text_update_per_result_at_aae8+0x18>
+ 7fcaafe:	226d      	movs	r2, #109	@ 0x6d
+ 7fcab00:	2344      	movs	r3, #68	@ 0x44
+ 7fcab02:	489c      	ldr	r0, [pc, #624]	@ (7fcad74 <__arm_cp.140_1>)
+ 7fcab04:	54c2      	strb	r2, [r0, r3]
+ 7fcab06:	4a0c      	ldr	r2, [pc, #48]	@ (7fcab38 <__arm_cp.0_2>)
+ 7fcab08:	6402      	str	r2, [r0, #64]	@ 0x40
+ 7fcab0a:	2904      	cmp	r1, #4
+ 7fcab0c:	d303      	bcc.n	7fcab16 <select_measurement_text_update_per_result_at_aae8+0x2e>
+ 7fcab0e:	2143      	movs	r1, #67	@ 0x43
+ 7fcab10:	2249      	movs	r2, #73	@ 0x49
+ 7fcab12:	5442      	strb	r2, [r0, r1]
+ 7fcab14:	e001      	b.n	7fcab1a <select_measurement_text_update_per_result_at_aae8+0x32>
+ 7fcab16:	2903      	cmp	r1, #3
+ 7fcab18:	d109      	bne.n	7fcab2e <select_measurement_text_update_per_result_at_aae8+0x46>
+ 7fcab1a:	2142      	movs	r1, #66	@ 0x42
+ 7fcab1c:	2249      	movs	r2, #73	@ 0x49
+ 7fcab1e:	5442      	strb	r2, [r0, r1]
+ 7fcab20:	2141      	movs	r1, #65	@ 0x41
+ 7fcab22:	2249      	movs	r2, #73	@ 0x49
+ 7fcab24:	5442      	strb	r2, [r0, r1]
+ 7fcab26:	2140      	movs	r1, #64	@ 0x40
+ 7fcab28:	225b      	movs	r2, #91	@ 0x5b
+ 7fcab2a:	5442      	strb	r2, [r0, r1]
+ 7fcab2c:	bd80      	pop	{r7, pc}
+ 7fcab2e:	2902      	cmp	r1, #2
+ 7fcab30:	d2f6      	bcs.n	7fcab20 <select_measurement_text_update_per_result_at_aae8+0x38>
+ 7fcab32:	2900      	cmp	r1, #0
+ 7fcab34:	d1f7      	bne.n	7fcab26 <select_measurement_text_update_per_result_at_aae8+0x3e>
+ 7fcab36:	e7f9      	b.n	7fcab2c <select_measurement_text_update_per_result_at_aae8+0x44>
+
+07fcab38 <__arm_cp.0_2>:
+ 7fcab38:	41414153 	.word	0x41414153
+
+Disassembly of section ER_07fcab3c:
+
+07fcab3c <update_status_display_using_remainder_rom_at_ab3c>:
+ 7fcab3c:	b510      	push	{r4, lr}
+ 7fcab3e:	2040      	movs	r0, #64	@ 0x40
+ 7fcab40:	4c8c      	ldr	r4, [pc, #560]	@ (7fcad74 <__arm_cp.140_1>)
+ 7fcab42:	490c      	ldr	r1, [pc, #48]	@ (7fcab74 <__arm_cp.0_1>)
+ 7fcab44:	5221      	strh	r1, [r4, r0]
+ 7fcab46:	4620      	mov	r0, r4
+ 7fcab48:	3040      	adds	r0, #64	@ 0x40
+ 7fcab4a:	2152      	movs	r1, #82	@ 0x52
+ 7fcab4c:	7081      	strb	r1, [r0, #2]
+ 7fcab4e:	2030      	movs	r0, #48	@ 0x30
+ 7fcab50:	4909      	ldr	r1, [pc, #36]	@ (7fcab78 <Veneer$$LitPool>)
+ 7fcab52:	5c08      	ldrb	r0, [r1, r0]
+ 7fcab54:	2103      	movs	r1, #3
+ 7fcab56:	f753 fa2f 	bl	7f1dfb8 <__aeabi_uidiv>
+ 7fcab5a:	2902      	cmp	r1, #2
+ 7fcab5c:	d303      	bcc.n	7fcab66 <update_status_display_using_remainder_rom_at_ab3c+0x2a>
+ 7fcab5e:	2044      	movs	r0, #68	@ 0x44
+ 7fcab60:	2108      	movs	r1, #8
+ 7fcab62:	5421      	strb	r1, [r4, r0]
+ 7fcab64:	e001      	b.n	7fcab6a <update_status_display_using_remainder_rom_at_ab3c+0x2e>
+ 7fcab66:	2900      	cmp	r1, #0
+ 7fcab68:	d002      	beq.n	7fcab70 <update_status_display_using_remainder_rom_at_ab3c+0x34>
+ 7fcab6a:	2043      	movs	r0, #67	@ 0x43
+ 7fcab6c:	2108      	movs	r1, #8
+ 7fcab6e:	5421      	strb	r1, [r4, r0]
+ 7fcab70:	bd10      	pop	{r4, pc}
+ 7fcab72:	46c0      	nop			@ (mov r8, r8)
+
+07fcab74 <__arm_cp.0_1>:
+ 7fcab74:	00005b13 	.word	0x00005b13
+
+07fcab78 <Veneer$$LitPool>:
+ 7fcab78:	07fd5650                                PV..
+
+Disassembly of section ER_07fcab78:
+
+07fcab7c <select_two_display_patterns_mode_flag_at_ab78>:
+ 7fcab7c:	b570      	push	{r4, r5, r6, lr}
+ 7fcab7e:	2030      	movs	r0, #48	@ 0x30
+ 7fcab80:	49f4      	ldr	r1, [pc, #976]	@ (7fcaf54 <__arm_cp.7fcadf8_15c>)
+ 7fcab82:	5c08      	ldrb	r0, [r1, r0]
+ 7fcab84:	0780      	lsls	r0, r0, #30
+ 7fcab86:	d405      	bmi.n	7fcab94 <select_two_display_patterns_mode_flag_at_ab78+0x18>
+ 7fcab88:	233e      	movs	r3, #62	@ 0x3e
+ 7fcab8a:	206f      	movs	r0, #111	@ 0x6f
+ 7fcab8c:	2124      	movs	r1, #36	@ 0x24
+ 7fcab8e:	2218      	movs	r2, #24
+ 7fcab90:	243a      	movs	r4, #58	@ 0x3a
+ 7fcab92:	e004      	b.n	7fcab9e <select_two_display_patterns_mode_flag_at_ab78+0x22>
+ 7fcab94:	206b      	movs	r0, #107	@ 0x6b
+ 7fcab96:	215b      	movs	r1, #91	@ 0x5b
+ 7fcab98:	2237      	movs	r2, #55	@ 0x37
+ 7fcab9a:	2413      	movs	r4, #19
+ 7fcab9c:	4603      	mov	r3, r0
+ 7fcab9e:	2540      	movs	r5, #64	@ 0x40
+ 7fcaba0:	4e74      	ldr	r6, [pc, #464]	@ (7fcad74 <__arm_cp.140_1>)
+ 7fcaba2:	5574      	strb	r4, [r6, r5]
+ 7fcaba4:	3640      	adds	r6, #64	@ 0x40
+ 7fcaba6:	7133      	strb	r3, [r6, #4]
+ 7fcaba8:	70f0      	strb	r0, [r6, #3]
+ 7fcabaa:	70b1      	strb	r1, [r6, #2]
+ 7fcabac:	7072      	strb	r2, [r6, #1]
+ 7fcabae:	bd70      	pop	{r4, r5, r6, pc}

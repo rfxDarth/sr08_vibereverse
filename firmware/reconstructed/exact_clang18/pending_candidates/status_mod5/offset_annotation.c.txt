@@ -1,0 +1,17 @@
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+void recreate_display_status_indicator_update_selected_at_a914(void) {
+    volatile uint8_t *base = (volatile uint8_t *)&merged_globals_56d0;
+    uint32_t offset = __builtin_annotation(64,"digit offset");
+    base[offset] = 83;
+    volatile uint8_t *digits = base + offset;
+    digits[4] = 101;
+    uint32_t remainder = ((volatile uint8_t *)&merged_globals_5650)[48] % 5;
+    if (remainder >= 4) { base[67] = 8; goto third; }
+    if (remainder == 3) {
+third: base[66] = 8;
+second: base[65] = 8;
+    } else if (remainder >= 2) { goto second; }
+    else if (remainder == 0) { return; }
+    base[offset] = 91;
+}

@@ -1,0 +1,274 @@
+/* PARKED (Jeff, 2026-11-15): process_sensor_reading_and_update_state (0x07fc20f0), byte mismatch.
+ * Fully decoded: the battery service tick. It runs the SDK adc_offset_calibrate(SINGLE_ENDED) inlined,
+ * battery mV = adc_get_p0_1_sample() * 31275 / 4864, takes the peak over the reading ring
+ * (event_record_queue_state + 0x20), maps it to a 0..100 level (>3870: (50v-193500)/230+50; >3499: (50v-175000)/370),
+ * and runs the charger pin (P0_7) state changes.
+ * Needs ("ac6lto", ["process_sensor_reading_and_update_state"]): its ring literal 0x07fd1f1c is in 0x2590,
+ * a later function's pool.
+ * This candidate gives 169 normalized line differences (plain ac6 or LTO, 393 V204 lines). The remaining gaps:
+ *   - V204 tests measurement_state != 1, then unplugged == 0, then peak < 3401 (each in its own block, with a
+ *     second uxth of the peak); armclang merges the && chain and tests peak first. Permuting the chain made it
+ *     worse (234..257).
+ *   - V204 keeps merged_globals_5650 in r4 across the state code; armclang reloads it from the pool.
+ *   - The level clamp: V204 has cmp #99/ble, armclang cmp #100/blt. The full_count test: V204 cmp #6/bcs,
+ *     armclang cmp #5/bhi.
+ *   - The 1 << 11 constant is materialized before the first call (V204: after), and the stack slots for
+ *     reading/sample are swapped.
+ * Tried: a compiler-only __atomic_signal_fence after (measure_state != 1 && unplugged == 0) gives V204's test
+ *   order, but armclang then tests charging rather than unplugged; 238 differences.
+ * Matched: the inlined ADC calibration, the mV conversion, the not_charging flag
+ * ((pins & 0x80) >> 6 + old & 0xfd) ^ 2 (needs `charger = pins & 0x80; flag = !charger;`), the peak loop and
+ * the level formulas.
+ */
+/* Battery service tick: calibrate the ADC offsets (SDK adc_offset_calibrate, single ended), read the battery
+ * on P0_1 in millivolts, track the charger pin (P0_7), keep the peak of the recent readings, derive a 0..100
+ * level, and run the charge/discharge state changes. */
+#include <stdbool.h>
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+#include "firmware/reconstructed/include/sr08_radio_configuration.h"
+#include "firmware/reconstructed/include/sr08_ring_buffer.h"
+#include "firmware/reconstructed/include/sr08_sdk_adc.h"
+
+/* sdk/platform/include/da14585_586.h */
+#define GP_ADC_CTRL_REG_ (0x50001500)
+#define GP_ADC_OFFP_REG (0x50001504)
+#define GP_ADC_OFFN_REG (0x50001506)
+#define GP_ADC_OFFP (0x03FF)
+#define GP_ADC_OFFN (0x03FF)
+#define GP_ADC_MUTE (0x1000)
+#define P0_7_MASK (0x0080)
+
+/* sdk/platform/driver/adc/adc.h */
+static inline __attribute__((always_inline)) void adc_enable_(void)
+{
+    SetBits16(GP_ADC_CTRL_REG, GP_ADC_LDO_EN, 1);
+    SetBits16(GP_ADC_CTRL_REG, GP_ADC_EN, 1);
+}
+static inline __attribute__((always_inline)) void adc_input_mute(void) { SetBits16(GP_ADC_CTRL_REG, GP_ADC_MUTE, 1); }
+static inline __attribute__((always_inline)) void adc_input_unmute(void) { SetBits16(GP_ADC_CTRL_REG, GP_ADC_MUTE, 0); }
+static inline __attribute__((always_inline)) void adc_sign_change_enable(void) { SetBits16(GP_ADC_CTRL_REG, GP_ADC_SIGN, 1); }
+static inline __attribute__((always_inline)) void adc_sign_change_disable(void) { SetBits16(GP_ADC_CTRL_REG, GP_ADC_SIGN, 0); }
+static inline __attribute__((always_inline)) void adc_set_offset_positive(uint16_t offset) { SetBits16(GP_ADC_OFFP_REG, GP_ADC_OFFP, offset); }
+static inline __attribute__((always_inline)) void adc_set_offset_negative(uint16_t offset) { SetBits16(GP_ADC_OFFN_REG, GP_ADC_OFFN, offset); }
+
+/* sdk/platform/driver/adc/adc_58x.c */
+static void adc_offset_calibrate(adc_input_mode_t input_mode)
+{
+    uint16_t adc_res, adc_off_p, adc_off_n;
+
+    adc_set_input_mode(input_mode);
+    adc_enable_();
+    adc_usDelay(20);
+
+    SetWord16(GP_ADC_OFFP_REG, 0x200);
+    SetWord16(GP_ADC_OFFN_REG, 0x200);
+
+    adc_input_mute();
+
+    adc_sign_change_disable();
+
+    adc_res   = adc_get_sample();
+    adc_off_p = adc_res - 0x200;
+
+    adc_sign_change_enable();
+
+    adc_res   = adc_get_sample();
+    adc_off_n = adc_res - 0x200;
+
+    if (input_mode == ADC_INPUT_MODE_SINGLE_ENDED)
+    {
+        adc_set_offset_positive(0x200 - 2 * adc_off_p);
+        adc_set_offset_negative(0x200 - 2 * adc_off_n);
+    }
+    else
+    {
+        adc_set_offset_positive(0x200 - adc_off_p);
+        adc_set_offset_negative(0x200 - adc_off_n);
+    }
+
+    adc_sign_change_disable();
+
+    adc_input_unmute();
+}
+
+extern uint8_t device_settings[];
+extern uint8_t sr08_shared_context[];
+extern uint8_t event_record_queue_state[];
+extern uint8_t time_event_queue_state[];
+extern uint8_t cycle_control_state[];
+extern uint8_t read_current_record_value_byte(void);
+extern uint32_t adc_get_p0_1_sample(void);
+extern void copy_ring_buffer_entry_if_index_available(struct sr08_ring_buffer *queue, uint32_t index, void *destination);
+extern void stage_and_program_flash_region_3c000(void);
+extern void build_mode_status_record_select_corresponding_at_43a4(uint32_t mode);
+extern void switch_display_state_and_run_hooks(uint32_t);
+extern void update_mode_flags_and_transitions(uint32_t);
+extern void gate_mode_activation_on_sensor_flags(uint32_t);
+extern void initialize_and_dispatch_three_byte_request(uint8_t first, uint8_t second, uint8_t third);
+
+#define AT(type, base, offset) (*(type *)(void *)((uint8_t *)(base) + (offset)))
+#define battery_mv AT(uint16_t, device_settings, 6)
+#define battery_peak_mv AT(uint16_t, device_settings, 8)
+struct context_bits { uint8_t charge_full : 1; uint8_t not_charging : 1; uint8_t reserved : 6; };
+#define context_bits AT(struct context_bits, sr08_shared_context, 0xc5)
+#define context_mode_word AT(uint32_t, sr08_shared_context, 0x14)
+#define context_low_count AT(uint32_t, sr08_shared_context, 0x24)
+#define display_state AT(uint8_t, &merged_globals_5650, 0x0c)
+#define measure_state merged_globals_5650.measurement_state
+#define level_ready AT(uint8_t, &merged_globals_5650, 0x20)
+#define level_warmup AT(uint8_t, &merged_globals_5650, 0x24)
+#define unplugged_state AT(uint8_t, &merged_globals_5650, 0x26)
+#define reported_unplugged AT(uint8_t, &merged_globals_5650, 0x28)
+#define charge_level AT(int32_t, &merged_globals_56d0, 0x28)
+#define battery_level AT(int32_t, &merged_globals_56d0, 0x2c)
+#define reported_level AT(uint32_t, &merged_globals_56d0, 0x30)
+#define charge_ticks AT(uint32_t, &merged_globals_56d0, 0x34)
+#define drain_ticks AT(uint32_t, &merged_globals_56d0, 0x38)
+#define full_count AT(uint8_t, &device_control_state, 8)
+#define queue_unplugged AT(uint8_t, &device_control_state, 0x36)
+#define queue_owner AT(uint8_t, &device_control_state, 0x37)
+#define reading_ring ((struct sr08_ring_buffer *)(void *)(event_record_queue_state + 0x20))
+#define event_ring AT(struct sr08_ring_buffer, time_event_queue_state, 0x28)
+
+void process_sensor_reading_and_update_state(void)
+{
+    uint8_t record_value = read_current_record_value_byte();
+
+    adc_offset_calibrate(ADC_INPUT_MODE_SINGLE_ENDED);
+
+    uint32_t mv = (uint16_t)adc_get_p0_1_sample() * 31275u / 4864u;
+    battery_mv = mv;
+    uint16_t pins = GetWord16(P0_DATA_REG);
+    uint32_t charger = pins & P0_7_MASK;
+    context_bits.not_charging = !charger;
+    uint8_t charging = charger >> 7;
+    uint16_t reading = mv;
+    enqueue_ring_record_overwriting_oldest(reading_ring, &reading);
+    uint8_t count = (reading_ring->head - reading_ring->tail) & (reading_ring->capacity - 1);
+    uint16_t peak = mv;
+    for (int8_t index = 0; index < count; index++) {
+        uint16_t sample;
+        copy_ring_buffer_entry_if_index_available(reading_ring, index, &sample);
+        if (peak < sample)
+            peak = sample;
+    }
+    battery_peak_mv = peak;
+
+    uint8_t unplugged = charging ^ 1;
+    int32_t level;
+    if (measure_state != 1 && unplugged == 0 && peak < 3401 && context_low_count >= 10) {
+        stage_and_program_flash_region_3c000();
+        build_mode_status_record_select_corresponding_at_43a4(1);
+        level = 0;
+    } else if (peak > 3870) {
+        level = ((int32_t)(peak * 50) - 193500) / 230 + 50;
+        goto clamp;
+    } else if (peak > 3499) {
+        level = ((int32_t)(peak * 50) - 175000) / 370;
+    clamp:
+        if (level < 1)
+            level = 0;
+        else if (level > 99)
+            level = 100;
+    } else {
+        level = 0;
+    }
+
+    uint8_t report_level;
+    if (level_ready == 0) {
+        if (++level_warmup < 3) {
+            report_level = 0;
+            unplugged = 0;
+            goto report;
+        }
+        level_ready = 1;
+        battery_level = level;
+    }
+    if (unplugged_state == unplugged) {
+        unplugged_state = unplugged;
+        if (charging)
+            goto charging_tick;
+        goto discharging_tick;
+    }
+    if (queue_owner != unplugged) {
+        queue_unplugged = unplugged;
+        event_ring.head = 0;
+        event_ring.tail = 0;
+        event_ring.capacity = 8;
+        event_ring.element_size = 1;
+        event_ring.storage_base = (uintptr_t)(cycle_control_state + 68);
+    }
+    queue_owner = unplugged;
+    if (charging) {
+        switch_display_state_and_run_hooks(0);
+        drain_ticks = 0;
+        update_mode_flags_and_transitions(64);
+        unplugged_state = unplugged;
+    charging_tick:
+        full_count = 0;
+        {
+            uint32_t ticks = ++drain_ticks;
+            int32_t current = battery_level;
+            if (ticks >= (level < current ? 25u : 51840u)) {
+                drain_ticks = 0;
+                current--;
+            }
+            battery_level = current < 0 ? 0 : current;
+        }
+        if (display_state != 32) {
+            if (context_mode_word & (1u << 11))
+                update_mode_flags_and_transitions(1u << 27);
+            if (context_mode_word & (1u << 10))
+                update_mode_flags_and_transitions(1u << 26);
+        }
+    } else {
+        switch_display_state_and_run_hooks(11);
+        update_mode_flags_and_transitions(1u << 22);
+        unplugged_state = unplugged;
+        charge_ticks = 0;
+        charge_level = battery_level;
+    discharging_tick:
+        if (measure_state == 1 || display_state == 30 || measure_state == 2 || display_state == 32)
+            build_mode_status_record_select_corresponding_at_43a4(0);
+        if (display_state != 11 && display_state != 27)
+            switch_display_state_and_run_hooks(11);
+        {
+            uint32_t ticks = charge_ticks;
+            int32_t current;
+            if (battery_mv > 3500)
+                charge_ticks = ++ticks;
+            if (ticks >= 30) {
+                charge_ticks = 0;
+                current = charge_level < 100 ? charge_level + 1 : 100;
+                charge_level = current;
+                battery_level = current;
+            } else {
+                current = battery_level;
+            }
+            if (current >= 100 && battery_peak_mv > 4099) {
+                battery_level = 100;
+                update_mode_flags_and_transitions(1u << 26);
+                if (full_count < 6) {
+                    full_count++;
+                    update_mode_flags_and_transitions(1u << 11);
+                } else {
+                    update_mode_flags_and_transitions(1u << 27);
+                }
+                gate_mode_activation_on_sensor_flags(1);
+            } else {
+                if (current == 100)
+                    battery_level = 99;
+                update_mode_flags_and_transitions(1u << 27);
+                update_mode_flags_and_transitions(1u << 10);
+                gate_mode_activation_on_sensor_flags(2);
+            }
+        }
+    }
+    report_level = (uint8_t)battery_level;
+report:
+    if (record_value == 1 && (reported_level != report_level || unplugged != reported_unplugged))
+        initialize_and_dispatch_three_byte_request(11, (uint8_t)battery_level, unplugged);
+    reported_unplugged = unplugged;
+    reported_level = report_level;
+}

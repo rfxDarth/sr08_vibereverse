@@ -1,0 +1,202 @@
+{
+  "annotated_settled_native.log": [
+    "group 0x07fc85e0-0x07fc8680 (160 bytes)",
+    "MISMATCH: 102 differing bytes",
+    "--- V204"
+  ],
+  "baseline_native.log": [
+    "group 0x07fc85e0-0x07fc8680 (160 bytes)",
+    "MISMATCH: 100 differing bytes",
+    "--- V204"
+  ],
+  "baseline_typed_native.log": [
+    "group 0x07fc85e0-0x07fc8680 (160 bytes)",
+    "MISMATCH: 100 differing bytes",
+    "--- V204"
+  ],
+  "both_opaque_native.log": [
+    "group 0x07fc85e0-0x07fc8688 (168 bytes)",
+    "MISMATCH: 119 differing bytes",
+    "--- V204"
+  ],
+  "equality_fence_native.log": [
+    "group 0x07fc85e0-0x07fc8678 (152 bytes)",
+    "MISMATCH: 101 differing bytes",
+    "--- V204"
+  ],
+  "equality_fence_typed_native.log": [
+    "group 0x07fc85e0-0x07fc8678 (152 bytes)",
+    "MISMATCH: 101 differing bytes",
+    "--- V204"
+  ],
+  "explicit_merge_native.log": [
+    "group 0x07fc85e0-0x07fc8688 (168 bytes)",
+    "MISMATCH: 119 differing bytes",
+    "--- V204"
+  ],
+  "fenced_annotated_settled_native.log": [
+    "group 0x07fc85e0-0x07fc8680 (160 bytes)",
+    "MISMATCH: 102 differing bytes",
+    "--- V204"
+  ],
+  "fenced_settled_native.log": [
+    "group 0x07fc85e0-0x07fc8680 (160 bytes)",
+    "MISMATCH: 102 differing bytes",
+    "--- V204"
+  ],
+  "fenced_store_native.log": [
+    "group 0x07fc85e0-0x07fc8684 (164 bytes)",
+    "MISMATCH: 104 differing bytes",
+    "--- V204"
+  ],
+  "final_gate_f0_both_native.log": [
+    "group 0x07fc85e0-0x07fc8684 (164 bytes)",
+    "MISMATCH: 104 differing bytes",
+    "--- V204"
+  ],
+  "final_gate_f0_none_native.log": [
+    "group 0x07fc85e0-0x07fc8684 (164 bytes)",
+    "MISMATCH: 112 differing bytes",
+    "--- V204"
+  ],
+  "final_gate_f0_one_native.log": [
+    "group 0x07fc85e0-0x07fc8684 (164 bytes)",
+    "MISMATCH: 104 differing bytes",
+    "--- V204"
+  ],
+  "final_gate_f1_both_native.log": [
+    "group 0x07fc85e0-0x07fc8684 (164 bytes)",
+    "MISMATCH: 104 differing bytes",
+    "--- V204"
+  ],
+  "final_gate_f1_none_native.log": [
+    "group 0x07fc85e0-0x07fc8684 (164 bytes)",
+    "MISMATCH: 112 differing bytes",
+    "--- V204"
+  ],
+  "final_gate_f1_one_native.log": [
+    "group 0x07fc85e0-0x07fc8684 (164 bytes)",
+    "MISMATCH: 104 differing bytes",
+    "--- V204"
+  ],
+  "first_opaque_native.log": [
+    "group 0x07fc85e0-0x07fc8688 (168 bytes)",
+    "MISMATCH: 119 differing bytes",
+    "--- V204"
+  ],
+  "opaque_final_1_native.log": [
+    "group 0x07fc85e0-0x07fc8684 (164 bytes)",
+    "MISMATCH: 112 differing bytes",
+    "--- V204"
+  ],
+  "opaque_final_2_native.log": [
+    "group 0x07fc85e0-0x07fc8688 (168 bytes)",
+    "MISMATCH: 120 differing bytes",
+    "--- V204"
+  ],
+  "opaque_final_3_native.log": [
+    "group 0x07fc85e0-0x07fc8684 (164 bytes)",
+    "MISMATCH: 112 differing bytes",
+    "--- V204"
+  ],
+  "opaque_final_4_native.log": [
+    "group 0x07fc85e0-0x07fc8684 (164 bytes)",
+    "MISMATCH: 113 differing bytes",
+    "--- V204"
+  ],
+  "opaque_final_5_native.log": [
+    "group 0x07fc85e0-0x07fc8684 (164 bytes)",
+    "MISMATCH: 112 differing bytes",
+    "--- V204"
+  ],
+  "opaque_final_6_native.log": [
+    "group 0x07fc85e0-0x07fc8684 (164 bytes)",
+    "MISMATCH: 113 differing bytes",
+    "--- V204"
+  ],
+  "opaque_final_7_native.log": [
+    "group 0x07fc85e0-0x07fc8684 (164 bytes)",
+    "MISMATCH: 112 differing bytes",
+    "--- V204"
+  ],
+  "ordered_fence_native.log": [
+    "group 0x07fc85e0-0x07fc8688 (168 bytes)",
+    "MISMATCH: 115 differing bytes",
+    "--- V204"
+  ],
+  "ordered_fence_typed_native.log": [
+    "group 0x07fc85e0-0x07fc8688 (168 bytes)",
+    "MISMATCH: 115 differing bytes",
+    "--- V204"
+  ],
+  "ordered_opaque_native.log": [
+    "group 0x07fc85e0-0x07fc8684 (164 bytes)",
+    "MISMATCH: 112 differing bytes",
+    "--- V204"
+  ],
+  "ordered_opaque_typed_native.log": [
+    "group 0x07fc85e0-0x07fc8684 (164 bytes)",
+    "MISMATCH: 112 differing bytes",
+    "--- V204"
+  ],
+  "ordered_stores_native.log": [
+    "group 0x07fc85e0-0x07fc8680 (160 bytes)",
+    "MISMATCH: 100 differing bytes",
+    "--- V204"
+  ],
+  "ordered_stores_typed_main_lto.log": [
+    "armlink failed for the LTO module (170 units):",
+    "Error: L6291E: Cannot assign Fixed Execution Region ER_07fc867c Load Address:0x07fc867c. Load Address must be greater than or equal to next available Load Address:0x07fc8680.",
+    "Finished: 0 information, 0 warning and 1 error messages."
+  ],
+  "ordered_stores_typed_native.log": [
+    "group 0x07fc85e0-0x07fc8680 (160 bytes)",
+    "MISMATCH: 100 differing bytes",
+    "--- V204"
+  ],
+  "ordered_traced_main_lto.log": [
+    "LTO link: raw loads [] kept for stubs [] raw load sites []",
+    "LTO link: inspecting temporary overlaps for a retry",
+    "LTO link: raw loads [] kept for stubs ['0x7fc2f28'] raw load sites []"
+  ],
+  "result_api_standalone_build.log": [
+    "flat image: /tmp/sr08-alice-callback-result-standalone.payload.bin (67136 bytes)",
+    "OTA container: /tmp/sr08-alice-callback-result-standalone.bin (67200 bytes)",
+    "linked 506 sections, 67136 bytes (100.00% of payload; matches canonical hash); 449 source units"
+  ],
+  "second_opaque_native.log": [
+    "group 0x07fc85e0-0x07fc8688 (168 bytes)",
+    "MISMATCH: 119 differing bytes",
+    "--- V204"
+  ],
+  "settled_fence_native.log": [
+    "group 0x07fc85e0-0x07fc8688 (168 bytes)",
+    "MISMATCH: 114 differing bytes",
+    "--- V204"
+  ],
+  "settled_opaque_native.log": [
+    "group 0x07fc85e0-0x07fc8684 (164 bytes)",
+    "MISMATCH: 110 differing bytes",
+    "--- V204"
+  ],
+  "zero_likely_native.log": [
+    "group 0x07fc85e0-0x07fc8684 (164 bytes)",
+    "MISMATCH: 110 differing bytes",
+    "--- V204"
+  ],
+  "zero_or_native.log": [
+    "group 0x07fc85e0-0x07fc8684 (164 bytes)",
+    "MISMATCH: 105 differing bytes",
+    "--- V204"
+  ],
+  "zero_swap_native.log": [
+    "group 0x07fc85e0-0x07fc8684 (164 bytes)",
+    "MISMATCH: 105 differing bytes",
+    "--- V204"
+  ],
+  "zero_unlikely_native.log": [
+    "group 0x07fc85e0-0x07fc8684 (164 bytes)",
+    "MISMATCH: 105 differing bytes",
+    "--- V204"
+  ]
+}

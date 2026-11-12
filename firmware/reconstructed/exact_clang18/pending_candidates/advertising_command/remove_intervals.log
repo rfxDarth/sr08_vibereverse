@@ -1,0 +1,25 @@
+group 0x07fc32bc-0x07fc334c (144 bytes)
+MISMATCH: 14 differing bytes
+--- V204
++++ candidate
+@@ -15,12 +15,12 @@
+ 7fc32da:	2007      	movs	r0, #7
+ 7fc32dc:	7220      	strb	r0, [r4, #8]
+-7fc32de:	201d      	movs	r0, #29
+-7fc32e0:	0140      	lsls	r0, r0, #5
+-7fc32e2:	80e0      	strh	r0, [r4, #6]
+-7fc32e4:	80a0      	strh	r0, [r4, #4]
+-7fc32e6:	200d      	movs	r0, #13
+-7fc32e8:	8020      	strh	r0, [r4, #0]
+-7fc32ea:	2600      	movs	r6, #0
+-7fc32ec:	72a6      	strb	r6, [r4, #10]
++7fc32de:	200d      	movs	r0, #13
++7fc32e0:	8020      	strh	r0, [r4, #0]
++7fc32e2:	2600      	movs	r6, #0
++7fc32e4:	72a6      	strb	r6, [r4, #10]
++7fc32e6:	201d      	movs	r0, #29
++7fc32e8:	0140      	lsls	r0, r0, #5
++7fc32ea:	80e0      	strh	r0, [r4, #6]
++7fc32ec:	80a0      	strh	r0, [r4, #4]
+ 7fc32ee:	2001      	movs	r0, #1
+ 7fc32f0:	7260      	strb	r0, [r4, #9]

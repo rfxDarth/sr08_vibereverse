@@ -5,7 +5,7 @@
 #include "firmware/reconstructed/include/sr08_releasable_object.h"
 
 uint8_t read_current_record_value_byte(void) {
-    const struct sr08_releasable_object *record = find_keyed_record_value(SR08_MEASUREMENT_RECORD_LOOKUP_KEY);
+    const struct sr08_releasable_object *record = prf_env_get(SR08_MEASUREMENT_RECORD_LOOKUP_KEY);
     if (record == 0 || record->handle == 0)
         return 0;
 

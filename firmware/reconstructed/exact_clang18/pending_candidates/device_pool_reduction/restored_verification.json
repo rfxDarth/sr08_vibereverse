@@ -1,0 +1,7 @@
+{
+  "method": "all 582 normal inputs compared to accepted support-fix source bundle",
+  "matching_inputs": 582,
+  "payload_artifact": "/tmp/sr08-alice-local-pool-value-standalone.payload.bin",
+  "payload_equals_oem": true,
+  "fresh_rebuild_after_restore": false
+}

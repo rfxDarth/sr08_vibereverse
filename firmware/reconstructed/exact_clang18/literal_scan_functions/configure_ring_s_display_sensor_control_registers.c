@@ -25,5 +25,5 @@ void configure_ring_s_display_sensor_control_registers(void)
     *display_sensor_control =
         *display_sensor_control & DISPLAY_SENSOR_CONTROL_BIT_1_CLEAR_MASK | DISPLAY_SENSOR_CONTROL_BIT_0;
     *display_sensor_control = *display_sensor_control | DISPLAY_SENSOR_CONTROL_BIT_3;
-    initialize_ring_display_and_sensor_registers();
+    rf_regs();
 }

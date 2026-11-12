@@ -1,0 +1,29 @@
+{
+  "analysis_only": true,
+  "canonical_input_hashes_verified": 582,
+  "unchanged_object_reuses": 1779,
+  "fresh_compiles": [
+    "lto_param_update_request_timer_cb.c",
+    "lto_v204_stub_07fc2b70.s",
+    "lto_v204_stub_07fc3584.s",
+    "lto_param_update_request_timer_cb.c",
+    "lto_v204_stub_07fc2b70.s",
+    "lto_param_update_request_timer_cb.c",
+    "lto_v204_stub_07fc3584.s",
+    "lto_param_update_request_timer_cb.c",
+    "lto_v204_stub_07fc3584.s",
+    "lto_param_update_request_timer_cb.c"
+  ],
+  "retained": "/tmp/sr08-alice-cached-context-measurement_native_owner",
+  "probe_args": [
+    "ac6lto",
+    "select_measurement_text_update_per_result_at_aae8",
+    "param_update_request_timer_cb",
+    "--native",
+    "select_measurement_text_update_per_result_at_aae8",
+    "--native",
+    "param_update_request_timer_cb",
+    "--source",
+    "select_measurement_text_update_per_result_at_aae8=pending_candidates/measurement_text/candidate.c.txt"
+  ]
+}

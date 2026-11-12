@@ -1,7 +1,9 @@
-/* Recovered behavior:
- * Clear the state word at offset 0x1c when it is nonzero.
- */
-#include <stdint.h>
-#include "firmware/reconstructed/include/sr08_shared_state_fields.h"
+/* Drop the sensor frame batch state's active measurement context. */
+#include <stddef.h>
+#include "firmware/reconstructed/include/sr08_sensor_frame_batch_state.h"
 
-SR08_DEFINE_CLEAR_NONZERO_STATE_FIELD(clear_state_word_at_offset_1c, volatile struct sr08_shared_word_state, word_at_1c)
+void clear_state_word_at_offset_1c(void)
+{
+    if (sensor_frame_batch_state.context != NULL)
+        sensor_frame_batch_state.context = NULL;
+}

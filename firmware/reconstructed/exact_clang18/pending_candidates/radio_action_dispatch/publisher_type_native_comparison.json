@@ -1,0 +1,11 @@
+{
+  "before": {
+    "bytes": 128,
+    "sha256": "53d288f8c80f352cedeb0159a2056c3c64b7a511f9fd76be7fae98eefa6ebfd8"
+  },
+  "after": {
+    "bytes": 128,
+    "sha256": "53d288f8c80f352cedeb0159a2056c3c64b7a511f9fd76be7fae98eefa6ebfd8"
+  },
+  "native_output_identical": true
+}

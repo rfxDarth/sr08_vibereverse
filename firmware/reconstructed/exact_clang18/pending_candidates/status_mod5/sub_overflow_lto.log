@@ -1,0 +1,11 @@
+0x07fca914-0x07fca960 recreate_display_status_indicator_update_selected_at_a914 (76 bytes)
+--- V204
++++ candidate
+@@ -1,5 +1,5 @@
+ 7fca914:	b5b0      	push	{r4, r5, r7, lr}
+ 7fca916:	2440      	movs	r4, #64	@ 0x40
+-7fca918:	4deb      	ldr	r5, [pc, #940]	@ (0x7fcacc8)
++7fca918:	4de6      	ldr	r5, [pc, #920]	@ (0x7fcacb4)
+ 7fca91a:	2053      	movs	r0, #83	@ 0x53
+ 7fca91c:	5528      	strb	r0, [r5, r4]
+MISMATCH

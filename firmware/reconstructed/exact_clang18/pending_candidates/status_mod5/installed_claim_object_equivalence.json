@@ -1,0 +1,14 @@
+[
+  {
+    "source": "firmware/reconstructed/exact_clang18/manual_sources/switch_display_state_and_run_hooks.c",
+    "complete_object_equal": true,
+    "object_bytes": 1852,
+    "object_sha256": "119509953efd9becaf6c2b164d082aa54f8c165260692c1d0258217ea9e9098d"
+  },
+  {
+    "source": "firmware/reconstructed/exact_clang18/manual_sources/recreate_display_status_indicator_update_selected_at_a914.c",
+    "complete_object_equal": true,
+    "object_bytes": 1096,
+    "object_sha256": "7800e9ea426568d59c33a114c184ff6b8cdcff950242b4217a3a39ff4f69fa57"
+  }
+]

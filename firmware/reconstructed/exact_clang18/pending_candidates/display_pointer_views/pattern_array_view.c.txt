@@ -1,0 +1,20 @@
+#include <stdint.h>
+extern uint8_t merged_globals_5650[];
+extern uint8_t merged_globals_56d0[];
+__attribute__((used, section(".text.select_two_display_patterns_mode_flag_at_ab78"))) void
+select_two_display_patterns_mode_flag_at_ab78(void) {
+    volatile uint8_t *config = (volatile uint8_t *)&merged_globals_5650;
+    uint32_t first, second, third, fourth, fifth;
+    if ((config[0x30] & 2u) == 0) {
+        fifth=62; fourth=111; third=36; second=24; first=58;
+    } else {
+        fourth=107; third=91; second=55; first=19; fifth=fourth;
+    }
+    volatile uint8_t *display = (volatile uint8_t *)&merged_globals_56d0;
+    display[0x40]=first;
+    volatile uint8_t *digits=(volatile uint8_t *)__builtin_annotation((uintptr_t)(display+0x40),"display digits");
+    digits[4]=fifth;
+    digits[3]=fourth;
+    digits[2]=third;
+    digits[1]=second;
+}

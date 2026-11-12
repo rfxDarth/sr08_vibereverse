@@ -1,0 +1,83 @@
+
+/tmp/sr08-alice-callback-sync-lto-debug/lto_module.axf:     file format elf32-littlearm
+
+
+Disassembly of section ER_07fc85e0:
+
+07fc85e0 <synchronize_callback_values_and_notify>:
+ 7fc85e0:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+ 7fc85e2:	2401      	movs	r4, #1
+ 7fc85e4:	4620      	mov	r0, r4
+ 7fc85e6:	f7ff fea9 	bl	7fc833c <read_callback_pair_for_mode_window_39_3a>
+ 7fc85ea:	4eb8      	ldr	r6, [pc, #736]	@ (7fc88cc <__arm_cp.7fc8878_54>)
+ 7fc85ec:	87f0      	strh	r0, [r6, #62]	@ 0x3e
+ 7fc85ee:	4620      	mov	r0, r4
+ 7fc85f0:	f7ff ffbc 	bl	7fc856c <read_callback_pair_for_mode_window_42_43>
+ 7fc85f4:	2740      	movs	r7, #64	@ 0x40
+ 7fc85f6:	53f0      	strh	r0, [r6, r7]
+ 7fc85f8:	2500      	movs	r5, #0
+ 7fc85fa:	4628      	mov	r0, r5
+ 7fc85fc:	f7ff fe9e 	bl	7fc833c <read_callback_pair_for_mode_window_39_3a>
+ 7fc8600:	4628      	mov	r0, r5
+ 7fc8602:	f7ff ffb3 	bl	7fc856c <read_callback_pair_for_mode_window_42_43>
+ 7fc8606:	5bf0      	ldrh	r0, [r6, r7]
+ 7fc8608:	8ff1      	ldrh	r1, [r6, #62]	@ 0x3e
+ 7fc860a:	460a      	mov	r2, r1
+ 7fc860c:	4302      	orrs	r2, r0
+ 7fc860e:	d01a      	beq.n	7fc8646 <synchronize_callback_values_and_notify+0x66>
+ 7fc8610:	7f72      	ldrb	r2, [r6, #29]
+ 7fc8612:	2a00      	cmp	r2, #0
+ 7fc8614:	d01b      	beq.n	7fc864e <synchronize_callback_values_and_notify+0x6e>
+ 7fc8616:	4281      	cmp	r1, r0
+ 7fc8618:	d014      	beq.n	7fc8644 <synchronize_callback_values_and_notify+0x64>
+ 7fc861a:	b20b      	sxth	r3, r1
+ 7fc861c:	2101      	movs	r1, #1
+ 7fc861e:	76f1      	strb	r1, [r6, #27]
+ 7fc8620:	2146      	movs	r1, #70	@ 0x46
+ 7fc8622:	5e72      	ldrsh	r2, [r6, r1]
+ 7fc8624:	7e74      	ldrb	r4, [r6, #25]
+ 7fc8626:	2c00      	cmp	r4, #0
+ 7fc8628:	4605      	mov	r5, r0
+ 7fc862a:	d000      	beq.n	7fc862e <synchronize_callback_values_and_notify+0x4e>
+ 7fc862c:	4615      	mov	r5, r2
+ 7fc862e:	b22d      	sxth	r5, r5
+ 7fc8630:	1b5b      	subs	r3, r3, r5
+ 7fc8632:	4d12      	ldr	r5, [pc, #72]	@ (7fc867c <__arm_cp.111_1>)
+ 7fc8634:	63ab      	str	r3, [r5, #56]	@ 0x38
+ 7fc8636:	2c01      	cmp	r4, #1
+ 7fc8638:	d104      	bne.n	7fc8644 <synchronize_callback_values_and_notify+0x64>
+ 7fc863a:	b203      	sxth	r3, r0
+ 7fc863c:	3a32      	subs	r2, #50	@ 0x32
+ 7fc863e:	429a      	cmp	r2, r3
+ 7fc8640:	dd00      	ble.n	7fc8644 <synchronize_callback_values_and_notify+0x64>
+ 7fc8642:	5270      	strh	r0, [r6, r1]
+ 7fc8644:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
+ 7fc8646:	76f5      	strb	r5, [r6, #27]
+ 7fc8648:	7f72      	ldrb	r2, [r6, #29]
+ 7fc864a:	4254      	negs	r4, r2
+ 7fc864c:	4154      	adcs	r4, r2
+ 7fc864e:	2900      	cmp	r1, #0
+ 7fc8650:	d0f8      	beq.n	7fc8644 <synchronize_callback_values_and_notify+0x64>
+ 7fc8652:	4281      	cmp	r1, r0
+ 7fc8654:	d1f6      	bne.n	7fc8644 <synchronize_callback_values_and_notify+0x64>
+ 7fc8656:	2c00      	cmp	r4, #0
+ 7fc8658:	d0f4      	beq.n	7fc8644 <synchronize_callback_values_and_notify+0x64>
+ 7fc865a:	7e70      	ldrb	r0, [r6, #25]
+ 7fc865c:	2800      	cmp	r0, #0
+ 7fc865e:	d0f1      	beq.n	7fc8644 <synchronize_callback_values_and_notify+0x64>
+ 7fc8660:	209c      	movs	r0, #156	@ 0x9c
+ 7fc8662:	2107      	movs	r1, #7
+ 7fc8664:	f000 f8f4 	bl	7fc8850 <send_device_command_pair>
+ 7fc8668:	2070      	movs	r0, #112	@ 0x70
+ 7fc866a:	2100      	movs	r1, #0
+ 7fc866c:	f000 f8f0 	bl	7fc8850 <send_device_command_pair>
+ 7fc8670:	2001      	movs	r0, #1
+ 7fc8672:	7770      	strb	r0, [r6, #29]
+ 7fc8674:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
+ 7fc8676:	46c0      	nop			@ (mov r8, r8)
+
+07fc8678 <__arm_cp.111_0>:
+ 7fc8678:	07fd1e28 	.word	0x07fd1e28
+
+07fc867c <__arm_cp.111_1>:
+ 7fc867c:	07fd1ea4 	.word	0x07fd1ea4

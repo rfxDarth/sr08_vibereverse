@@ -1,177 +1,140 @@
-/*
- * update_measurement_display_and_mode_state, range 1: 288-byte fixed-address Thumb transcription.
- * Overall behavior: Handle a measurement result mode, update display-related state, retain
- *                   computed values, and trigger state transitions when their timing
- *                   conditions are met.
- */
+/* Record a measurement-result mode and, while it is not 1, update the per-ten-second
+ * result slot and run the display transitions whose timeouts have elapsed. */
 #include <stdint.h>
-__attribute__((used, naked, section(".text.update_measurement_display_and_mode_state"))) void
-update_measurement_display_and_mode_state(uint32_t result_mode) {
-    __asm__ volatile("push {r3, r4, r5, r6, r7, lr} /* 0x07fc7380 */\n"
-                     "ldr r4, [pc, #412] /* 0x07fc7382 */\n"
-                     "cmp r0, #1 /* 0x07fc7384 */\n"
-                     "bne.n .L_update_measurement_display_and_mode_state_at_07fc7390 /* branch: ne, target at .+10 */ "
-                     "/* 0x07fc7386 */\n"
-                     "ldrb r1, [r4, #13] /* 0x07fc7388 */\n"
-                     "cmp r1, #1 /* 0x07fc738a */\n"
-                     "bne.n .L_update_measurement_display_and_mode_state_at_07fc7390 /* branch: ne, target at .+4 */ "
-                     "/* 0x07fc738c */\n"
-                     ".L_update_measurement_display_and_mode_state_at_07fc738e:\n"
-                     "pop {r3, r4, r5, r6, r7, pc} /* 0x07fc738e */\n"
-                     ".L_update_measurement_display_and_mode_state_at_07fc7390:\n"
-                     "strb r0, [r4, #13] /* 0x07fc7390 */\n"
-                     "cmp r0, #1 /* 0x07fc7392 */\n"
-                     "bne.n .L_update_measurement_display_and_mode_state_at_07fc73a4 /* branch: ne, target at .+16 */ "
-                     "/* 0x07fc7394 */\n"
-                     "movs r0, #0 /* 0x07fc7396 */\n"
-                     "strh r0, [r4, #42]	@ 0x2a /* 0x07fc7398 */\n"
-                     "ldr r0, [pc, #556] /* 0x07fc739a */\n"
-                     "ldr r0, [r0, #20] /* 0x07fc739c */\n"
-                     "bl conditional_mode_updates_using_two_display_at_74a8\n" /* at 0x07fc739e */
-                     "pop {r3, r4, r5, r6, r7, pc} /* 0x07fc73a2 */\n"
-                     ".L_update_measurement_display_and_mode_state_at_07fc73a4:\n"
-                     "ldr r6, [pc, #248] /* 0x07fc73a4 */\n"
-                     "ldr r0, [r6, #0] /* 0x07fc73a6 */\n"
-                     "ldr r1, [r4, #92]	@ 0x5c /* 0x07fc73a8 */\n"
-                     "cmp r1, r0 /* 0x07fc73aa */\n"
-                     "beq.n .L_update_measurement_display_and_mode_state_at_07fc738e /* branch: eq, target at .-30 */ "
-                     "/* 0x07fc73ac */\n"
-                     "str r0, [r4, #92]	@ 0x5c /* 0x07fc73ae */\n"
-                     "ldr r1, [r4, #96]	@ 0x60 /* 0x07fc73b0 */\n"
-                     "subs r0, r0, r1 /* 0x07fc73b2 */\n"
-                     "cmp r0, #16 /* 0x07fc73b4 */\n"
-                     "bcc.n .L_update_measurement_display_and_mode_state_at_07fc73bc /* branch: cc, target at .+6 */ "
-                     "/* 0x07fc73b6 */\n"
-                     "movs r0, #0 /* 0x07fc73b8 */\n"
-                     "strh r0, [r4, #42]	@ 0x2a /* 0x07fc73ba */\n"
-                     ".L_update_measurement_display_and_mode_state_at_07fc73bc:\n"
-                     "ldr r5, [pc, #520] /* 0x07fc73bc */\n"
-                     "ldr r0, [r5, #20] /* 0x07fc73be */\n"
-                     "bl conditional_mode_updates_using_two_display_at_74a8\n" /* at 0x07fc73c0 */
-                     "ldrh r7, [r4, #42]	@ 0x2a /* 0x07fc73c4 */\n"
-                     "cmp r7, #0 /* 0x07fc73c6 */\n"
-                     "beq.n .L_update_measurement_display_and_mode_state_at_07fc73f2 /* branch: eq, target at .+42 */ "
-                     "/* 0x07fc73c8 */\n"
-                     "ldr r0, [r6, #28] /* 0x07fc73ca */\n"
-                     "movs r5, #1 /* 0x07fc73cc */\n"
-                     "ands r0, r5 /* 0x07fc73ce */\n"
-                     "movs r6, #6 /* 0x07fc73d0 */\n"
-                     "muls r6, r0 /* 0x07fc73d2 */\n"
-                     "ldr r0, [pc, #200] /* 0x07fc73d4 */\n"
-                     "ldr r0, [r0, #24] /* 0x07fc73d6 */\n"
-                     "movs r1, #10 /* 0x07fc73d8 */\n"
-                     "bl __aeabi_idiv\n" /* at 0x07fc73da */
-                     "adds r0, r6, r0 /* 0x07fc73de */\n"
-                     "ldr r6, [pc, #188] /* 0x07fc73e0 */\n"
-                     "uxtb r0, r0 /* 0x07fc73e2 */\n"
-                     "ldr r1, [pc, #480] /* 0x07fc73e4 */\n"
-                     "adds r0, r1, r0 /* 0x07fc73e6 */\n"
-                     "movs r1, #160	@ 0xa0 /* 0x07fc73e8 */\n"
-                     "strb r7, [r0, r1] /* 0x07fc73ea */\n"
-                     "ldr r0, [pc, #472] /* 0x07fc73ec */\n"
-                     "strb r5, [r0, #9] /* 0x07fc73ee */\n"
-                     "ldr r5, [pc, #468] /* 0x07fc73f0 */\n"
-                     ".L_update_measurement_display_and_mode_state_at_07fc73f2:\n"
-                     "ldr r0, [r5, #20] /* 0x07fc73f2 */\n"
-                     "lsls r1, r0, #29 /* 0x07fc73f4 */\n"
-                     "bpl.n .L_update_measurement_display_and_mode_state_at_07fc7422 /* branch: pl, target at .+44 */ "
-                     "/* 0x07fc73f6 */\n"
-                     "ldr r1, [r5, #24] /* 0x07fc73f8 */\n"
-                     "ldr r2, [r6, #0] /* 0x07fc73fa */\n"
-                     "subs r1, r2, r1 /* 0x07fc73fc */\n"
-                     "cmp r1, #45	@ 0x2d /* 0x07fc73fe */\n"
-                     "bhi.n .L_update_measurement_display_and_mode_state_at_07fc7418 /* branch: hi, target at .+24 */ "
-                     "/* 0x07fc7400 */\n"
-                     "ldrb r1, [r5, #10] /* 0x07fc7402 */\n"
-                     "cmp r1, #1 /* 0x07fc7404 */\n"
-                     "bne.n .L_update_measurement_display_and_mode_state_at_07fc740c /* branch: ne, target at .+6 */ "
-                     "/* 0x07fc7406 */\n"
-                     "cmp r7, #0 /* 0x07fc7408 */\n"
-                     "bne.n .L_update_measurement_display_and_mode_state_at_07fc7418 /* branch: ne, target at .+14 */ "
-                     "/* 0x07fc740a */\n"
-                     ".L_update_measurement_display_and_mode_state_at_07fc740c:\n"
-                     "subs r1, r1, #1 /* 0x07fc740c */\n"
-                     "cmp r1, #1 /* 0x07fc740e */\n"
-                     "bhi.n .L_update_measurement_display_and_mode_state_at_07fc7422 /* branch: hi, target at .+18 */ "
-                     "/* 0x07fc7410 */\n"
-                     "ldrb r1, [r5, #15] /* 0x07fc7412 */\n"
-                     "cmp r1, #1 /* 0x07fc7414 */\n"
-                     "bne.n .L_update_measurement_display_and_mode_state_at_07fc7422 /* branch: ne, target at .+12 */ "
-                     "/* 0x07fc7416 */\n"
-                     ".L_update_measurement_display_and_mode_state_at_07fc7418:\n"
-                     "movs r0, #1 /* 0x07fc7418 */\n"
-                     "lsls r0, r0, #18 /* 0x07fc741a */\n"
-                     "bl update_mode_flags_and_transitions\n" /* at 0x07fc741c */
-                     "ldr r0, [r5, #20] /* 0x07fc7420 */\n"
-                     ".L_update_measurement_display_and_mode_state_at_07fc7422:\n"
-                     "movs r1, #34	@ 0x22 /* 0x07fc7422 */\n"
-                     "tst r0, r1 /* 0x07fc7424 */\n"
-                     "beq.n .L_update_measurement_display_and_mode_state_at_07fc746e /* branch: eq, target at .+72 */ "
-                     "/* 0x07fc7426 */\n"
-                     "movs r0, #88	@ 0x58 /* 0x07fc7428 */\n"
-                     "ldr r1, [pc, #120] /* 0x07fc742a */\n"
-                     "ldrb r0, [r1, r0] /* 0x07fc742c */\n"
-                     "cmp r0, #3 /* 0x07fc742e */\n"
-                     "bcc.n .L_update_measurement_display_and_mode_state_at_07fc745e /* branch: cc, target at .+46 */ "
-                     "/* 0x07fc7430 */\n"
-                     "ldrb r3, [r4, #11] /* 0x07fc7432 */\n"
-                     "ldrb r2, [r4, #10] /* 0x07fc7434 */\n"
-                     "ldrb r1, [r4, #9] /* 0x07fc7436 */\n"
-                     "ldrb r0, [r5, #2] /* 0x07fc7438 */\n"
-                     "mov r7, r5 /* 0x07fc743a */\n"
-                     "ldrb r5, [r4, #12] /* 0x07fc743c */\n"
-                     "str r5, [sp, #0] /* 0x07fc743e */\n"
-                     "mov r5, r7 /* 0x07fc7440 */\n"
-                     "bl build_event_header_and_fourteen_byte_scratch_area\n" /* at 0x07fc7442 */
-                     "ldr r0, [r7, #32] /* 0x07fc7446 */\n"
-                     "ldr r1, [r6, #0] /* 0x07fc7448 */\n"
-                     "subs r0, r1, r0 /* 0x07fc744a */\n"
-                     "cmp r0, #45	@ 0x2d /* 0x07fc744c */\n"
-                     "bcc.n .L_update_measurement_display_and_mode_state_at_07fc745e /* branch: cc, target at .+16 */ "
-                     "/* 0x07fc744e */\n"
-                     "movs r0, #1 /* 0x07fc7450 */\n"
-                     "lsls r0, r0, #17 /* 0x07fc7452 */\n"
-                     "bl update_mode_flags_and_transitions\n" /* at 0x07fc7454 */
-                     "movs r0, #13 /* 0x07fc7458 */\n"
-                     "bl switch_display_state_and_run_hooks\n" /* at 0x07fc745a */
-                     ".L_update_measurement_display_and_mode_state_at_07fc745e:\n"
-                     "ldr r0, [r5, #32] /* 0x07fc745e */\n"
-                     "ldr r1, [r6, #0] /* 0x07fc7460 */\n"
-                     "subs r0, r1, r0 /* 0x07fc7462 */\n"
-                     "cmp r0, #45	@ 0x2d /* 0x07fc7464 */\n"
-                     "bcc.n .L_update_measurement_display_and_mode_state_at_07fc746e /* branch: cc, target at .+8 */ "
-                     "/* 0x07fc7466 */\n"
-                     "movs r0, #22 /* 0x07fc7468 */\n"
-                     "bl switch_display_state_and_run_hooks\n" /* at 0x07fc746a */
-                     ".L_update_measurement_display_and_mode_state_at_07fc746e:\n"
-                     "ldrb r0, [r5, #20] /* 0x07fc746e */\n"
-                     "movs r1, #17 /* 0x07fc7470 */\n"
-                     "tst r0, r1 /* 0x07fc7472 */\n"
-                     "beq.n .L_update_measurement_display_and_mode_state_at_07fc738e /* branch: eq, target at .-230 */ "
-                     "/* 0x07fc7474 */\n"
-                     "ldr r0, [r5, #32] /* 0x07fc7476 */\n"
-                     "ldr r1, [r6, #0] /* 0x07fc7478 */\n"
-                     "subs r0, r1, r0 /* 0x07fc747a */\n"
-                     "cmp r0, #23 /* 0x07fc747c */\n"
-                     "bcc.n .L_update_measurement_display_and_mode_state_at_07fc738e /* branch: cc, target at .-240 */ "
-                     "/* 0x07fc747e */\n"
-                     "ldrh r1, [r4, #42]	@ 0x2a /* 0x07fc7480 */\n"
-                     "cmp r1, #0 /* 0x07fc7482 */\n"
-                     "beq.n .L_update_measurement_display_and_mode_state_at_07fc7492 /* branch: eq, target at .+14 */ "
-                     "/* 0x07fc7484 */\n"
-                     "movs r0, #10 /* 0x07fc7486 */\n"
-                     "bl switch_display_state_and_run_hooks\n" /* at 0x07fc7488 */
-                     "ldr r0, [r5, #32] /* 0x07fc748c */\n"
-                     "ldr r1, [r6, #0] /* 0x07fc748e */\n"
-                     "subs r0, r1, r0 /* 0x07fc7490 */\n"
-                     ".L_update_measurement_display_and_mode_state_at_07fc7492:\n"
-                     "cmp r0, #46	@ 0x2e /* 0x07fc7492 */\n"
-                     "bcs.n .L_update_measurement_display_and_mode_state_at_07fc7498 /* branch: cs, target at .+4 */ "
-                     "/* 0x07fc7494 */\n"
-                     "b.n .L_update_measurement_display_and_mode_state_at_07fc738e /* branch: always, target at .-264 "
-                     "*/ /* 0x07fc7496 */\n"
-                     ".L_update_measurement_display_and_mode_state_at_07fc7498:\n"
-                     "movs r0, #22 /* 0x07fc7498 */\n"
-                     "bl switch_display_state_and_run_hooks\n" /* at 0x07fc749a */
-                     "pop {r3, r4, r5, r6, r7, pc} /* 0x07fc749e */\n");
+#include <stddef.h>
+#include "firmware/reconstructed/include/sr08_static_assert.h"
+#include "firmware/reconstructed/include/sr08_display_state_switches.h"
+#include "firmware/reconstructed/include/sr08_mode_transition.h"
+
+void conditional_mode_updates_using_two_display_at_74a8(uint32_t flags);
+void build_event_header_and_fourteen_byte_scratch_area(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uint8_t e);
+
+/* Views of the fixed RAM objects this routine touches (offsets from V204's loads). */
+struct measurement_mode_view {            /* device_control_state, 0x07fd1e28 */
+    uint8_t reserved_00_to_08[9];
+    uint8_t event_arguments[4];           /* 0x09-0x0c */
+    uint8_t result_mode;                  /* 0x0d */
+    uint8_t reserved_0e_to_29[0x1c];
+    uint16_t result_value;                /* 0x2a */
+    uint8_t reserved_2c_to_5b[0x30];
+    uint32_t last_timestamp;              /* 0x5c */
+    uint32_t result_timestamp;            /* 0x60 */
+};
+struct clock_view {                       /* clock_timekeeping_state, 0x07fd0858 */
+    uint32_t current_timestamp;
+    uint32_t reserved_04_to_17[5];
+    int32_t calendar_second;              /* 0x18 */
+    uint32_t calendar_minute;             /* 0x1c */
+};
+struct context_view {                     /* sr08_shared_context, 0x07fd557c */
+    uint8_t reserved_00_to_01[2];
+    uint8_t last_event_argument;          /* 0x02 */
+    uint8_t reserved_03_to_08[6];
+    uint8_t result_slots_updated;         /* 0x09 */
+    uint8_t display_mode;                 /* 0x0a */
+    uint8_t reserved_0b_to_0e[4];
+    uint8_t display_option;               /* 0x0f */
+    uint8_t reserved_10_to_13[4];
+    uint32_t mode_flags;                  /* 0x14 */
+    uint32_t mode_timestamp;              /* 0x18 */
+    uint8_t reserved_1c_to_1f[4];
+    uint32_t state_timestamp;             /* 0x20 */
+    uint8_t reserved_24_to_9f[0x7c];
+    uint8_t result_slots[12];             /* 0xa0: one per ten seconds of a two-minute window */
+};
+/* Partial RAM views, not recovered vendor type names. Keep every accessed
+ * field at the byte offsets established by V204's loads and stores. */
+SR08_STATIC_ASSERT(offsetof(struct measurement_mode_view, result_mode) == 0x0d,
+                   "measurement mode offset");
+SR08_STATIC_ASSERT(offsetof(struct measurement_mode_view, result_value) == 0x2a,
+                   "measurement value offset");
+SR08_STATIC_ASSERT(offsetof(struct measurement_mode_view, last_timestamp) == 0x5c,
+                   "measurement timestamp offset");
+SR08_STATIC_ASSERT(offsetof(struct measurement_mode_view, result_timestamp) == 0x60,
+                   "result timestamp offset");
+SR08_STATIC_ASSERT(offsetof(struct clock_view, calendar_second) == 0x18,
+                   "signed second input offset");
+SR08_STATIC_ASSERT(offsetof(struct clock_view, calendar_minute) == 0x1c,
+                   "minute input offset");
+SR08_STATIC_ASSERT(offsetof(struct context_view, display_mode) == 0x0a,
+                   "display mode offset");
+SR08_STATIC_ASSERT(offsetof(struct context_view, mode_flags) == 0x14,
+                   "mode flags offset");
+SR08_STATIC_ASSERT(offsetof(struct context_view, state_timestamp) == 0x20,
+                   "display state timestamp offset");
+SR08_STATIC_ASSERT(offsetof(struct context_view, result_slots) == 0xa0,
+                   "two-minute result slots offset");
+
+extern struct measurement_mode_view device_control_state;
+extern struct clock_view clock_timekeeping_state;
+extern struct context_view sr08_shared_context;
+#include "firmware/reconstructed/include/sr08_sensor_field_state.h"
+
+/* Keep the value test conditional on display mode. This compiler fence emits
+ * no instruction and prevents reassociation of the two short-circuit tests. */
+static __attribute__((always_inline)) inline int
+measurement_value_is_nonzero(uint32_t value)
+{
+    __atomic_signal_fence(__ATOMIC_SEQ_CST);
+    return value != 0;
+}
+
+void update_measurement_display_and_mode_state(uint32_t mode) {
+    struct measurement_mode_view *state = &device_control_state;
+    struct context_view *context = &sr08_shared_context;
+    if (mode == 1 && state->result_mode == 1)
+        return;
+    state->result_mode = mode;
+    if (mode == 1) {
+        state->result_value = 0;
+        conditional_mode_updates_using_two_display_at_74a8(context->mode_flags);
+        return;
+    }
+    uint32_t now = clock_timekeeping_state.current_timestamp;
+    if (state->last_timestamp == now)
+        return;
+    state->last_timestamp = now;
+    if (now - state->result_timestamp >= 16)
+        state->result_value = 0;
+    conditional_mode_updates_using_two_display_at_74a8(context->mode_flags);
+    uint16_t value = state->result_value;
+    if (value) {
+        uint8_t slot = 6 * (clock_timekeeping_state.calendar_minute & 1) + clock_timekeeping_state.calendar_second / 10;
+        context->result_slots[slot] = value;
+        context->result_slots_updated = 1;
+    }
+    uint32_t flags = context->mode_flags;
+    if (flags & 4) {
+        uint8_t display_mode = context->display_mode;
+        if (clock_timekeeping_state.current_timestamp - context->mode_timestamp > 45
+            || (display_mode == 1 && measurement_value_is_nonzero(value))
+            || (display_mode - 1u <= 1 && context->display_option == 1)) {
+            update_mode_flags_and_transitions(1u << 18);
+            flags = context->mode_flags;
+        }
+    }
+    if (flags & 0x22) {
+        if (sensor_field_state.reserved_40_to_67[0x18] >= 3) {
+            build_event_header_and_fourteen_byte_scratch_area(context->last_event_argument, state->event_arguments[0],
+                                                              state->event_arguments[1], state->event_arguments[2],
+                                                              state->event_arguments[3]);
+            if (clock_timekeeping_state.current_timestamp - context->state_timestamp >= 45) {
+                update_mode_flags_and_transitions(1u << 17);
+                switch_display_state_and_run_hooks(13);
+            }
+        }
+        if (clock_timekeeping_state.current_timestamp - context->state_timestamp >= 45)
+            switch_display_state_and_run_hooks(22);
+    }
+    if ((uint8_t)context->mode_flags & 0x11) {
+        uint32_t elapsed = clock_timekeeping_state.current_timestamp - context->state_timestamp;
+        if (elapsed >= 23) {
+            if (state->result_value) {
+                switch_display_state_and_run_hooks(10);
+                elapsed = clock_timekeeping_state.current_timestamp - context->state_timestamp;
+            }
+            if (elapsed >= 46)
+                switch_display_state_and_run_hooks(22);
+        }
+    }
 }

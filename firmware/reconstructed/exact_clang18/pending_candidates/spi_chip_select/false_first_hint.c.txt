@@ -1,0 +1,18 @@
+/* SDK spi_58x.c spi_transaction, with V204's P0_3/P0_0 chip select. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+#include "firmware/reconstructed/include/sr08_flash_transfer.h"
+#include "firmware/reconstructed/include/sr08_output_state.h"
+static __attribute__((always_inline)) inline uint16_t cs_mask(void)
+{
+    if (__builtin_expect(!merged_globals_5650.spi_flash_cs_select,1)) return 1;
+    __atomic_signal_fence(__ATOMIC_SEQ_CST);
+    return 8;
+}
+uint32_t update_mode_dependent_output_state_during_flash_transfer(uint32_t value)
+{
+    *(volatile uint16_t *)0x50003004u = cs_mask();
+    uint32_t result = spi_access(value);
+    *(volatile uint16_t *)0x50003002u = cs_mask();
+    return result;
+}

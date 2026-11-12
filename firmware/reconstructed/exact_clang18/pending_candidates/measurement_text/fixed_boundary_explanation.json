@@ -1,0 +1,28 @@
+{
+  "baseline": "sixth merge, Alice tree",
+  "frozen_baseline_inputs": 580,
+  "changed_build_inputs": [
+    "firmware/reconstructed/exact_clang18/arm_compilers.py",
+    "firmware/reconstructed/exact_clang18/build_v204.py",
+    "firmware/reconstructed/exact_clang18/manual_sources/select_measurement_text_update_per_result_at_aae8.c"
+  ],
+  "source_shape": "ordinary C, four threshold if-statements, no goto/overflow/annotation builtin",
+  "original_stub_neighbour_base": "0x07fcab3c FIXED",
+  "after_unconstrained_conversion_neighbour_base": "+0",
+  "preserved_neighbour_base": "0x07fcab3c FIXED",
+  "load_address": "0x07fcab50",
+  "load_pc": "0x07fcab54",
+  "out_of_range_word": "0x07fcaf54",
+  "out_of_range_distance": 1024,
+  "thumb_literal_maximum_forward_distance": 1020,
+  "original_word": "0x07fcade8",
+  "original_word_distance": 660,
+  "observed_unconstrained_veneer": "0x07fcab78 = 0x07fd5650",
+  "observed_unconstrained_next_function": "0x07fcab7c",
+  "constrained_module_result": "BYTE_EXACT, 84-byte new unit",
+  "normal_full_build": "passed: fresh payload and container equal OEM and canonical hashes",
+  "normal_build_uses_cached_objects": false,
+  "guard_weakening": false,
+  "instruction_or_literal_patching": false,
+  "farther_pool_selection": "inferred from range geometry and fixed/relative boundary experiment; armlink did not report its internal merge decision"
+}

@@ -1,57 +1,42 @@
-/* Publish each enabled sensor field and trigger the periodic service. */
-__attribute__((used, naked, section(".text.publish_enabled_sensor_field_trigger_periodic_at_8774"))) void
-publish_enabled_sensor_field_trigger_periodic_at_8774(void) {
-    __asm__ volatile("push {r4, r5, r6, lr}\n"
-                     "movs r5, #32\n"
-                     "ldr r4, [pc, #112]\n"
-                     "ldrb r0, [r4, r5]\n"
-                     "lsls r1, r0, #31\n"
-                     "beq .Lbit4\n"
-                     "mov r6, r4\n"
-                     "adds r6, #32\n"
-                     "ldrb r1, [r6, #10]\n"
-                     "movs r0, #39\n"
-                     "bl send_device_command_pair\n"
-                     "ldrb r1, [r6, #12]\n"
-                     "movs r0, #41\n"
-                     "bl send_device_command_pair\n"
-                     "ldrb r0, [r4, r5]\n"
-                     ".Lbit4: lsls r1, r0, #30\n"
-                     "bpl .Lbit3\n"
-                     "mov r6, r4\n"
-                     "adds r6, #32\n"
-                     "ldrb r1, [r6, #5]\n"
-                     "movs r0, #45\n"
-                     "bl send_device_command_pair\n"
-                     "ldrb r1, [r6, #6]\n"
-                     "movs r0, #47\n"
-                     "bl send_device_command_pair\n"
-                     "ldrb r0, [r4, r5]\n"
-                     ".Lbit3: lsls r1, r0, #29\n"
-                     "bpl .Lbit2\n"
-                     "mov r0, r4\n"
-                     "adds r0, #32\n"
-                     "ldrb r1, [r0, #7]\n"
-                     "movs r0, #44\n"
-                     "bl send_device_command_pair\n"
-                     "ldrb r0, [r4, r5]\n"
-                     ".Lbit2: lsls r0, r0, #28\n"
-                     "bpl .Lservice\n"
-                     "movs r6, #46\n"
-                     "ldrb r1, [r4, r6]\n"
-                     "movs r0, #28\n"
-                     "ldr r5, [pc, #32]\n"
-                     "blx r5\n"
-                     "ldrb r1, [r4, r6]\n"
-                     "movs r0, #29\n"
-                     "blx r5\n"
-                     "ldrb r1, [r4, r6]\n"
-                     "movs r0, #30\n"
-                     "blx r5\n"
-                     "ldrb r1, [r4, r6]\n"
-                     "movs r0, #31\n"
-                     "blx r5\n"
-                     ".Lservice: movs r0, #10\n"
-                     "bl wait_shared_timer_delta_exceed_requested_at_4458\n"
-                     "pop {r4, r5, r6, pc}\n");
+/* Send the sensor configuration fields enabled in the field mask of the
+ * sensor field state (0x07fd1ffc) as device command pairs, then wait for the
+ * periodic service interval. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_radio_commands.h"
+
+#include "firmware/reconstructed/include/sr08_sensor_field_state.h"
+
+extern void wait_shared_timer_delta_exceed_requested_at_4458(uint32_t interval);
+
+enum {
+    FIELD_ENABLE_A = 0x01,
+    FIELD_ENABLE_B = 0x02,
+    FIELD_ENABLE_C = 0x04,
+    FIELD_ENABLE_D = 0x08,
+    PERIODIC_INTERVAL = 10,
+};
+
+void publish_enabled_sensor_field_trigger_periodic_at_8774(void)
+{
+    if (sensor_field_state.config.enabled & FIELD_ENABLE_A) {
+        struct sr08_sensor_field_config *config = &sensor_field_state.config;
+
+        send_device_command_pair(39, config->value_2a);
+        send_device_command_pair(41, config->value_2c);
+    }
+    if (sensor_field_state.config.enabled & FIELD_ENABLE_B) {
+        struct sr08_sensor_field_config *config = &sensor_field_state.config;
+
+        send_device_command_pair(45, config->value_25);
+        send_device_command_pair(47, config->value_26);
+    }
+    if (sensor_field_state.config.enabled & FIELD_ENABLE_C)
+        send_device_command_pair(44, sensor_field_state.config.value_27);
+    if (sensor_field_state.config.enabled & FIELD_ENABLE_D) {
+        send_device_command_pair(28, sensor_field_state.config.value_2e);
+        send_device_command_pair(29, sensor_field_state.config.value_2e);
+        send_device_command_pair(30, sensor_field_state.config.value_2e);
+        send_device_command_pair(31, sensor_field_state.config.value_2e);
+    }
+    wait_shared_timer_delta_exceed_requested_at_4458(PERIODIC_INTERVAL);
 }

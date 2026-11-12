@@ -1,43 +1,36 @@
-/* Select the measurement marker/value according to the active sensor mode. */
-__attribute__((used, naked, section(".text.select_measurement_marker_value_according_active_at_abb4"))) void
+/* Show a marker pattern on the display digits chosen by the display-mode byte
+ * (0x07fd5680) modulo 10: pairs of values select one of four four-digit patterns
+ * (two also set digit 4), and 8 or 9 a two-digit pattern. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+
+enum { DISPLAY_MODE_FLAGS_OFFSET = 0x30 };
+
+/* Digits 0-3 written as one word, digit 4 separately (the display buffer at 0x07fd5710). */
+struct display_marker_view {
+    uint8_t reserved_00_to_3f[0x40];
+    union {
+        uint32_t digits_0_to_3;
+        uint16_t digits_0_to_1;
+    };
+    uint8_t digit_4;
+};
+
+__attribute__((used, section(".text.select_measurement_marker_value_according_active_at_abb4"))) void
 select_measurement_marker_value_according_active_at_abb4(void) {
-    __asm__ volatile("push {r7, lr}\n"
-                     "movs r0, #48\n"
-                     "ldr r1, [pc, #920]\n"
-                     "ldrb r0, [r1, r0]\n"
-                     "movs r1, #10\n"
-                     "bl __aeabi_uidiv\n"
-                     "cmp r1, #1\n"
-                     "bhi .Lgt1\n"
-                     "ldr r0, [pc, #428]\n"
-                     "ldr r1, [pc, #80]\n"
-                     "b .Lstore_r1\n"
-                     ".Lgt1: cmp r1, #3\n"
-                     "bhi .Lgt3\n"
-                     "movs r0, #68\n"
-                     "ldr r1, [pc, #416]\n"
-                     "movs r2, #91\n"
-                     "strb r2, [r1, r0]\n"
-                     "ldr r0, [pc, #60]\n"
-                     "b .Lstore_r0\n"
-                     ".Lgt3: cmp r1, #5\n"
-                     "bhi .Lgt5\n"
-                     "ldr r0, [pc, #400]\n"
-                     "ldr r1, [pc, #48]\n"
-                     ".Lstore_r1: str r1, [r0, #64]\n"
-                     "pop {r7, pc}\n"
-                     ".Lgt5: cmp r1, #7\n"
-                     "bhi .Lgt7\n"
-                     "movs r0, #68\n"
-                     "ldr r1, [pc, #388]\n"
-                     "movs r2, #107\n"
-                     "strb r2, [r1, r0]\n"
-                     "ldr r0, [pc, #24]\n"
-                     ".Lstore_r0: str r0, [r1, #64]\n"
-                     "pop {r7, pc}\n"
-                     ".Lgt7: movs r0, #64\n"
-                     "ldr r1, [pc, #372]\n"
-                     "ldr r2, [pc, #12]\n"
-                     "strh r2, [r1, r0]\n"
-                     "pop {r7, pc}\n");
+    struct display_marker_view *view = (struct display_marker_view *)(void *)&merged_globals_56d0;
+    uint32_t selector = ((const uint8_t *)(const void *)&merged_globals_5650)[DISPLAY_MODE_FLAGS_OFFSET] % 10u;
+    if (selector <= 1) {
+        view->digits_0_to_3 = 0x7c37241b;
+    } else if (selector <= 3) {
+        view->digit_4 = 0x5b;
+        view->digits_0_to_3 = 0x37773e1f;
+    } else if (selector <= 5) {
+        view->digits_0_to_3 = 0x6f377752;
+    } else if (selector <= 7) {
+        view->digit_4 = 0x6b;
+        view->digits_0_to_3 = 0x6b5b181f;
+    } else {
+        view->digits_0_to_1 = 0x3724;
+    }
 }

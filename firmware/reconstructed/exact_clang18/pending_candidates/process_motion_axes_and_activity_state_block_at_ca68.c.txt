@@ -1,0 +1,308 @@
+/* PARKED (byte mismatch) — candidate C for 0x07fcca68 process_motion_axes_and_activity_state_block_at_ca68 (+ the
+ * block_at_ce6c unit it absorbs; V204 has a literal pool at 0xce50 inside the routine). Step counter: drains the
+ * accelerometer FIFO into the motion ring, publishes each sample, takes the vector magnitude, smooths it with three
+ * cascaded scalar Kalman filters and detects steps from crest/trough swings.
+ * Install needs (all additive): ("ac6lto", [unit]) after process_sensor_sample_and_maybe_save_record in build_v204.py;
+ * the microlib __aeabi_f* aliases in arm_compilers.py ROM_RUNTIME_ALIASES (fadd/fsub/fmul/fdiv/ui2f/f2uiz -> the V204
+ * float members); "motion_filters": "0x07fd5524" in data/V204_ram_symbols.json (a separate 3 x 28-byte global after
+ * the 12 timing records — addressing it as sr08_timing_records + 0xc0 makes LSR pick a different IV).
+ * Status (2026-11-15, LTO relink, raw diff incl. pools): 74 lines of 569; frame 68 and all stack slots match. Remaining:
+ *  - after the 0x3d6c call V204 keeps z in r7 and shares the 0 argument (r4) as the Kalman-init loop index; here the
+ *    0 is spilled and reloaded as the second loop's start (regalloc).
+ *  - Kalman step: V204 calls fmul(predicted_x, h) and fmul(residual, gain); here the operands come out swapped
+ *    (DAG libcall operand order; every source order gives identical bytes).
+ *  - window max: V204 cmp(window_max, value) bge; here cmp(value, window_max) ble (all spellings identical).
+ *  - crest test: V204 tests sxtb(direction) < 1; here instcombine folds it to value <= last.
+ *  - depth > swing: V204 sign-extends swing and uses asrs for swing >> 1; here the swing range is proven (no sxth,
+ *    lsrs). int16/uint32 types for threshold/swing change nothing.
+ *  - elapsed > 2000: V204 compares with 125 << 4 (2000 hoisted opaque); here the DAG turns it into slt 2001 (pool).
+ * Levers that took it from 436 to 74: count = queued with the >= 10 override, uint8_t queued/count/index (up-count
+ * FIFO loop), __attribute__((const)) on integer_square_root_restoring (built outside the LTO module; V204 inferred it),
+ * the magnitude as two isqrt calls (z read per branch), the 50x swing computed before the 1820 test and
+ * `if (!(threshold <= 1820))` (gives V204's ult 1821), the fence between crest store and extremum store, the switch
+ * as case 0/1/2, pending=1 before the byte clears, direction stored before last_value.
+ * Fast iteration: build/lto_relink/ (relink.py + lt.sh); append "0x07fd5524 D motion_filters" to the kept
+ * lto_module.symdefs. */
+/* Step counter service: read the accelerometer FIFO into the motion-sample ring, then for each queued
+ * sample publish it, take the vector magnitude, smooth it with three cascaded scalar Kalman filters and
+ * detect steps from the crest-to-trough swing of the filtered value. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_cycle_control_state.h"
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+#include "firmware/reconstructed/include/sr08_radio_configuration.h"
+#include "firmware/reconstructed/include/sr08_ring_buffer.h"
+#include "firmware/reconstructed/include/sr08_time_event_queue.h"
+#include "firmware/reconstructed/include/sr08_timing_record.h"
+
+extern void i2c_eeprom_initialize(void);
+extern uint8_t exchange_one_radio_word(uint32_t command_value);
+extern uint16_t process_two_packed_input_bytes_update_at_8ad8(uint32_t first_value, uint32_t second_value);
+extern void handle_matched_device_state_send_corresponding_at_1da8(void);
+extern void fill_hardware_fifo_optionally_report_state_at_89b0(uint32_t command, uint8_t *destination,
+                                                                uint32_t byte_count);
+extern uint32_t get_ble_base_time_ms(void);
+extern void optionally_calculate_three_axis_magnitude_dispatching_at_3d6c(int16_t value, int16_t x, int16_t y,
+                                                                          int16_t z, uint32_t extra, uint32_t mode);
+extern void copy_three_signed_coordinates_to_display_state(volatile uint16_t *x, volatile uint16_t *y,
+                                                           volatile int16_t *angle);
+extern uint32_t integer_square_root_restoring(uint32_t input) __attribute__((const));
+extern void update_mode_flags_and_transitions(uint32_t flags);
+extern void advance_display_timing_and_serialize_interval_changes(uint32_t elapsed, uint32_t tertiary);
+
+#define CONVERSION_REQUEST (*(volatile uint32_t *)0x400000fcu)
+#define CONVERSION_RESULT (*(volatile uint32_t *)0x4000001cu)
+
+#define mode_state ((uint8_t *)(void *)&merged_globals_5650)
+#define mode_word(offset) (*(uint32_t *)(void *)(mode_state + (offset)))
+#define step_state ((uint8_t *)(void *)&device_control_state)
+#define step_s8(offset) (*(int8_t *)(void *)(step_state + (offset)))
+#define step_half(offset) (*(int16_t *)(void *)(step_state + (offset)))
+#define step_word(offset) (*(uint32_t *)(void *)(step_state + (offset)))
+#define cycle_words ((uint32_t *)(void *)&cycle_control_state)
+#define motion_ring ((struct sr08_ring_buffer *)(void *)((uint8_t *)&time_event_queue_state + 0x14))
+#define motion_ring_storage 0x07fd0890u
+
+/* One scalar Kalman filter: x' = a x, p' = a a p + q, k = p' h / (h p' h + r). */
+struct motion_filter {
+    float x;
+    float a;
+    float h;
+    float q;
+    float r;
+    float p;
+    float k;
+};
+#define MOTION_FILTERS 3
+extern struct motion_filter motion_filters[MOTION_FILTERS];
+
+enum {
+    DIRECTION = 0x00,       /* device_control_state bytes */
+    EXTREMUM = 0x01,        /* 1 after a crest, 2 after a trough */
+    FILTER_READY = 0x02,
+    STEP_PHASE = 0x03,
+    PHASE_BYTE_4 = 0x04,
+    PHASE_BYTE_5 = 0x05,
+    WINDOW_COUNT = 0x06,
+    LAST_VALUE = 0x24,      /* int16 */
+    WINDOW_MAX = 0x26,
+    PEAK = 0x28,
+    TROUGH = 0x38,
+    CREST = 0x3c,
+    STEP_CLOCK = 0x4c,      /* words */
+    LAST_STEP_CLOCK = 0x50,
+    PENDING_STEPS = 0x54,
+    STEP_TIME = 0x58,
+    SENSOR_READY = 0x11,    /* merged_globals_5650 bytes */
+    DISPLAY_MODE = 0x0c,
+    STEP_TOTAL = 0x68,
+    FIFO_READ = 0xa8,
+    SAMPLE_BYTES = 6,
+};
+
+static int16_t sample_axis(const uint8_t *bytes)
+{
+    return (int16_t)(bytes[0] + (bytes[1] << 8)) / 4;
+}
+
+void process_motion_axes_and_activity_state_block_at_ca68(void)
+{
+    uint32_t one = __builtin_annotation(1u, "one");
+    uint8_t sample[SAMPLE_BYTES];
+
+    CONVERSION_REQUEST = one;
+    while (CONVERSION_REQUEST != 0)
+        ;
+    (void)CONVERSION_RESULT;
+    if (mode_state[SENSOR_READY] == 0) {
+        motion_ring->head = 0;
+        motion_ring->tail = 0;
+        motion_ring->capacity = 32;
+        motion_ring->element_size = SAMPLE_BYTES;
+        motion_ring->storage_base = motion_ring_storage;
+        handle_matched_device_state_send_corresponding_at_1da8();
+        if (mode_state[SENSOR_READY] == 0) {
+            update_mode_flags_and_transitions(1u << 12);
+        } else {
+            mode_state[0x35] = 1;
+            *(uint32_t *)(void *)&merged_globals_56d0 = 0;
+            *(uint16_t *)(void *)(mode_state + 0x36) = 1u << 9;
+        }
+        return;
+    }
+    if (mode_state[DISPLAY_MODE] != 30) {
+        i2c_eeprom_initialize();
+        if (exchange_one_radio_word(0x20) != 0x47) {
+            handle_matched_device_state_send_corresponding_at_1da8();
+        } else {
+            uint8_t status = exchange_one_radio_word(0x35);
+            process_two_packed_input_bytes_update_at_8ad8(0x34, 0);
+            process_two_packed_input_bytes_update_at_8ad8(0x34, 10);
+            if (status & 0x4a)
+                cycle_words[0x18 / 4] = 0;
+            uint8_t queued = exchange_one_radio_word(0x2f) & 31;
+            uint8_t count = queued;
+            if (cycle_words[0x18 / 4] >= 10) {
+                count = 0;
+                if (queued != 0) {
+                    uint32_t now = get_ble_base_time_ms();
+                    uint32_t last = cycle_words[0x1c / 4];
+                    if (((now >= last ? now : now + 0x5000000) - last) / 4 >= 225) {
+                        fill_hardware_fifo_optionally_report_state_at_89b0(FIFO_READ, sample, SAMPLE_BYTES);
+                        int16_t x = sample_axis(&sample[0]);
+                        int16_t y = sample_axis(&sample[2]);
+                        int16_t z = sample_axis(&sample[4]);
+                        optionally_calculate_three_axis_magnitude_dispatching_at_3d6c(0, x, y, z,
+                                                                                      get_ble_base_time_ms(), one);
+                        cycle_words[0x1c / 4] = now;
+                    }
+                }
+            }
+            for (uint8_t index = 0; index < count; index++) {
+                fill_hardware_fifo_optionally_report_state_at_89b0(FIFO_READ, sample, SAMPLE_BYTES);
+                enqueue_ring_record_if_space(motion_ring, sample);
+            }
+            process_two_packed_input_bytes_update_at_8ad8(0x2e, 0);
+            process_two_packed_input_bytes_update_at_8ad8(0x2e, 0x9f);
+        }
+    }
+
+    uint16_t pending = (motion_ring->head - motion_ring->tail) & (motion_ring->capacity - 1);
+    for (uint8_t index = 0; index < pending; index++) {
+        peek_ring_buffer_entry(motion_ring, sample);
+        advance_queue_tail_if_nonempty(motion_ring);
+        int16_t x = sample_axis(&sample[0]);
+        int16_t y = sample_axis(&sample[2]);
+        int16_t z = sample_axis(&sample[4]);
+        volatile uint16_t shown_x = x;
+        volatile uint16_t shown_y = y;
+        int16_t shown_z = z;
+        copy_three_signed_coordinates_to_display_state(&shown_x, &shown_y, (volatile int16_t *)&shown_z);
+        uint32_t magnitude;
+        if (!(device_control_state.magnitude_axes < 0))
+            magnitude = integer_square_root_restoring(x * x + y * y + shown_z * shown_z);
+        else
+            magnitude = integer_square_root_restoring(x * x + y * y);
+        optionally_calculate_three_axis_magnitude_dispatching_at_3d6c((int16_t)magnitude, x, y, shown_z,
+                                                                      get_ble_base_time_ms(), 0);
+
+        if (step_state[FILTER_READY] == 0) {
+            float initial = (float)magnitude;
+            for (int filter = 0; filter < MOTION_FILTERS; filter++) {
+                motion_filters[filter].x = initial;
+                motion_filters[filter].a = 1.0f;
+                motion_filters[filter].h = 1.0f;
+                motion_filters[filter].q = 20.0f;
+                motion_filters[filter].r = 50.0f;
+                motion_filters[filter].p = 50.0f;
+            }
+            step_state[FILTER_READY] = one;
+        }
+        uint32_t clock = step_word(STEP_CLOCK) + 20;
+        step_word(STEP_CLOCK) = clock;
+        uint32_t value = magnitude;
+        for (int filter = 0; filter < MOTION_FILTERS; filter++) {
+            struct motion_filter *f = &motion_filters[filter];
+            float a = f->a;
+            float predicted_p = a * a * f->p + f->q;
+            float h = f->h;
+            float gain = predicted_p * h / (f->r + h * (predicted_p * h));
+            float measured = (float)value;
+            float predicted_x = f->x * a;
+            float x_new = predicted_x + (measured - predicted_x * h) * gain;
+            f->x = x_new;
+            f->k = gain;
+            f->p = predicted_p * (1.0f - h * gain);
+            value = (uint32_t)x_new;
+        }
+
+        uint16_t window_max;
+        if (++step_state[WINDOW_COUNT] > 99) {
+            step_state[WINDOW_COUNT] = 0;
+            uint16_t previous = step_half(WINDOW_MAX);
+            step_half(WINDOW_MAX) = 0;
+            step_half(PEAK) = previous;
+            window_max = 0;
+        } else {
+            window_max = step_half(WINDOW_MAX);
+        }
+        if ((int16_t)window_max < (int16_t)value)
+            step_half(WINDOW_MAX) = value;
+        uint16_t peak = step_half(PEAK);
+        uint16_t threshold = peak ? peak : 1000;
+        if (!((int16_t)threshold > 1000))
+            threshold = 1000;
+        int32_t swing;
+        uint32_t strong;
+        if (!(device_control_state.magnitude_axes < 0)) {
+            swing = (int32_t)(50 * threshold - 50000) / 1000 + 158;
+            strong = 0;
+            if (!(threshold <= 1820)) {
+                swing = (int32_t)(110 * threshold - 200200) / 1000 + 300;
+                strong = one;
+            }
+        } else {
+            strong = threshold > 1820;
+            swing = 200;
+        }
+
+        int16_t last = step_half(LAST_VALUE);
+        int8_t direction = 0;
+        if (value < (uint32_t)last)
+            direction = -1;
+        if (value > (uint32_t)last)
+            direction = 1;
+        int8_t previous_direction = step_s8(DIRECTION);
+        if (direction == -previous_direction || (previous_direction == 0 && direction != 0)) {
+            if (direction >= 1) {
+                step_half(CREST) = last;
+                __atomic_signal_fence(__ATOMIC_SEQ_CST);
+                step_state[EXTREMUM] = 1;
+            } else {
+                step_half(TROUGH) = last;
+                uint8_t extremum = step_state[EXTREMUM];
+                step_state[EXTREMUM] = 2;
+                if (extremum != 2) {
+                    int16_t depth = (int16_t)(last - step_half(CREST));
+                    if (depth > (int16_t)swing ||
+                        (depth > (int16_t)swing >> 1 && step_state[STEP_PHASE] == 2)) {
+                        int32_t elapsed = clock - step_word(LAST_STEP_CLOCK);
+                        if (elapsed >= 40) {
+                            if (elapsed > 2000) {
+                                step_word(LAST_STEP_CLOCK) = clock;
+                            } else {
+                                cycle_words[0x18 / 4] = 0;
+                                switch (step_state[STEP_PHASE]) {
+                                case 0:
+                                    step_word(PENDING_STEPS) = 1;
+                                    step_state[PHASE_BYTE_4] = 0;
+                                    step_state[PHASE_BYTE_5] = 0;
+                                    step_state[STEP_PHASE] = 1;
+                                    break;
+                                case 1:
+                                    step_state[PHASE_BYTE_4] = 0;
+                                    if (++step_word(PENDING_STEPS) >= 18) {
+                                        step_state[STEP_PHASE] = 2;
+                                        mode_word(STEP_TOTAL) += step_word(PENDING_STEPS);
+                                        advance_display_timing_and_serialize_interval_changes(
+                                            step_word(PENDING_STEPS), strong);
+                                        step_word(PENDING_STEPS) = 0;
+                                    }
+                                    break;
+                                case 2:
+                                    step_word(STEP_TIME) = get_ble_base_time_ms();
+                                    mode_word(STEP_TOTAL) += 1;
+                                    advance_display_timing_and_serialize_interval_changes(1, strong);
+                                    step_state[PHASE_BYTE_5] = 0;
+                                    break;
+                                }
+                                step_word(LAST_STEP_CLOCK) = step_word(STEP_CLOCK);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        step_s8(DIRECTION) = direction;
+        step_half(LAST_VALUE) = value;
+    }
+}

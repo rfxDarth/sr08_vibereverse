@@ -1,41 +1,30 @@
-/* Clear cached sensor fields, refresh calibration, then update four readings. */
-__attribute__((used, naked, section(".text.clear_cached_sensor_fields_refresh_calibration_at_8f48"))) void
-clear_cached_sensor_fields_refresh_calibration_at_8f48(void) {
-    __asm__ volatile("push {r4, r5, r6, lr}\n"
-                     "mov r4, r0\n"
-                     "ldr r5, [pc, #80]\n"
-                     "strb r1, [r5, #18]\n"
-                     "movs r6, #0\n"
-                     "strb r6, [r5, #24]\n"
-                     "strb r6, [r5, #23]\n"
-                     "strh r6, [r5, #20]\n"
-                     "bl clear_state_counter_at_offset_four\n"
-                     "strh r6, [r5, #30]\n"
-                     "bl clear_state_word_at_offset_1c\n"
-                     "bl retry_radio_command_until_status_0x27\n"
-                     "movs r0, #71\n"
-                     "bl ensure_radio_profile_then_exchange_word\n"
-                     "cmp r0, #63\n"
-                     "bhi .Lfinish\n"
-                     "ldr r0, [pc, #48]\n"
-                     "bl ensure_radio_profile_then_scan_paired_bytes\n"
-                     "movs r0, #69\n"
-                     "ldr r6, [pc, #44]\n"
-                     "blx r6\n"
-                     "ldr r5, [pc, #44]\n"
-                     "strb r0, [r5, #3]\n"
-                     "movs r0, #70\n"
-                     "blx r6\n"
-                     "strb r0, [r5, #5]\n"
-                     "movs r0, #71\n"
-                     "blx r6\n"
-                     "strb r0, [r5, #7]\n"
-                     "movs r0, #72\n"
-                     "blx r6\n"
-                     "strb r0, [r5, #9]\n"
-                     "mov r0, r5\n"
-                     "bl ensure_radio_profile_then_scan_paired_bytes\n"
-                     ".Lfinish: mov r0, r4\n"
-                     "bl configure_command_record\n"
-                     "pop {r4, r5, r6, pc}\n");
+/* Reset cached fields, refresh the four calibration register bytes, then configure mode. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_radio_configuration.h"
+extern void clear_state_counter_at_offset_four(void);
+extern void clear_state_word_at_offset_1c(void);
+extern uint32_t retry_radio_command_until_status_0x27(void);
+extern void configure_command_record(uint32_t mode);
+__attribute__((used, section(".text.clear_cached_sensor_fields_refresh_calibration_at_8f48"))) void
+clear_cached_sensor_fields_refresh_calibration_at_8f48(uint32_t mode, uint8_t calibration_setting) {
+    volatile uint8_t *state = (volatile uint8_t *)&device_control_state;
+    state[0x12] = calibration_setting;
+    state[0x18] = 0;
+    state[0x17] = 0;
+    *(volatile uint16_t *)(state + 0x14) = 0;
+    clear_state_counter_at_offset_four();
+    *(volatile uint16_t *)(state + 0x1e) = 0;
+    clear_state_word_at_offset_1c();
+    retry_radio_command_until_status_0x27();
+    if (ensure_radio_profile_then_exchange_word(71) <= 63) {
+        ensure_radio_profile_then_scan_paired_bytes((const struct sr08_radio_command_pair *)0x07fcfafc);
+        uint8_t (*read_calibration_byte)(uint32_t) = (uint8_t (*)(uint32_t))0x07fc8585;
+        struct sr08_radio_command_pair *pairs = (struct sr08_radio_command_pair *)0x07fd03c8;
+        pairs[1].second = read_calibration_byte(69);
+        pairs[2].second = read_calibration_byte(70);
+        pairs[3].second = read_calibration_byte(71);
+        pairs[4].second = read_calibration_byte(72);
+        ensure_radio_profile_then_scan_paired_bytes(pairs);
+    }
+    configure_command_record(mode);
 }

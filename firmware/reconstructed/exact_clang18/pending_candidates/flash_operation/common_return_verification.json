@@ -1,0 +1,13 @@
+{
+  "candidate": "common_return_a0f0.c.txt",
+  "compiler": "ac6lto",
+  "region_start": "0x07fc3ea0",
+  "region_end": "0x07fc40a0",
+  "bytes": 512,
+  "differing_bytes": 422,
+  "payload_region_equal": false,
+  "next_function_address": "0x07fc40a0",
+  "sha256": "46fa1ec7525c109942981d98fcf66574df6a0317a6ee2382a36829d5fcbe6a30",
+  "canonical_source_changes": false,
+  "installed": false
+}

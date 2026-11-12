@@ -1,0 +1,4 @@
+flat image: /tmp/sr08-alice-spi-cs-standalone.payload.bin (67136 bytes)
+OTA container: /tmp/sr08-alice-spi-cs-standalone.bin (67200 bytes)
+linked 508 sections, 67136 bytes (100.00% of payload; matches canonical hash); 449 source units
+ELF: /tmp/sr08-alice-spi-cs-standalone.elf

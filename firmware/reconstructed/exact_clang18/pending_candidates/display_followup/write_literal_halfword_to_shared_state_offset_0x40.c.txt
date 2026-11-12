@@ -1,0 +1,8 @@
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+
+__attribute__((used, section(".text.write_literal_halfword_to_shared_state_offset_0x40"))) void
+write_literal_halfword_to_shared_state_offset_0x40(void) {
+    volatile uint8_t *base = (volatile uint8_t *)&merged_globals_56d0;
+    *(volatile uint16_t *)(base + 0x40) = 0x3f53;
+}

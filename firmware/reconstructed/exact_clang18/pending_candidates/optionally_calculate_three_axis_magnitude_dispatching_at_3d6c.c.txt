@@ -1,0 +1,29 @@
+/* Pass a motion sample to update_motion_sample_history_and_activity_flags.
+ * In mode 1 the sample is first published to the display state (which
+ * negates z), and the first value becomes the vector magnitude: of x and y,
+ * plus the published z unless device_control_state.magnitude_axes is
+ * negative. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_radio_configuration.h"
+
+void copy_three_signed_coordinates_to_display_state(volatile uint16_t *x, volatile uint16_t *y, volatile int16_t *angle);
+uint32_t integer_square_root_restoring(uint32_t input);
+void update_motion_sample_history_and_activity_flags(int16_t value, int16_t x, int16_t y, int16_t z, uint32_t extra);
+
+void optionally_calculate_three_axis_magnitude_dispatching_at_3d6c(int16_t value, int16_t x, int16_t y, int16_t z,
+                                                                   uint32_t extra, uint32_t mode)
+{
+    uint16_t shown_x = x;
+    uint16_t shown_y = y;
+    int16_t shown_z = z;
+
+    if (mode == 1) {
+        copy_three_signed_coordinates_to_display_state(&shown_x, &shown_y, &shown_z);
+        uint32_t sum = x * x + y * y;
+        z = shown_z;
+        if (device_control_state.magnitude_axes >= 0)
+            sum += z * z;
+        value = (int16_t)integer_square_root_restoring(sum);
+    }
+    update_motion_sample_history_and_activity_flags(value, x, y, z, extra);
+}

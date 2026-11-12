@@ -1,0 +1,17 @@
+/* Read a 20-bit sample from three I2C registers (low nibble register
+ * low_index - 1, then low_index and high_index) between sensor-mode commands
+ * 0x35 = 8 and 0x35 = 0, and return its signed top 16 bits.
+ */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_radio_commands.h"
+#include "firmware/reconstructed/include/sr08_radio_configuration.h"
+
+int16_t read_three_callback_values_between_mode_at_85a0(uint8_t high_index, uint8_t low_index)
+{
+    send_device_command_pair(0x35, 8);
+    uint8_t low = ensure_radio_profile_then_exchange_word((uint8_t)(low_index - 1));
+    uint8_t middle = ensure_radio_profile_then_exchange_word(low_index);
+    uint8_t high = ensure_radio_profile_then_exchange_word(high_index);
+    send_device_command_pair(0x35, 0);
+    return (int16_t)((low >> 4) + (middle << 4) + (high << 12));
+}

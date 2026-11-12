@@ -1,3 +1,4 @@
+/* Alice C candidate parked; see WORK_CLAIMS.md. */
 /* Recovered behavior:
  * Destructively count nonzero samples, select up to three distinct values with the highest
  * frequencies (reuse the top value if needed), and return their integer average.

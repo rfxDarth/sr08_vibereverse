@@ -12,7 +12,7 @@ import java.nio.file.Path;
 /** Export Ghidra's current code/data listing and references for gap review. */
 public class AuditCodeUnits extends ghidra.app.script.GhidraScript {
     private static final String DEFAULT_OUTPUT =
-        "/home/drath/Projects/personal/code/sr08_ai/firmware/decompiled/V204_code_units.tsv";
+        "firmware/decompiled/V204_code_units.tsv";
 
     @Override
     protected void run() throws Exception {

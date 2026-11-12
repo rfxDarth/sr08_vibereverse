@@ -1,134 +1,130 @@
-/*
- * advance_sensor_cycle_and_toggle_mode_flags, range 1: 228-byte fixed-address Thumb transcription.
- * Overall behavior: Advance the sensor-cycle counters, toggle the shared mode flag on
- *                   alternating cycles, and invoke the enabled follow-up handler.
+/* Advance the sensor-cycle counters, toggle the shared mode flag on alternating
+ * cycles, and, while reporting is enabled, queue a 0x50 report record with the
+ * seven report values, connection RSSI, a shared state byte and the low step count.
  */
 #include <stdint.h>
-__attribute__((used, naked, section(".text.advance_sensor_cycle_and_toggle_mode_flags"))) void
+#include "firmware/reconstructed/include/sr08_mode_transition.h"
+#include "firmware/reconstructed/include/sr08_sdk_llc.h"
+
+#define CYCLE_REPORT_RECORD 0x50
+#define MODE_FLAG_SET_TRANSITION 0x800u
+#define MODE_FLAG_CLEAR_TRANSITION (1u << 27)
+
+/* Prefix views of fixed RAM blocks (not C-allocated objects). Reuse their
+ * canonical linker names: extra names for the same addresses make armlink's
+ * shared-literal identity ambiguous. These views name only this routine's
+ * established fields; other translation units use additional views.
+ */
+struct sensor_cycle_state {
+    uint8_t reserved_00_to_0f[0x10];
+    uint8_t mode_flag;
+    uint8_t reserved_11_to_34[0x24];
+    uint8_t cycle_active;
+    uint8_t cycle_count;
+    uint8_t cycle_limit;
+};
+/* Vendor fields of merged_globals_56d0 used here. */
+struct sensor_cycle_counters {
+    uint32_t cycle_counter;
+    uint8_t reserved_04_to_2b[0x28];
+    /* Also used as the SUOTA activation value; its report meaning is unknown. */
+    uint32_t report_value;
+};
+/* Only report fields whose offsets are established by this routine are named. */
+struct sensor_report_context {
+    uint8_t reserved_00_to_37[0x38];
+    uint32_t total_steps;
+    uint8_t reserved_3c_to_c3[0x88];
+    uint8_t enabled;
+    uint8_t kind;
+    uint16_t values[7];
+};
+extern struct sensor_cycle_state merged_globals_5650;
+extern struct sensor_cycle_counters merged_globals_56d0;
+extern struct sensor_report_context sr08_shared_context;
+struct sensor_snapshot_record {
+    uint16_t command;
+    uint8_t kind;
+    uint8_t words_le[14];
+    int8_t rssi;
+    uint8_t shared_value;
+    uint8_t steps_low;
+};
+/* Annotations return the same address and emit no runtime operation. They
+ * preserve V204's source/payload address expressions through optimization;
+ * removing either lets armclang combine the halfword/byte addresses.
+ * Keep byte offsets here: a typed array GEP lets the compiler fold the loads.
+ */
+#define REPORT_BYTE(offset) (((const uint8_t *)&sr08_shared_context)[offset])
+#define REPORT_HALFWORD(offset)                                                                                        \
+    (*(const uint16_t *)(const void *)((const uint8_t *)__builtin_annotation((uintptr_t)(&sr08_shared_context),        \
+                                                                             "snapshot source") +                      \
+                                       (offset)))
+
+SR08_STATIC_ASSERT(offsetof(struct sensor_cycle_state, mode_flag) == 0x10, "mode flag offset");
+SR08_STATIC_ASSERT(offsetof(struct sensor_cycle_state, cycle_active) == 0x35, "cycle control offset");
+SR08_STATIC_ASSERT(offsetof(struct sensor_cycle_counters, report_value) == 0x2c, "report counter offset");
+SR08_STATIC_ASSERT(offsetof(struct sensor_report_context, total_steps) == 0x38, "step counter offset");
+SR08_STATIC_ASSERT(offsetof(struct sensor_report_context, enabled) == 0xc4, "report enable offset");
+SR08_STATIC_ASSERT(offsetof(struct sensor_report_context, values) == 0xc6, "report values offset");
+SR08_STATIC_ASSERT(sizeof(struct sensor_snapshot_record) == 20, "queue record length");
+SR08_STATIC_ASSERT(offsetof(struct sensor_snapshot_record, words_le) == 3, "unaligned report values");
+SR08_STATIC_ASSERT(offsetof(struct sensor_snapshot_record, rssi) == 17, "report RSSI offset");
+
+extern void search_queue_and_insert_limit_twenty(const void *record);
+
+__attribute__((used, section(".text.advance_sensor_cycle_and_toggle_mode_flags"))) void
 advance_sensor_cycle_and_toggle_mode_flags(void) {
-    __asm__ volatile("push {r4, r5, r6, r7, lr} /* 0x07fcc8b0 */\n"
-                     "sub sp, #36 /* 0x07fcc8b2 */\n"
-                     "movs r1, #53	@ 0x35 /* 0x07fcc8b4 */\n"
-                     "ldr r0, [pc, #220] /* 0x07fcc8b6 */\n"
-                     "ldrb r2, [r0, r1] /* 0x07fcc8b8 */\n"
-                     "ldr r3, [pc, #220] /* 0x07fcc8ba */\n"
-                     "ldr r4, [r3, #0] /* 0x07fcc8bc */\n"
-                     "add r5, sp, #16 /* 0x07fcc8be */\n"
-                     "cmp r2, #1 /* 0x07fcc8c0 */\n"
-                     "bne.n .L_advance_sensor_cycle_and_toggle_mode_flags_at_07fcc8f4 /* branch: ne, target at .+50 */ "
-                     "/* 0x07fcc8c2 */\n"
-                     "movs r2, #54	@ 0x36 /* 0x07fcc8c4 */\n"
-                     "ldrb r3, [r0, r2] /* 0x07fcc8c6 */\n"
-                     "adds r3, r3, #1 /* 0x07fcc8c8 */\n"
-                     "strb r3, [r0, r2] /* 0x07fcc8ca */\n"
-                     "movs r2, #55	@ 0x37 /* 0x07fcc8cc */\n"
-                     "ldrb r2, [r0, r2] /* 0x07fcc8ce */\n"
-                     "uxtb r3, r3 /* 0x07fcc8d0 */\n"
-                     "cmp r3, r2 /* 0x07fcc8d2 */\n"
-                     "bcc.n .L_advance_sensor_cycle_and_toggle_mode_flags_at_07fcc8da /* branch: cc, target at .+6 */ "
-                     "/* 0x07fcc8d4 */\n"
-                     "movs r2, #0 /* 0x07fcc8d6 */\n"
-                     "strb r2, [r0, r1] /* 0x07fcc8d8 */\n"
-                     ".L_advance_sensor_cycle_and_toggle_mode_flags_at_07fcc8da:\n"
-                     "ldr r1, [pc, #192] /* 0x07fcc8da */\n"
-                     "ldr r2, [r1, #0] /* 0x07fcc8dc */\n"
-                     "adds r2, r2, #1 /* 0x07fcc8de */\n"
-                     "str r2, [r1, #0] /* 0x07fcc8e0 */\n"
-                     "lsls r1, r2, #31 /* 0x07fcc8e2 */\n"
-                     "beq.n .L_advance_sensor_cycle_and_toggle_mode_flags_at_07fcc8fc /* branch: eq, target at .+24 */ "
-                     "/* 0x07fcc8e4 */\n"
-                     "ldrb r1, [r0, #16] /* 0x07fcc8e6 */\n"
-                     "cmp r1, #0 /* 0x07fcc8e8 */\n"
-                     "bne.n .L_advance_sensor_cycle_and_toggle_mode_flags_at_07fcc90e /* branch: ne, target at .+36 */ "
-                     "/* 0x07fcc8ea */\n"
-                     "movs r1, #1 /* 0x07fcc8ec */\n"
-                     "strb r1, [r0, #16] /* 0x07fcc8ee */\n"
-                     "lsls r0, r1, #11 /* 0x07fcc8f0 */\n"
-                     "b.n .L_advance_sensor_cycle_and_toggle_mode_flags_at_07fcc90a /* branch: always, target at .+24 "
-                     "*/ /* 0x07fcc8f2 */\n"
-                     ".L_advance_sensor_cycle_and_toggle_mode_flags_at_07fcc8f4:\n"
-                     "ldr r1, [pc, #164] /* 0x07fcc8f4 */\n"
-                     "ldr r2, [r1, #0] /* 0x07fcc8f6 */\n"
-                     "adds r2, r2, #1 /* 0x07fcc8f8 */\n"
-                     "str r2, [r1, #0] /* 0x07fcc8fa */\n"
-                     ".L_advance_sensor_cycle_and_toggle_mode_flags_at_07fcc8fc:\n"
-                     "ldrb r1, [r0, #16] /* 0x07fcc8fc */\n"
-                     "cmp r1, #1 /* 0x07fcc8fe */\n"
-                     "bne.n .L_advance_sensor_cycle_and_toggle_mode_flags_at_07fcc90e /* branch: ne, target at .+14 */ "
-                     "/* 0x07fcc900 */\n"
-                     "movs r1, #0 /* 0x07fcc902 */\n"
-                     "strb r1, [r0, #16] /* 0x07fcc904 */\n"
-                     "movs r0, #1 /* 0x07fcc906 */\n"
-                     "lsls r0, r0, #27 /* 0x07fcc908 */\n"
-                     ".L_advance_sensor_cycle_and_toggle_mode_flags_at_07fcc90a:\n"
-                     "bl update_mode_flags_and_transitions\n" /* at 0x07fcc90a */
-                     ".L_advance_sensor_cycle_and_toggle_mode_flags_at_07fcc90e:\n"
-                     "movs r0, #196	@ 0xc4 /* 0x07fcc90e */\n"
-                     "ldr r1, [pc, #140] /* 0x07fcc910 */\n"
-                     "ldrb r0, [r1, r0] /* 0x07fcc912 */\n"
-                     "cmp r0, #1 /* 0x07fcc914 */\n"
-                     "bne.n .L_advance_sensor_cycle_and_toggle_mode_flags_at_07fcc990 /* branch: ne, target at .+122 "
-                     "*/ /* 0x07fcc916 */\n"
-                     "adds r2, r5, #3 /* 0x07fcc918 */\n"
-                     "add r0, sp, #16 /* 0x07fcc91a */\n"
-                     "movs r3, #80	@ 0x50 /* 0x07fcc91c */\n"
-                     "strh r3, [r0, #0] /* 0x07fcc91e */\n"
-                     "movs r3, #198	@ 0xc6 /* 0x07fcc920 */\n"
-                     "ldrh r3, [r1, r3] /* 0x07fcc922 */\n"
-                     "str r3, [sp, #8] /* 0x07fcc924 */\n"
-                     "strb r3, [r2, #0] /* 0x07fcc926 */\n"
-                     "movs r3, #200	@ 0xc8 /* 0x07fcc928 */\n"
-                     "ldrh r3, [r1, r3] /* 0x07fcc92a */\n"
-                     "str r3, [sp, #4] /* 0x07fcc92c */\n"
-                     "strb r3, [r2, #2] /* 0x07fcc92e */\n"
-                     "movs r3, #202	@ 0xca /* 0x07fcc930 */\n"
-                     "ldrh r3, [r1, r3] /* 0x07fcc932 */\n"
-                     "str r3, [sp, #0] /* 0x07fcc934 */\n"
-                     "strb r3, [r2, #4] /* 0x07fcc936 */\n"
-                     "movs r3, #204	@ 0xcc /* 0x07fcc938 */\n"
-                     "ldrh r7, [r1, r3] /* 0x07fcc93a */\n"
-                     "strb r7, [r2, #6] /* 0x07fcc93c */\n"
-                     "movs r3, #206	@ 0xce /* 0x07fcc93e */\n"
-                     "ldrh r5, [r1, r3] /* 0x07fcc940 */\n"
-                     "strb r5, [r2, #8] /* 0x07fcc942 */\n"
-                     "movs r3, #208	@ 0xd0 /* 0x07fcc944 */\n"
-                     "str r4, [sp, #12] /* 0x07fcc946 */\n"
-                     "ldrh r4, [r1, r3] /* 0x07fcc948 */\n"
-                     "strb r4, [r2, #10] /* 0x07fcc94a */\n"
-                     "movs r3, #210	@ 0xd2 /* 0x07fcc94c */\n"
-                     "ldrh r3, [r1, r3] /* 0x07fcc94e */\n"
-                     "strb r3, [r2, #12] /* 0x07fcc950 */\n"
-                     "movs r6, #197	@ 0xc5 /* 0x07fcc952 */\n"
-                     "ldrb r6, [r1, r6] /* 0x07fcc954 */\n"
-                     "strb r6, [r0, #2] /* 0x07fcc956 */\n"
-                     "ldr r6, [sp, #8] /* 0x07fcc958 */\n"
-                     "lsrs r6, r6, #8 /* 0x07fcc95a */\n"
-                     "strb r6, [r2, #1] /* 0x07fcc95c */\n"
-                     "ldr r6, [sp, #4] /* 0x07fcc95e */\n"
-                     "lsrs r6, r6, #8 /* 0x07fcc960 */\n"
-                     "strb r6, [r2, #3] /* 0x07fcc962 */\n"
-                     "ldr r6, [sp, #0] /* 0x07fcc964 */\n"
-                     "lsrs r6, r6, #8 /* 0x07fcc966 */\n"
-                     "strb r6, [r2, #5] /* 0x07fcc968 */\n"
-                     "lsrs r6, r7, #8 /* 0x07fcc96a */\n"
-                     "strb r6, [r2, #7] /* 0x07fcc96c */\n"
-                     "lsrs r5, r5, #8 /* 0x07fcc96e */\n"
-                     "strb r5, [r2, #9] /* 0x07fcc970 */\n"
-                     "lsrs r4, r4, #8 /* 0x07fcc972 */\n"
-                     "strb r4, [r2, #11] /* 0x07fcc974 */\n"
-                     "lsrs r3, r3, #8 /* 0x07fcc976 */\n"
-                     "strb r3, [r2, #13] /* 0x07fcc978 */\n"
-                     "movs r2, #36	@ 0x24 /* 0x07fcc97a */\n"
-                     "ldr r3, [sp, #12] /* 0x07fcc97c */\n"
-                     "ldrb r2, [r3, r2] /* 0x07fcc97e */\n"
-                     "strb r2, [r0, #17] /* 0x07fcc980 */\n"
-                     "ldr r2, [pc, #24] /* 0x07fcc982 */\n"
-                     "ldr r2, [r2, #44]	@ 0x2c /* 0x07fcc984 */\n"
-                     "strb r2, [r0, #18] /* 0x07fcc986 */\n"
-                     "ldr r1, [r1, #56]	@ 0x38 /* 0x07fcc988 */\n"
-                     "strb r1, [r0, #19] /* 0x07fcc98a */\n"
-                     "bl search_queue_and_insert_limit_twenty\n" /* at 0x07fcc98c */
-                     ".L_advance_sensor_cycle_and_toggle_mode_flags_at_07fcc990:\n"
-                     "add sp, #36 /* 0x07fcc990 */\n"
-                     "pop {r4, r5, r6, r7, pc} /* 0x07fcc992 */\n");
+    struct sensor_cycle_state *state = &merged_globals_5650;
+    struct sensor_cycle_counters *counters = &merged_globals_56d0;
+    /* SDK ROM llc_env[0]. Capture before hooks, which may change the live link. */
+    struct llc_env_tag *link = *(struct llc_env_tag **)0x07fd7918u;
+    struct sensor_snapshot_record record;
+    volatile struct sensor_snapshot_record *output = &record;
+    volatile uint8_t *bytes = (volatile uint8_t *)&record;
+    volatile uint8_t *payload = (volatile uint8_t *)__builtin_annotation((uintptr_t)(bytes + 3), "snapshot payload");
+    uint8_t active = state->cycle_active;
+
+    if (active == 1 && ++state->cycle_count >= state->cycle_limit)
+        state->cycle_active = 0;
+    counters->cycle_counter++;
+    if (active == 1 && (counters->cycle_counter & 1)) {
+        if (state->mode_flag == 0) {
+            state->mode_flag = 1;
+            update_mode_flags_and_transitions(MODE_FLAG_SET_TRANSITION);
+        }
+    } else if (state->mode_flag == 1) {
+        state->mode_flag = 0;
+        update_mode_flags_and_transitions(MODE_FLAG_CLEAR_TRANSITION);
+    }
+    if (REPORT_BYTE(0xc4) != 1)
+        return;
+    /* V204 stores all low bytes, then the kind, then all high bytes. */
+    output->command = CYCLE_REPORT_RECORD;
+    uint16_t value_0 = REPORT_HALFWORD(0xc6);
+    payload[0] = value_0;
+    uint16_t value_1 = REPORT_HALFWORD(0xc8);
+    payload[2] = value_1;
+    uint16_t value_2 = REPORT_HALFWORD(0xca);
+    payload[4] = value_2;
+    uint16_t value_3 = REPORT_HALFWORD(0xcc);
+    payload[6] = value_3;
+    uint16_t value_4 = REPORT_HALFWORD(0xce);
+    payload[8] = value_4;
+    uint16_t value_5 = REPORT_HALFWORD(0xd0);
+    payload[10] = value_5;
+    uint16_t value_6 = REPORT_HALFWORD(0xd2);
+    payload[12] = value_6;
+    bytes[2] = REPORT_BYTE(0xc5);
+    payload[1] = value_0 >> 8;
+    payload[3] = value_1 >> 8;
+    payload[5] = value_2 >> 8;
+    payload[7] = value_3 >> 8;
+    payload[9] = value_4 >> 8;
+    payload[11] = value_5 >> 8;
+    payload[13] = value_6 >> 8;
+    bytes[17] = link->rssi;
+    bytes[18] = counters->report_value;
+    bytes[19] = sr08_shared_context.total_steps;
+    search_queue_and_insert_limit_twenty(&record);
 }

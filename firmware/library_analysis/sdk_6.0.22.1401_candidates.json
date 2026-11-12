@@ -1,0 +1,252 @@
+{
+  "examined_functions": 68,
+  "candidates": [
+    {
+      "member": "patch.o",
+      "symbol": "l2cc_handle_invalid_pdu",
+      "section": ".text",
+      "address": "0x7fc0a98",
+      "size": 276,
+      "compared_bytes": 236,
+      "masked_bytes": 40
+    },
+    {
+      "member": "patch.o",
+      "symbol": "PATCHED_atts_mtu_exc_req",
+      "section": ".text",
+      "address": "0x7fc01b4",
+      "size": 52,
+      "compared_bytes": 32,
+      "masked_bytes": 20
+    },
+    {
+      "member": "patch.o",
+      "symbol": "PATCHED_smpc_is_sec_mode_reached",
+      "section": ".text",
+      "address": "0x7fc01e8",
+      "size": 66,
+      "compared_bytes": 66,
+      "masked_bytes": 0
+    },
+    {
+      "member": "patch.o",
+      "symbol": "PATCHED_smpc_check_key_distrib",
+      "section": ".text",
+      "address": "0x7fc022a",
+      "size": 74,
+      "compared_bytes": 74,
+      "masked_bytes": 0
+    },
+    {
+      "member": "patch.o",
+      "symbol": "PATCHED_llcp_length_req_handler",
+      "section": ".text",
+      "address": "0x7fc0274",
+      "size": 120,
+      "compared_bytes": 104,
+      "masked_bytes": 16
+    },
+    {
+      "member": "patch.o",
+      "symbol": "PATCHED_llcp_length_rsp_handler",
+      "section": ".text",
+      "address": "0x7fc02ec",
+      "size": 136,
+      "compared_bytes": 112,
+      "masked_bytes": 24
+    },
+    {
+      "member": "patch.o",
+      "symbol": "JT_llc_le_length_effective_func",
+      "section": ".text",
+      "address": "0x7fc0374",
+      "size": 182,
+      "compared_bytes": 182,
+      "masked_bytes": 0
+    },
+    {
+      "member": "patch.o",
+      "symbol": "PATCHED_smpc_construct_id_addr_info_pdu",
+      "section": ".text",
+      "address": "0x7fc042a",
+      "size": 48,
+      "compared_bytes": 40,
+      "masked_bytes": 8
+    },
+    {
+      "member": "patch.o",
+      "symbol": "PATCHED_llm_adv_report_set",
+      "section": ".text",
+      "address": "0x7fc046e",
+      "size": 142,
+      "compared_bytes": 122,
+      "masked_bytes": 20
+    },
+    {
+      "member": "patch.o",
+      "symbol": "PATCHED_lld_evt_move_to_master",
+      "section": ".text",
+      "address": "0x7fc04fc",
+      "size": 360,
+      "compared_bytes": 300,
+      "masked_bytes": 60
+    },
+    {
+      "member": "patch.o",
+      "symbol": "PATCHED_gapm_adv_sanity",
+      "section": ".text",
+      "address": "0x7fc0664",
+      "size": 244,
+      "compared_bytes": 240,
+      "masked_bytes": 4
+    },
+    {
+      "member": "patch.o",
+      "symbol": "PATCHED_gapm_get_ad_type_flag",
+      "section": ".text",
+      "address": "0x7fc0758",
+      "size": 38,
+      "compared_bytes": 38,
+      "masked_bytes": 0
+    },
+    {
+      "member": "patch.o",
+      "symbol": "PK_PointMult_func",
+      "section": ".text",
+      "address": "0x7fc077e",
+      "size": 246,
+      "compared_bytes": 230,
+      "masked_bytes": 16
+    },
+    {
+      "member": "patch.o",
+      "symbol": "llm_create_p256_key_func",
+      "section": ".text",
+      "address": "0x7fc0874",
+      "size": 70,
+      "compared_bytes": 54,
+      "masked_bytes": 16
+    },
+    {
+      "member": "patch.o",
+      "symbol": "llm_p256_req_handler_func",
+      "section": ".text",
+      "address": "0x7fc08ba",
+      "size": 290,
+      "compared_bytes": 246,
+      "masked_bytes": 44
+    },
+    {
+      "member": "patch.o",
+      "symbol": "PATCHED_gapm_reset_cmd_handler",
+      "section": ".text",
+      "address": "0x7fc09dc",
+      "size": 78,
+      "compared_bytes": 58,
+      "masked_bytes": 20
+    },
+    {
+      "member": "patch.o",
+      "symbol": "PATCHED_hci_command_handler",
+      "section": ".text",
+      "address": "0x7fc0a2a",
+      "size": 110,
+      "compared_bytes": 74,
+      "masked_bytes": 36
+    },
+    {
+      "member": "patch.o",
+      "symbol": "PATCHED_hci_acl_data_rx_handler",
+      "section": ".text",
+      "address": "0x7fc0bac",
+      "size": 620,
+      "compared_bytes": 516,
+      "masked_bytes": 104
+    },
+    {
+      "member": "patch.o",
+      "symbol": "JT_l2cc_pdu_unpack_func",
+      "section": ".text",
+      "address": "0x7fc0e18",
+      "size": 812,
+      "compared_bytes": 760,
+      "masked_bytes": 52
+    },
+    {
+      "member": "patch.o",
+      "symbol": "JT_l2cc_pdu_recv_ind_handler_func",
+      "section": ".text",
+      "address": "0x7fc1144",
+      "size": 70,
+      "compared_bytes": 58,
+      "masked_bytes": 12
+    },
+    {
+      "member": "patch.o",
+      "symbol": "PATCHED_llc_ch_map_req_ind",
+      "section": ".text",
+      "address": "0x7fc118a",
+      "size": 110,
+      "compared_bytes": 86,
+      "masked_bytes": 24
+    },
+    {
+      "member": "patch.o",
+      "symbol": "PATCHED_smpc_recv_pair_rand_pdu",
+      "section": ".text",
+      "address": "0x7fc11f8",
+      "size": 306,
+      "compared_bytes": 222,
+      "masked_bytes": 84
+    },
+    {
+      "member": "rf_calibration.o",
+      "symbol": "rf_calibration_585",
+      "section": ".text",
+      "address": "0x7fc16f8",
+      "size": 84,
+      "compared_bytes": 72,
+      "masked_bytes": 12
+    },
+    {
+      "member": "rf_calibration.o",
+      "symbol": "set_gauss_modgain",
+      "section": ".text",
+      "address": "0x7fc17bc",
+      "size": 54,
+      "compared_bytes": 54,
+      "masked_bytes": 0
+    },
+    {
+      "member": "smpc_util.o",
+      "symbol": "PATCHED_smpc_dhkey_calc_start",
+      "section": ".text",
+      "address": "0x7fc180c",
+      "size": 136,
+      "compared_bytes": 108,
+      "masked_bytes": 28
+    },
+    {
+      "member": "smpc_util.o",
+      "symbol": "JT_llm_p256_start_func",
+      "section": ".text",
+      "address": "0x7fc1894",
+      "size": 82,
+      "compared_bytes": 70,
+      "masked_bytes": 12
+    },
+    {
+      "member": "arch_asm.o",
+      "symbol": "arch_asm_delay_us",
+      "section": ".text",
+      "address": "0x7fc0194",
+      "size": 30,
+      "compared_bytes": 26,
+      "masked_bytes": 4
+    }
+  ],
+  "version": "6.0.22.1401",
+  "zip_sha256": "c8f107037d031dca5557dad0edb314ed12c2e628c0a056810c12fb0a8764be58",
+  "archive_sha256": "94c3329310e02625f910900faf15d4cd660fb7da43e0139cd975a390a19622a0",
+  "archive_identical_to_atc": true
+}

@@ -1,0 +1,138 @@
+[
+  {
+    "early_readers": false,
+    "caller_first": false,
+    "pool_object_order": [
+      "0x7fc832c",
+      "0x7fc84e4",
+      "0x7fc8568",
+      "0x7fc867c"
+    ],
+    "loads": [
+      {
+        "site": "0x7fc82b2",
+        "target": "0x7fc82bc"
+      }
+    ],
+    "reader_bytes": 16
+  },
+  {
+    "early_readers": false,
+    "caller_first": false,
+    "pool_object_order": [
+      "0x7fc867c",
+      "0x7fc8568",
+      "0x7fc84e4",
+      "0x7fc832c"
+    ],
+    "loads": [
+      {
+        "site": "0x7fc82b2",
+        "target": "0x7fc82bc"
+      }
+    ],
+    "reader_bytes": 16
+  },
+  {
+    "early_readers": false,
+    "caller_first": true,
+    "pool_object_order": [
+      "0x7fc832c",
+      "0x7fc84e4",
+      "0x7fc8568",
+      "0x7fc867c"
+    ],
+    "loads": [
+      {
+        "site": "0x7fc82b2",
+        "target": "0x7fc82bc"
+      }
+    ],
+    "reader_bytes": 16
+  },
+  {
+    "early_readers": false,
+    "caller_first": true,
+    "pool_object_order": [
+      "0x7fc867c",
+      "0x7fc8568",
+      "0x7fc84e4",
+      "0x7fc832c"
+    ],
+    "loads": [
+      {
+        "site": "0x7fc82b2",
+        "target": "0x7fc82bc"
+      }
+    ],
+    "reader_bytes": 16
+  },
+  {
+    "early_readers": true,
+    "caller_first": false,
+    "pool_object_order": [
+      "0x7fc832c",
+      "0x7fc84e4",
+      "0x7fc8568",
+      "0x7fc867c"
+    ],
+    "loads": [
+      {
+        "site": "0x7fc82b2",
+        "target": "0x7fc82bc"
+      }
+    ],
+    "reader_bytes": 16
+  },
+  {
+    "early_readers": true,
+    "caller_first": false,
+    "pool_object_order": [
+      "0x7fc867c",
+      "0x7fc8568",
+      "0x7fc84e4",
+      "0x7fc832c"
+    ],
+    "loads": [
+      {
+        "site": "0x7fc82b2",
+        "target": "0x7fc82bc"
+      }
+    ],
+    "reader_bytes": 16
+  },
+  {
+    "early_readers": true,
+    "caller_first": true,
+    "pool_object_order": [
+      "0x7fc832c",
+      "0x7fc84e4",
+      "0x7fc8568",
+      "0x7fc867c"
+    ],
+    "loads": [
+      {
+        "site": "0x7fc82b2",
+        "target": "0x7fc82bc"
+      }
+    ],
+    "reader_bytes": 16
+  },
+  {
+    "early_readers": true,
+    "caller_first": true,
+    "pool_object_order": [
+      "0x7fc867c",
+      "0x7fc8568",
+      "0x7fc84e4",
+      "0x7fc832c"
+    ],
+    "loads": [
+      {
+        "site": "0x7fc82b2",
+        "target": "0x7fc82bc"
+      }
+    ],
+    "reader_bytes": 16
+  }
+]

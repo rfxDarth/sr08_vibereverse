@@ -1,6 +1,8 @@
 #ifndef SR08_STARTUP_EXCEPTION_VECTORS_H
 #define SR08_STARTUP_EXCEPTION_VECTORS_H
 
+#include "firmware/reconstructed/include/sr08_static_assert.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -12,15 +14,15 @@ struct sr08_startup_exception_vectors {
     void (*hardfault_entry)(const uint32_t *exception_context);
 };
 
-_Static_assert(offsetof(struct sr08_startup_exception_vectors, initialization_hook) == 0,
+SR08_STATIC_ASSERT(offsetof(struct sr08_startup_exception_vectors, initialization_hook) == 0,
                "startup hook vector must remain at offset zero");
-_Static_assert(offsetof(struct sr08_startup_exception_vectors, reset_entry) == 4,
+SR08_STATIC_ASSERT(offsetof(struct sr08_startup_exception_vectors, reset_entry) == 4,
                "reset entry vector must remain at offset four");
-_Static_assert(offsetof(struct sr08_startup_exception_vectors, nmi_entry) == 8,
+SR08_STATIC_ASSERT(offsetof(struct sr08_startup_exception_vectors, nmi_entry) == 8,
                "NMI vector must remain at offset eight");
-_Static_assert(offsetof(struct sr08_startup_exception_vectors, hardfault_entry) == 12,
+SR08_STATIC_ASSERT(offsetof(struct sr08_startup_exception_vectors, hardfault_entry) == 12,
                "HardFault vector must remain at offset twelve");
-_Static_assert(sizeof(struct sr08_startup_exception_vectors) == 16,
+SR08_STATIC_ASSERT(sizeof(struct sr08_startup_exception_vectors) == 16,
                "startup and exception vectors must remain 16 bytes");
 
 #endif

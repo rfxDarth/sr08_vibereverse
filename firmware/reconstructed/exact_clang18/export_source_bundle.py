@@ -5,6 +5,8 @@ from __future__ import annotations
 import argparse
 import json
 import shutil
+
+import build_v204 as build
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -19,7 +21,7 @@ def bundle_readme() -> str:
     return f"""# Standalone V204 source build
 
 This bundle builds the 67,136-byte V204 payload and its 67,200-byte SUOTA
-container from the included C sources, fixed data, linker layout, and frozen
+container from the included C and SDK startup sources, fixed data, linker layout, and frozen
 source manifest. It does not need the original firmware image, extracted
 payload, Ghidra project, scan exports, or repository analysis tools.
 Every C translation unit is compiled with implicit function declarations
@@ -28,7 +30,9 @@ treated as errors, with shared declarations kept in the included headers.
 The build compiles source units into relocatable ARM objects and links named
 code and data sections at fixed addresses. It generates the payload from those
 sections and the SUOTA container from the included header. It does not copy a
-firmware image or depend on cached compiler output. Some routines remain named
+firmware image or depend on cached compiler output. The delay and two security helpers are linked from the included, hash-pinned
+Dialog SDK archive members `arch_asm.o` and `smpc_util.o`; the build requires `arm-none-eabi-ar` to extract it.
+Some routines remain named
 Thumb instruction transcriptions or mixed C and assembly to preserve exact
 instruction encodings; the catalog records their recovered behavior and source
 style in the full repository. Pinned instruction bodies use Thumb mnemonics and
@@ -42,7 +46,13 @@ they are not included because they are not build inputs.
 - Python 3.9 or later (standard library only)
 - `clang-18`
 - `arm-none-eabi-gcc` (verified with 13.2.1)
-- `arm-none-eabi-ld`, `arm-none-eabi-objcopy`, and `arm-none-eabi-objdump`
+- `arm-none-eabi-ar`, `arm-none-eabi-ld`, `arm-none-eabi-objcopy`, and `arm-none-eabi-objdump`
+- Native ARM Compiler 5.06u7 and 6.16, with MDK-Lite mappings, under your tools directory
+- Wine and licensed Keil MDK Professional 5.36 / ARM Compiler 6.16 for the LTO module
+
+The tools directory needs `armcc506/`, `armclang616/`, and
+`mdk_lite/mappings/`. Keil defaults to `$WINEPREFIX/drive_c/Keil_v5`
+(or `~/.wine/drive_c/Keil_v5`); override it with `SR08_KEIL_DIR`.
 
 Byte-for-byte verification was performed with Ubuntu Clang 18.1.3 and GNU Arm
 binutils 2.42. The canonical hash check rejects outputs that differ.
@@ -53,6 +63,7 @@ Run from the bundle root:
 
 ```sh
 python3 firmware/reconstructed/exact_clang18/build_v204.py \\
+  --arm-tools-dir /path/to/Tools \\
   --output /tmp/V204.elf \\
   --flat-output /tmp/V204.payload.bin \\
   --container-output /tmp/V204.bin
@@ -82,12 +93,32 @@ def main() -> None:
     manifest = json.loads(manifest_path.read_text())
     files = [
         EXACT / "build_v204.py",
+        EXACT / "arm_compilers.py",
+        EXACT / "audit_inline_assembly.py",
+        ROOT / "firmware/reconstructed/third_party/renesas_sdk_6.0.22.1401/da14585_586.lib",
+        ROOT / "firmware/reconstructed/third_party/renesas_sdk_6.0.22.1401/renesas_license.txt",
+        ROOT / "firmware/reconstructed/third_party/renesas_sdk_6.0.22.1401/README.md",
+        ROOT / "firmware/reconstructed/third_party/renesas_sdk_6.0.22.1401/da14585_symbols.txt",
+        ROOT / "firmware/reconstructed/third_party/renesas_sdk_6.0.18.1182.1/da14585_586.lib",
+        ROOT / "firmware/reconstructed/third_party/renesas_sdk_6.0.18.1182.1/dialog_license.txt",
+        ROOT / "firmware/reconstructed/third_party/renesas_sdk_6.0.18.1182.1/README.md",
         manifest_path,
         DATA / "V204_tables.c",
         DATA / "V204_auto_data.c",
         DATA / "V204_ota_header.c",
         DATA / "V204_data_sections.ld",
+        DATA / "V204_ram_symbols.json",
     ]
+    for relative in build.LTO_SUPPORT_SOURCES + [item[3] for item in build.LTO_READONLY_SOURCES]:
+        source = (ROOT / relative).resolve()
+        if not source.is_relative_to(RECONSTRUCTED.resolve()):
+            raise SystemExit(f"LTO support source is outside reconstruction tree: {relative}")
+        files.append(source)
+    for _, source, *_ in build.SDK_ASSEMBLY_SOURCES:
+        source = source.resolve()
+        if not source.is_relative_to(RECONSTRUCTED.resolve()):
+            raise SystemExit(f"SDK assembly source is outside reconstruction tree: {source}")
+        files.append(source)
     for item in manifest["sources"]:
         source = (ROOT / item["source"]).resolve()
         if not source.is_relative_to(RECONSTRUCTED.resolve()):

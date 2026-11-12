@@ -1,0 +1,12 @@
+{
+  "c_callers_updated": [
+    "lto_support/user_app_disconnect.c",
+    "lto_support/user_app_on_pairing_succeeded.c",
+    "manual_sources/initialize_display_image_region_and_fixed_header.c",
+    "manual_sources/stage_and_program_flash_region_3c000.c",
+    "manual_sources/translate_rom_result_to_display_coordinates.c"
+  ],
+  "wrapper_address": "0x07fc3e90",
+  "legacy_alias": "erase_flash_range",
+  "canonical_function": "erase_flash_range_status"
+}

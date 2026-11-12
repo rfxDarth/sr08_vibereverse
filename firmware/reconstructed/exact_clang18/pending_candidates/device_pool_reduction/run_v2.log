@@ -1,0 +1,8 @@
+{
+  "synthetic_only": true,
+  "oem_input_required": false,
+  "cases": 96,
+  "selected_target_counts": {
+    "0x7fc82bc": 96
+  }
+}

@@ -10,7 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class ExportThumbFunctions extends ghidra.app.script.GhidraScript {
-    private static final String DEFAULT_ROOT = "/home/drath/Projects/personal/code/sr08_ai/firmware/decompiled/V204_functions/thumb_full";
+    private static final String DEFAULT_ROOT = "firmware/decompiled/V204_functions/thumb_full";
     private static final String DEFAULT_VERSION = "V204";
     private static final String DEFAULT_SHA256 = "5020c236a289544d878196bec3e21b005835237bc2fc34935927533bcd1c8570";
 

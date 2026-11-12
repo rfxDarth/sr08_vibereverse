@@ -1,30 +1,24 @@
-/* Update the status display using the remainder from the ROM divide helper. */
-__attribute__((used, naked, section(".text.update_status_display_using_remainder_rom_at_ab3c"))) void
+/* Show status patterns and light up to two indicators from config modulo three.
+ * Compiled natively and linked in the shared module for exact literal sharing.
+ * The address annotation retains the digit-base expression; it supplies no instructions.
+ */
+#include <stdint.h>
+extern uint8_t merged_globals_5650[];
+extern uint8_t merged_globals_56d0[];
+#define VIEW(p) ((volatile uint8_t *)__builtin_annotation((uintptr_t)(p), "display digits"))
+__attribute__((used, section(".text.update_status_display_using_remainder_rom_at_ab3c"))) void
 update_status_display_using_remainder_rom_at_ab3c(void) {
-    __asm__ volatile("push {r4, lr}\n"
-                     "movs r0, #64\n"
-                     "ldr r4, [pc, #560]\n"
-                     "ldr r1, [pc, #48]\n"
-                     "strh r1, [r4, r0]\n"
-                     "mov r0, r4\n"
-                     "adds r0, #64\n"
-                     "movs r1, #82\n"
-                     "strb r1, [r0, #2]\n"
-                     "movs r0, #48\n"
-                     "ldr r1, [pc, #660]\n"
-                     "ldrb r0, [r1, r0]\n"
-                     "movs r1, #3\n"
-                     "bl __aeabi_uidiv\n"
-                     "cmp r1, #2\n"
-                     "bcc .Lhandle_small_remainder\n"
-                     "movs r0, #68\n"
-                     "movs r1, #8\n"
-                     "strb r1, [r4, r0]\n"
-                     "b .Lset_second_indicator\n"
-                     ".Lhandle_small_remainder: cmp r1, #0\n"
-                     "beq .Ldone\n"
-                     ".Lset_second_indicator: movs r0, #67\n"
-                     "movs r1, #8\n"
-                     "strb r1, [r4, r0]\n"
-                     ".Ldone: pop {r4, pc}\n");
+    volatile uint8_t *base = merged_globals_56d0;
+    *(volatile uint16_t *)(base + 64) = 0x5b13;
+    volatile uint8_t *digits = VIEW(base + 64);
+    digits[2] = 82;
+    unsigned remainder = ((volatile uint8_t *)merged_globals_5650)[48] % 3;
+    if (remainder >= 2) {
+        base[68] = 8;
+        goto second;
+    }
+    if (remainder == 0)
+        return;
+second:
+    base[67] = 8;
 }

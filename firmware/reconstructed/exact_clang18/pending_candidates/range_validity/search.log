@@ -1,0 +1,4 @@
+{'config': (-1, -1, -1, -1), 'bytes': 100, 'masked_code_differences': 59}
+{'config': (-1, -1, -1, 0), 'bytes': 104, 'masked_code_differences': 12}
+{'config': (-1, -1, 0, 0), 'bytes': 104, 'masked_code_differences': 0}
+finished 81 variants; best {'config': (-1, -1, 0, 0), 'bytes': 104, 'masked_code_differences': 0}

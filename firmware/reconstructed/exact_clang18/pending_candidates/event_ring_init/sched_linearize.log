@@ -1,0 +1,3 @@
+armclang failed for initialize_configuration_record_defaults (ac6):
+clang (LLVM option parsing): for the --pre-RA-sched option: Cannot find option named 'linearize'!
+

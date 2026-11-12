@@ -1,30 +1,32 @@
-/* Select one of two display patterns from the mode flag and write five bytes. */
-__attribute__((used, naked, section(".text.select_two_display_patterns_mode_flag_at_ab78"))) void
+/* Select and write the five digit patterns for mode bit one.
+ * Compiled natively and linked in the shared module for exact literal sharing.
+ * The address annotation retains the digit-base expression; it supplies no instructions.
+ */
+#include <stdint.h>
+extern uint8_t merged_globals_5650[];
+extern uint8_t merged_globals_56d0[];
+__attribute__((used, section(".text.select_two_display_patterns_mode_flag_at_ab78"))) void
 select_two_display_patterns_mode_flag_at_ab78(void) {
-    __asm__ volatile("push {r4, r5, r6, lr}\n"
-                     "movs r0, #48\n"
-                     "ldr r1, [pc, #980]\n"
-                     "ldrb r0, [r1, r0]\n"
-                     "lsls r0, r0, #30\n"
-                     "bmi .Lpattern_when_mode_bit_one_set\n"
-                     "movs r3, #62\n"
-                     "movs r0, #111\n"
-                     "movs r1, #36\n"
-                     "movs r2, #24\n"
-                     "movs r4, #58\n"
-                     "b .Lwrite_selected_pattern\n"
-                     ".Lpattern_when_mode_bit_one_set: movs r0, #107\n"
-                     "movs r1, #91\n"
-                     "movs r2, #55\n"
-                     "movs r4, #19\n"
-                     "mov r3, r0\n"
-                     ".Lwrite_selected_pattern: movs r5, #64\n"
-                     "ldr r6, [pc, #468]\n"
-                     "strb r4, [r6, r5]\n"
-                     "adds r6, #64\n"
-                     "strb r3, [r6, #4]\n"
-                     "strb r0, [r6, #3]\n"
-                     "strb r1, [r6, #2]\n"
-                     "strb r2, [r6, #1]\n"
-                     "pop {r4, r5, r6, pc}\n");
+    volatile uint8_t *config = (volatile uint8_t *)&merged_globals_5650;
+    uint32_t fifth, fourth, first, second, third;
+    if ((config[0x30] & 2) == 0) {
+        fifth = 62;
+        fourth = 111;
+        first = 58;
+        second = 24;
+        third = 36;
+    } else {
+        fifth = 107;
+        fourth = 107;
+        first = 19;
+        second = 55;
+        third = 91;
+    }
+    volatile uint8_t *display = (volatile uint8_t *)&merged_globals_56d0;
+    display[0x40] = first;
+    volatile uint8_t *digits = (volatile uint8_t *)__builtin_annotation((uintptr_t)(display + 0x40), "display digits");
+    digits[4] = fifth;
+    digits[3] = fourth;
+    digits[2] = third;
+    digits[1] = second;
 }

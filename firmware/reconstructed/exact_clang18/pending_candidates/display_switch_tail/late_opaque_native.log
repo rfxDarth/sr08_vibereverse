@@ -1,0 +1,42 @@
+group 0x07fc3b78-0x07fc3d6c (500 bytes)
+MISMATCH: 34 differing bytes
+--- V204
++++ candidate
+@@ -172,21 +172,21 @@
+ 7fc3cea:	06e0      	lsls	r0, r4, #27
+ 7fc3cec:	f7ff fea4 	bl	0x7fc3a38
+-7fc3cf0:	7b39      	ldrb	r1, [r7, #12]
+-7fc3cf2:	a011      	add	r0, pc, #68	@ (adr r0, 0x7fc3d38)
+-7fc3cf4:	462a      	mov	r2, r5
+-7fc3cf6:	f001 fb19 	bl	0x7fc532c
+-7fc3cfa:	2001      	movs	r0, #1
+-7fc3cfc:	2100      	movs	r1, #0
+-7fc3cfe:	f008 fe51 	bl	0x7fcc9a4
+-7fc3d02:	2e00      	cmp	r6, #0
+-7fc3d04:	d001      	beq.n	0x7fc3d0a
+-7fc3d06:	4628      	mov	r0, r5
+-7fc3d08:	47b0      	blx	r6
+-7fc3d0a:	7b38      	ldrb	r0, [r7, #12]
+-7fc3d0c:	733d      	strb	r5, [r7, #12]
+-7fc3d0e:	9904      	ldr	r1, [sp, #16]
+-7fc3d10:	2900      	cmp	r1, #0
++7fc3cf0:	9c04      	ldr	r4, [sp, #16]
++7fc3cf2:	7b39      	ldrb	r1, [r7, #12]
++7fc3cf4:	a010      	add	r0, pc, #64	@ (adr r0, 0x7fc3d38)
++7fc3cf6:	462a      	mov	r2, r5
++7fc3cf8:	f001 fb18 	bl	0x7fc532c
++7fc3cfc:	2001      	movs	r0, #1
++7fc3cfe:	2100      	movs	r1, #0
++7fc3d00:	f008 fe50 	bl	0x7fcc9a4
++7fc3d04:	2e00      	cmp	r6, #0
++7fc3d06:	d001      	beq.n	0x7fc3d0c
++7fc3d08:	4628      	mov	r0, r5
++7fc3d0a:	47b0      	blx	r6
++7fc3d0c:	7b38      	ldrb	r0, [r7, #12]
++7fc3d0e:	733d      	strb	r5, [r7, #12]
++7fc3d10:	2c00      	cmp	r4, #0
+ 7fc3d12:	d000      	beq.n	0x7fc3d16
+-7fc3d14:	4788      	blx	r1
++7fc3d14:	47a0      	blx	r4
+ 7fc3d16:	b005      	add	sp, #20
+ 7fc3d18:	bdf0      	pop	{r4, r5, r6, r7, pc}

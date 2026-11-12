@@ -1,0 +1,31 @@
+{
+  "reference_payload_sha256": "5020c236a289544d878196bec3e21b005835237bc2fc34935927533bcd1c8570",
+  "values": {
+    "0x07fc832c": "0x07fd1e28",
+    "0x07fc84e4": "0x07fd1e28",
+    "0x07fc8568": "0x07fd1e28",
+    "0x07fc867c": "0x07fd1e28"
+  },
+  "main_module_original_loads": [
+    {
+      "function": "retry_radio_command_until_status_0x27",
+      "instruction": "0x07fc7f98",
+      "target": "0x07fc832c"
+    },
+    {
+      "function": "clear_radio_flag_and_configure_state",
+      "instruction": "0x07fc8006",
+      "target": "0x07fc832c"
+    },
+    {
+      "function": "configure_radio_profile_and_mark_state_ready",
+      "instruction": "0x07fc8032",
+      "target": "0x07fc832c"
+    },
+    {
+      "function": "configure_radio_state_and_send_command_6a",
+      "instruction": "0x07fc82b2",
+      "target": "0x07fc867c"
+    }
+  ]
+}

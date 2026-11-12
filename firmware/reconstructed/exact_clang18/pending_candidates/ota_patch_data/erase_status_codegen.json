@@ -1,0 +1,31 @@
+{
+  "code_and_call_relocations_identical": true,
+  "variants": [
+    {
+      "source": "legacy_void",
+      "bytes": 16,
+      "code_sha256": "799c0f0ca45e87a4908724d2aa2dfc0c74bb1f1ddae8c357ce962c33eb888824",
+      "call_relocations": [
+        [
+          "0000000a",
+          "0000050a",
+          "R_ARM_THM_CALL",
+          "perform_flash_memory_operation"
+        ]
+      ]
+    },
+    {
+      "source": "status_returning",
+      "bytes": 16,
+      "code_sha256": "799c0f0ca45e87a4908724d2aa2dfc0c74bb1f1ddae8c357ce962c33eb888824",
+      "call_relocations": [
+        [
+          "0000000a",
+          "0000050a",
+          "R_ARM_THM_CALL",
+          "perform_flash_memory_operation"
+        ]
+      ]
+    }
+  ]
+}

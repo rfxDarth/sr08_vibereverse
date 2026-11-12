@@ -1,0 +1,47 @@
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_cycle_control_state.h"
+#include "firmware/reconstructed/include/sr08_radio_configuration.h"
+extern void configure_command_record(uint32_t);
+extern void configure_radio_state_from_profile(void);
+extern void configure_radio_profile_and_mark_state_ready(uint32_t);
+extern void clear_radio_flag_and_configure_state(void);
+extern void dispatch_enabled_indicator_fields_for_device_status(void);
+__attribute__((used,section(".text.six_way_command_dispatch_default_branch_at_8040"))) void
+six_way_command_dispatch_default_branch_at_8040(uint32_t action) {
+ volatile uint8_t *device=(volatile uint8_t *)&device_control_state;
+ volatile uint8_t *state=(volatile uint8_t *)&cycle_control_state;
+ switch(action) {
+ case 0:
+   configure_command_record(*(volatile uint32_t *)(state+0x20));
+   device[0x17]=1;
+   device[0x15]=1;
+   break;
+ case 1:
+   configure_radio_state_from_profile();
+   device[0x17]=0;
+   break;
+ case 3:
+   state[0x4c]=15;
+   state[0x54]=5;
+   *(volatile uint32_t *)(state+0x50)=64;
+   *(volatile uint16_t *)(state+0x58)=6400;
+   *(volatile uint16_t *)(state+0x4e)=0;
+   goto publish;
+ case 4:
+   device[0x14]=0;
+   configure_radio_profile_and_mark_state_ready(0);
+   device[0x18]=0;
+   break;
+ case 5:
+   state[0x4c]=2;
+   state[0x58]=2;
+   state[0x4e]=0;
+ publish:
+   clear_radio_flag_and_configure_state();
+   dispatch_enabled_indicator_fields_for_device_status();
+   device[0x18]=1;
+   device[0x14]=1;
+   break;
+ default:break;
+ }
+}

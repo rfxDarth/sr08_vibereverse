@@ -1,35 +1,22 @@
-/* Scan the bounded record range until the callback clears the continue byte. */
-__attribute__((used, naked, section(".text.scan_bounded_record_range_until_callback_at_87f4"))) int
-scan_bounded_record_range_until_callback_at_87f4(void) {
-    __asm__ volatile("push {r3, r4, r5, r6, r7, lr}\n"
-                     "mov r1, sp\n"
-                     "movs r0, #0\n"
-                     "strb r0, [r1, #0]\n"
-                     "ldr r4, [pc, #52]\n"
-                     "mov r3, r4\n"
-                     "adds r3, #40\n"
-                     "ldmia r3, {r1, r2, r3}\n"
-                     "subs r1, r1, r2\n"
-                     "subs r7, r3, #1\n"
-                     "ands r7, r1\n"
-                     "cmp r7, #7\n"
-                     "bcc .Lreturn_result\n"
-                     "movs r5, #0\n"
-                     "adds r4, #40\n"
-                     ".Lscan_record: cmp r7, r5\n"
-                     "beq .Lcontinue_flag_set\n"
-                     "mov r6, sp\n"
-                     "mov r0, r4\n"
-                     "mov r1, r5\n"
-                     "mov r2, r6\n"
-                     "bl copy_ring_buffer_entry_if_index_available\n"
-                     "adds r5, r5, #1\n"
-                     "ldrb r0, [r6, #0]\n"
-                     "cmp r0, #1\n"
-                     "beq .Lscan_record\n"
-                     "movs r0, #255\n"
-                     "b .Lreturn_result\n"
-                     ".Lcontinue_flag_set: movs r0, #1\n"
-                     ".Lreturn_result: sxtb r0, r0\n"
-                     "pop {r3, r4, r5, r6, r7, pc}\n");
+/* Report whether the time-event ring holds at least seven events and all of
+ * them are 1: 1 when so, 0 when fewer are queued, -1 at the first other event. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_time_event_queue.h"
+
+void copy_ring_buffer_entry_if_index_available(struct sr08_ring_buffer *queue, uint32_t index, void *destination);
+
+int8_t scan_bounded_record_range_until_callback_at_87f4(void)
+{
+    uint8_t event = 0;
+    struct sr08_ring_buffer *ring = &time_event_queue_state.ring;
+    uint32_t count = (ring->head - ring->tail) & (ring->capacity - 1);
+    if (count < 7)
+        return 0;
+    for (uint32_t index = 0;; index++) {
+        if (index == count)
+            return 1;
+        copy_ring_buffer_entry_if_index_available(ring, index, &event);
+        if (event != 1)
+            return -1;
+    }
 }

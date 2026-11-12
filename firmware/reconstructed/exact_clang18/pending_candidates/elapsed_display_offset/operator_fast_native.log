@@ -1,0 +1,3 @@
+armclang failed for convert_elapsed_sensor_time_minute_second_at_ace8 (ac6):
+clang (LLVM option parsing): for the --pre-RA-sched option: Cannot find option named 'fast'!
+

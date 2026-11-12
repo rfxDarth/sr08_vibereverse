@@ -1,0 +1,8 @@
+{
+  "changed_inputs": [
+    "firmware/reconstructed/exact_clang18/build_v204.py",
+    "firmware/reconstructed/exact_clang18/manual_sources/dispatch_enabled_indicator_fields_for_device_status.c"
+  ],
+  "all_other_inputs_unchanged": 580,
+  "total_inputs": 582
+}

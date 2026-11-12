@@ -12,3 +12,6 @@
 # Python-generated caches
 **/__pycache__/
 *.py[cod]
+
+# Local SDK packages and relocated analysis tools
+/Tools/

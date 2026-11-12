@@ -1,0 +1,18 @@
+group 0x07fcbb38-0x07fcbb6c (52 bytes)
+MISMATCH: 11 differing bytes
+--- V204
++++ candidate
+@@ -14,7 +14,8 @@
+ 7fcbb5a:	f7ff ffcf 	bl	0x7fcbafc
+ 7fcbb5e:	0780      	lsls	r0, r0, #30
+-7fcbb60:	d401      	bmi.n	0x7fcbb66
+-7fcbb62:	200b      	movs	r0, #11
+-7fcbb64:	43c4      	mvns	r4, r0
+-7fcbb66:	4620      	mov	r0, r4
+-7fcbb68:	bd10      	pop	{r4, pc}
++7fcbb60:	d501      	bpl.n	0x7fcbb66
++7fcbb62:	4620      	mov	r0, r4
++7fcbb64:	bd10      	pop	{r4, pc}
++7fcbb66:	200b      	movs	r0, #11
++7fcbb68:	43c0      	mvns	r0, r0
++7fcbb6a:	bd10      	pop	{r4, pc}

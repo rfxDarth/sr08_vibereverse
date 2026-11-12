@@ -1,45 +1,35 @@
-/* Reset related capture and sensor state on the 1-to-0 control transition. */
-__attribute__((used, naked, section(".text.reset_related_capture_sensor_state_control_at_4fc8"))) void
-reset_related_capture_sensor_state_control_at_4fc8(void) {
-    __asm__ volatile("push {r4, r5, r6, lr}\n"
-                     "mov r4, r0\n"
-                     "ldr r5, [pc, #80]\n"
-                     "ldrb r0, [r5, #0]\n"
-                     "cmp r4, #1\n"
-                     "bne .Lcheck0\n"
-                     "cmp r0, #0\n"
-                     "beq .Lassign\n"
-                     ".Lcheck0: cmp r4, #0\n"
-                     "bne .Lassign\n"
-                     "cmp r0, #1\n"
-                     "bne .Lassign\n"
-                     "ldr r0, [pc, #64]\n"
-                     "bl update_mode_flags_and_transitions\n"
-                     "ldr r6, [pc, #64]\n"
-                     "ldrb r0, [r6, #12]\n"
-                     "cmp r0, #22\n"
-                     "beq .Lclear\n"
-                     "movs r0, #0\n"
-                     "bl switch_display_state_and_run_hooks\n"
-                     ".Lclear: movs r0, #66\n"
-                     "movs r1, #0\n"
-                     "strh r1, [r6, r0]\n"
-                     "movs r0, #196\n"
-                     "strb r1, [r5, r0]\n"
-                     "strb r1, [r5, #1]\n"
-                     "strb r1, [r5, #18]\n"
-                     "strb r1, [r5, #17]\n"
-                     "mvns r0, r1\n"
-                     "ldr r1, [pc, #36]\n"
-                     "strh r0, [r1, #14]\n"
-                     "strh r0, [r1, #12]\n"
-                     "movs r0, #125\n"
-                     "lsls r0, r0, #2\n"
-                     "strh r0, [r1, #10]\n"
-                     ".Lassign: strb r4, [r5, #0]\n"
-                     ".set .Lname, .+28\n"
-                     "adr r0, .Lname\n"
-                     "mov r1, r4\n"
-                     "bl format_and_send_uart_message\n"
-                     "pop {r4, r5, r6, pc}\n");
+/* Record the connection state ("c=%d"). On disconnection (1 -> 0), clear the
+ * connection-related mode flags and state, leave display state 22 alone, and
+ * reset the connection-parameter settings (interval 500 / 0xffff, latency
+ * 0xffff). */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_device_settings.h"
+#include "firmware/reconstructed/include/sr08_device_state.h"
+#include "firmware/reconstructed/include/sr08_display_state_switches.h"
+#include "firmware/reconstructed/include/sr08_format.h"
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+#include "firmware/reconstructed/include/sr08_mode_transition.h"
+#include "firmware/reconstructed/include/sr08_shared_context.h"
+
+void reset_related_capture_sensor_state_control_at_4fc8(uint8_t connected)
+{
+    uint8_t previous = sr08_shared_context.connection_state;
+    struct sr08_device_state *state = (struct sr08_device_state *)&merged_globals_5650;
+
+    if (connected == 1 && previous == 0) {
+    } else if (connected == 0 && previous == 1) {
+        update_mode_flags_and_transitions(0x200b0000);
+        if (merged_globals_5650.reserved_0c[0] != 22)
+            switch_display_state_and_run_hooks(0);
+        sr08_shared_context.state_12 = 0;
+        sr08_shared_context.state_01 = 0;
+        state->active_mode_setting = 0;
+        sr08_shared_context.state_c4 = 0;
+        sr08_shared_context.mode_11 = 0;
+        device_settings.slave_latency = 0xffff;
+        device_settings.conn_intv_max = 0xffff;
+        device_settings.conn_intv_min = 500;
+    }
+    sr08_shared_context.connection_state = connected;
+    arch_printf((const uint8_t *)"c=%d\n", connected);
 }

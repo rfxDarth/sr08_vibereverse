@@ -1,0 +1,69 @@
+/* Alice experiment: 216 bytes / 47 differing bytes with native ac6.
+ * Not accepted: two spill slots and validation ordering differ; private literal
+ * placement also differs. The extra 36-byte scratch capacity is a stack-layout
+ * experiment, not a recovered calendar ABI (only 32 output bytes are established).
+ * See WORK_CLAIMS.md; retain the original until whole-image parity is achieved.
+ */
+/* Sum the time covered by the valid 15-minute records of time's day.
+ * Each weekday has an 8 KiB flash slot of 36-byte records with a 128-bit
+ * "record written" bitmap (stored inverted) at its end. For each written
+ * record whose index lies in [first / 15, last / 15) and whose timestamp
+ * falls on that day with status 1, 900 seconds are added. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_calendar_time.h"
+#include "firmware/reconstructed/include/sr08_flash_operation.h"
+
+enum {
+    SECONDS_PER_DAY = 86400,
+    RECORD_MINUTES = 15,
+    RECORD_SECONDS = 900,
+    RECORD_SIZE = 36,
+    DAY_SLOT_BASE = 0x2e000,
+    DAY_SLOT_SIZE = 0x2000,
+    DAY_BITMAP = 0x1fec,
+    RECORD_VALID = 1,
+};
+
+struct day_record_header {
+    uint32_t timestamp;
+    uint8_t status;
+    uint8_t reserved_05_to_07[3];
+};
+
+uint32_t find_latest_valid_record_within_bitset(uint32_t time, uint32_t first, uint32_t last)
+{
+    uint32_t written[4] = {0};
+    uint32_t day = time / SECONDS_PER_DAY;
+    uint32_t day_start = day * SECONDS_PER_DAY;
+    uint32_t slot, index, end, address, total;
+    unsigned i;
+    union {
+        struct sr08_calendar_time calendar;
+        struct day_record_header record;
+        uint8_t full_tm_storage[36];
+    } scratch;
+
+    convert_timestamp_to_calendar_fields(day_start, &scratch.calendar);
+    slot = day % 7 * DAY_SLOT_SIZE;
+    perform_flash_memory_operation((uint8_t *)written, slot + DAY_SLOT_BASE + DAY_BITMAP, sizeof(written),
+                                   SR08_FLASH_READ);
+    for (i = 0; i < 4; i++)
+        written[i] = ~written[i];
+    index = first / RECORD_MINUTES;
+    end = last / RECORD_MINUTES;
+    address = index * RECORD_SIZE + slot + DAY_SLOT_BASE;
+    total = 0;
+    for (; index < end; index++, address += RECORD_SIZE) {
+        uint8_t word = index / 32;
+
+        if ((written[word] >> (index % 32)) & 1) {
+            volatile struct day_record_header *record = (struct day_record_header *)__builtin_annotation((uintptr_t)&scratch.record, "day record");
+            perform_flash_memory_operation((uint8_t *)record, address, sizeof(scratch.record), SR08_FLASH_READ);
+            uint32_t next = record->status == RECORD_VALID ? total + RECORD_SECONDS : total;
+            uint32_t stamp = record->timestamp;
+            next = stamp - day_start < SECONDS_PER_DAY ? next : total;
+            total = stamp >= day_start ? next : total;
+        }
+    }
+    return total;
+}

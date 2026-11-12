@@ -1,0 +1,21 @@
+0x07fca8ec-0x07fca904 format_signed_state_byte_as_three_display_digits (24 bytes)
+--- V204
++++ candidate
+@@ -3,5 +3,5 @@
+ 7fca8f0:	49e0      	ldr	r1, [pc, #896]	@ (0x7fcac74)
+ 7fca8f2:	5608      	ldrsb	r0, [r1, r0]
+-7fca8f4:	49e0      	ldr	r1, [pc, #896]	@ (0x7fcac78)
++7fca8f4:	49fa      	ldr	r1, [pc, #1000]	@ (0x7fcace0)
+ 7fca8f6:	3142      	adds	r1, #66	@ 0x42
+ 7fca8f8:	2203      	movs	r2, #3
+0x07fca904-0x07fca914 write_literal_halfword_to_shared_state_offset_0x40 (16 bytes)
+--- V204
++++ candidate
+@@ -1,4 +1,4 @@
+ 7fca904:	2040      	movs	r0, #64	@ 0x40
+-7fca906:	49eb      	ldr	r1, [pc, #940]	@ (0x7fcacb4)
++7fca906:	49f6      	ldr	r1, [pc, #984]	@ (0x7fcace0)
+ 7fca908:	4a01      	ldr	r2, [pc, #4]	@ (0x7fca910)
+ 7fca90a:	520a      	strh	r2, [r1, r0]
+0x07fcacd0-0x07fcace8 write_shared_state_byte_44_and_word_40 (24 bytes)
+MISMATCH

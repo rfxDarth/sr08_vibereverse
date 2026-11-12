@@ -1,8 +1,11 @@
 #ifndef SR08_HID_SERVICE_DATA_H
 #define SR08_HID_SERVICE_DATA_H
 
+#include "firmware/reconstructed/include/sr08_static_assert.h"
+
 #include <stddef.h>
 #include <stdint.h>
+#include "firmware/reconstructed/include/sr08_sdk_attm.h"
 
 enum sr08_hid_attribute_uuid {
     SR08_ATT_UUID_PRIMARY_SERVICE = 0x2800,
@@ -49,35 +52,35 @@ struct sr08_hid_service_descriptor_template {
     struct sr08_hid_attribute_template attributes[23];
 } __attribute__((packed));
 
-/* Typed view into the 1002-byte constant pool at 0x07fcf6e2. */
+/* Typed view into the 786-byte constant pool at 0x07fcf6e2. */
 struct sr08_hid_profile_data_view {
     uint8_t bytes_before_callback_map[0x7e];
     struct sr08_hid_callback_mapping callback_map[4];
     struct sr08_hid_service_descriptor_template service;
     uint32_t handler_addresses[4];
-    uint8_t remaining_bytes[544];
+    uint8_t bytes_before_custom_attributes[328];
 } __attribute__((packed));
 
 union sr08_hid_profile_data_region {
-    uint8_t bytes[1002];
+    uint8_t bytes[786];
     struct sr08_hid_profile_data_view view;
 } __attribute__((packed));
 
-_Static_assert(sizeof(struct sr08_hid_callback_mapping) == 8, "HID callback mapping must remain two words");
-_Static_assert(sizeof(struct sr08_hid_attribute_template) == 12, "HID attribute template must remain three words");
-_Static_assert(offsetof(struct sr08_hid_service_descriptor_template, attributes) == 8,
+SR08_STATIC_ASSERT(sizeof(struct sr08_hid_callback_mapping) == 8, "HID callback mapping must remain two words");
+SR08_STATIC_ASSERT(sizeof(struct sr08_hid_attribute_template) == 12, "HID attribute template must remain three words");
+SR08_STATIC_ASSERT(offsetof(struct sr08_hid_service_descriptor_template, attributes) == 8,
                "HID attribute list must follow its two-word header");
-_Static_assert(sizeof(struct sr08_hid_service_descriptor_template) == 284,
+SR08_STATIC_ASSERT(sizeof(struct sr08_hid_service_descriptor_template) == 284,
                "HID service descriptor template must remain 284 bytes");
-_Static_assert(offsetof(struct sr08_hid_profile_data_view, callback_map) == 0x7e,
+SR08_STATIC_ASSERT(offsetof(struct sr08_hid_profile_data_view, callback_map) == 0x7e,
                "HID callback map must remain at address 0x07fcf760");
-_Static_assert(offsetof(struct sr08_hid_profile_data_view, service) == 0x9e,
+SR08_STATIC_ASSERT(offsetof(struct sr08_hid_profile_data_view, service) == 0x9e,
                "HID service template must remain at address 0x07fcf780");
-_Static_assert(offsetof(struct sr08_hid_profile_data_view, handler_addresses) == 0x1ba,
+SR08_STATIC_ASSERT(offsetof(struct sr08_hid_profile_data_view, handler_addresses) == 0x1ba,
                "HID handler addresses must remain at address 0x07fcf89c");
-_Static_assert(sizeof(struct sr08_hid_profile_data_view) == 1002,
+SR08_STATIC_ASSERT(sizeof(struct sr08_hid_profile_data_view) == 786,
                "typed HID data view must cover the complete constant pool");
-_Static_assert(sizeof(union sr08_hid_profile_data_region) == 1002,
+SR08_STATIC_ASSERT(sizeof(union sr08_hid_profile_data_region) == 786,
                "HID data region must preserve its original section size");
 
 #endif

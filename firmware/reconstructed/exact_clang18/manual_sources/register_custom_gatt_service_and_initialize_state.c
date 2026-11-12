@@ -1,472 +1,213 @@
-/*
- * register_custom_gatt_service_and_initialize_state: 906-byte fixed-address Thumb transcription.
- *
- * The routine takes five ABI arguments and returns the ATT service-registration
- * status. Only the observed argument roles are named here; the service context
- * layout is not fully recovered.
- *
- * 1. Allocate and populate an RWBLE 8 GATT service descriptor: a 24-byte
- *    service header followed by 19 24-byte attribute descriptors. The checked
- *    layout and compile-time size assertions are in sr08_gatt_service_descriptor.h.
- * 2. Register the table with the ATT database.
- * 3. On success, allocate per-connection request state, publish the service
- *    handle and protocol fields, and initialize the associated ATT values.
- * 4. Free the temporary attribute table on both success and failure, then
- *    return the registration status.
- *
- * The assembly remains pinned because it encodes the exact V204 table writes
- * and branches. These notes describe the observed flow, not vendor source.
+/* suotar_init and suotar_set_dle_params_in_db from the Renesas DA145xx SDK
+ * 6.0.18.1182.1, sdk/ble_stack/profiles/suota/suotar/src/suotar.c (Copyright (C)
+ * Dialog Semiconductor / Renesas Electronics Corporation; see
+ * third_party/renesas_sdk_6.0.18.1182.1/dialog_license.txt), with the defines
+ * from suotar.h, suotar_task.h, attm.h and att.h that it uses
+ * (SUOTA_VERSION_1_3). suotar_init is static in the SDK; V204 reaches it
+ * through suotar_itf. V204's KE_MEM_NON_RETENTION heap index is 2.
  */
 #include <stdint.h>
-#include "firmware/reconstructed/include/sr08_attmdb.h"
-#include "firmware/reconstructed/include/sr08_gatt_service_descriptor.h"
-__attribute__((used, naked, section(".text.register_custom_gatt_service_and_initialize_state"))) int
-register_custom_gatt_service_and_initialize_state(void *service_context, uint16_t *service_handle_out,
-                                                  uint16_t service_value, int16_t option_bits,
-                                                  const uint8_t *initial_protocol_byte) {
-    __asm__ volatile("push {r4, r5, r6, r7, lr} /* 0x07fcbc40 */\n"
-                     "sub sp, #52 /* 0x07fcbc42 */\n"
-                     "mov r7, r3 /* 0x07fcbc44 */\n"
-                     "str r2, [sp, #8] /* 0x07fcbc46 */\n"
-                     "mov r6, r1 /* 0x07fcbc48 */\n"
-                     "mov r5, r0 /* 0x07fcbc4a */\n"
-                     "movs r0, #1 /* 0x07fcbc4c */\n"
-                     "str r0, [sp, #36]	@ 0x24 /* 0x07fcbc4e */\n"
-                     "lsls r0, r0, #8 /* 0x07fcbc50 */\n"
-                     "str r0, [sp, #32] /* 0x07fcbc52 */\n"
-                     "adds r0, #224	@ 0xe0 /* 0x07fcbc54 */\n"
-                     "movs r1, #2 /* 0x07fcbc56 */\n"
-                     "str r1, [sp, #40]	@ 0x28 /* 0x07fcbc58 */\n"
-                     "bl ke_malloc\n" /* at 0x07fcbc5a */
-                     "mov r4, r0 /* 0x07fcbc5e */\n"
-                     "str r6, [sp, #12] /* 0x07fcbc60 */\n"
-                     "ldrh r0, [r6, #0] /* 0x07fcbc62 */\n"
-                     "strh r0, [r4, #0] /* 0x07fcbc64 */\n"
-                     "str r5, [sp, #16] /* 0x07fcbc66 */\n"
-                     "ldrh r0, [r5, #20] /* 0x07fcbc68 */\n"
-                     "strh r0, [r4, #2] /* 0x07fcbc6a */\n"
-                     "movs r0, #30 /* 0x07fcbc6c */\n"
-                     "str r7, [sp, #4] /* 0x07fcbc6e */\n"
-                     "ands r0, r7 /* 0x07fcbc70 */\n"
-                     "adds r0, #128	@ 0x80 /* 0x07fcbc72 */\n"
-                     "strb r0, [r4, #4] /* 0x07fcbc74 */\n"
-                     "adds r0, r4, #6 /* 0x07fcbc76 */\n"
-                     ".set .Ladr_07fcbc78, .+852\n"
-                     "adr r1, .Ladr_07fcbc78 /* 0x07fcbc78 -> 0x07fcbfcc */\n"
-                     "movs r2, #16 /* 0x07fcbc7a */\n"
-                     "bl __aeabi_memcpy\n" /* at 0x07fcbc7c */
-                     /* Literal 0x07fcbfdc is named
-                      * v204_gatt_characteristic_declaration_uuid; its low
-                      * halfword is written at table byte offset 24. */
-                     "ldr r0, [pc, #856] /* 0x07fcbc80 */\n"
-                     "strh r0, [r4, #24] /* 0x07fcbc82 */\n"
-                     "mov r6, r0 /* 0x07fcbc84 */\n"
-                     "mov r0, r4 /* 0x07fcbc86 */\n"
-                     "adds r0, #26 /* 0x07fcbc88 */\n"
-                     "movs r7, #22 /* 0x07fcbc8a */\n"
-                     "mov r1, r7 /* 0x07fcbc8c */\n"
-                     "bl __aeabi_memclr\n" /* at 0x07fcbc8e */
-                     "movs r0, #64	@ 0x40 /* 0x07fcbc92 */\n"
-                     "ldr r1, [pc, #840] /* 0x07fcbc94 */\n"
-                     "strh r1, [r4, r0] /* 0x07fcbc96 */\n"
-                     "mov r0, r4 /* 0x07fcbc98 */\n"
-                     "adds r0, #64	@ 0x40 /* 0x07fcbc9a */\n"
-                     "lsrs r5, r1, #16 /* 0x07fcbc9c */\n"
-                     "strh r5, [r0, #2] /* 0x07fcbc9e */\n"
-                     "mov r0, r4 /* 0x07fcbca0 */\n"
-                     "adds r0, #48	@ 0x30 /* 0x07fcbca2 */\n"
-                     "strh r6, [r0, #24] /* 0x07fcbca4 */\n"
-                     "movs r6, #4 /* 0x07fcbca6 */\n"
-                     "strh r6, [r0, #20] /* 0x07fcbca8 */\n"
-                     "ldr r0, [pc, #824] /* 0x07fcbcaa */\n"
-                     "strh r0, [r4, #62]	@ 0x3e /* 0x07fcbcac */\n"
-                     "ldr r0, [pc, #824] /* 0x07fcbcae */\n"
-                     "strh r0, [r4, #60]	@ 0x3c /* 0x07fcbcb0 */\n"
-                     "ldr r0, [pc, #824] /* 0x07fcbcb2 */\n"
-                     "strh r0, [r4, #58]	@ 0x3a /* 0x07fcbcb4 */\n"
-                     "ldr r0, [pc, #824] /* 0x07fcbcb6 */\n"
-                     "strh r0, [r4, #56]	@ 0x38 /* 0x07fcbcb8 */\n"
-                     "ldr r0, [pc, #824] /* 0x07fcbcba */\n"
-                     "strh r0, [r4, #54]	@ 0x36 /* 0x07fcbcbc */\n"
-                     "ldr r0, [pc, #824] /* 0x07fcbcbe */\n"
-                     "strh r0, [r4, #52]	@ 0x34 /* 0x07fcbcc0 */\n"
-                     "ldr r0, [pc, #824] /* 0x07fcbcc2 */\n"
-                     "strh r0, [r4, #50]	@ 0x32 /* 0x07fcbcc4 */\n"
-                     "ldr r0, [pc, #824] /* 0x07fcbcc6 */\n"
-                     "strh r0, [r4, #48]	@ 0x30 /* 0x07fcbcc8 */\n"
-                     "mov r0, r4 /* 0x07fcbcca */\n"
-                     "adds r0, #74	@ 0x4a /* 0x07fcbccc */\n"
-                     "mov r1, r7 /* 0x07fcbcce */\n"
-                     "bl __aeabi_memclr\n" /* at 0x07fcbcd0 */
-                     "movs r0, #112	@ 0x70 /* 0x07fcbcd4 */\n"
-                     "str r0, [sp, #28] /* 0x07fcbcd6 */\n"
-                     "ldr r1, [pc, #772] /* 0x07fcbcd8 */\n"
-                     "strh r1, [r4, r0] /* 0x07fcbcda */\n"
-                     "movs r0, #96	@ 0x60 /* 0x07fcbcdc */\n"
-                     "ldr r1, [pc, #804] /* 0x07fcbcde */\n"
-                     "strh r1, [r4, r0] /* 0x07fcbce0 */\n"
-                     "mov r0, r4 /* 0x07fcbce2 */\n"
-                     "adds r0, #112	@ 0x70 /* 0x07fcbce4 */\n"
-                     "strh r5, [r0, #2] /* 0x07fcbce6 */\n"
-                     "mov r0, r4 /* 0x07fcbce8 */\n"
-                     "adds r0, #96	@ 0x60 /* 0x07fcbcea */\n"
-                     "ldr r1, [pc, #748] /* 0x07fcbcec */\n"
-                     "strh r1, [r0, #24] /* 0x07fcbcee */\n"
-                     "strh r6, [r0, #20] /* 0x07fcbcf0 */\n"
-                     "ldr r1, [pc, #788] /* 0x07fcbcf2 */\n"
-                     "strh r1, [r0, #14] /* 0x07fcbcf4 */\n"
-                     "ldr r1, [pc, #788] /* 0x07fcbcf6 */\n"
-                     "strh r1, [r0, #12] /* 0x07fcbcf8 */\n"
-                     "ldr r1, [pc, #788] /* 0x07fcbcfa */\n"
-                     "strh r1, [r0, #10] /* 0x07fcbcfc */\n"
-                     "ldr r1, [pc, #788] /* 0x07fcbcfe */\n"
-                     "strh r1, [r0, #8] /* 0x07fcbd00 */\n"
-                     "ldr r1, [pc, #788] /* 0x07fcbd02 */\n"
-                     "strh r1, [r0, #6] /* 0x07fcbd04 */\n"
-                     "ldr r1, [pc, #788] /* 0x07fcbd06 */\n"
-                     "strh r1, [r0, #4] /* 0x07fcbd08 */\n"
-                     "ldr r1, [pc, #788] /* 0x07fcbd0a */\n"
-                     "strh r1, [r0, #2] /* 0x07fcbd0c */\n"
-                     "mov r0, r4 /* 0x07fcbd0e */\n"
-                     "adds r0, #122	@ 0x7a /* 0x07fcbd10 */\n"
-                     "mov r1, r7 /* 0x07fcbd12 */\n"
-                     "bl __aeabi_memclr\n" /* at 0x07fcbd14 */
-                     "movs r0, #144	@ 0x90 /* 0x07fcbd18 */\n"
-                     "ldr r1, [pc, #776] /* 0x07fcbd1a */\n"
-                     "strh r1, [r4, r0] /* 0x07fcbd1c */\n"
-                     "mov r0, r4 /* 0x07fcbd1e */\n"
-                     "adds r0, #144	@ 0x90 /* 0x07fcbd20 */\n"
-                     "ldr r2, [pc, #772] /* 0x07fcbd22 */\n"
-                     "lsrs r1, r2, #16 /* 0x07fcbd24 */\n"
-                     "str r1, [sp, #24] /* 0x07fcbd26 */\n"
-                     "strh r1, [r0, #18] /* 0x07fcbd28 */\n"
-                     "strh r2, [r0, #16] /* 0x07fcbd2a */\n"
-                     "ldr r1, [pc, #684] /* 0x07fcbd2c */\n"
-                     "strh r1, [r0, #24] /* 0x07fcbd2e */\n"
-                     "strh r6, [r0, #20] /* 0x07fcbd30 */\n"
-                     "ldr r1, [pc, #760] /* 0x07fcbd32 */\n"
-                     "strh r1, [r0, #14] /* 0x07fcbd34 */\n"
-                     "ldr r1, [pc, #760] /* 0x07fcbd36 */\n"
-                     "strh r1, [r0, #12] /* 0x07fcbd38 */\n"
-                     "ldr r1, [pc, #760] /* 0x07fcbd3a */\n"
-                     "strh r1, [r0, #10] /* 0x07fcbd3c */\n"
-                     "ldr r1, [pc, #760] /* 0x07fcbd3e */\n"
-                     "strh r1, [r0, #8] /* 0x07fcbd40 */\n"
-                     "ldr r1, [pc, #760] /* 0x07fcbd42 */\n"
-                     "strh r1, [r0, #6] /* 0x07fcbd44 */\n"
-                     "ldr r1, [pc, #760] /* 0x07fcbd46 */\n"
-                     "strh r1, [r0, #4] /* 0x07fcbd48 */\n"
-                     "ldr r1, [pc, #760] /* 0x07fcbd4a */\n"
-                     "strh r1, [r0, #2] /* 0x07fcbd4c */\n"
-                     "mov r0, r4 /* 0x07fcbd4e */\n"
-                     "adds r0, #170	@ 0xaa /* 0x07fcbd50 */\n"
-                     "mov r1, r7 /* 0x07fcbd52 */\n"
-                     "bl __aeabi_memclr\n" /* at 0x07fcbd54 */
-                     "movs r0, #192	@ 0xc0 /* 0x07fcbd58 */\n"
-                     "ldr r1, [pc, #748] /* 0x07fcbd5a */\n"
-                     "strh r1, [r4, r0] /* 0x07fcbd5c */\n"
-                     "mov r0, r4 /* 0x07fcbd5e */\n"
-                     "adds r0, #192	@ 0xc0 /* 0x07fcbd60 */\n"
-                     "strh r5, [r0, #18] /* 0x07fcbd62 */\n"
-                     "ldr r1, [pc, #632] /* 0x07fcbd64 */\n"
-                     "strh r1, [r0, #16] /* 0x07fcbd66 */\n"
-                     "ldr r1, [pc, #624] /* 0x07fcbd68 */\n"
-                     "strh r1, [r0, #24] /* 0x07fcbd6a */\n"
-                     "ldr r1, [sp, #40]	@ 0x28 /* 0x07fcbd6c */\n"
-                     "strh r1, [r0, #20] /* 0x07fcbd6e */\n"
-                     "ldr r1, [pc, #728] /* 0x07fcbd70 */\n"
-                     "strh r1, [r0, #14] /* 0x07fcbd72 */\n"
-                     "ldr r1, [pc, #728] /* 0x07fcbd74 */\n"
-                     "strh r1, [r0, #12] /* 0x07fcbd76 */\n"
-                     "movs r1, #12 /* 0x07fcbd78 */\n"
-                     "strh r1, [r0, #10] /* 0x07fcbd7a */\n"
-                     "ldr r1, [pc, #724] /* 0x07fcbd7c */\n"
-                     "strh r1, [r0, #8] /* 0x07fcbd7e */\n"
-                     "ldr r1, [pc, #724] /* 0x07fcbd80 */\n"
-                     "strh r1, [r0, #6] /* 0x07fcbd82 */\n"
-                     "ldr r1, [pc, #724] /* 0x07fcbd84 */\n"
-                     "strh r1, [r0, #4] /* 0x07fcbd86 */\n"
-                     "ldr r1, [pc, #724] /* 0x07fcbd88 */\n"
-                     "strh r1, [r0, #2] /* 0x07fcbd8a */\n"
-                     "mov r0, r4 /* 0x07fcbd8c */\n"
-                     "adds r0, #218	@ 0xda /* 0x07fcbd8e */\n"
-                     "mov r1, r7 /* 0x07fcbd90 */\n"
-                     "mov r5, r7 /* 0x07fcbd92 */\n"
-                     "bl __aeabi_memclr\n" /* at 0x07fcbd94 */
-                     "ldr r0, [pc, #712] /* 0x07fcbd98 */\n"
-                     "ldr r2, [sp, #32] /* 0x07fcbd9a */\n"
-                     "strh r0, [r4, r2] /* 0x07fcbd9c */\n"
-                     "movs r0, #240	@ 0xf0 /* 0x07fcbd9e */\n"
-                     "ldr r1, [pc, #708] /* 0x07fcbda0 */\n"
-                     "strh r1, [r4, r0] /* 0x07fcbda2 */\n"
-                     "adds r6, r4, r2 /* 0x07fcbda4 */\n"
-                     "movs r0, #10 /* 0x07fcbda6 */\n"
-                     "strh r0, [r6, #2] /* 0x07fcbda8 */\n"
-                     "mov r0, r4 /* 0x07fcbdaa */\n"
-                     "adds r0, #240	@ 0xf0 /* 0x07fcbdac */\n"
-                     "ldr r1, [pc, #700] /* 0x07fcbdae */\n"
-                     "strh r1, [r0, #14] /* 0x07fcbdb0 */\n"
-                     "ldr r1, [pc, #700] /* 0x07fcbdb2 */\n"
-                     "strh r1, [r0, #12] /* 0x07fcbdb4 */\n"
-                     "ldr r1, [pc, #700] /* 0x07fcbdb6 */\n"
-                     "strh r1, [r0, #10] /* 0x07fcbdb8 */\n"
-                     "ldr r1, [pc, #700] /* 0x07fcbdba */\n"
-                     "strh r1, [r0, #8] /* 0x07fcbdbc */\n"
-                     "ldr r1, [pc, #700] /* 0x07fcbdbe */\n"
-                     "strh r1, [r0, #6] /* 0x07fcbdc0 */\n"
-                     "ldr r1, [pc, #700] /* 0x07fcbdc2 */\n"
-                     "strh r1, [r0, #4] /* 0x07fcbdc4 */\n"
-                     "ldr r1, [pc, #700] /* 0x07fcbdc6 */\n"
-                     "strh r1, [r0, #2] /* 0x07fcbdc8 */\n"
-                     "movs r0, #244	@ 0xf4 /* 0x07fcbdca */\n"
-                     "str r0, [sp, #0] /* 0x07fcbdcc */\n"
-                     "strh r0, [r6, #4] /* 0x07fcbdce */\n"
-                     "ldr r0, [pc, #520] /* 0x07fcbdd0 */\n"
-                     "strh r0, [r6, #8] /* 0x07fcbdd2 */\n"
-                     "mov r0, r6 /* 0x07fcbdd4 */\n"
-                     "adds r0, #10 /* 0x07fcbdd6 */\n"
-                     "mov r1, r7 /* 0x07fcbdd8 */\n"
-                     "str r7, [sp, #20] /* 0x07fcbdda */\n"
-                     "bl __aeabi_memclr\n" /* at 0x07fcbddc */
-                     "movs r0, #8 /* 0x07fcbde0 */\n"
-                     "strh r0, [r6, #50]	@ 0x32 /* 0x07fcbde2 */\n"
-                     "ldr r0, [pc, #672] /* 0x07fcbde4 */\n"
-                     "strh r0, [r6, #48]	@ 0x30 /* 0x07fcbde6 */\n"
-                     "ldr r0, [pc, #672] /* 0x07fcbde8 */\n"
-                     "strh r0, [r6, #56]	@ 0x38 /* 0x07fcbdea */\n"
-                     "ldr r0, [sp, #36]	@ 0x24 /* 0x07fcbdec */\n"
-                     "strh r0, [r6, #52]	@ 0x34 /* 0x07fcbdee */\n"
-                     "ldr r0, [pc, #668] /* 0x07fcbdf0 */\n"
-                     "strh r0, [r6, #46]	@ 0x2e /* 0x07fcbdf2 */\n"
-                     "ldr r0, [pc, #668] /* 0x07fcbdf4 */\n"
-                     "strh r0, [r6, #44]	@ 0x2c /* 0x07fcbdf6 */\n"
-                     "ldr r0, [pc, #668] /* 0x07fcbdf8 */\n"
-                     "strh r0, [r6, #42]	@ 0x2a /* 0x07fcbdfa */\n"
-                     "ldr r0, [pc, #668] /* 0x07fcbdfc */\n"
-                     "strh r0, [r6, #40]	@ 0x28 /* 0x07fcbdfe */\n"
-                     "ldr r0, [pc, #668] /* 0x07fcbe00 */\n"
-                     "strh r0, [r6, #38]	@ 0x26 /* 0x07fcbe02 */\n"
-                     "ldr r0, [pc, #668] /* 0x07fcbe04 */\n"
-                     "strh r0, [r6, #36]	@ 0x24 /* 0x07fcbe06 */\n"
-                     "ldr r0, [pc, #668] /* 0x07fcbe08 */\n"
-                     "strh r0, [r6, #34]	@ 0x22 /* 0x07fcbe0a */\n"
-                     "ldr r0, [pc, #668] /* 0x07fcbe0c */\n"
-                     "strh r0, [r6, #32] /* 0x07fcbe0e */\n"
-                     "mov r0, r6 /* 0x07fcbe10 */\n"
-                     "adds r0, #58	@ 0x3a /* 0x07fcbe12 */\n"
-                     "movs r1, #14 /* 0x07fcbe14 */\n"
-                     "bl __aeabi_memclr\n" /* at 0x07fcbe16 */
-                     "movs r0, #76	@ 0x4c /* 0x07fcbe1a */\n"
-                     "movs r1, #0 /* 0x07fcbe1c */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbe1e */\n"
-                     "movs r0, #72	@ 0x48 /* 0x07fcbe20 */\n"
-                     "ldr r2, [pc, #576] /* 0x07fcbe22 */\n"
-                     "strh r2, [r6, r0] /* 0x07fcbe24 */\n"
-                     "movs r0, #80	@ 0x50 /* 0x07fcbe26 */\n"
-                     "ldr r7, [pc, #432] /* 0x07fcbe28 */\n"
-                     "strh r7, [r6, r0] /* 0x07fcbe2a */\n"
-                     "mov r0, r6 /* 0x07fcbe2c */\n"
-                     "adds r0, #76	@ 0x4c /* 0x07fcbe2e */\n"
-                     "str r1, [sp, #32] /* 0x07fcbe30 */\n"
-                     "strh r1, [r0, #2] /* 0x07fcbe32 */\n"
-                     "mov r0, r6 /* 0x07fcbe34 */\n"
-                     "adds r0, #72	@ 0x48 /* 0x07fcbe36 */\n"
-                     "ldr r1, [sp, #40]	@ 0x28 /* 0x07fcbe38 */\n"
-                     "strh r1, [r0, #2] /* 0x07fcbe3a */\n"
-                     "mov r0, r6 /* 0x07fcbe3c */\n"
-                     "adds r0, #82	@ 0x52 /* 0x07fcbe3e */\n"
-                     "mov r1, r5 /* 0x07fcbe40 */\n"
-                     "bl __aeabi_memclr\n" /* at 0x07fcbe42 */
-                     "movs r0, #120	@ 0x78 /* 0x07fcbe46 */\n"
-                     "ldr r5, [pc, #476] /* 0x07fcbe48 */\n"
-                     "strh r5, [r6, r0] /* 0x07fcbe4a */\n"
-                     "movs r0, #128	@ 0x80 /* 0x07fcbe4c */\n"
-                     "strh r7, [r6, r0] /* 0x07fcbe4e */\n"
-                     "movs r0, #124	@ 0x7c /* 0x07fcbe50 */\n"
-                     "ldr r1, [sp, #36]	@ 0x24 /* 0x07fcbe52 */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbe54 */\n"
-                     "movs r0, #118	@ 0x76 /* 0x07fcbe56 */\n"
-                     "ldr r1, [pc, #596] /* 0x07fcbe58 */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbe5a */\n"
-                     "movs r0, #116	@ 0x74 /* 0x07fcbe5c */\n"
-                     "ldr r1, [pc, #596] /* 0x07fcbe5e */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbe60 */\n"
-                     "movs r0, #114	@ 0x72 /* 0x07fcbe62 */\n"
-                     "ldr r1, [pc, #592] /* 0x07fcbe64 */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbe66 */\n"
-                     "ldr r0, [pc, #592] /* 0x07fcbe68 */\n"
-                     "ldr r1, [sp, #28] /* 0x07fcbe6a */\n"
-                     "strh r0, [r6, r1] /* 0x07fcbe6c */\n"
-                     "movs r0, #110	@ 0x6e /* 0x07fcbe6e */\n"
-                     "ldr r1, [pc, #588] /* 0x07fcbe70 */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbe72 */\n"
-                     "movs r0, #108	@ 0x6c /* 0x07fcbe74 */\n"
-                     "ldr r1, [pc, #588] /* 0x07fcbe76 */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbe78 */\n"
-                     "movs r0, #106	@ 0x6a /* 0x07fcbe7a */\n"
-                     "ldr r1, [pc, #584] /* 0x07fcbe7c */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbe7e */\n"
-                     "movs r0, #104	@ 0x68 /* 0x07fcbe80 */\n"
-                     "ldr r1, [pc, #584] /* 0x07fcbe82 */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbe84 */\n"
-                     "mov r0, r6 /* 0x07fcbe86 */\n"
-                     "adds r0, #120	@ 0x78 /* 0x07fcbe88 */\n"
-                     "ldr r7, [sp, #24] /* 0x07fcbe8a */\n"
-                     "strh r7, [r0, #2] /* 0x07fcbe8c */\n"
-                     "mov r0, r6 /* 0x07fcbe8e */\n"
-                     "adds r0, #130	@ 0x82 /* 0x07fcbe90 */\n"
-                     "ldr r5, [sp, #20] /* 0x07fcbe92 */\n"
-                     "mov r1, r5 /* 0x07fcbe94 */\n"
-                     "bl __aeabi_memclr\n" /* at 0x07fcbe96 */
-                     "movs r0, #168	@ 0xa8 /* 0x07fcbe9a */\n"
-                     "ldr r1, [pc, #392] /* 0x07fcbe9c */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbe9e */\n"
-                     "movs r0, #176	@ 0xb0 /* 0x07fcbea0 */\n"
-                     "ldr r1, [pc, #312] /* 0x07fcbea2 */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbea4 */\n"
-                     "movs r0, #172	@ 0xac /* 0x07fcbea6 */\n"
-                     "ldr r1, [sp, #40]	@ 0x28 /* 0x07fcbea8 */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbeaa */\n"
-                     "movs r0, #166	@ 0xa6 /* 0x07fcbeac */\n"
-                     "ldr r1, [pc, #544] /* 0x07fcbeae */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbeb0 */\n"
-                     "movs r0, #164	@ 0xa4 /* 0x07fcbeb2 */\n"
-                     "ldr r1, [pc, #540] /* 0x07fcbeb4 */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbeb6 */\n"
-                     "movs r0, #162	@ 0xa2 /* 0x07fcbeb8 */\n"
-                     "ldr r1, [pc, #540] /* 0x07fcbeba */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbebc */\n"
-                     "movs r0, #160	@ 0xa0 /* 0x07fcbebe */\n"
-                     "ldr r1, [pc, #536] /* 0x07fcbec0 */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbec2 */\n"
-                     "movs r0, #158	@ 0x9e /* 0x07fcbec4 */\n"
-                     "ldr r1, [pc, #536] /* 0x07fcbec6 */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbec8 */\n"
-                     "movs r0, #156	@ 0x9c /* 0x07fcbeca */\n"
-                     "ldr r1, [pc, #532] /* 0x07fcbecc */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbece */\n"
-                     "movs r0, #154	@ 0x9a /* 0x07fcbed0 */\n"
-                     "ldr r1, [pc, #532] /* 0x07fcbed2 */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbed4 */\n"
-                     "movs r0, #152	@ 0x98 /* 0x07fcbed6 */\n"
-                     "ldr r1, [pc, #528] /* 0x07fcbed8 */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbeda */\n"
-                     "mov r0, r6 /* 0x07fcbedc */\n"
-                     "adds r0, #168	@ 0xa8 /* 0x07fcbede */\n"
-                     "strh r7, [r0, #2] /* 0x07fcbee0 */\n"
-                     "mov r0, r6 /* 0x07fcbee2 */\n"
-                     "adds r0, #178	@ 0xb2 /* 0x07fcbee4 */\n"
-                     "mov r1, r5 /* 0x07fcbee6 */\n"
-                     "bl __aeabi_memclr\n" /* at 0x07fcbee8 */
-                     "movs r0, #216	@ 0xd8 /* 0x07fcbeec */\n"
-                     "ldr r1, [pc, #312] /* 0x07fcbeee */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbef0 */\n"
-                     "movs r0, #220	@ 0xdc /* 0x07fcbef2 */\n"
-                     "ldr r1, [pc, #504] /* 0x07fcbef4 */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbef6 */\n"
-                     "movs r0, #214	@ 0xd6 /* 0x07fcbef8 */\n"
-                     "ldr r1, [pc, #504] /* 0x07fcbefa */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbefc */\n"
-                     "movs r0, #212	@ 0xd4 /* 0x07fcbefe */\n"
-                     "ldr r1, [pc, #500] /* 0x07fcbf00 */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbf02 */\n"
-                     "movs r0, #210	@ 0xd2 /* 0x07fcbf04 */\n"
-                     "ldr r1, [pc, #500] /* 0x07fcbf06 */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbf08 */\n"
-                     "movs r0, #208	@ 0xd0 /* 0x07fcbf0a */\n"
-                     "ldr r1, [pc, #496] /* 0x07fcbf0c */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbf0e */\n"
-                     "movs r0, #206	@ 0xce /* 0x07fcbf10 */\n"
-                     "ldr r1, [pc, #496] /* 0x07fcbf12 */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbf14 */\n"
-                     "movs r0, #204	@ 0xcc /* 0x07fcbf16 */\n"
-                     "ldr r1, [pc, #492] /* 0x07fcbf18 */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbf1a */\n"
-                     "movs r0, #202	@ 0xca /* 0x07fcbf1c */\n"
-                     "ldr r1, [pc, #492] /* 0x07fcbf1e */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbf20 */\n"
-                     "movs r0, #200	@ 0xc8 /* 0x07fcbf22 */\n"
-                     "ldr r1, [pc, #488] /* 0x07fcbf24 */\n"
-                     "strh r1, [r6, r0] /* 0x07fcbf26 */\n"
-                     "adds r6, #216	@ 0xd8 /* 0x07fcbf28 */\n"
-                     "strh r7, [r6, #2] /* 0x07fcbf2a */\n"
-                     "movs r0, #19 /* 0x07fcbf2c */\n"
-                     "strb r0, [r4, #5] /* 0x07fcbf2e */\n"
-                     "mov r0, r4 /* 0x07fcbf30 */\n"
-                     "bl attmdb_add_service\n" /* at 0x07fcbf32 */
-                     "mov r5, r0 /* 0x07fcbf36 */\n"
-                     "cmp r0, #0 /* 0x07fcbf38 */\n"
-                     "bne.n .L_register_custom_gatt_service_and_initialize_state_at_07fcbfbe /* branch: ne, target at "
-                     ".+132 */ /* 0x07fcbf3a */\n"
-                     "ldr r0, [sp, #72]	@ 0x48 /* 0x07fcbf3c */\n"
-                     "str r0, [sp, #40]	@ 0x28 /* 0x07fcbf3e */\n"
-                     "movs r6, #12 /* 0x07fcbf40 */\n"
-                     "mov r0, r6 /* 0x07fcbf42 */\n"
-                     "ldr r1, [sp, #32] /* 0x07fcbf44 */\n"
-                     "bl ke_malloc\n" /* at 0x07fcbf46 */
-                     "mov r7, r0 /* 0x07fcbf4a */\n"
-                     "mov r1, r6 /* 0x07fcbf4c */\n"
-                     "bl __aeabi_memclr\n" /* at 0x07fcbf4e */
-                     "ldrh r0, [r4, #0] /* 0x07fcbf52 */\n"
-                     "ldr r3, [sp, #32] /* 0x07fcbf54 */\n"
-                     "strh r3, [r7, #10] /* 0x07fcbf56 */\n"
-                     "strh r0, [r7, #6] /* 0x07fcbf58 */\n"
-                     "ldr r1, [sp, #4] /* 0x07fcbf5a */\n"
-                     "lsls r1, r1, #15 /* 0x07fcbf5c */\n"
-                     "ldr r2, [sp, #8] /* 0x07fcbf5e */\n"
-                     "orrs r1, r2 /* 0x07fcbf60 */\n"
-                     "strh r1, [r7, #0] /* 0x07fcbf62 */\n"
-                     "ldr r2, [sp, #16] /* 0x07fcbf64 */\n"
-                     "ldrh r1, [r2, #20] /* 0x07fcbf66 */\n"
-                     "strh r1, [r7, #2] /* 0x07fcbf68 */\n"
-                     "movs r1, #252	@ 0xfc /* 0x07fcbf6a */\n"
-                     "strh r1, [r2, #22] /* 0x07fcbf6c */\n"
-                     "ldr r1, [sp, #36]	@ 0x24 /* 0x07fcbf6e */\n"
-                     "strh r1, [r2, #14] /* 0x07fcbf70 */\n"
-                     "ldr r1, [sp, #12] /* 0x07fcbf72 */\n"
-                     "strh r0, [r1, #0] /* 0x07fcbf74 */\n"
-                     "mov r0, r7 /* 0x07fcbf76 */\n"
-                     "adds r0, #8 /* 0x07fcbf78 */\n"
-                     "str r7, [r2, #16] /* 0x07fcbf7a */\n"
-                     /* The next literal is the fixed-data pointer named
-                      * v204_hid_service_descriptor_template at 0x07fcc114.
-                      * This routine stores it in the context at offset 4;
-                      * only the template's HID attribute records are decoded
-                      * so far, not its complete metadata header. */
-                     "ldr r1, [pc, #404] /* 0x07fcbf7c */\n"
-                     "str r1, [r2, #4] /* 0x07fcbf7e */\n"
-                     "str r0, [r2, #8] /* 0x07fcbf80 */\n"
-                     "ldr r0, [sp, #40]	@ 0x28 /* 0x07fcbf82 */\n"
-                     "ldrb r0, [r0, #0] /* 0x07fcbf84 */\n"
-                     "strb r0, [r7, #4] /* 0x07fcbf86 */\n"
-                     "ldrh r0, [r2, #20] /* 0x07fcbf88 */\n"
-                     "mov r1, r3 /* 0x07fcbf8a */\n"
-                     "bl ke_state_set\n" /* at 0x07fcbf8c */
-                     "ldrh r6, [r7, #6] /* 0x07fcbf90 */\n"
-                     "add r3, sp, #48 /* 0x07fcbf92 */\n"
-                     "movs r0, #13 /* 0x07fcbf94 */\n"
-                     "strb r0, [r3, #0] /* 0x07fcbf96 */\n"
-                     "add r1, sp, #44 /* 0x07fcbf98 */\n"
-                     "str r1, [sp, #40]	@ 0x28 /* 0x07fcbf9a */\n"
-                     "ldr r0, [sp, #0] /* 0x07fcbf9c */\n"
-                     "strh r0, [r1, #0] /* 0x07fcbf9e */\n"
-                     "mov r0, r6 /* 0x07fcbfa0 */\n"
-                     "adds r0, #15 /* 0x07fcbfa2 */\n"
-                     "uxth r0, r0 /* 0x07fcbfa4 */\n"
-                     "ldr r1, [sp, #36]	@ 0x24 /* 0x07fcbfa6 */\n"
-                     "ldr r7, [sp, #32] /* 0x07fcbfa8 */\n"
-                     "mov r2, r7 /* 0x07fcbfaa */\n"
-                     "bl attmdb_att_set_value\n" /* at 0x07fcbfac */
-                     "adds r6, #17 /* 0x07fcbfb0 */\n"
-                     "uxth r0, r6 /* 0x07fcbfb2 */\n"
-                     "movs r1, #2 /* 0x07fcbfb4 */\n"
-                     "mov r2, r7 /* 0x07fcbfb6 */\n"
-                     "ldr r3, [sp, #40]	@ 0x28 /* 0x07fcbfb8 */\n"
-                     "bl attmdb_att_set_value\n" /* at 0x07fcbfba */
-                     ".L_register_custom_gatt_service_and_initialize_state_at_07fcbfbe:\n"
-                     "mov r0, r4 /* 0x07fcbfbe */\n"
-                     "bl ke_free\n" /* at 0x07fcbfc0 */
-                     "mov r0, r5 /* 0x07fcbfc4 */\n"
-                     "add sp, #52 /* 0x07fcbfc6 */\n"
-                     "pop {r4, r5, r6, r7, pc} /* 0x07fcbfc8 */\n");
+#include <string.h>
+#include "firmware/reconstructed/include/sr08_sdk_suotar.h"
+
+/* attm.h (DA14585 permission layout) */
+enum {
+    PERM_MASK_RD = 0x0007, PERM_POS_RD = 0,
+    PERM_MASK_WR = 0x0038, PERM_POS_WR = 3,
+    PERM_MASK_WRITE_COMMAND = 0x8000, PERM_POS_WRITE_COMMAND = 15,
+    PERM_MASK_WRITE_REQ = 0x20000, PERM_POS_WRITE_REQ = 17,
+};
+#define ATT_UUID_16(uuid) (uuid)
+#define ATT_UUID_16_ARR(uuid) {(uint8_t)(uuid), (uint8_t)(uuid >> 8)}
+
+/* V204 heap index of KE_MEM_NON_RETENTION (the SDK 6.0.18 enum gives 3; hogpd_init
+ * agrees, while KE_MEM_ENV and KE_MEM_ATT_DB keep 0 and 1). */
+#define V204_KE_MEM_NON_RETENTION 2
+
+/* suotar.h */
+#define SUOTA_PD_CHAR_SIZE 244
+/* suotar_task.h */
+struct suotar_db_cfg
+{
+    /// Indicate if ext mem is supported or not
+    uint8_t features;
+};
+extern const struct ke_state_handler suotar_default_handler;
+
+/* suotar.c */
+#define ATT_SVC_SUOTAR                   {0xF5, 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+#define SUOTA_MEM_DEV_UUID               {0x34, 0xcc, 0x54, 0xb9, 0xf9, 0x56, 0xc6, 0x91, 0x21, 0x40, 0xa6, 0x41, 0xa8, 0xca, 0x82, 0x80}
+#define SUOTA_GPIO_MAP_UUID              {0x51, 0x86, 0xf0, 0x5a, 0x34, 0x42, 0x04, 0x88, 0x5f, 0x4b, 0xc3, 0x5e, 0xf0, 0x49, 0x42, 0x72}
+#define SUOTA_MEM_INFO_UUID              {0xd4, 0x4f, 0x33, 0xfb, 0x92, 0x7c, 0x22, 0xa0, 0xfe, 0x45, 0xa1, 0x47, 0x25, 0xdb, 0x53, 0x6c}
+#define SUOTA_PATCH_LEN_UUID             {0x31, 0xda, 0x3f, 0x67, 0x5b, 0x85, 0x83, 0x91, 0xd8, 0x49, 0x0c, 0x00, 0xa3, 0xb9, 0x84, 0x9d}
+#define SUOTA_PATCH_DATA_UUID            {0xb2, 0x9c, 0x7b, 0xb1, 0xd0, 0x57, 0x16, 0x91, 0xa1, 0x4c, 0x16, 0xd5, 0xe8, 0x71, 0x78, 0x45}
+#define SUOTA_SERV_STATUS_UUID           {0x88, 0x5c, 0x06, 0x6a, 0xeb, 0xb3, 0x0a, 0x99, 0xf5, 0x46, 0x8c, 0x79, 0x94, 0xdf, 0x78, 0x5f}
+#define SUOTA_VERSION_UUID               {0x3a, 0x91, 0x3b, 0xdb, 0xc8, 0xac, 0x1d, 0xa2, 0x1b, 0x40, 0xe5, 0x0d, 0xb5, 0xe8, 0xb4, 0x64}
+#define SUOTA_PATCH_DATA_CHAR_SIZE_UUID  {0x3b, 0xfb, 0x67, 0x52, 0x87, 0x8f, 0x54, 0x84, 0x9c, 0x4d, 0xbe, 0x77, 0xdd, 0xdf, 0xc3, 0x42}
+#define SUOTA_MTU_UUID                   {0x3c, 0xe2, 0xfc, 0x3d, 0x90, 0xc4, 0xaf, 0xa3, 0xbb, 0x43, 0x3d, 0x82, 0xea, 0x1e, 0xde, 0xb7}
+
+static void suotar_set_dle_params_in_db(uint16_t suota_shdl)
+{
+    uint8_t version = SUOTA_VERSION;
+    uint16_t pd_char_size = SUOTA_PD_CHAR_SIZE;
+    //Set SUOTA version into DB
+    attmdb_att_set_value(suota_shdl + SUOTA_IDX_VERSION_VAL,
+                         sizeof(uint8_t),
+                         0,
+                         &version);
+    //Set PATCH_DATA_CHAR_SIZE value
+    attmdb_att_set_value(suota_shdl + SUOTA_IDX_PATCH_DATA_CHAR_SIZE_VAL,
+                         sizeof(uint16_t),
+                         0,
+                         (uint8_t*)&pd_char_size);
+}
+
+__attribute__((used, section(".text.register_custom_gatt_service_and_initialize_state")))
+uint8_t register_custom_gatt_service_and_initialize_state(struct prf_task_env* env, uint16_t* start_hdl, uint16_t app_task,
+                            uint8_t sec_lvl, struct suotar_db_cfg* params)
+{
+    struct suotar_env_tag* suotar_env = NULL;
+    struct gattm_svc_desc *svc_desc = NULL;
+    uint8_t att_idx = 0;
+    uint8_t status;
+
+    // Allocate database descriptor
+    svc_desc = (struct gattm_svc_desc *) ke_malloc(sizeof(struct gattm_svc_desc) + \
+                                // No need for svc declaration, thus (SUOTA_IDX_NB - 1)
+                                (SUOTA_IDX_NB - 1) * sizeof(struct gattm_att_desc), \
+                                V204_KE_MEM_NON_RETENTION);
+
+    /*---------------------------------------------------*
+     * SUOTAR Service Creation
+     *---------------------------------------------------*/
+    svc_desc->start_hdl = *start_hdl;
+    svc_desc->task_id = env->task;
+    svc_desc->perm = ((sec_lvl & PERM_MASK_SVC_AUTH) | (sec_lvl & PERM_MASK_SVC_EKS) | \
+                        PERM(SVC_PRIMARY, ENABLE) | PERM(SVC_MI, DISABLE) | \
+                        PERM_VAL(SVC_UUID_LEN, PERM_UUID_16));
+    struct att_uuid_128 temp =
+    {
+        .uuid = ATT_SVC_SUOTAR
+    };
+    memcpy((struct att_uuid_128 *)(&svc_desc->uuid), &temp, sizeof(svc_desc->uuid) / sizeof(svc_desc->uuid[0]));
+
+    // Char. decl. and value attribute for patch_mem_dev
+    svc_desc->atts[att_idx++] = (struct gattm_att_desc) {
+            .uuid = ATT_UUID_16_ARR(ATT_DECL_CHARACTERISTIC), .perm = 0, .max_len = 0 };
+    svc_desc->atts[att_idx++] = (struct gattm_att_desc) {
+            .uuid = SUOTA_MEM_DEV_UUID,
+            .perm = PERM(RD, ENABLE) | PERM(WR, ENABLE) | PERM(WRITE_REQ, ENABLE) | \
+                    PERM_VAL(UUID_LEN, PERM_UUID_128),
+            .max_len = sizeof(uint32_t) };
+
+    // Char. decl. and value attribute for gpio_map
+    svc_desc->atts[att_idx++] = (struct gattm_att_desc) {
+            .uuid = ATT_UUID_16_ARR(ATT_DECL_CHARACTERISTIC), .perm = 0, .max_len = 0 };
+    svc_desc->atts[att_idx++] = (struct gattm_att_desc) {
+            .uuid = SUOTA_GPIO_MAP_UUID,
+            .perm = PERM(RD, ENABLE) | PERM(WR, ENABLE) | PERM(WRITE_REQ, ENABLE) | \
+                    PERM_VAL(UUID_LEN, PERM_UUID_128),
+            .max_len = sizeof(uint32_t) };
+
+    // Char. decl. and value attribute for patch_mem info
+    svc_desc->atts[att_idx++] = (struct gattm_att_desc) {
+            .uuid = ATT_UUID_16_ARR(ATT_DECL_CHARACTERISTIC), .perm = 0, .max_len = 0 };
+    svc_desc->atts[att_idx++] = (struct gattm_att_desc) {
+            .uuid = SUOTA_MEM_INFO_UUID,
+            .perm = PERM(RD, ENABLE) | PERM_VAL(UUID_LEN, PERM_UUID_128),
+            .max_len = sizeof(uint32_t) };
+
+    // Char. decl. and value attribute for patch_len
+    svc_desc->atts[att_idx++] = (struct gattm_att_desc) {
+            .uuid = ATT_UUID_16_ARR(ATT_DECL_CHARACTERISTIC), .perm = 0, .max_len = 0 };
+    svc_desc->atts[att_idx++] = (struct gattm_att_desc) {
+            .uuid = SUOTA_PATCH_LEN_UUID,
+            .perm = PERM(RD, ENABLE) | PERM(WR, ENABLE) | PERM(WRITE_REQ, ENABLE) | \
+                    PERM_VAL(UUID_LEN, PERM_UUID_128),
+            .max_len = sizeof(uint16_t) };
+
+    // Char. decl. and value attribute for patch_data
+    svc_desc->atts[att_idx++] = (struct gattm_att_desc) {
+            .uuid = ATT_UUID_16_ARR(ATT_DECL_CHARACTERISTIC), .perm = 0, .max_len = 0 };
+    svc_desc->atts[att_idx++] = (struct gattm_att_desc) {
+            .uuid = SUOTA_PATCH_DATA_UUID,
+            .perm = PERM(RD, ENABLE) | PERM(WR, ENABLE) | PERM(WRITE_REQ, ENABLE) | \
+                    PERM(WRITE_COMMAND, ENABLE) | \
+                    PERM_VAL(UUID_LEN, PERM_UUID_128),
+            .max_len = sizeof(uint8_t) * SUOTA_PD_CHAR_SIZE };
+
+    // Char. decl., value attribute and CCC for patch_status
+    svc_desc->atts[att_idx++] = (struct gattm_att_desc) {
+            .uuid = ATT_UUID_16_ARR(ATT_DECL_CHARACTERISTIC), .perm = 0, .max_len = 0 };
+    svc_desc->atts[att_idx++] = (struct gattm_att_desc) {
+            .uuid = SUOTA_SERV_STATUS_UUID,
+            .perm = PERM(RD, ENABLE) | PERM(NTF, ENABLE) | \
+                    PERM_VAL(UUID_LEN, PERM_UUID_128),
+            .max_len = sizeof(uint8_t) };
+    svc_desc->atts[att_idx++] = (struct gattm_att_desc) {
+            .uuid = ATT_UUID_16_ARR(ATT_DESC_CLIENT_CHAR_CFG),
+            .perm = PERM(RD, ENABLE) | PERM(WR, ENABLE) | PERM(WRITE_REQ, ENABLE) | \
+                    PERM(WRITE_COMMAND, ENABLE) | PERM_VAL(UUID_LEN, PERM_UUID_16),
+            .max_len = 0 };
+
+    // Char. decl. and value attribute for version
+    svc_desc->atts[att_idx++] = (struct gattm_att_desc) {
+            .uuid = ATT_UUID_16_ARR(ATT_DECL_CHARACTERISTIC), .perm = 0, .max_len = 0 };
+    svc_desc->atts[att_idx++] = (struct gattm_att_desc) {
+            .uuid = SUOTA_VERSION_UUID,
+            .perm = PERM(RD, ENABLE) | PERM_VAL(UUID_LEN, PERM_UUID_128),
+            .max_len = sizeof(uint8_t) };
+
+    // Char. decl. and value attribute for patch_data_char_size
+    svc_desc->atts[att_idx++] = (struct gattm_att_desc) {
+            .uuid = ATT_UUID_16_ARR(ATT_DECL_CHARACTERISTIC), .perm = 0, .max_len = 0 };
+    svc_desc->atts[att_idx++] = (struct gattm_att_desc) {
+            .uuid = SUOTA_PATCH_DATA_CHAR_SIZE_UUID,
+            .perm = PERM(RD, ENABLE) | PERM_VAL(UUID_LEN, PERM_UUID_128),
+            .max_len = sizeof(uint16_t) };
+
+    // Char. decl. and value attribute for mtu
+    svc_desc->atts[att_idx++] = (struct gattm_att_desc) {
+            .uuid = ATT_UUID_16_ARR(ATT_DECL_CHARACTERISTIC), .perm = 0, .max_len = 0 };
+    svc_desc->atts[att_idx++] = (struct gattm_att_desc) {
+            .uuid = SUOTA_MTU_UUID,
+            .perm = PERM(RD, ENABLE) | PERM_VAL(UUID_LEN, PERM_UUID_128),
+            .max_len = PERM(RI, ENABLE) | sizeof(uint16_t) };
+
+    // Count all attributes and create database
+    svc_desc->nb_att = att_idx;
+    status = attmdb_add_service(svc_desc);
+
+    if (status == ATT_ERR_NO_ERROR)
+    {
+        // Allocate SUOTAR required environment variable
+        suotar_env = (struct suotar_env_tag*) \
+                        ke_malloc(sizeof(struct suotar_env_tag), KE_MEM_ENV);
+        memset(suotar_env, 0 , sizeof(struct suotar_env_tag));
+
+        suotar_env->suota_shdl        = svc_desc->start_hdl;
+        suotar_env->features          = params->features;
+        suotar_env->ntf_cfg           = GATT_CCC_STOP_NTFIND;
+        suotar_env->prf_env.app_task  = app_task
+            | (PERM_GET(sec_lvl, SVC_MI) ? PERM(PRF_MI, ENABLE) : PERM(PRF_MI, DISABLE));
+        suotar_env->prf_env.prf_task  = env->task | PERM(PRF_MI, DISABLE);
+
+        // Initialize environment variable
+        env->id                     = TASK_ID_SUOTAR;
+        env->desc.idx_max           = SUOTAR_IDX_MAX;
+        env->desc.state             = suotar_env->state;
+        env->desc.default_handler   = &suotar_default_handler;
+        env->env = (prf_env_t*) suotar_env;
+
+        // Set start handle to first allocated service value
+        *start_hdl = suotar_env->suota_shdl;
+
+        // Service is ready, go into an Idle state
+        ke_state_set(env->task, SUOTAR_IDLE);
+
+        suotar_set_dle_params_in_db(suotar_env->suota_shdl);
+    }
+
+    ke_free(svc_desc);
+    return status;
 }

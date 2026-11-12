@@ -1,0 +1,24 @@
+{
+  "accepted": true,
+  "new_c_units": [
+    "select_measurement_text_update_per_result_at_aae8"
+  ],
+  "payload_bytes": 67136,
+  "payload_sha256": "5020c236a289544d878196bec3e21b005835237bc2fc34935927533bcd1c8570",
+  "container_bytes": 67200,
+  "container_sha256": "c747249568a75dc9925a7d25de7baffca2ae5ff42cd2ffd7dfddf8ee42b5e8e8",
+  "payload_equals_oem": true,
+  "container_equals_oem": true,
+  "source_bundle": "/tmp/sr08-alice-measurement-text-source-bundle",
+  "normal_build_uses_cached_objects": false,
+  "source_inputs": 580,
+  "all_source_inputs_match": true,
+  "changed_inputs": [],
+  "source_units": 449,
+  "direct_assembly_units": 59,
+  "expanded_assembly_units": 61,
+  "support_tests_passed": 11,
+  "full_build_log": "standalone_build.log",
+  "fixed_following_function": "update_status_display_using_remainder_rom_at_ab3c",
+  "linked_sections": 497
+}

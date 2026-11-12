@@ -1,0 +1,12 @@
+{
+  "method": "canonical source-input hashes plus complete-object equivalence of both claim-comment changes",
+  "unchanged_inputs": 580,
+  "comment_only_changed_inputs": [
+    "firmware/reconstructed/exact_clang18/manual_sources/recreate_display_status_indicator_update_selected_at_a914.c",
+    "firmware/reconstructed/exact_clang18/manual_sources/switch_display_state_and_run_hooks.c"
+  ],
+  "complete_object_equal": true,
+  "fresh_full_build": false,
+  "payload_artifact": "/tmp/sr08-alice-event-ring-types-standalone.payload.bin",
+  "payload_sha256": "5020c236a289544d878196bec3e21b005835237bc2fc34935927533bcd1c8570"
+}

@@ -1,0 +1,18 @@
+test_actual_consecutive_functions_still_share_a_run (test_lto_region_gap.LtoRegionGapTest.test_actual_consecutive_functions_still_share_a_run) ... ok
+test_first_function_and_nonintervening_entries (test_lto_region_gap.LtoRegionGapTest.test_first_function_and_nonintervening_entries) ... ok
+test_fixed_boundary_keeps_following_function_out_of_far_pool_range (test_lto_region_gap.LtoRegionGapTest.test_fixed_boundary_keeps_following_function_out_of_far_pool_range) ... ERROR
+test_publisher_after_radio_dispatcher_keeps_its_address (test_lto_region_gap.LtoRegionGapTest.test_publisher_after_radio_dispatcher_keeps_its_address) ... ok
+
+======================================================================
+ERROR: test_fixed_boundary_keeps_following_function_out_of_far_pool_range (test_lto_region_gap.LtoRegionGapTest.test_fixed_boundary_keeps_following_function_out_of_far_pool_range)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/drath/Projects/personal/code/sr08_ai/firmware/reconstructed/exact_clang18/tests/test_lto_region_gap.py", line 24, in test_fixed_boundary_keeps_following_function_out_of_far_pool_range
+    self.assertEqual(lto_function_region_base(0x07fcab3c, 0x07fcaae8,
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: lto_function_region_base() got an unexpected keyword argument 'fixed_code_starts'
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.001s
+
+FAILED (errors=1)

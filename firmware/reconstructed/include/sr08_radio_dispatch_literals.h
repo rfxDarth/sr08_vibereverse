@@ -1,6 +1,8 @@
 #ifndef SR08_RADIO_DISPATCH_LITERALS_H
 #define SR08_RADIO_DISPATCH_LITERALS_H
 
+#include "firmware/reconstructed/include/sr08_static_assert.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -15,11 +17,11 @@ union sr08_radio_dispatch_literal_pool {
     struct sr08_radio_dispatch_literal_fields view;
 } __attribute__((packed));
 
-_Static_assert(offsetof(struct sr08_radio_dispatch_literal_fields, radio_action_state_bytes) == 2,
+SR08_STATIC_ASSERT(offsetof(struct sr08_radio_dispatch_literal_fields, radio_action_state_bytes) == 2,
                "radio action-state pointer must remain at offset two");
-_Static_assert(offsetof(struct sr08_radio_dispatch_literal_fields, send_device_command_pair) == 6,
+SR08_STATIC_ASSERT(offsetof(struct sr08_radio_dispatch_literal_fields, send_device_command_pair) == 6,
                "radio command callback must remain at offset six");
-_Static_assert(sizeof(union sr08_radio_dispatch_literal_pool) == 10,
+SR08_STATIC_ASSERT(sizeof(union sr08_radio_dispatch_literal_pool) == 10,
                "radio dispatch literal pool must remain ten bytes");
 
 #endif

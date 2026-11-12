@@ -1,0 +1,17 @@
+{
+  "diagnostic_only": true,
+  "extracted_bytes": 67144,
+  "compared_prefix_bytes": 67136,
+  "differing_bytes": 1,
+  "differences": [
+    {
+      "address": "0x7fc82b2",
+      "oem": "0xf2",
+      "candidate": "0xad"
+    }
+  ],
+  "candidate_sha256": "b8f19849d7848ef1b1e97b43a31593262a8451de213662ad741cbc8803d44adb",
+  "range_region_equal": true,
+  "whole_payload_equal": false,
+  "accepted": false
+}

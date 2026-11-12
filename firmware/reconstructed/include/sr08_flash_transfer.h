@@ -4,6 +4,6 @@
 #include <stdint.h>
 
 /* Send a transaction word through the flash controller and return readback. */
-uint32_t transfer_flash_controller_word(uint32_t transaction_value);
+uint32_t spi_access(uint32_t transaction_value);
 
 #endif

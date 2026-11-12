@@ -1,68 +1,42 @@
-/* Render the current time and charging or measurement markers. */
-__attribute__((used, naked, section(".text.render_current_time_charging_measurement_markers_at_a9d0"))) void
-render_current_time_charging_measurement_markers_at_a9d0(void) {
-    /* Mnemonic transcription of the original fixed-address Thumb sequence. */
-    __asm__ volatile("push {r3, r4, r5, r6, r7, lr}\n"
-                     "movs r1, #196\n"
-                     "ldr r0, [pc, #920]\n"
-                     "ldrb r1, [r0, r1]\n"
-                     "cmp r1, #1\n"
-                     "bne.n .Ldisplay_not_idle\n"
-                     "movs r1, #64\n"
-                     "ldr r0, [pc, #916]\n"
-                     ".Lclear_markers:\n"
-                     "cmp r1, #69\n"
-                     "beq.n .Lshow_charging_marker\n"
-                     "movs r2, #127\n"
-                     "strb r2, [r0, r1]\n"
-                     "adds r1, r1, #1\n"
-                     "b.n .Lclear_markers\n"
-                     ".Ldisplay_not_idle:\n"
-                     "movs r1, #52\n"
-                     "ldrb r0, [r0, r1]\n"
-                     "ldr r6, [pc, #84]\n"
-                     "ldr r1, [r6, #32]\n"
-                     "cmp r0, #0\n"
-                     "bne.n .Lmeasurement_value\n"
-                     "mov r0, r1\n"
-                     "b.n .Lclamp_value\n"
-                     ".Lshow_charging_marker:\n"
-                     "movs r1, #69\n"
-                     "movs r2, #80\n"
-                     "strb r2, [r0, r1]\n"
-                     "b.n .Lreturn\n"
-                     ".Lmeasurement_value:\n"
-                     "mov r0, r1\n"
-                     "subs r0, #12\n"
-                     ".Lclamp_value:\n"
-                     "cmp r1, #12\n"
-                     "bgt.n .Lvalue_ready\n"
-                     "mov r0, r1\n"
-                     ".Lvalue_ready:\n"
-                     "ldr r7, [pc, #868]\n"
-                     "mov r1, r7\n"
-                     "adds r1, #64\n"
-                     "movs r4, #2\n"
-                     "movs r5, #0\n"
-                     "mov r2, r4\n"
-                     "mov r3, r5\n"
-                     "bl convert_quotient_remainder_sequence_ring_s_at_3148\n"
-                     "ldr r0, [r6, #28]\n"
-                     "mov r1, r7\n"
-                     "adds r1, #67\n"
-                     "mov r2, r4\n"
-                     "mov r3, r5\n"
-                     "bl convert_quotient_remainder_sequence_ring_s_at_3148\n"
-                     "movs r0, #48\n"
-                     "ldr r1, [pc, #948]\n"
-                     "ldrb r0, [r1, r0]\n"
-                     "lsls r0, r0, #31\n"
-                     "bne.n .Lshow_measurement_marker\n"
-                     ".Lreturn:\n"
-                     "pop {r3, r4, r5, r6, r7, pc}\n"
-                     ".Lshow_measurement_marker:\n"
-                     "movs r0, #66\n"
-                     "movs r1, #72\n"
-                     "strb r1, [r7, r0]\n"
-                     "pop {r3, r4, r5, r6, r7, pc}\n");
+/* Render the clock on the display.
+ *
+ * Idle (shared byte 0xc4 == 1): fill display bytes 0x40..0x44 with 127 and set 0x45 to 80.
+ * Otherwise show the hour (12-hour when shared byte 0x34 is set and the hour is past 12) and the
+ * minute through the two-digit formatter, and the separator (72 at byte 0x42) when bit 0 of
+ * merged_globals_5650+0x30 is set.
+ *
+ * Matching note: V204's code generator saw `select (twelve_hour != 0), hour - 12, hour`. InstCombine
+ * rewrites a single-use `!=` compare into `==` with the arms swapped (beq instead of V204's bne, and a
+ * different block layout). The __builtin_assume gives the compare a second use, so it stays `!=`; it
+ * emits no code and states something true (in 24-hour mode `value` is the hour, 0..23). */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_clock_literal_pool.h"
+#include "firmware/reconstructed/include/sr08_display_value_formatters.h"
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+#include "firmware/reconstructed/include/sr08_shared_context.h"
+
+extern struct sr08_clock_timekeeping_state clock_timekeeping_state;
+
+__attribute__((used, section(".text.render_current_time_charging_measurement_markers_at_a9d0"))) void
+render_current_time_charging_measurement_markers_at_a9d0(void)
+{
+    volatile uint8_t *shared = (volatile uint8_t *)&sr08_shared_context;
+    volatile uint8_t *display = (volatile uint8_t *)&merged_globals_56d0;
+    if (!(shared[0xc4] == 1)) {
+        uint32_t twelve_hour = shared[0x34];
+        volatile struct sr08_clock_timekeeping_state *clock = &clock_timekeeping_state;
+        int32_t hour = clock->calendar_hour;
+        int is12 = twelve_hour != 0;
+        int32_t value = is12 ? hour - 12 : hour;
+        __builtin_assume(is12 | (value != 1000));
+        value = hour > 12 ? value : hour;
+        convert_quotient_remainder_sequence_ring_s_at_3148(value, display + 0x40, 2, 0);
+        convert_quotient_remainder_sequence_ring_s_at_3148(clock->calendar_minute, display + 0x43, 2, 0);
+        if (__builtin_expect(((volatile uint8_t *)&merged_globals_5650)[0x30] & 1, 0))
+            display[0x42] = 72;
+        return;
+    }
+    for (uint32_t i = 0x40; i != 0x45; i++)
+        display[i] = 127;
+    display[0x45] = 80;
 }

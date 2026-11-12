@@ -1,0 +1,15 @@
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_event_record_queue.h"
+void initialize_configuration_record_defaults(void) {
+    volatile uint32_t *words = (volatile uint32_t *)(void *)&event_record_queue_state;
+    words[21] = EVENT_RECORD_SIZE;
+    words[22] = (uintptr_t)secondary_event_record_storage;
+    words[13] = 0;
+    words[14] = 0;
+    words[15] = EVENT_RECORD_COUNT;
+    words[16] = EVENT_RECORD_SIZE;
+    words[17] = (uintptr_t)event_record_storage;
+    words[18] = 0;
+    words[19] = 0;
+    words[20] = SECONDARY_EVENT_RECORD_COUNT;
+}

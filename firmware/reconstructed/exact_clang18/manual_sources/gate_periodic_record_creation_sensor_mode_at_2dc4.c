@@ -1,42 +1,31 @@
-/* Gate periodic record creation on sensor mode and elapsed-time thresholds. */
-__attribute__((used, naked, section(".text.gate_periodic_record_creation_sensor_mode_at_2dc4"))) void
+/* V204's gated BLE parameter-update request, with its wrapping timestamp. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_device_settings.h"
+#include "firmware/reconstructed/include/sr08_device_state.h"
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+extern uint32_t get_ble_base_time_ms(void);
+extern uint16_t read_state_word_at_10_with_record_flag_clamp(void);
+extern void allocate_initialize_record_first_use_release_at_3254(uint8_t conidx, uint16_t minimum, uint16_t maximum);
+extern void replace_state_timer_with_600_delay(void);
+__attribute__((used, section(".text.gate_periodic_record_creation_sensor_mode_at_2dc4"))) void
 gate_periodic_record_creation_sensor_mode_at_2dc4(void) {
-    __asm__ volatile("push {r4, r5, r6, lr}\n"
-                     "bl request_sensor_sample_then_scale_result\n"
-                     "mov r4, r0\n"
-                     "ldr r0, [pc, #124]\n"
-                     "ldrh r1, [r0, #12]\n"
-                     "cmp r1, #79\n"
-                     "bhi .Ltimecheck\n"
-                     "ldrh r0, [r0, #14]\n"
-                     "cmp r0, #0\n"
-                     "bne .Ltimecheck\n"
-                     "movs r0, #66\n"
-                     "ldr r1, [pc, #756]\n"
-                     "ldrh r0, [r1, r0]\n"
-                     "lsrs r0, r0, #2\n"
-                     "cmp r0, #124\n"
-                     "bhi .Lfinish\n"
-                     ".Ltimecheck: ldr r6, [pc, #748]\n"
-                     "ldr r0, [r6, #112]\n"
-                     "cmp r4, r0\n"
-                     "bcc .Lwrap\n"
-                     "mov r1, r4\n"
-                     "b .Ldelta\n"
-                     ".Lwrap: movs r1, #5\n"
-                     "lsls r1, r1, #24\n"
-                     "adds r1, r4, r1\n"
-                     ".Ldelta: subs r0, r1, r0\n"
-                     "ldr r1, [pc, #28]\n"
-                     "cmp r0, r1\n"
-                     "bcc .Lfinish\n"
-                     "ldrb r5, [r6, #8]\n"
-                     "bl read_state_word_at_10_with_record_flag_clamp\n"
-                     "mov r1, r0\n"
-                     "mov r0, r5\n"
-                     "mov r2, r1\n"
-                     "bl allocate_initialize_record_first_use_release_at_3254\n"
-                     "str r4, [r6, #112]\n"
-                     ".Lfinish: bl replace_state_timer_with_600_delay\n"
-                     "pop {r4, r5, r6, pc}\n");
+    uint32_t now = get_ble_base_time_ms();
+    volatile struct sr08_device_settings *settings = &device_settings;
+    volatile struct sr08_device_state *state = (volatile struct sr08_device_state *)&merged_globals_5650;
+    if (settings->conn_intv_max <= 79 && settings->slave_latency == 0 &&
+            (state->active_mode_setting >> 2) > 124)
+        goto finish;
+    uint32_t previous = state->last_periodic_record_timestamp;
+    uint32_t adjusted_now = now;
+    if (now < previous)
+        adjusted_now = now + 0x05000000u;
+    uint32_t elapsed = adjusted_now - previous;
+    if (elapsed >= 6001) {
+        uint8_t conidx = ((volatile uint8_t *)state)[8];
+        uint16_t interval = read_state_word_at_10_with_record_flag_clamp();
+        allocate_initialize_record_first_use_release_at_3254(conidx, interval, interval);
+        state->last_periodic_record_timestamp = now;
+    }
+finish:
+    replace_state_timer_with_600_delay();
 }

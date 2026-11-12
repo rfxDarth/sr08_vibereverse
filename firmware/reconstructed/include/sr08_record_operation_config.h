@@ -1,6 +1,8 @@
 #ifndef SR08_RECORD_OPERATION_CONFIG_H
 #define SR08_RECORD_OPERATION_CONFIG_H
 
+#include "firmware/reconstructed/include/sr08_static_assert.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -10,7 +12,7 @@ struct sr08_record_operation_config_prefix {
     uint32_t active;
 };
 
-_Static_assert(offsetof(struct sr08_record_operation_config_prefix, active) == 4,
+SR08_STATIC_ASSERT(offsetof(struct sr08_record_operation_config_prefix, active) == 4,
                "record-operation active word must remain at offset four");
 
 #endif

@@ -1,0 +1,98 @@
+/* PARKED 2026-11-15 (Jeff): full-module LTO probe MISMATCH (424 vs 420 bytes incl. pool; 342 diff lines).
+ * Needs "sensor_sample_window": "0x07fd0950" in data/V204_ram_symbols.json (additive).
+ * Matching: uint8_t window (unsigned level test), 60-byte frame, decode branch polarity, shift/clear loops.
+ * Still differs: V204 keeps count in r5 until after the bytes<=30 test (stored later to sp20),
+ * loads b0 and b1<<8 before the sign test and ORs b1 on the positive path (here: add).
+ * Variants tried: combined-then-mask, common low/middle locals, int/uint16 counters (all no better). */
+/* Read the sensor FIFO into the incoming sample window: with at least two windows queued, read
+ * whole windows of three-byte samples (at most 30 bytes) with device command 0x41, decode each
+ * 21-bit two's-complement sample, align the window to the first sample's two-bit tag, read and
+ * keep the tail sample, and return the number of complete windows. A full FIFO (64) is reset. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_format.h"
+#include "firmware/reconstructed/include/sr08_radio_commands.h"
+#include "firmware/reconstructed/include/sr08_radio_configuration.h"
+
+extern void read_device_bytes_into_buffer(uint32_t, volatile uint8_t *, uint32_t);
+extern void wait_shared_timer_delta_exceed_requested_at_4458(uint32_t delay);
+
+/* Vendor state at 0x07fd0950. */
+struct sensor_sample_window {
+    uint8_t count;
+    uint32_t items[64];
+    int32_t incoming[64];
+};
+extern struct sensor_sample_window sensor_sample_window;
+
+enum {
+    FIFO_LEVEL = 64,
+    FIFO_CONTROL = 61,
+    FIFO_DATA = 65,
+    SAMPLE_BYTES = 3,
+    MAX_READ_BYTES = 30,
+};
+
+uint16_t read_three_byte_samples_and_update_history(uint8_t window)
+{
+    uint8_t level = ensure_radio_profile_then_exchange_word(FIFO_LEVEL);
+    uint16_t windows = 0;
+    uint8_t tail[4];
+    uint8_t buffer[32];
+
+    if (level < window * 2)
+        return 0;
+    int excess = level - window;
+    int count = excess - (uint16_t)(excess % window);
+    int bytes = count * SAMPLE_BYTES;
+    if (device_control_state.configuration_ready == 1) {
+        read_device_bytes_into_buffer(FIFO_DATA, tail, SAMPLE_BYTES);
+        device_control_state.configuration_ready = 0;
+    }
+    uint16_t samples = count;
+    if ((uint16_t)bytes <= MAX_READ_BYTES) {
+        read_device_bytes_into_buffer(FIFO_DATA, buffer, (uint8_t)bytes);
+        const uint8_t *sample = buffer;
+        int32_t *incoming = sensor_sample_window.incoming;
+        for (uint32_t left = samples; left != 0; left--) {
+            uint32_t value;
+            if (sample[2] & 0x10)
+                value = (sample[2] << 16) | sample[0] | (sample[1] << 8) | 0xfff00000u;
+            else
+                value = (((sample[2] & 0x1f) << 16) + sample[0]) | (sample[1] << 8);
+            *incoming++ = value;
+            sample += SAMPLE_BYTES;
+        }
+        uint8_t last_tag = (buffer[(uint16_t)bytes - 1] >> 5) & 3;
+        uint8_t first_tag = (buffer[2] >> 5) & 3;
+        if (first_tag != 0) {
+            int32_t *shift = sensor_sample_window.incoming;
+            count = count - window + first_tag;
+            uint16_t kept = count;
+            for (uint16_t moved = kept; moved != 0; moved--) {
+                *shift = shift[window - first_tag];
+                shift++;
+            }
+            for (uint32_t index = kept; index < samples; index++)
+                sensor_sample_window.incoming[index] = 0;
+        }
+        int extra = window - last_tag - 1;
+        if (last_tag < window - 1) {
+            uint32_t index;
+            for (index = (uint16_t)count; index < (uint32_t)(extra + (uint16_t)count); index++)
+                read_device_bytes_into_buffer(FIFO_DATA, tail, SAMPLE_BYTES);
+            sensor_sample_window.incoming[index] = tail[0] + (tail[1] << 8) + ((tail[2] & 0x1f) << 16);
+        }
+        windows = (uint16_t)(extra + count) / (uint32_t)window;
+    } else {
+        arch_printf((const uint8_t *)"3918_f_e %d\n", (uint16_t)bytes);
+        windows = 0;
+    }
+    if (level == FIFO_LEVEL) {
+        uint8_t control = ensure_radio_profile_then_exchange_word(FIFO_CONTROL);
+        send_device_command_pair(FIFO_CONTROL, 0);
+        wait_shared_timer_delta_exceed_requested_at_4458(5);
+        send_device_command_pair(FIFO_CONTROL, control);
+        device_control_state.configuration_ready = 1;
+    }
+    return windows;
+}

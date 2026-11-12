@@ -9,6 +9,6 @@ enum {
 };
 
 /* Return the address-like 32-bit field at offset 16 in the matching record. */
-extern void *find_keyed_record_value(uint32_t key);
+extern void *prf_env_get(uint32_t key);
 
 #endif

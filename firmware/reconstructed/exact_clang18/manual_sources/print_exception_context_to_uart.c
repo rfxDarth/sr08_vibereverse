@@ -1,104 +1,57 @@
-/* Recovered behavior:
- * Write a HardFault or NMI label and eight exception-context words as hexadecimal through the
- * memory-mapped UART.
- */
-
+/* Print a HardFault or NMI banner and the eight stacked registers as
+ * "R0 =0x........\r\n" lines over UART, pausing after each line. If the
+ * UART transmitter is not yet enabled, wait for it to drain first. */
 #include <stdint.h>
 #include "firmware/reconstructed/include/sr08_exception_report.h"
-__attribute__((used, naked, section(".text.print_exception_context_to_uart"))) void
-print_exception_context_to_uart(enum sr08_exception_report_kind kind, const uint32_t *exception_context) {
-    __asm__ volatile("push {r4, r5, r6, r7, lr} /* 0x07fc5e54 */\n"
-                     "sub sp, #20 /* 0x07fc5e56 */\n"
-                     "mov r4, r1 /* 0x07fc5e58 */\n"
-                     "mov r5, r0 /* 0x07fc5e5a */\n"
-                     "ldr r0, [pc, #144] /* 0x07fc5e5c */\n"
-                     "ldrh r1, [r0, #0] /* 0x07fc5e5e */\n"
-                     "lsls r1, r1, #24 /* 0x07fc5e60 */\n"
-                     "bmi.n .L_print_exception_context_to_uart_block_at_5e54_at_07fc5e72 /* branch: mi, target at .+16 "
-                     "*/ /* 0x07fc5e62 */\n"
-                     ".L_print_exception_context_to_uart_block_at_5e54_at_07fc5e64:\n"
-                     "ldrh r1, [r0, #10] /* 0x07fc5e64 */\n"
-                     "lsls r1, r1, #24 /* 0x07fc5e66 */\n"
-                     "bpl.n .L_print_exception_context_to_uart_block_at_5e54_at_07fc5e64 /* branch: pl, target at .-4 "
-                     "*/ /* 0x07fc5e68 */\n"
-                     "ldrh r1, [r0, #0] /* 0x07fc5e6a */\n"
-                     "movs r2, #3 /* 0x07fc5e6c */\n"
-                     "bics r1, r2 /* 0x07fc5e6e */\n"
-                     "strh r1, [r0, #0] /* 0x07fc5e70 */\n"
-                     ".L_print_exception_context_to_uart_block_at_5e54_at_07fc5e72:\n"
-                     "bl quiesce_irq_source_wait_pending_bit_at_c4b0\n" /* at 0x07fc5e72 */
-                     "cmp r5, #0 /* 0x07fc5e76 */\n"
-                     "beq.n .L_print_exception_context_to_uart_block_at_5e54_at_07fc5e80 /* branch: eq, target at .+8 "
-                     "*/ /* 0x07fc5e78 */\n"
-                     ".set .Ladr_07fc5e7a, .+122\n"
-                     "adr r0, .Ladr_07fc5e7a /* 0x07fc5e7a -> 0x07fc5ef4 */\n"
-                     "movs r1, #16 /* 0x07fc5e7c */\n"
-                     "b.n .L_print_exception_context_to_uart_block_at_5e54_at_07fc5e84 /* branch: always, target at "
-                     ".+6 */ /* 0x07fc5e7e */\n"
-                     ".L_print_exception_context_to_uart_block_at_5e54_at_07fc5e80:\n"
-                     ".set .Ladr_07fc5e80, .+136\n"
-                     "adr r0, .Ladr_07fc5e80 /* 0x07fc5e80 -> 0x07fc5f08 */\n"
-                     "movs r1, #17 /* 0x07fc5e82 */\n"
-                     ".L_print_exception_context_to_uart_block_at_5e54_at_07fc5e84:\n"
-                     "bl transmit_uart_buffer\n" /* at 0x07fc5e84 */
-                     "ldr r0, [pc, #144] /* 0x07fc5e88 */\n"
-                     "bl c_delay_loop_v204_timing_padding_at_0194\n" /* at 0x07fc5e8a */
-                     "movs r6, #0 /* 0x07fc5e8e */\n"
-                     "ldr r7, [pc, #140] /* 0x07fc5e90 */\n"
-                     "ldr r5, [pc, #144] /* 0x07fc5e92 */\n"
-                     ".L_print_exception_context_to_uart_block_at_5e54_at_07fc5e94:\n"
-                     "cmp r6, #8 /* 0x07fc5e94 */\n"
-                     "beq.n .L_print_exception_context_to_uart_block_at_5e54_at_07fc5eea /* branch: eq, target at .+84 "
-                     "*/ /* 0x07fc5e96 */\n"
-                     "add r0, sp, #4 /* 0x07fc5e98 */\n"
-                     "movs r1, #120	@ 0x78 /* 0x07fc5e9a */\n"
-                     "strb r1, [r0, #5] /* 0x07fc5e9c */\n"
-                     "movs r1, #48	@ 0x30 /* 0x07fc5e9e */\n"
-                     "strb r1, [r0, #4] /* 0x07fc5ea0 */\n"
-                     "movs r1, #61	@ 0x3d /* 0x07fc5ea2 */\n"
-                     "strb r1, [r0, #3] /* 0x07fc5ea4 */\n"
-                     "lsls r1, r6, #2 /* 0x07fc5ea6 */\n"
-                     "ldrb r2, [r7, r1] /* 0x07fc5ea8 */\n"
-                     "strb r2, [r0, #0] /* 0x07fc5eaa */\n"
-                     "adds r2, r7, r1 /* 0x07fc5eac */\n"
-                     "ldrb r3, [r2, #2] /* 0x07fc5eae */\n"
-                     "strb r3, [r0, #2] /* 0x07fc5eb0 */\n"
-                     "ldrb r2, [r2, #1] /* 0x07fc5eb2 */\n"
-                     "strb r2, [r0, #1] /* 0x07fc5eb4 */\n"
-                     "ldr r0, [r4, r1] /* 0x07fc5eb6 */\n"
-                     "movs r1, #13 /* 0x07fc5eb8 */\n"
-                     ".L_print_exception_context_to_uart_block_at_5e54_at_07fc5eba:\n"
-                     "cmp r1, #6 /* 0x07fc5eba */\n"
-                     "bcc.n .L_print_exception_context_to_uart_block_at_5e54_at_07fc5ed6 /* branch: cc, target at .+26 "
-                     "*/ /* 0x07fc5ebc */\n"
-                     "movs r2, #15 /* 0x07fc5ebe */\n"
-                     "ands r2, r0 /* 0x07fc5ec0 */\n"
-                     "cmp r2, #10 /* 0x07fc5ec2 */\n"
-                     "bcc.n .L_print_exception_context_to_uart_block_at_5e54_at_07fc5eca /* branch: cc, target at .+6 "
-                     "*/ /* 0x07fc5ec4 */\n"
-                     "adds r2, #87	@ 0x57 /* 0x07fc5ec6 */\n"
-                     "b.n .L_print_exception_context_to_uart_block_at_5e54_at_07fc5ecc /* branch: always, target at "
-                     ".+4 */ /* 0x07fc5ec8 */\n"
-                     ".L_print_exception_context_to_uart_block_at_5e54_at_07fc5eca:\n"
-                     "adds r2, #48	@ 0x30 /* 0x07fc5eca */\n"
-                     ".L_print_exception_context_to_uart_block_at_5e54_at_07fc5ecc:\n"
-                     "add r3, sp, #4 /* 0x07fc5ecc */\n"
-                     "strb r2, [r3, r1] /* 0x07fc5ece */\n"
-                     "subs r1, r1, #1 /* 0x07fc5ed0 */\n"
-                     "asrs r0, r0, #4 /* 0x07fc5ed2 */\n"
-                     "b.n .L_print_exception_context_to_uart_block_at_5e54_at_07fc5eba /* branch: always, target at "
-                     ".-26 */ /* 0x07fc5ed4 */\n"
-                     ".L_print_exception_context_to_uart_block_at_5e54_at_07fc5ed6:\n"
-                     "add r0, sp, #4 /* 0x07fc5ed6 */\n"
-                     "strh r5, [r0, #14] /* 0x07fc5ed8 */\n"
-                     "movs r1, #16 /* 0x07fc5eda */\n"
-                     "bl transmit_uart_buffer\n" /* at 0x07fc5edc */
-                     "ldr r0, [pc, #56] /* 0x07fc5ee0 */\n"
-                     "bl c_delay_loop_v204_timing_padding_at_0194\n" /* at 0x07fc5ee2 */
-                     "adds r6, r6, #1 /* 0x07fc5ee6 */\n"
-                     "b.n .L_print_exception_context_to_uart_block_at_5e54_at_07fc5e94 /* branch: always, target at "
-                     ".-84 */ /* 0x07fc5ee8 */\n"
-                     ".L_print_exception_context_to_uart_block_at_5e54_at_07fc5eea:\n"
-                     "add sp, #20 /* 0x07fc5eea */\n"
-                     "pop {r4, r5, r6, r7, pc} /* 0x07fc5eec */\n");
+
+#define UART_CONTROL_REGISTER ((volatile uint16_t *)0x5000000au)
+
+enum {
+    UART_CONTROL_ENABLED = 0x80,
+    UART_STATUS_OFFSET = 5,
+    UART_STATUS_IDLE = 0x80,
+    UART_CONTROL_MODE_MASK = 3,
+    EXCEPTION_LINE_DELAY = 3000,
+    STACKED_REGISTER_COUNT = 8,
+};
+
+extern const char exception_register_names[STACKED_REGISTER_COUNT][4];
+extern void quiesce_irq_source_wait_pending_bit_at_c4b0(void);
+extern void transmit_uart_buffer(const uint8_t *buffer, int32_t byte_count);
+extern void arch_asm_delay_us(uint32_t iterations);
+
+void print_exception_context_to_uart(enum sr08_exception_report_kind kind, const uint32_t *exception_context) {
+    uint8_t line[16];
+    uint32_t index;
+    if (!(*UART_CONTROL_REGISTER & UART_CONTROL_ENABLED)) {
+        while (!(UART_CONTROL_REGISTER[UART_STATUS_OFFSET] & UART_STATUS_IDLE)) {
+        }
+        *UART_CONTROL_REGISTER &= ~UART_CONTROL_MODE_MASK;
+    }
+    quiesce_irq_source_wait_pending_bit_at_c4b0();
+    if (kind)
+        transmit_uart_buffer((const uint8_t *)"\n--- HF STATUS\r\n", 16);
+    else
+        transmit_uart_buffer((const uint8_t *)"\n--- NMI STATUS\r\n", 17);
+    arch_asm_delay_us(EXCEPTION_LINE_DELAY);
+    for (index = 0; index != STACKED_REGISTER_COUNT; index++) {
+        int32_t value;
+        uint32_t digit;
+        line[4] = '0';
+        line[5] = 'x';
+        line[3] = '=';
+        line[0] = exception_register_names[index][0];
+        line[2] = exception_register_names[index][2];
+        line[1] = exception_register_names[index][1];
+        value = (int32_t)exception_context[index];
+        for (digit = 13; digit >= 6; digit--) {
+            uint32_t nibble = value & 15;
+            line[digit] = nibble < 10 ? nibble + '0' : nibble + 'a' - 10;
+            value >>= 4;
+        }
+        line[14] = '\r';
+        line[15] = '\n';
+        transmit_uart_buffer(line, sizeof(line));
+        arch_asm_delay_us(EXCEPTION_LINE_DELAY);
+    }
 }

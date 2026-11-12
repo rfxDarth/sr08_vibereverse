@@ -1,0 +1,40 @@
+/* Merge the display mode bits into the display flags, then show the value. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_display_value_formatters.h"
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+
+#define mode_state ((uint8_t *)(void *)&merged_globals_5650)
+#define display_state ((uint8_t *)(void *)&merged_globals_56d0)
+
+enum {
+    MODE_BYTE = 0x30,
+    MODE_MASK = 0x03,
+    DISPLAY_FLAGS = 0x40,
+    DISPLAY_VALUE = 0x2c,
+    DISPLAY_DIGITS = 0x42,
+    FLAG_FIRST = 0x01,
+    FLAG_SECOND = 0x08,
+    FLAG_SHOWN = 0x40,
+};
+
+void update_mode_bits_and_notify_display_service(void)
+{
+    uint8_t mode = mode_state[MODE_BYTE] & MODE_MASK;
+    uint8_t flags;
+
+    if (mode == 3) {
+        flags = display_state[DISPLAY_FLAGS] | FLAG_FIRST;
+        goto second;
+    } else if (mode >= 2) {
+        flags = display_state[DISPLAY_FLAGS];
+    second:
+        flags |= FLAG_SECOND;
+        goto shown;
+    } else if (mode != 0) {
+        flags = display_state[DISPLAY_FLAGS];
+    shown:
+        display_state[DISPLAY_FLAGS] = flags | FLAG_SHOWN;
+    }
+    convert_quotient_remainder_sequence_ring_s_at_3148(*(uint32_t *)(void *)(display_state + DISPLAY_VALUE),
+                                                       display_state + DISPLAY_DIGITS, 3, 1);
+}

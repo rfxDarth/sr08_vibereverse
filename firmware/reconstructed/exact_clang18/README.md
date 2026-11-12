@@ -1,5 +1,9 @@
 # V204 source reconstruction
 
+This is the single reconstruction tree. Agents Jeff and Alice worked in parallel copies
+(`exact_clang18_jeff/`, `exact_clang18_alice/`) until 2026-11-17, when they were merged here;
+`../WORK_CLAIMS.md` keeps their claim history.
+
 This tree rebuilds the V204 Cortex-M0 firmware payload and SUOTA container from
 checked-in sources. The normal build uses no original firmware image, Ghidra
 project, decompiler export, or scan CSV. Reference images are optional inputs
@@ -80,24 +84,36 @@ This distinction matters when judging how much has been reconstructed. A
 pinned Thumb body is source-controlled assembly, not a copied byte array, and
 the assembler recreates its machine code on every build. But it is still an
 instruction-level transcription: it explains *what the CPU executes*, not
-necessarily *why the firmware does it*. The current build has 121 C sections,
-99 mixed C/assembly sections, and 251 pinned Thumb sections. The C sections are
-the semantic middle ground; mixed and pinned sections remain targets for
-further semantic recovery. Some sections are discontiguous
+necessarily *why the firmware does it*. Ordinary C routines provide the
+semantic middle ground; mixed and pinned routines remain targets for further
+semantic recovery. The manifest records build provenance (`direct`, `manual`,
+or `literal_scan_function`), which is not a reliable C-versus-assembly
+classification: manually maintained sources also include complete C
+conversions. Complete byte parity therefore does not imply complete C recovery. Some sections are discontiguous
 blocks or entry shims rather than standalone functions, so not every pinned
 section can be translated to an independent C function. Where a C rewrite
 better explains behavior and preserves the linked bytes, it should replace the
 transcription; otherwise the annotated instruction sequence remains the more
 reviewable source of truth.
 
-Two routines show why behaviorally equivalent C is not always byte-equivalent
-with the locked compiler. A normal `while` rewrite of
-`zero_word_buffer_by_byte_count` moves the zero-count check ahead of zero
-initialization; V204 branches over the store into a bottom-tested loop, so the
-register constraint and asm-goto remain. A normal C rewrite of
-`initialize_state_and_return_one` emits `push {r7, lr}` and `pop {r7, pc}`;
-V204 saves only `lr`. Keep these instruction constraints until a C form can
-reproduce each original section exactly.
+Compiler configuration is part of byte parity. For example,
+`initialize_state_and_return_one` is ordinary C compiled with the `ac6apcs`
+profile, which reproduces V204's four-byte stack frame. The six-byte reverse
+profile copy uses Armclang 6.16 with source-order pre-RA scheduling. Other units
+need the original LTO module to reproduce shared literals. The builder records
+these choices and rejects any final image with a different canonical hash.
+`nvds_get_func` uses the native `ac6wordtables` profile to preserve its word
+jump table without changing other LTO switches. Its scalar defaults and stored
+NVDS object share `sr08_nvds_config.h`; the Bluetooth address is still read from
+the stored object. This replaces the old two assembly chunks with one C function.
+`six_way_command_dispatch_default_branch_at_8040` needs both a word table and
+literals shared with its neighbours, so it is linked in a second LTO module,
+`ac6ltowordtables`, after the main one. armlink passes
+`--lto_llvm_options=-arm-synthesize-thumb-1-tbb=false` to that module's code
+generation only (the option is module-wide, and the SDK's
+`hogpd_report_cfm_handler` in the main module keeps its TBB table).
+The zero-word buffer and string-length helpers now reuse their matching Arm
+C-library members; their previous inline-assembly transcriptions are gone.
 
 ## Source layout
 
@@ -160,11 +176,28 @@ reference payload.
 
 ## Current reconstruction state
 
-The build links 466 manifest entries into 471 function sections, plus 344 data
-sections: 815 non-overlapping sections covering all 67,136 payload bytes. The
-64-byte SUOTA header is compiled from `../data/V204_ota_header.c`, producing
-a 67,200-byte container. Both outputs have been verified byte-for-byte against
-V204.
+The latest verified source-only build uses 449 active source units and links
+479 non-overlapping sections covering all 67,136 payload bytes. Of those source
+units, 44 contain assembly syntax directly. Expanding project headers finds
+the same 44; no unit's assembly comes only from shared macros any more.
+These conservative counts include register bindings and unused inline functions;
+they are not percentages of recovered behavior. The 64-byte
+SUOTA header is compiled from `../data/V204_ota_header.c`, producing a 67,200-byte
+container. The payload and complete container match the canonical V204 hashes.
+See `../HANDOFF.md` and `DEVELOPMENT_HISTORY.md` for the latest verified artifacts
+and `../WORK_CLAIMS.md` before picking conversion work.
+
+Audit active sources and expanded project headers with:
+
+```sh
+python3 firmware/reconstructed/exact_clang18/audit_inline_assembly.py --list
+```
+
+Use `--require-zero` for a failing gate while assembly remains. The audit is
+also exported in source bundles; pass `--arm-tools-dir` there as for the build.
+Compiler/system headers are excluded. It reports preprocessing failures and
+must be combined with checks of upstream object implementations, inactive
+macros and compiler-specific branches before claiming complete C recovery.
 
 The classified data generator names verified embedded strings as separate
 fixed-address C objects, including diagnostic formats and configuration names.
@@ -208,6 +241,44 @@ to retain the countdown and decrement-before-pointer-update order. The linked
 record drain also disables loop rotation; both record loops are ordinary C. Per-source options live in
 `SOURCE_FLAGS` in the builder and are also used by the candidate comparison tool.
 
-The string-length source disables loop strength reduction so its C pointer
-increment retains the original instructions; its initial pointer setup is
-still constrained by inline assembly.
+The string-length helper uses the matching Arm C-library member, as described
+below.
+
+## Verified upstream object reuse
+
+The delay helper at 0x07fc0194 now links directly from `arch_asm.o` in the
+included Dialog DA14585/586 Keil SDK archive. The builder checks the archive
+hash, extracts that member with `arm-none-eabi-ar`, and renames its code section
+for the fixed linker map. Local branch relocations are resolved by the linker.
+The prior C source remains as an analysis reference and is skipped by the
+canonical build. The standalone export includes the upstream archive; it is
+an explicit library dependency, rather than a reconstruction cache.
+
+The security member `smpc_util.o` is also linked directly at 0x07fc180c,
+replacing two reconstructed routines and their shared literal pool (232 bytes).
+Its external calls use the existing ROM symbol map; the SDK `gapc_env` data
+reference resolves to 0x07fd7e2c. The builder excludes the superseded code
+and data sections to prevent duplicate coverage.
+
+## LTO literal-pool context
+
+The build performs a preliminary source link, then supplies nearby source-built
+code and data to the Arm LTO linker as fixed context. This reproduces whole-image
+literal coalescing without reading original firmware or patching instructions.
+Context is split at source function boundaries and bounded to forward literal
+reach. Only LDR retargeting to an identical source-built word is permitted in
+that temporary context; it is never emitted as replacement code. The final GNU
+link uses the original source-built context objects and the regenerated LTO
+objects, then verifies complete coverage and canonical image hashes.
+
+`LTO_FIXED_UNITS` preserves selected existing function boundaries during literal
+merging. This keeps a newly converted native function's temporary private
+pointers from moving its neighbour into reach of a farther pool. The setting
+uses the manifest address and ordinary scatter placement; all range, value,
+overlap and final hash checks still apply.
+
+`LTO_NATIVE_UNITS` selects ordinary C translation units that need native
+instruction selection while sharing this link context. They compile without
+`-flto`, then their normal objects participate in the same module link and
+unchanged placement, context and byte-parity checks. This covers display routines whose annotated address forms
+changed under full LTO, while retaining ordinary C and shared literal-pool linking.

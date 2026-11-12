@@ -1,0 +1,11 @@
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_shared_context.h"
+#include "firmware/reconstructed/include/sr08_display_value_formatters.h"
+extern uint8_t merged_globals_56d0[];
+
+__attribute__((used, section(".text.format_signed_state_byte_as_three_display_digits"))) void
+format_signed_state_byte_as_three_display_digits(void) {
+    const volatile struct sr08_shared_context *state = &sr08_shared_context;
+    int8_t value = (int8_t)state->display_character;
+    convert_quotient_remainder_sequence_ring_s_at_3148((uint32_t)value, merged_globals_56d0 + 0x42, 3, 1);
+}

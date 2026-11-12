@@ -1,0 +1,62 @@
+{
+  "associated": {
+    "synthetic_only": true,
+    "oem_input_required": false,
+    "compiler": "ac6",
+    "pool_readers": true,
+    "reader_lto": false,
+    "standalone_tail": 0,
+    "cases": 96,
+    "selected_target_counts": {
+      "0x7fc867c": 96
+    }
+  },
+  "tail1": {
+    "synthetic_only": true,
+    "oem_input_required": false,
+    "compiler": "ac6",
+    "pool_readers": true,
+    "reader_lto": false,
+    "standalone_tail": 1,
+    "cases": 8,
+    "selected_target_counts": {
+      "0x7fc8568": 8
+    }
+  },
+  "tail2": {
+    "synthetic_only": true,
+    "oem_input_required": false,
+    "compiler": "ac6",
+    "pool_readers": true,
+    "reader_lto": false,
+    "standalone_tail": 2,
+    "cases": 8,
+    "selected_target_counts": {
+      "0x7fc84e4": 8
+    }
+  },
+  "tail3": {
+    "synthetic_only": true,
+    "oem_input_required": false,
+    "compiler": "ac6",
+    "pool_readers": true,
+    "reader_lto": false,
+    "standalone_tail": 3,
+    "cases": 8,
+    "selected_target_counts": {
+      "0x7fc832c": 8
+    }
+  },
+  "tail4": {
+    "synthetic_only": true,
+    "oem_input_required": false,
+    "compiler": "ac6",
+    "pool_readers": true,
+    "reader_lto": false,
+    "standalone_tail": 4,
+    "cases": 8,
+    "selected_target_counts": {
+      "0x7fc82bc": 8
+    }
+  }
+}

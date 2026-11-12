@@ -2,69 +2,72 @@ SECTIONS
 {
   .v204.data.07fc0000 0x07fc0000 : { KEEP(*(.v204.data.07fc0000)) }
   .v204.auto.07fc00a0 0x07fc00a0 : { KEEP(*(.v204.auto.07fc00a0)) }
+  .v204.auto.07fc0110 0x07fc0110 : { KEEP(*(.v204.auto.07fc0110)) }
+  .v204.auto.07fc011e 0x07fc011e : { KEEP(*(.v204.auto.07fc011e)) }
+  .v204.auto.07fc0120 0x07fc0120 : { KEEP(*(.v204.auto.07fc0120)) }
   .v204.func.07fc0130 0x07fc0130 : { KEEP(*(.text.reset_entry_stack_setup_startup_callback_at_0130)) }
   .v204.func.07fc0138 0x07fc0138 : { KEEP(*(.text.initialize_sensor_measurement_state_entry_thunk)) }
   .v204.auto.07fc013c 0x07fc013c : { KEEP(*(.v204.auto.07fc013c)) }
   .v204.auto.07fc0140 0x07fc0140 : { KEEP(*(.v204.auto.07fc0140)) }
-  .v204.func.07fc0144 0x07fc0144 : { KEEP(*(.text.startup_hooks_loaded_adjacent_callback_pointer_at_0144)) }
-  .v204.func.07fc014c 0x07fc014c : { KEEP(*(.text.dispatch_first_exception_on_selected_stack)) }
-  .v204.func.07fc0164 0x07fc0164 : { KEEP(*(.text.dispatch_second_exception_on_selected_stack)) }
-  .v204.func.07fc017c 0x07fc017c : { KEEP(*(.text.nonreturning_spin_loop_at_017c)) }
-  .v204.func.07fc017e 0x07fc017e : { KEEP(*(.text.nonreturning_spin_loop_at_017e)) }
-  .v204.func.07fc0180 0x07fc0180 : { KEEP(*(.text.nonreturning_spin_loop_at_0180)) }
-  .v204.func.07fc0182 0x07fc0182 : { KEEP(*(.text.nonreturning_spin_loop_at_0182)) }
+  .v204.func.07fc0144 0x07fc0144 : { KEEP(*(.text.Reset_Handler)) }
+  .v204.func.07fc014c 0x07fc014c : { KEEP(*(.text.NMI_Handler)) }
+  .v204.func.07fc0164 0x07fc0164 : { KEEP(*(.text.HardFault_Handler)) }
+  .v204.func.07fc017c 0x07fc017c : { KEEP(*(.text.SVC_Handler)) }
+  .v204.func.07fc017e 0x07fc017e : { KEEP(*(.text.PendSV_Handler)) }
+  .v204.func.07fc0180 0x07fc0180 : { KEEP(*(.text.SysTick_Handler)) }
+  .v204.func.07fc0182 0x07fc0182 : { KEEP(*(.text.Default_Handler)) }
   .v204.auto.07fc0184 0x07fc0184 : { KEEP(*(.v204.auto.07fc0184)) }
-  .v204.func.07fc0194 0x07fc0194 : { KEEP(*(.text.c_delay_loop_v204_timing_padding_at_0194)) }
+  .v204.func.07fc0194 0x07fc0194 : { KEEP(*(.text.arch_asm_delay_us)) }
   .v204.auto.07fc01b2 0x07fc01b2 : { KEEP(*(.v204.auto.07fc01b2)) }
-  .v204.func.07fc01b4 0x07fc01b4 : { KEEP(*(.text.send_local_mtu_response_and_set_negotiated_limit)) }
-  .v204.func.07fc01e8 0x07fc01e8 : { KEEP(*(.text.validate_selected_record_state_return_readiness_at_01e8)) }
-  .v204.func.07fc022a 0x07fc022a : { KEEP(*(.text.shared_entry_shim_move_incoming_value_at_022a)) }
-  .v204.func.07fc022c 0x07fc022c : { KEEP(*(.text.evaluate_two_mode_dependent_record_readiness_at_022c)) }
-  .v204.func.07fc0274 0x07fc0274 : { KEEP(*(.text.update_slot_event_state_and_dispatch)) }
-  .v204.func.07fc02ec 0x07fc02ec : { KEEP(*(.text.dispatch_packed_event_to_indexed_record)) }
-  .v204.func.07fc0374 0x07fc0374 : { KEEP(*(.text.clamp_indexed_state_fields_and_sync_values)) }
-  .v204.func.07fc042a 0x07fc042a : { KEEP(*(.text.select_six_byte_source_for_current_state)) }
-  .v204.func.07fc045a 0x07fc045a : { KEEP(*(.text.read_eight_bytes_from_rom_helper)) }
-  .v204.func.07fc046e 0x07fc046e : { KEEP(*(.text.decode_packet_into_output_record_entry)) }
+  .v204.func.07fc01b4 0x07fc01b4 : { KEEP(*(.text.PATCHED_atts_mtu_exc_req)) }
+  .v204.func.07fc01e8 0x07fc01e8 : { KEEP(*(.text.PATCHED_smpc_is_sec_mode_reached)) }
+  .v204.func.07fc022a 0x07fc022a : { KEEP(*(.text.PATCHED_smpc_check_key_distrib)) }
+  .v204.func.07fc022c 0x07fc022c : { KEEP(*(.text.PATCHED_smpc_check_key_distrib_at_022c)) }
+  .v204.func.07fc0274 0x07fc0274 : { KEEP(*(.text.PATCHED_llcp_length_req_handler)) }
+  .v204.func.07fc02ec 0x07fc02ec : { KEEP(*(.text.PATCHED_llcp_length_rsp_handler)) }
+  .v204.func.07fc0374 0x07fc0374 : { KEEP(*(.text.JT_llc_le_length_effective_func)) }
+  .v204.func.07fc042a 0x07fc042a : { KEEP(*(.text.PATCHED_smpc_construct_id_addr_info_pdu)) }
+  .v204.func.07fc045a 0x07fc045a : { KEEP(*(.text.PATCHED_llc_util_gen_skdx)) }
+  .v204.func.07fc046e 0x07fc046e : { KEEP(*(.text.PATCHED_llm_adv_report_set)) }
   .v204.auto.07fc04a6 0x07fc04a6 : { KEEP(*(.v204.auto.07fc04a6)) }
-  .v204.func.07fc04bc 0x07fc04bc : { KEEP(*(.text.decode_packet_into_output_record_continuation)) }
+  .v204.func.07fc04bc 0x07fc04bc : { KEEP(*(.text.PATCHED_llm_adv_report_set_at_04bc)) }
   .v204.auto.07fc04f8 0x07fc04f8 : { KEEP(*(.v204.auto.07fc04f8)) }
-  .v204.func.07fc04fc 0x07fc04fc : { KEEP(*(.text.advance_buffer_cursor_and_publish_record_block_at_04fc)) }
+  .v204.func.07fc04fc 0x07fc04fc : { KEEP(*(.text.PATCHED_lld_evt_move_to_master)) }
   .v204.auto.07fc05e8 0x07fc05e8 : { KEEP(*(.v204.auto.07fc05e8)) }
   .v204.auto.07fc0600 0x07fc0600 : { KEEP(*(.v204.auto.07fc0600)) }
   .v204.auto.07fc0604 0x07fc0604 : { KEEP(*(.v204.auto.07fc0604)) }
-  .v204.func.07fc0608 0x07fc0608 : { KEEP(*(.text.advance_buffer_cursor_and_publish_record_block_at_0608)) }
-  .v204.func.07fc0664 0x07fc0664 : { KEEP(*(.text.validate_record_stream_fields)) }
-  .v204.func.07fc0758 0x07fc0758 : { KEEP(*(.text.find_variable_record_value_by_marker)) }
-  .v204.func.07fc077e 0x07fc077e : { KEEP(*(.text.sr08_block_transform_wrapper_packs_key_at_077e)) }
-  .v204.func.07fc0874 0x07fc0874 : { KEEP(*(.text.send_crypto_operation_result_message)) }
-  .v204.func.07fc08ba 0x07fc08ba : { KEEP(*(.text.process_ble_link_layer_event_payload)) }
-  .v204.func.07fc09dc 0x07fc09dc : { KEEP(*(.text.dispatch_three_recognized_notification_codes_forward_at_09dc)) }
-  .v204.func.07fc0a2a 0x07fc0a2a : { KEEP(*(.text.allocate_initialize_record_special_path_otherwise_at_0a2a)) }
+  .v204.func.07fc0608 0x07fc0608 : { KEEP(*(.text.PATCHED_lld_evt_move_to_master_at_0608)) }
+  .v204.func.07fc0664 0x07fc0664 : { KEEP(*(.text.PATCHED_gapm_adv_sanity)) }
+  .v204.func.07fc0758 0x07fc0758 : { KEEP(*(.text.PATCHED_gapm_get_ad_type_flag)) }
+  .v204.func.07fc077e 0x07fc077e : { KEEP(*(.text.PK_PointMult_func)) }
+  .v204.func.07fc0874 0x07fc0874 : { KEEP(*(.text.llm_create_p256_key_func)) }
+  .v204.func.07fc08ba 0x07fc08ba : { KEEP(*(.text.llm_p256_req_handler_func)) }
+  .v204.func.07fc09dc 0x07fc09dc : { KEEP(*(.text.PATCHED_gapm_reset_cmd_handler)) }
+  .v204.func.07fc0a2a 0x07fc0a2a : { KEEP(*(.text.PATCHED_hci_command_handler)) }
   .v204.auto.07fc0a66 0x07fc0a66 : { KEEP(*(.v204.auto.07fc0a66)) }
   .v204.func.07fc0a94 0x07fc0a94 : { KEEP(*(.text.dispatch_indirect_record_path_0a2a)) }
-  .v204.func.07fc0a98 0x07fc0a98 : { KEEP(*(.text.process_indexed_response_and_release_buffer)) }
-  .v204.func.07fc0bac 0x07fc0bac : { KEEP(*(.text.process_incoming_data_fragment)) }
-  .v204.func.07fc0e18 0x07fc0e18 : { KEEP(*(.text.encode_record_with_schema_block_at_0e18)) }
+  .v204.func.07fc0a98 0x07fc0a98 : { KEEP(*(.text.l2cc_handle_invalid_pdu)) }
+  .v204.func.07fc0bac 0x07fc0bac : { KEEP(*(.text.PATCHED_hci_acl_data_rx_handler)) }
+  .v204.func.07fc0e18 0x07fc0e18 : { KEEP(*(.text.JT_l2cc_pdu_unpack_func)) }
   .v204.auto.07fc0e9c 0x07fc0e9c : { KEEP(*(.v204.auto.07fc0e9c)) }
-  .v204.func.07fc0eb8 0x07fc0eb8 : { KEEP(*(.text.encode_record_with_schema_block_at_0eb8)) }
-  .v204.func.07fc1144 0x07fc1144 : { KEEP(*(.text.dispatch_l2cap_and_smp_received_pdu)) }
-  .v204.func.07fc118a 0x07fc118a : { KEEP(*(.text.compare_sample_timestamp_update_record_dispatch_at_118a)) }
-  .v204.func.07fc11f8 0x07fc11f8 : { KEEP(*(.text.process_indexed_payload_state_block_at_11f8)) }
+  .v204.func.07fc0eb8 0x07fc0eb8 : { KEEP(*(.text.JT_l2cc_pdu_unpack_func_at_0eb8)) }
+  .v204.func.07fc1144 0x07fc1144 : { KEEP(*(.text.JT_l2cc_pdu_recv_ind_handler_func)) }
+  .v204.func.07fc118a 0x07fc118a : { KEEP(*(.text.PATCHED_llc_ch_map_req_ind)) }
+  .v204.func.07fc11f8 0x07fc11f8 : { KEEP(*(.text.PATCHED_smpc_recv_pair_rand_pdu)) }
   .v204.auto.07fc12c6 0x07fc12c6 : { KEEP(*(.v204.auto.07fc12c6)) }
-  .v204.func.07fc12e8 0x07fc12e8 : { KEEP(*(.text.process_indexed_payload_state_block_at_12e8)) }
-  .v204.func.07fc132a 0x07fc132a : { KEEP(*(.text.validate_and_copy_fixed_size_credential)) }
-  .v204.func.07fc1394 0x07fc1394 : { KEEP(*(.text.route_incoming_packet_status_sample_freshness_at_1394)) }
-  .v204.func.07fc1426 0x07fc1426 : { KEEP(*(.text.process_ble_connection_request)) }
-  .v204.func.07fc1696 0x07fc1696 : { KEEP(*(.text.copy_two_initialized_state_blocks_and_install_pointers)) }
-  .v204.func.07fc16c6 0x07fc16c6 : { KEEP(*(.text.return_without_action_at_16c6)) }
+  .v204.func.07fc12e8 0x07fc12e8 : { KEEP(*(.text.PATCHED_smpc_recv_pair_rand_pdu_at_12e8)) }
+  .v204.func.07fc132a 0x07fc132a : { KEEP(*(.text.PATCHED_smpc_recv_public_key_exchange_pdu)) }
+  .v204.func.07fc1394 0x07fc1394 : { KEEP(*(.text.PATCHED_llc_data_ind_handler)) }
+  .v204.func.07fc1426 0x07fc1426 : { KEEP(*(.text.PATCHED_llm_con_req_ind)) }
+  .v204.func.07fc1696 0x07fc1696 : { KEEP(*(.text.patch_func)) }
+  .v204.func.07fc16c6 0x07fc16c6 : { KEEP(*(.text.patch_global_vars_init)) }
   .v204.auto.07fc16c8 0x07fc16c8 : { KEEP(*(.v204.auto.07fc16c8)) }
-  .v204.func.07fc16f8 0x07fc16f8 : { KEEP(*(.text.temporarily_clear_hardware_flags_query_sensor_at_16f8)) }
-  .v204.func.07fc174c 0x07fc174c : { KEEP(*(.text.configure_interrupt_registers_and_optional_mode)) }
-  .v204.func.07fc17bc 0x07fc17bc : { KEEP(*(.text.apply_fixed_point_sensor_calibration_while_at_17bc)) }
+  .v204.func.07fc16f8 0x07fc16f8 : { KEEP(*(.text.rf_calibration_585)) }
+  .v204.func.07fc174c 0x07fc174c : { KEEP(*(.text.enable_rf_diag_irq)) }
+  .v204.func.07fc17bc 0x07fc17bc : { KEEP(*(.text.set_gauss_modgain)) }
   .v204.auto.07fc17f2 0x07fc17f2 : { KEEP(*(.v204.auto.07fc17f2)) }
-  .v204.func.07fc180c 0x07fc180c : { KEEP(*(.text.build_type_27_packet_or_set_fallback_state)) }
-  .v204.func.07fc1894 0x07fc1894 : { KEEP(*(.text.reverse_tagged_record_regions_then_start_p256)) }
+  .v204.func.07fc180c 0x07fc180c : { KEEP(*(.text.PATCHED_smpc_dhkey_calc_start)) }
+  .v204.func.07fc1894 0x07fc1894 : { KEEP(*(.text.JT_llm_p256_start_func)) }
   .v204.auto.07fc18e6 0x07fc18e6 : { KEEP(*(.v204.auto.07fc18e6)) }
   .v204.func.07fc18f4 0x07fc18f4 : { KEEP(*(.text.nul_terminated_string_length)) }
   .v204.auto.07fc1902 0x07fc1902 : { KEEP(*(.v204.auto.07fc1902)) }
@@ -82,45 +85,46 @@ SECTIONS
   .v204.func.07fc1b98 0x07fc1b98 : { KEEP(*(.text.normalize_and_round_v204_software_float)) }
   .v204.auto.07fc1c0a 0x07fc1c0a : { KEEP(*(.v204.auto.07fc1c0a)) }
   .v204.func.07fc1c0c 0x07fc1c0c : { KEEP(*(.text.write_one_to_peripheral_status_register)) }
-  .v204.func.07fc1c18 0x07fc1c18 : { KEEP(*(.text.configure_peripheral_and_wait_for_status_flags)) }
+  .v204.func.07fc1c18 0x07fc1c18 : { KEEP(*(.text.BLE_WAKEUP_LP_Handler)) }
   .v204.auto.07fc1cc6 0x07fc1cc6 : { KEEP(*(.v204.auto.07fc1cc6)) }
-  .v204.func.07fc1cdc 0x07fc1cdc : { KEEP(*(.text.update_selected_hot_bit_10)) }
-  .v204.func.07fc1ce6 0x07fc1ce6 : { KEEP(*(.text.update_selected_hot_bit_11)) }
-  .v204.func.07fc1cf0 0x07fc1cf0 : { KEEP(*(.text.update_selected_hot_bit_12)) }
-  .v204.func.07fc1cfa 0x07fc1cfa : { KEEP(*(.text.update_selected_hot_bit_13)) }
-  .v204.func.07fc1d04 0x07fc1d04 : { KEEP(*(.text.update_selected_hot_bit_14)) }
+  .v204.func.07fc1cdc 0x07fc1cdc : { KEEP(*(.text.GPIO0_Handler)) }
+  .v204.func.07fc1ce6 0x07fc1ce6 : { KEEP(*(.text.GPIO1_Handler)) }
+  .v204.func.07fc1cf0 0x07fc1cf0 : { KEEP(*(.text.GPIO2_Handler)) }
+  .v204.func.07fc1cfa 0x07fc1cfa : { KEEP(*(.text.GPIO3_Handler)) }
+  .v204.func.07fc1d04 0x07fc1d04 : { KEEP(*(.text.GPIO4_Handler)) }
   .v204.auto.07fc1d0e 0x07fc1d0e : { KEEP(*(.v204.auto.07fc1d0e)) }
-  .v204.func.07fc1d10 0x07fc1d10 : { KEEP(*(.text.update_status_slots_for_group_bit)) }
+  .v204.func.07fc1d10 0x07fc1d10 : { KEEP(*(.text.GPIO_ConfigurePin)) }
   .v204.auto.07fc1d3e 0x07fc1d3e : { KEEP(*(.v204.auto.07fc1d3e)) }
-  .v204.func.07fc1d44 0x07fc1d44 : { KEEP(*(.text.update_selected_hot_bit_associated_bit_at_1d44)) }
+  .v204.func.07fc1d44 0x07fc1d44 : { KEEP(*(.text.GPIOn_Handler)) }
   .v204.auto.07fc1d80 0x07fc1d80 : { KEEP(*(.v204.auto.07fc1d80)) }
-  .v204.func.07fc1d88 0x07fc1d88 : { KEEP(*(.text.report_hardfault_context_and_halt)) }
+  .v204.func.07fc1d88 0x07fc1d88 : { KEEP(*(.text.HardFault_HandlerC)) }
   .v204.func.07fc1da8 0x07fc1da8 : { KEEP(*(.text.handle_matched_device_state_send_corresponding_at_1da8)) }
   .v204.auto.07fc1dee 0x07fc1dee : { KEEP(*(.v204.auto.07fc1dee)) }
-  .v204.func.07fc1df8 0x07fc1df8 : { KEEP(*(.text.handle_nmi_and_report_context)) }
-  .v204.func.07fc1e4c 0x07fc1e4c : { KEEP(*(.text.return_without_action_at_1e4c)) }
+  .v204.func.07fc1df8 0x07fc1df8 : { KEEP(*(.text.NMI_HandlerC)) }
+  .v204.func.07fc1e4c 0x07fc1e4c : { KEEP(*(.text.RADIOCNTL_Handler)) }
   .v204.auto.07fc1e4e 0x07fc1e4e : { KEEP(*(.v204.auto.07fc1e4e)) }
-  .v204.func.07fc1e50 0x07fc1e50 : { KEEP(*(.text.apply_device_state_radio_profile)) }
+  .v204.func.07fc1e50 0x07fc1e50 : { KEEP(*(.text.i2c_eeprom_initialize)) }
   .v204.func.07fc1e60 0x07fc1e60 : { KEEP(*(.text.process_radio_state_if_active)) }
   .v204.func.07fc1e70 0x07fc1e70 : { KEEP(*(.text.integer_square_root_restoring)) }
   .v204.auto.07fc1ea2 0x07fc1ea2 : { KEEP(*(.v204.auto.07fc1ea2)) }
-  .v204.func.07fc1ea4 0x07fc1ea4 : { KEEP(*(.text.poll_state_nibble_clear_state_specific_at_1ea4)) }
+  .v204.func.07fc1ea4 0x07fc1ea4 : { KEEP(*(.text.UART2_Handler)) }
   .v204.auto.07fc1ee4 0x07fc1ee4 : { KEEP(*(.v204.auto.07fc1ee4)) }
   .v204.func.07fc1ee8 0x07fc1ee8 : { KEEP(*(.text.wait_for_any_status_bit_or_elapsed_200)) }
+  .v204.func.07fc1ee8 0x07fc1ee8 : { KEEP(*(.text.wait_i2c_rx_fifo_or_timeout)) }
   .v204.func.07fc1f00 0x07fc1f00 : { KEEP(*(.text.wait_for_status_mask_0x04_set_minimum_32)) }
   .v204.func.07fc1f10 0x07fc1f10 : { KEEP(*(.text.wait_for_status_mask_0x20_clear_minimum_8)) }
   .v204.func.07fc1f20 0x07fc1f20 : { KEEP(*(.text.wait_for_status_mask_0x02_set_minimum_8)) }
-  .v204.func.07fc1f34 0x07fc1f34 : { KEEP(*(.text.clear_interrupt_status_bits_dispatch_corresponding_at_1f34)) }
+  .v204.func.07fc1f34 0x07fc1f34 : { KEEP(*(.text.WKUP_QUADEC_Handler)) }
   .v204.auto.07fc1f9a 0x07fc1f9a : { KEEP(*(.v204.auto.07fc1f9a)) }
   .v204.func.07fc1fa8 0x07fc1fa8 : { KEEP(*(.text.append_bounded_bytes_and_terminate)) }
-  .v204.func.07fc1fd0 0x07fc1fd0 : { KEEP(*(.text.wait_for_state_flag_bit_one_to_clear_and_read_result)) }
+  .v204.func.07fc1fd0 0x07fc1fd0 : { KEEP(*(.text.adc_get_sample)) }
   .v204.auto.07fc1fee 0x07fc1fee : { KEEP(*(.v204.auto.07fc1fee)) }
-  .v204.func.07fc1ff4 0x07fc1ff4 : { KEEP(*(.text.reproduce_two_pulse_output_sequence_used_at_1ff4)) }
+  .v204.func.07fc1ff4 0x07fc1ff4 : { KEEP(*(.text.adc_get_p0_1_sample)) }
   .v204.auto.07fc203e 0x07fc203e : { KEEP(*(.v204.auto.07fc203e)) }
-  .v204.func.07fc2048 0x07fc2048 : { KEEP(*(.text.initialize_control_registers_encode_four_optional_at_2048)) }
+  .v204.func.07fc2048 0x07fc2048 : { KEEP(*(.text.adc_init)) }
   .v204.auto.07fc20a4 0x07fc20a4 : { KEEP(*(.v204.auto.07fc20a4)) }
-  .v204.func.07fc20b4 0x07fc20b4 : { KEEP(*(.text.c_countdown_loop_v204_timing_padding_at_20b4)) }
-  .v204.func.07fc20d4 0x07fc20d4 : { KEEP(*(.text.register_thumb_handler_and_store_slot_index)) }
+  .v204.func.07fc20b4 0x07fc20b4 : { KEEP(*(.text.adc_usDelay)) }
+  .v204.func.07fc20d4 0x07fc20d4 : { KEEP(*(.text.adv_data_update_timer_cb)) }
   .v204.auto.07fc20ec 0x07fc20ec : { KEEP(*(.v204.auto.07fc20ec)) }
   .v204.func.07fc20f0 0x07fc20f0 : { KEEP(*(.text.process_sensor_reading_and_update_state)) }
   .v204.auto.07fc2440 0x07fc2440 : { KEEP(*(.v204.auto.07fc2440)) }
@@ -160,41 +164,42 @@ SECTIONS
   .v204.auto.07fc2f88 0x07fc2f88 : { KEEP(*(.v204.auto.07fc2f88)) }
   .v204.func.07fc2f8c 0x07fc2f8c : { KEEP(*(.text.advance_queue_tail_if_nonempty)) }
   .v204.func.07fc2fa4 0x07fc2fa4 : { KEEP(*(.text.copy_ring_buffer_entry_if_index_available)) }
-  .v204.func.07fc2fcc 0x07fc2fcc : { KEEP(*(.text.copy_scaled_payload_slice_when_mask_hits)) }
-  .v204.func.07fc2ff4 0x07fc2ff4 : { KEEP(*(.text.submit_display_code_record_for_fd)) }
-  .v204.func.07fc3028 0x07fc3028 : { KEEP(*(.text.return_constant_one_at_3028)) }
-  .v204.func.07fc302c 0x07fc302c : { KEEP(*(.text.initialize_display_config_or_run_handler)) }
+  .v204.func.07fc2fcc 0x07fc2fcc : { KEEP(*(.text.peek_ring_buffer_entry)) }
+  .v204.func.07fc2ff4 0x07fc2ff4 : { KEEP(*(.text.app_custs1_create_db)) }
+  .v204.func.07fc3028 0x07fc3028 : { KEEP(*(.text.app_custs1_process_handler)) }
+  .v204.func.07fc302c 0x07fc302c : { KEEP(*(.text.app_db_init_next)) }
   .v204.auto.07fc30d2 0x07fc30d2 : { KEEP(*(.v204.auto.07fc30d2)) }
   .v204.auto.07fc30f0 0x07fc30f0 : { KEEP(*(.v204.auto.07fc30f0)) }
   .v204.auto.07fc30f4 0x07fc30f4 : { KEEP(*(.v204.auto.07fc30f4)) }
+  .v204.auto.07fc3110 0x07fc3110 : { KEEP(*(.v204.auto.07fc3110)) }
   .v204.func.07fc3148 0x07fc3148 : { KEEP(*(.text.convert_quotient_remainder_sequence_ring_s_at_3148)) }
   .v204.auto.07fc31c0 0x07fc31c0 : { KEEP(*(.v204.auto.07fc31c0)) }
   .v204.func.07fc31d4 0x07fc31d4 : { KEEP(*(.text.reset_transition_state_and_store_scaled_value)) }
   .v204.auto.07fc31ee 0x07fc31ee : { KEEP(*(.v204.auto.07fc31ee)) }
   .v204.func.07fc31f4 0x07fc31f4 : { KEEP(*(.text.return_without_action_at_31f4)) }
   .v204.auto.07fc31f6 0x07fc31f6 : { KEEP(*(.v204.auto.07fc31f6)) }
-  .v204.func.07fc31f8 0x07fc31f8 : { KEEP(*(.text.publish_per_slot_state_byte)) }
+  .v204.func.07fc31f8 0x07fc31f8 : { KEEP(*(.text.app_easy_gap_confirm)) }
   .v204.auto.07fc321c 0x07fc321c : { KEEP(*(.v204.auto.07fc321c)) }
-  .v204.func.07fc3220 0x07fc3220 : { KEEP(*(.text.build_and_publish_compact_sensor_request_record)) }
+  .v204.func.07fc3220 0x07fc3220 : { KEEP(*(.text.app_easy_gap_disconnect)) }
   .v204.auto.07fc324e 0x07fc324e : { KEEP(*(.v204.auto.07fc324e)) }
   .v204.func.07fc3254 0x07fc3254 : { KEEP(*(.text.allocate_initialize_record_first_use_release_at_3254)) }
   .v204.auto.07fc32a6 0x07fc32a6 : { KEEP(*(.v204.auto.07fc32a6)) }
-  .v204.func.07fc32bc 0x07fc32bc : { KEEP(*(.text.get_or_initialize_cached_text_record)) }
+  .v204.func.07fc32bc 0x07fc32bc : { KEEP(*(.text.app_easy_gap_undirected_advertise_start_create_msg)) }
   .v204.auto.07fc3340 0x07fc3340 : { KEEP(*(.v204.auto.07fc3340)) }
-  .v204.func.07fc334c 0x07fc334c : { KEEP(*(.text.load_per_slot_record_emit_time_at_334c)) }
+  .v204.func.07fc334c 0x07fc334c : { KEEP(*(.text.app_easy_security_accept_encryption)) }
   .v204.auto.07fc339a 0x07fc339a : { KEEP(*(.v204.auto.07fc339a)) }
-  .v204.func.07fc33a4 0x07fc33a4 : { KEEP(*(.text.refresh_cache_then_clear_indexed_word)) }
-  .v204.func.07fc33c0 0x07fc33c0 : { KEEP(*(.text.clear_cached_value_and_publish_sensor_request)) }
+  .v204.func.07fc33a4 0x07fc33a4 : { KEEP(*(.text.app_easy_security_encrypt_cfm)) }
+  .v204.func.07fc33c0 0x07fc33c0 : { KEEP(*(.text.app_easy_security_reject_encryption)) }
   .v204.auto.07fc33e0 0x07fc33e0 : { KEEP(*(.v204.auto.07fc33e0)) }
-  .v204.func.07fc33e4 0x07fc33e4 : { KEEP(*(.text.store_item_in_first_free_registration_slot)) }
+  .v204.func.07fc33e4 0x07fc33e4 : { KEEP(*(.text.app_easy_timer)) }
   .v204.auto.07fc340e 0x07fc340e : { KEEP(*(.v204.auto.07fc340e)) }
-  .v204.func.07fc3410 0x07fc3410 : { KEEP(*(.text.replace_occupied_slot_newly_allocated_initialized_at_3410)) }
+  .v204.func.07fc3410 0x07fc3410 : { KEEP(*(.text.app_easy_timer_cancel)) }
   .v204.auto.07fc3452 0x07fc3452 : { KEEP(*(.v204.auto.07fc3452)) }
-  .v204.func.07fc3460 0x07fc3460 : { KEEP(*(.text.dispatch_through_seven_entry_callback_table)) }
+  .v204.func.07fc3460 0x07fc3460 : { KEEP(*(.text.app_entry_point_handler)) }
   .v204.auto.07fc34a4 0x07fc34a4 : { KEEP(*(.v204.auto.07fc34a4)) }
-  .v204.func.07fc34a8 0x07fc34a8 : { KEEP(*(.text.zero_prefix_and_fill_random_suffix)) }
+  .v204.func.07fc34a8 0x07fc34a8 : { KEEP(*(.text.app_fill_random_byte_array)) }
   .v204.auto.07fc355c 0x07fc355c : { KEEP(*(.v204.auto.07fc355c)) }
-  .v204.func.07fc3564 0x07fc3564 : { KEEP(*(.text.dispatch_callback_table_profile_14)) }
+  .v204.func.07fc3564 0x07fc3564 : { KEEP(*(.text.app_gap_process_handler)) }
   .v204.auto.07fc3580 0x07fc3580 : { KEEP(*(.v204.auto.07fc3580)) }
   .v204.func.07fc3584 0x07fc3584 : { KEEP(*(.text.process_sensor_mode_and_update_display)) }
   .v204.auto.07fc37be 0x07fc37be : { KEEP(*(.v204.auto.07fc37be)) }
@@ -217,19 +222,19 @@ SECTIONS
   .v204.auto.07fc3dd2 0x07fc3dd2 : { KEEP(*(.v204.auto.07fc3dd2)) }
   .v204.func.07fc3dd8 0x07fc3dd8 : { KEEP(*(.text.copy_three_signed_coordinates_to_display_state)) }
   .v204.auto.07fc3e00 0x07fc3e00 : { KEEP(*(.v204.auto.07fc3e00)) }
-  .v204.func.07fc3e08 0x07fc3e08 : { KEEP(*(.text.clear_and_invoke_registered_callback_for_five_values)) }
+  .v204.func.07fc3e08 0x07fc3e08 : { KEEP(*(.text.app_msg_utils_api_process_handler)) }
   .v204.auto.07fc3e38 0x07fc3e38 : { KEEP(*(.v204.auto.07fc3e38)) }
-  .v204.func.07fc3e40 0x07fc3e40 : { KEEP(*(.text.dispatch_callback_table_profile_7)) }
+  .v204.func.07fc3e40 0x07fc3e40 : { KEEP(*(.text.app_sec_process_handler)) }
   .v204.auto.07fc3e5c 0x07fc3e5c : { KEEP(*(.v204.auto.07fc3e5c)) }
   .v204.func.07fc3e60 0x07fc3e60 : { KEEP(*(.text.update_state_bits_and_publish_empty_status)) }
   .v204.auto.07fc3e84 0x07fc3e84 : { KEEP(*(.v204.auto.07fc3e84)) }
   .v204.func.07fc3e90 0x07fc3e90 : { KEEP(*(.text.erase_flash_range)) }
   .v204.func.07fc3ea0 0x07fc3ea0 : { KEEP(*(.text.perform_flash_memory_operation)) }
   .v204.auto.07fc4090 0x07fc4090 : { KEEP(*(.v204.auto.07fc4090)) }
-  .v204.func.07fc40a0 0x07fc40a0 : { KEEP(*(.text.search_callback_table_invoke_matching_handler_at_40a0)) }
+  .v204.func.07fc40a0 0x07fc40a0 : { KEEP(*(.text.app_std_process_event)) }
   .v204.auto.07fc4102 0x07fc4102 : { KEEP(*(.v204.auto.07fc4102)) }
-  .v204.func.07fc4110 0x07fc4110 : { KEEP(*(.text.submit_display_code_status_record)) }
-  .v204.func.07fc4144 0x07fc4144 : { KEEP(*(.text.dispatch_callback_table_profile_4)) }
+  .v204.func.07fc4110 0x07fc4110 : { KEEP(*(.text.app_suotar_create_db)) }
+  .v204.func.07fc4144 0x07fc4144 : { KEEP(*(.text.app_suotar_process_handler)) }
   .v204.auto.07fc4160 0x07fc4160 : { KEEP(*(.v204.auto.07fc4160)) }
   .v204.func.07fc4164 0x07fc4164 : { KEEP(*(.text.map_elapsed_ticks_to_firmware_time_units)) }
   .v204.auto.07fc41ca 0x07fc41ca : { KEEP(*(.v204.auto.07fc41ca)) }
@@ -239,7 +244,7 @@ SECTIONS
   .v204.auto.07fc43ea 0x07fc43ea : { KEEP(*(.v204.auto.07fc43ea)) }
   .v204.func.07fc4400 0x07fc4400 : { KEEP(*(.text.serialize_status_and_global_values_with_word)) }
   .v204.auto.07fc4432 0x07fc4432 : { KEEP(*(.v204.auto.07fc4432)) }
-  .v204.func.07fc4440 0x07fc4440 : { KEEP(*(.text.request_sensor_sample_then_scale_result)) }
+  .v204.func.07fc4440 0x07fc4440 : { KEEP(*(.text.get_ble_base_time_ms)) }
   .v204.func.07fc4458 0x07fc4458 : { KEEP(*(.text.wait_shared_timer_delta_exceed_requested_at_4458)) }
   .v204.auto.07fc449e 0x07fc449e : { KEEP(*(.v204.auto.07fc449e)) }
   .v204.func.07fc44a8 0x07fc44a8 : { KEEP(*(.text.update_clock_and_process_events)) }
@@ -248,7 +253,7 @@ SECTIONS
   .v204.auto.07fc4c96 0x07fc4c96 : { KEEP(*(.v204.auto.07fc4c96)) }
   .v204.func.07fc4cb0 0x07fc4cb0 : { KEEP(*(.text.load_and_update_persistent_measurement_state_block_at_4cb0)) }
   .v204.auto.07fc4d3e 0x07fc4d3e : { KEEP(*(.v204.auto.07fc4d3e)) }
-  .v204.func.07fc4d6c 0x07fc4d6c : { KEEP(*(.text.dispatch_callback_table_command_and_clear_result)) }
+  .v204.func.07fc4d6c 0x07fc4d6c : { KEEP(*(.text.app_timer_api_process_handler)) }
   .v204.auto.07fc4e74 0x07fc4e74 : { KEEP(*(.v204.auto.07fc4e74)) }
   .v204.func.07fc4e98 0x07fc4e98 : { KEEP(*(.text.handle_record_flag_and_queue_sensor_configuration)) }
   .v204.auto.07fc4f26 0x07fc4f26 : { KEEP(*(.v204.auto.07fc4f26)) }
@@ -274,10 +279,10 @@ SECTIONS
   .v204.func.07fc5260 0x07fc5260 : { KEEP(*(.text.set_pending_flag_if_status_bit_7_clear)) }
   .v204.auto.07fc528c 0x07fc528c : { KEEP(*(.v204.auto.07fc528c)) }
   .v204.func.07fc5294 0x07fc5294 : { KEEP(*(.text.format_integer_radix_zero_padded)) }
-  .v204.func.07fc532c 0x07fc532c : { KEEP(*(.text.format_and_send_uart_message)) }
+  .v204.func.07fc532c 0x07fc532c : { KEEP(*(.text.arch_printf)) }
   .v204.auto.07fc5458 0x07fc5458 : { KEEP(*(.v204.auto.07fc5458)) }
   .v204.data.07fc5480 0x07fc5480 : { KEEP(*(.v204.data.07fc5480)) }
-  .v204.func.07fc5484 0x07fc5484 : { KEEP(*(.text.fill_buffer_with_32_random_bytes)) }
+  .v204.func.07fc5484 0x07fc5484 : { KEEP(*(.text.ba431_get_rand_func)) }
   .v204.func.07fc549c 0x07fc549c : { KEEP(*(.text.switch_to_display_state_1b_when_word_44_is_100)) }
   .v204.auto.07fc54ae 0x07fc54ae : { KEEP(*(.v204.auto.07fc54ae)) }
   .v204.func.07fc54b4 0x07fc54b4 : { KEEP(*(.text.initialize_display_image_region_and_fixed_header)) }
@@ -290,41 +295,41 @@ SECTIONS
   .v204.auto.07fc564c 0x07fc564c : { KEEP(*(.v204.auto.07fc564c)) }
   .v204.func.07fc5654 0x07fc5654 : { KEEP(*(.text.increment_character_by_ten_wrap_at_d)) }
   .v204.auto.07fc5668 0x07fc5668 : { KEEP(*(.v204.auto.07fc5668)) }
-  .v204.func.07fc566c 0x07fc566c : { KEEP(*(.text.initialize_peripheral_control_state)) }
+  .v204.func.07fc566c 0x07fc566c : { KEEP(*(.text.calibrate_rcx20)) }
   .v204.func.07fc5694 0x07fc5694 : { KEEP(*(.text.select_dispatch_operation_two)) }
   .v204.auto.07fc569e 0x07fc569e : { KEEP(*(.v204.auto.07fc569e)) }
   .v204.func.07fc56a0 0x07fc56a0 : { KEEP(*(.text.crc32_update_buffer)) }
   .v204.auto.07fc573a 0x07fc573a : { KEEP(*(.v204.auto.07fc573a)) }
   .v204.func.07fc5740 0x07fc5740 : { KEEP(*(.text.crc32_update_one_byte)) }
   .v204.auto.07fc5758 0x07fc5758 : { KEEP(*(.v204.auto.07fc5758)) }
-  .v204.func.07fc575c 0x07fc575c : { KEEP(*(.text.select_fast_rom_write_allocate_initialize_at_575c)) }
+  .v204.func.07fc575c 0x07fc575c : { KEEP(*(.text.create_timer)) }
   .v204.auto.07fc57a4 0x07fc57a4 : { KEEP(*(.v204.auto.07fc57a4)) }
   .v204.func.07fc57b4 0x07fc57b4 : { KEEP(*(.text.return_without_action_at_57b4)) }
   .v204.auto.07fc57b6 0x07fc57b6 : { KEEP(*(.v204.auto.07fc57b6)) }
-  .v204.func.07fc57b8 0x07fc57b8 : { KEEP(*(.text.find_measurement_record_by_id)) }
-  .v204.func.07fc5808 0x07fc5808 : { KEEP(*(.text.populate_measurement_record_if_empty)) }
-  .v204.func.07fc5848 0x07fc5848 : { KEEP(*(.text.upsert_variable_length_list_record)) }
+  .v204.func.07fc57b8 0x07fc57b8 : { KEEP(*(.text.custs1_att_get_value)) }
+  .v204.func.07fc5808 0x07fc5808 : { KEEP(*(.text.custs1_att_info_rsp_handler)) }
+  .v204.func.07fc5848 0x07fc5848 : { KEEP(*(.text.custs1_att_set_value)) }
   .v204.auto.07fc58aa 0x07fc58aa : { KEEP(*(.v204.auto.07fc58aa)) }
-  .v204.func.07fc58ac 0x07fc58ac : { KEEP(*(.text.visit_selected_five_word_records_update_at_58ac)) }
+  .v204.func.07fc58ac 0x07fc58ac : { KEEP(*(.text.custs1_cleanup)) }
   .v204.auto.07fc58fa 0x07fc58fa : { KEEP(*(.v204.auto.07fc58fa)) }
-  .v204.func.07fc58fc 0x07fc58fc : { KEEP(*(.text.scan_five_masked_records_and_dispatch_entries)) }
-  .v204.func.07fc5940 0x07fc5940 : { KEEP(*(.text.drain_linked_record_list_and_clear_head)) }
-  .v204.func.07fc5968 0x07fc5968 : { KEEP(*(.text.append_or_finalize_measurement_record_chunk)) }
+  .v204.func.07fc58fc 0x07fc58fc : { KEEP(*(.text.custs1_create)) }
+  .v204.func.07fc5940 0x07fc5940 : { KEEP(*(.text.custs1_destroy)) }
+  .v204.func.07fc5968 0x07fc5968 : { KEEP(*(.text.custs1_exe_operation)) }
   .v204.auto.07fc5a5a 0x07fc5a5a : { KEEP(*(.v204.auto.07fc5a5a)) }
-  .v204.func.07fc5a6c 0x07fc5a6c : { KEEP(*(.text.lookup_measurement_value_by_index)) }
-  .v204.func.07fc5a88 0x07fc5a88 : { KEEP(*(.text.match_measurement_index_and_write_offset)) }
+  .v204.func.07fc5a6c 0x07fc5a6c : { KEEP(*(.text.custs1_get_att_handle)) }
+  .v204.func.07fc5a88 0x07fc5a88 : { KEEP(*(.text.custs1_get_att_idx)) }
   .v204.auto.07fc5aae 0x07fc5aae : { KEEP(*(.v204.auto.07fc5aae)) }
-  .v204.func.07fc5ab0 0x07fc5ab0 : { KEEP(*(.text.build_service_information_record)) }
+  .v204.func.07fc5ab0 0x07fc5ab0 : { KEEP(*(.text.custs1_init)) }
   .v204.auto.07fc5c32 0x07fc5c32 : { KEEP(*(.v204.auto.07fc5c32)) }
-  .v204.func.07fc5c44 0x07fc5c44 : { KEEP(*(.text.replace_byte_in_variable_length_record_at_index)) }
+  .v204.func.07fc5c44 0x07fc5c44 : { KEEP(*(.text.custs1_set_ccc_value)) }
   .v204.auto.07fc5cb2 0x07fc5cb2 : { KEEP(*(.v204.auto.07fc5cb2)) }
-  .v204.func.07fc5cbc 0x07fc5cbc : { KEEP(*(.text.prepare_measurement_record_append_at_5cbc)) }
+  .v204.func.07fc5cbc 0x07fc5cbc : { KEEP(*(.text.custs1_val_ind_req_handler)) }
   .v204.auto.07fc5d32 0x07fc5d32 : { KEEP(*(.v204.auto.07fc5d32)) }
-  .v204.func.07fc5d34 0x07fc5d34 : { KEEP(*(.text.prepare_measurement_record_append_at_5d34)) }
+  .v204.func.07fc5d34 0x07fc5d34 : { KEEP(*(.text.custs1_val_ntf_req_handler)) }
   .v204.auto.07fc5daa 0x07fc5daa : { KEEP(*(.v204.auto.07fc5daa)) }
-  .v204.func.07fc5db4 0x07fc5db4 : { KEEP(*(.text.set_attribute_value_from_measurement_record)) }
+  .v204.func.07fc5db4 0x07fc5db4 : { KEEP(*(.text.custs1_val_set_req_handler)) }
   .v204.auto.07fc5dd6 0x07fc5dd6 : { KEEP(*(.v204.auto.07fc5dd6)) }
-  .v204.func.07fc5dd8 0x07fc5dd8 : { KEEP(*(.text.build_submit_sensor_record_incoming_sample_at_5dd8)) }
+  .v204.func.07fc5dd8 0x07fc5dd8 : { KEEP(*(.text.custs1_value_req_rsp_handler)) }
   .v204.auto.07fc5e4c 0x07fc5e4c : { KEEP(*(.v204.auto.07fc5e4c)) }
   .v204.func.07fc5e50 0x07fc5e50 : { KEEP(*(.text.return_without_action_at_5e50)) }
   .v204.func.07fc5e52 0x07fc5e52 : { KEEP(*(.text.return_without_action_at_5e52)) }
@@ -332,7 +337,7 @@ SECTIONS
   .v204.auto.07fc5eee 0x07fc5eee : { KEEP(*(.v204.auto.07fc5eee)) }
   .v204.func.07fc5f28 0x07fc5f28 : { KEEP(*(.text.get_random_number)) }
   .v204.func.07fc5f30 0x07fc5f30 : { KEEP(*(.text.seed_random_number_generator)) }
-  .v204.func.07fc5f38 0x07fc5f38 : { KEEP(*(.text.get_or_allocate_cached_message_buffer_for_index)) }
+  .v204.func.07fc5f38 0x07fc5f38 : { KEEP(*(.text.encrypt_cfm_create_msg)) }
   .v204.auto.07fc5f5c 0x07fc5f5c : { KEEP(*(.v204.auto.07fc5f5c)) }
   .v204.func.07fc5f64 0x07fc5f64 : { KEEP(*(.text.clear_mode_flags_0x0011)) }
   .v204.func.07fc5f70 0x07fc5f70 : { KEEP(*(.text.clear_mode_flags_0x0022)) }
@@ -340,109 +345,91 @@ SECTIONS
   .v204.func.07fc5f7e 0x07fc5f7e : { KEEP(*(.text.return_without_action_at_5f7e)) }
   .v204.func.07fc5f80 0x07fc5f80 : { KEEP(*(.text.log_message_with_code_17_and_enqueue_operation_one)) }
   .v204.auto.07fc5f94 0x07fc5f94 : { KEEP(*(.v204.auto.07fc5f94)) }
-  .v204.func.07fc5fb0 0x07fc5fb0 : { KEEP(*(.text.dispatch_indexed_message_by_id)) }
+  .v204.func.07fc5fb0 0x07fc5fb0 : { KEEP(*(.text.gapc_bond_ind_handler)) }
   .v204.auto.07fc5fc4 0x07fc5fc4 : { KEEP(*(.v204.auto.07fc5fc4)) }
-  .v204.func.07fc5fca 0x07fc5fca : { KEEP(*(.text.dispatch_indexed_message_by_id_cases_2_and_3)) }
-  .v204.func.07fc6060 0x07fc6060 : { KEEP(*(.text.dispatch_switch_default_case_from_5fb0)) }
-  .v204.func.07fc6066 0x07fc6066 : { KEEP(*(.text.dispatch_indexed_message_by_id_cases_5_to_7)) }
-  .v204.func.07fc60da 0x07fc60da : { KEEP(*(.text.return_from_switch_dispatch_5fb0)) }
   .v204.auto.07fc60de 0x07fc60de : { KEEP(*(.v204.auto.07fc60de)) }
-  .v204.func.07fc60ec 0x07fc60ec : { KEEP(*(.text.handle_per_slot_ble_data_record)) }
+  .v204.func.07fc60ec 0x07fc60ec : { KEEP(*(.text.gapc_bond_req_ind_handler)) }
   .v204.auto.07fc61dc 0x07fc61dc : { KEEP(*(.v204.auto.07fc61dc)) }
-  .v204.func.07fc61e4 0x07fc61e4 : { KEEP(*(.text.decode_control_notifications_adjust_range_setting_at_61e4)) }
+  .v204.func.07fc61e4 0x07fc61e4 : { KEEP(*(.text.gapc_cmp_evt_handler)) }
   .v204.auto.07fc623c 0x07fc623c : { KEEP(*(.v204.auto.07fc623c)) }
-  .v204.func.07fc625c 0x07fc625c : { KEEP(*(.text.store_indexed_measurement_status_record)) }
+  .v204.func.07fc625c 0x07fc625c : { KEEP(*(.text.gapc_connection_req_ind_handler)) }
   .v204.auto.07fc632e 0x07fc632e : { KEEP(*(.v204.auto.07fc632e)) }
-  .v204.func.07fc6358 0x07fc6358 : { KEEP(*(.text.activate_staged_firmware_image)) }
+  .v204.func.07fc6358 0x07fc6358 : { KEEP(*(.text.gapc_disconnect_ind_handler)) }
   .v204.auto.07fc6420 0x07fc6420 : { KEEP(*(.v204.auto.07fc6420)) }
-  .v204.func.07fc6440 0x07fc6440 : { KEEP(*(.text.store_byte_in_table_by_high_index)) }
+  .v204.func.07fc6440 0x07fc6440 : { KEEP(*(.text.gapc_encrypt_ind_handler)) }
   .v204.auto.07fc6452 0x07fc6452 : { KEEP(*(.v204.auto.07fc6452)) }
-  .v204.func.07fc6458 0x07fc6458 : { KEEP(*(.text.route_record_update_slot_state_two_at_6458)) }
+  .v204.func.07fc6458 0x07fc6458 : { KEEP(*(.text.gapc_encrypt_req_ind_handler)) }
   .v204.auto.07fc649e 0x07fc649e : { KEEP(*(.v204.auto.07fc649e)) }
   .v204.auto.07fc64a4 0x07fc64a4 : { KEEP(*(.v204.auto.07fc64a4)) }
-  .v204.func.07fc64a8 0x07fc64a8 : { KEEP(*(.text.build_and_submit_record_for_selector_type)) }
+  .v204.func.07fc64a8 0x07fc64a8 : { KEEP(*(.text.gapc_get_dev_info_req_ind_handler)) }
   .v204.auto.07fc6538 0x07fc6538 : { KEEP(*(.v204.auto.07fc6538)) }
-  .v204.func.07fc653c 0x07fc653c : { KEEP(*(.text.return_constant_0_at_653c)) }
-  .v204.func.07fc6540 0x07fc6540 : { KEEP(*(.text.create_empty_measurement_record)) }
-  .v204.func.07fc6560 0x07fc6560 : { KEEP(*(.text.return_constant_0_at_6560)) }
-  .v204.func.07fc6564 0x07fc6564 : { KEEP(*(.text.return_constant_0_at_6564)) }
-  .v204.func.07fc6568 0x07fc6568 : { KEEP(*(.text.update_measurement_fields_emit_typed_sensor_at_6568)) }
+  .v204.func.07fc653c 0x07fc653c : { KEEP(*(.text.gapc_le_pkt_size_ind_handler)) }
+  .v204.func.07fc6540 0x07fc6540 : { KEEP(*(.text.gapc_param_update_req_ind_handler)) }
+  .v204.func.07fc6560 0x07fc6560 : { KEEP(*(.text.gapc_peer_features_ind_handler)) }
+  .v204.func.07fc6564 0x07fc6564 : { KEEP(*(.text.gapc_security_ind_handler)) }
+  .v204.func.07fc6568 0x07fc6568 : { KEEP(*(.text.gapc_set_dev_info_req_ind_handler)) }
   .v204.auto.07fc65be 0x07fc65be : { KEEP(*(.v204.auto.07fc65be)) }
-  .v204.func.07fc65c8 0x07fc65c8 : { KEEP(*(.text.return_constant_0_at_65c8)) }
-  .v204.func.07fc65cc 0x07fc65cc : { KEEP(*(.text.return_constant_0_at_65cc)) }
-  .v204.func.07fc65d0 0x07fc65d0 : { KEEP(*(.text.discontiguous_switch_entry_default_return_blocks_at_65d0)) }
+  .v204.func.07fc65c8 0x07fc65c8 : { KEEP(*(.text.gapm_addr_solved_ind_handler)) }
+  .v204.func.07fc65cc 0x07fc65cc : { KEEP(*(.text.gapm_adv_report_ind_handler)) }
+  .v204.func.07fc65d0 0x07fc65d0 : { KEEP(*(.text.gapm_cmp_evt_handler)) }
   .v204.auto.07fc65e4 0x07fc65e4 : { KEEP(*(.v204.auto.07fc65e4)) }
-  .v204.func.07fc65fc 0x07fc65fc : { KEEP(*(.text.return_from_switch_dispatch_65d0)) }
-  .v204.func.07fc6600 0x07fc6600 : { KEEP(*(.text.discontiguous_switch_entry_default_return_blocks_at_65d0_fault)) }
-  .v204.func.07fc6614 0x07fc6614 : { KEEP(*(.text.dispatch_switch_default_case_from_65d0)) }
-  .v204.func.07fc661a 0x07fc661a : { KEEP(*(.text.discontiguous_switch_entry_default_return_blocks_at_65d0_cases)) }
   .v204.auto.07fc66ac 0x07fc66ac : { KEEP(*(.v204.auto.07fc66ac)) }
-  .v204.func.07fc66c0 0x07fc66c0 : { KEEP(*(.text.send_type_9_message_if_task_state_zero)) }
+  .v204.func.07fc66c0 0x07fc66c0 : { KEEP(*(.text.gapm_device_ready_ind_handler)) }
   .v204.auto.07fc66f2 0x07fc66f2 : { KEEP(*(.v204.auto.07fc66f2)) }
-  .v204.func.07fc66f8 0x07fc66f8 : { KEEP(*(.text.initialize_measurement_for_enabled_slot)) }
-  .v204.func.07fc671c 0x07fc671c : { KEEP(*(.text.return_constant_0_at_671c)) }
-  .v204.func.07fc6720 0x07fc6720 : { KEEP(*(.text.return_constant_0_at_6720)) }
-  .v204.func.07fc6724 0x07fc6724 : { KEEP(*(.text.reproduce_sensor_record_allocation_out_range_at_6724)) }
+  .v204.func.07fc66f8 0x07fc66f8 : { KEEP(*(.text.gapm_profile_added_ind_handler)) }
+  .v204.func.07fc671c 0x07fc671c : { KEEP(*(.text.gapm_ral_addr_ind_handler)) }
+  .v204.func.07fc6720 0x07fc6720 : { KEEP(*(.text.gapm_ral_size_ind_handler)) }
+  .v204.func.07fc6724 0x07fc6724 : { KEEP(*(.text.custs1_gattc_att_info_req_ind_handler)) }
   .v204.auto.07fc6770 0x07fc6770 : { KEEP(*(.v204.auto.07fc6770)) }
-  .v204.func.07fc677c 0x07fc677c : { KEEP(*(.text.build_measurement_message_from_service_record)) }
+  .v204.func.07fc677c 0x07fc677c : { KEEP(*(.text.hogpd_gattc_att_info_req_ind_handler)) }
   .v204.auto.07fc67e4 0x07fc67e4 : { KEEP(*(.v204.auto.07fc67e4)) }
-  .v204.func.07fc67f0 0x07fc67f0 : { KEEP(*(.text.dispatch_measurement_record_type)) }
-  .v204.func.07fc6804 0x07fc6804 : { KEEP(*(.text.decrement_pending_count_build_measurement_packet_at_6804)) }
+  .v204.func.07fc67f0 0x07fc67f0 : { KEEP(*(.text.custs1_gattc_cmp_evt_handler)) }
+  .v204.func.07fc6804 0x07fc6804 : { KEEP(*(.text.hogpd_gattc_cmp_evt_handler)) }
   .v204.auto.07fc6866 0x07fc6866 : { KEEP(*(.v204.auto.07fc6866)) }
-  .v204.func.07fc686c 0x07fc686c : { KEEP(*(.text.build_and_send_measurement_item_response)) }
+  .v204.func.07fc686c 0x07fc686c : { KEEP(*(.text.custs1_gattc_read_req_ind_handler)) }
   .v204.auto.07fc6982 0x07fc6982 : { KEEP(*(.v204.auto.07fc6982)) }
-  .v204.func.07fc6998 0x07fc6998 : { KEEP(*(.text.allocate_and_send_typed_message)) }
+  .v204.func.07fc6998 0x07fc6998 : { KEEP(*(.text.suotar_gattc_read_req_ind_handler)) }
   .v204.auto.07fc6a3e 0x07fc6a3e : { KEEP(*(.v204.auto.07fc6a3e)) }
-  .v204.func.07fc6a40 0x07fc6a40 : { KEEP(*(.text.parse_service_record_and_update_state_entry)) }
+  .v204.func.07fc6a40 0x07fc6a40 : { KEEP(*(.text.hogpd_gattc_read_req_ind_handler)) }
   .v204.auto.07fc6aa8 0x07fc6aa8 : { KEEP(*(.v204.auto.07fc6aa8)) }
-  .v204.func.07fc6ae8 0x07fc6ae8 : { KEEP(*(.text.parse_service_record_and_update_state_body)) }
   .v204.auto.07fc6be2 0x07fc6be2 : { KEEP(*(.v204.auto.07fc6be2)) }
-  .v204.func.07fc6bf0 0x07fc6bf0 : { KEEP(*(.text.return_constant_0_at_6bf0)) }
-  .v204.func.07fc6bf4 0x07fc6bf4 : { KEEP(*(.text.handle_incoming_service_record)) }
+  .v204.func.07fc6bf0 0x07fc6bf0 : { KEEP(*(.text.gattc_svc_changed_cfg_ind_handler)) }
+  .v204.func.07fc6bf4 0x07fc6bf4 : { KEEP(*(.text.custs1_gattc_write_req_ind_handler)) }
   .v204.auto.07fc6da4 0x07fc6da4 : { KEEP(*(.v204.auto.07fc6da4)) }
-  .v204.func.07fc6dbc 0x07fc6dbc : { KEEP(*(.text.dispatch_attribute_request_by_opcode_entry)) }
+  .v204.func.07fc6dbc 0x07fc6dbc : { KEEP(*(.text.suotar_gattc_write_req_ind_handler)) }
   .v204.auto.07fc6e18 0x07fc6e18 : { KEEP(*(.v204.auto.07fc6e18)) }
-  .v204.func.07fc6e24 0x07fc6e24 : { KEEP(*(.text.dispatch_attribute_request_by_opcode_switch)) }
-  .v204.func.07fc6fa0 0x07fc6fa0 : { KEEP(*(.text.dispatch_attribute_request_by_opcode_exit)) }
   .v204.auto.07fc6fac 0x07fc6fac : { KEEP(*(.v204.auto.07fc6fac)) }
-  .v204.func.07fc6fc0 0x07fc6fc0 : { KEEP(*(.text.handle_incoming_packet_entry)) }
+  .v204.func.07fc6fc0 0x07fc6fc0 : { KEEP(*(.text.hogpd_gattc_write_req_ind_handler)) }
   .v204.auto.07fc703c 0x07fc703c : { KEEP(*(.v204.auto.07fc703c)) }
-  .v204.func.07fc7060 0x07fc7060 : { KEEP(*(.text.handle_incoming_packet_case_prefix)) }
   .v204.auto.07fc70b8 0x07fc70b8 : { KEEP(*(.v204.auto.07fc70b8)) }
-  .v204.func.07fc70c6 0x07fc70c6 : { KEEP(*(.text.handle_incoming_packet_case_body)) }
-  .v204.func.07fc725a 0x07fc725a : { KEEP(*(.text.handle_incoming_packet_exit)) }
   .v204.auto.07fc7276 0x07fc7276 : { KEEP(*(.v204.auto.07fc7276)) }
-  .v204.func.07fc7284 0x07fc7284 : { KEEP(*(.text.search_next_item_decoded_marker_matches_at_7284)) }
+  .v204.func.07fc7284 0x07fc7284 : { KEEP(*(.text.get_cfg_handle)) }
   .v204.auto.07fc72ea 0x07fc72ea : { KEEP(*(.v204.auto.07fc72ea)) }
   .v204.func.07fc72f0 0x07fc72f0 : { KEEP(*(.text.copy_six_profile_bytes_from_offsets_two_to_seven)) }
   .v204.auto.07fc7304 0x07fc7304 : { KEEP(*(.v204.auto.07fc7304)) }
-  .v204.func.07fc7308 0x07fc7308 : { KEEP(*(.text.read_sensor_conversion_result)) }
-  .v204.func.07fc7358 0x07fc7358 : { KEEP(*(.text.search_display_code_table_from_minus20_to_zero)) }
+  .v204.func.07fc7308 0x07fc7308 : { KEEP(*(.text.get_rc16m_count)) }
+  .v204.func.07fc7358 0x07fc7358 : { KEEP(*(.text.get_user_prf_srv_perm)) }
   .v204.auto.07fc737c 0x07fc737c : { KEEP(*(.v204.auto.07fc737c)) }
   .v204.func.07fc7380 0x07fc7380 : { KEEP(*(.text.update_measurement_display_and_mode_state)) }
   .v204.auto.07fc74a0 0x07fc74a0 : { KEEP(*(.v204.auto.07fc74a0)) }
   .v204.func.07fc74a8 0x07fc74a8 : { KEEP(*(.text.conditional_mode_updates_using_two_display_at_74a8)) }
-  .v204.func.07fc74d4 0x07fc74d4 : { KEEP(*(.text.clear_selected_slot_record_series)) }
+  .v204.func.07fc74d4 0x07fc74d4 : { KEEP(*(.text.hogpd_cleanup)) }
   .v204.auto.07fc7518 0x07fc7518 : { KEEP(*(.v204.auto.07fc7518)) }
-  .v204.func.07fc7524 0x07fc7524 : { KEEP(*(.text.return_without_action_at_7524)) }
-  .v204.func.07fc7526 0x07fc7526 : { KEEP(*(.text.release_and_clear_object_handle)) }
+  .v204.func.07fc7524 0x07fc7524 : { KEEP(*(.text.hogpd_create)) }
+  .v204.func.07fc7526 0x07fc7526 : { KEEP(*(.text.hogpd_destroy)) }
   .v204.auto.07fc7536 0x07fc7536 : { KEEP(*(.v204.auto.07fc7536)) }
-  .v204.func.07fc7538 0x07fc7538 : { KEEP(*(.text.update_profile_values_and_send_status)) }
+  .v204.func.07fc7538 0x07fc7538 : { KEEP(*(.text.hogpd_enable_req_handler)) }
   .v204.auto.07fc75c4 0x07fc75c4 : { KEEP(*(.v204.auto.07fc75c4)) }
-  .v204.func.07fc75d4 0x07fc75d4 : { KEEP(*(.text.compute_display_segment_position_from_mode_table)) }
-  .v204.func.07fc76a0 0x07fc76a0 : { KEEP(*(.text.parse_variable_length_service_record)) }
+  .v204.func.07fc75d4 0x07fc75d4 : { KEEP(*(.text.hogpd_get_att_handle)) }
+  .v204.func.07fc76a0 0x07fc76a0 : { KEEP(*(.text.hogpd_get_att_idx)) }
   .v204.auto.07fc77f4 0x07fc77f4 : { KEEP(*(.v204.auto.07fc77f4)) }
-  .v204.func.07fc77fc 0x07fc77fc : { KEEP(*(.text.build_measurement_packet_and_handle_reply)) }
+  .v204.func.07fc77fc 0x07fc77fc : { KEEP(*(.text.hogpd_init)) }
   .v204.auto.07fc7baa 0x07fc7baa : { KEEP(*(.v204.auto.07fc7baa)) }
-  .v204.func.07fc7bcc 0x07fc7bcc : { KEEP(*(.text.complete_pending_attribute_operation)) }
-  .v204.func.07fc7c88 0x07fc7c88 : { KEEP(*(.text.handle_pending_attribute_write_request_at_7c88)) }
+  .v204.func.07fc7bcc 0x07fc7bcc : { KEEP(*(.text.hogpd_proto_mode_cfm_handler)) }
+  .v204.func.07fc7c88 0x07fc7c88 : { KEEP(*(.text.hogpd_report_cfm_handler)) }
   .v204.auto.07fc7ce4 0x07fc7ce4 : { KEEP(*(.v204.auto.07fc7ce4)) }
-  .v204.func.07fc7cea 0x07fc7cea : { KEEP(*(.text.select_attribute_value_length_case_zero_at_7cea)) }
-  .v204.func.07fc7cee 0x07fc7cee : { KEEP(*(.text.handle_pending_attribute_write_cases_one_and_two_at_7cee)) }
-  .v204.func.07fc7cf6 0x07fc7cf6 : { KEEP(*(.text.select_attribute_value_lengths_cases_three_to_five_at_7cf6)) }
-  .v204.func.07fc7d04 0x07fc7d04 : { KEEP(*(.text.finish_pending_attribute_write_request_at_7d04)) }
   .v204.auto.07fc7dae 0x07fc7dae : { KEEP(*(.v204.auto.07fc7dae)) }
-  .v204.func.07fc7db4 0x07fc7db4 : { KEEP(*(.text.validate_and_queue_attribute_request)) }
+  .v204.func.07fc7db4 0x07fc7db4 : { KEEP(*(.text.hogpd_report_upd_req_handler)) }
   .v204.auto.07fc7f4a 0x07fc7f4a : { KEEP(*(.v204.auto.07fc7f4a)) }
   .v204.func.07fc7f58 0x07fc7f58 : { KEEP(*(.text.restore_radio_profile_before_command)) }
   .v204.func.07fc7f68 0x07fc7f68 : { KEEP(*(.text.read_device_bytes_into_buffer)) }
@@ -456,7 +443,6 @@ SECTIONS
   .v204.auto.07fc803a 0x07fc803a : { KEEP(*(.v204.auto.07fc803a)) }
   .v204.func.07fc8040 0x07fc8040 : { KEEP(*(.text.six_way_command_dispatch_default_branch_at_8040)) }
   .v204.auto.07fc804e 0x07fc804e : { KEEP(*(.v204.auto.07fc804e)) }
-  .v204.func.07fc8068 0x07fc8068 : { KEEP(*(.text.six_way_command_dispatch_default_branch_at_8040_cases)) }
   .v204.auto.07fc80d6 0x07fc80d6 : { KEEP(*(.v204.auto.07fc80d6)) }
   .v204.func.07fc80d8 0x07fc80d8 : { KEEP(*(.text.dispatch_enabled_indicator_fields_for_device_status)) }
   .v204.auto.07fc812e 0x07fc812e : { KEEP(*(.v204.auto.07fc812e)) }
@@ -502,6 +488,7 @@ SECTIONS
   .v204.func.07fc8a54 0x07fc8a54 : { KEEP(*(.text.scan_pair_table_until_terminator)) }
   .v204.auto.07fc8a76 0x07fc8a76 : { KEEP(*(.v204.auto.07fc8a76)) }
   .v204.func.07fc8a78 0x07fc8a78 : { KEEP(*(.text.wait_requested_status_mask_minimum_elapsed_at_8a78)) }
+  .v204.func.07fc8a78 0x07fc8a78 : { KEEP(*(.text.poll_status_until_match_or_ble_timeout)) }
   .v204.auto.07fc8ace 0x07fc8ace : { KEEP(*(.v204.auto.07fc8ace)) }
   .v204.func.07fc8ad8 0x07fc8ad8 : { KEEP(*(.text.process_two_packed_input_bytes_update_at_8ad8)) }
   .v204.auto.07fc8b12 0x07fc8b12 : { KEEP(*(.v204.auto.07fc8b12)) }
@@ -557,14 +544,14 @@ SECTIONS
   .v204.func.07fc97ca 0x07fc97ca : { KEEP(*(.text.select_operation_four_and_reset_state)) }
   .v204.func.07fc97d8 0x07fc97d8 : { KEEP(*(.text.switch_to_display_state_four_if_flag_clear)) }
   .v204.auto.07fc97ea 0x07fc97ea : { KEEP(*(.v204.auto.07fc97ea)) }
-  .v204.func.07fc97f0 0x07fc97f0 : { KEEP(*(.text.accumulate_elapsed_units_store_quotient_remainder_at_97f0)) }
+  .v204.func.07fc97f0 0x07fc97f0 : { KEEP(*(.text.lld_sleep_compensate_func)) }
   .v204.auto.07fc9828 0x07fc9828 : { KEEP(*(.v204.auto.07fc9828)) }
-  .v204.func.07fc9830 0x07fc9830 : { KEEP(*(.text.clear_shared_state_and_mmio_flag)) }
-  .v204.func.07fc9858 0x07fc9858 : { KEEP(*(.text.scale_value_by_threshold_specific_factor)) }
+  .v204.func.07fc9830 0x07fc9830 : { KEEP(*(.text.lld_sleep_init_func)) }
+  .v204.func.07fc9858 0x07fc9858 : { KEEP(*(.text.lld_sleep_lpcycles_2_us_rcx_func)) }
   .v204.auto.07fc987e 0x07fc987e : { KEEP(*(.v204.auto.07fc987e)) }
-  .v204.func.07fc9880 0x07fc9880 : { KEEP(*(.text.call_divider_for_indexed_record)) }
+  .v204.func.07fc9880 0x07fc9880 : { KEEP(*(.text.lld_sleep_us_2_lpcycles_rcx_func)) }
   .v204.auto.07fc9894 0x07fc9894 : { KEEP(*(.v204.auto.07fc9894)) }
-  .v204.func.07fc98a0 0x07fc98a0 : { KEEP(*(.text.allocate_attach_per_slot_record_not_at_98a0)) }
+  .v204.func.07fc98a0 0x07fc98a0 : { KEEP(*(.text.ltk_exch_create_msg)) }
   .v204.auto.07fc98cc 0x07fc98cc : { KEEP(*(.v204.auto.07fc98cc)) }
   .v204.func.07fc98d4 0x07fc98d4 : { KEEP(*(.text.initialize_sensor_measurement_state_block_at_98d4)) }
   .v204.auto.07fc9c42 0x07fc9c42 : { KEEP(*(.v204.auto.07fc9c42)) }
@@ -577,13 +564,14 @@ SECTIONS
   .v204.auto.07fca5b4 0x07fca5b4 : { KEEP(*(.v204.auto.07fca5b4)) }
   .v204.func.07fca64c 0x07fca64c : { KEEP(*(.text.advance_registration_data_transfers)) }
   .v204.auto.07fca77c 0x07fca77c : { KEEP(*(.v204.auto.07fca77c)) }
-  .v204.func.07fca79c 0x07fca79c : { KEEP(*(.text.return_constant_1_at_a79c)) }
+  .v204.func.07fca79c 0x07fca79c : { KEEP(*(.text.nvds_del_func)) }
   .v204.func.07fca7a0 0x07fca7a0 : { KEEP(*(.text.dispatch_command_response_by_id)) }
+  .v204.func.07fca7a0 0x07fca7a0 : { KEEP(*(.text.nvds_get_func)) }
   .v204.auto.07fca7b4 0x07fca7b4 : { KEEP(*(.v204.auto.07fca7b4)) }
   .v204.func.07fca7c8 0x07fca7c8 : { KEEP(*(.text.handle_command_response_cases_and_finalize)) }
   .v204.auto.07fca83e 0x07fca83e : { KEEP(*(.v204.auto.07fca83e)) }
-  .v204.func.07fca844 0x07fca844 : { KEEP(*(.text.return_constant_0_at_a844)) }
-  .v204.func.07fca848 0x07fca848 : { KEEP(*(.text.return_constant_1_at_a848)) }
+  .v204.func.07fca844 0x07fca844 : { KEEP(*(.text.nvds_init_func)) }
+  .v204.func.07fca848 0x07fca848 : { KEEP(*(.text.nvds_put_func)) }
   .v204.func.07fca84c 0x07fca84c : { KEEP(*(.text.update_mode_bits_and_notify_display_service)) }
   .v204.auto.07fca89a 0x07fca89a : { KEEP(*(.v204.auto.07fca89a)) }
   .v204.func.07fca89c 0x07fca89c : { KEEP(*(.text.update_companion_mode_bits_and_notify_display)) }
@@ -625,26 +613,27 @@ SECTIONS
   .v204.func.07fcad54 0x07fcad54 : { KEEP(*(.text.format_shared_value_and_set_flag_40)) }
   .v204.auto.07fcad70 0x07fcad70 : { KEEP(*(.v204.auto.07fcad70)) }
   .v204.func.07fcad78 0x07fcad78 : { KEEP(*(.text.update_sensor_freshness_request_refresh_due_at_ad78)) }
+  .v204.func.07fcad78 0x07fcad78 : { KEEP(*(.text.param_update_request_timer_cb)) }
   .v204.auto.07fcade2 0x07fcade2 : { KEEP(*(.v204.auto.07fcade2)) }
   .v204.func.07fcadf8 0x07fcadf8 : { KEEP(*(.text.initialize_peripheral_state_and_interrupts)) }
   .v204.auto.07fcaf38 0x07fcaf38 : { KEEP(*(.v204.auto.07fcaf38)) }
-  .v204.func.07fcaf60 0x07fcaf60 : { KEEP(*(.text.set_control_bit_15_clear_bits_0_1)) }
+  .v204.func.07fcaf60 0x07fcaf60 : { KEEP(*(.text.platform_reset_func)) }
   .v204.func.07fcaf78 0x07fcaf78 : { KEEP(*(.text.build_mode_status_record_operation_zero)) }
   .v204.auto.07fcaf82 0x07fcaf82 : { KEEP(*(.v204.auto.07fcaf82)) }
   .v204.func.07fcaf84 0x07fcaf84 : { KEEP(*(.text.set_state_flag_and_switch_to_twenty_two)) }
   .v204.auto.07fcaf96 0x07fcaf96 : { KEEP(*(.v204.auto.07fcaf96)) }
   .v204.auto.07fcaf98 0x07fcaf98 : { KEEP(*(.v204.auto.07fcaf98)) }
-  .v204.func.07fcaf9c 0x07fcaf9c : { KEEP(*(.text.lookup_or_register_request_handler)) }
-  .v204.func.07fcb014 0x07fcb014 : { KEEP(*(.text.dispatch_callback_for_record_types_26_fc_fd)) }
+  .v204.func.07fcaf9c 0x07fcaf9c : { KEEP(*(.text.prf_add_profile_func)) }
+  .v204.func.07fcb014 0x07fcb014 : { KEEP(*(.text.prf_cleanup_func)) }
   .v204.auto.07fcb04a 0x07fcb04a : { KEEP(*(.v204.auto.07fcb04a)) }
-  .v204.func.07fcb04c 0x07fcb04c : { KEEP(*(.text.dispatch_fixed_size_records_by_marker)) }
-  .v204.func.07fcb080 0x07fcb080 : { KEEP(*(.text.find_keyed_record_value)) }
+  .v204.func.07fcb04c 0x07fcb04c : { KEEP(*(.text.prf_create_func)) }
+  .v204.func.07fcb080 0x07fcb080 : { KEEP(*(.text.prf_env_get)) }
   .v204.auto.07fcb0a6 0x07fcb0a6 : { KEEP(*(.v204.auto.07fcb0a6)) }
-  .v204.func.07fcb0a8 0x07fcb0a8 : { KEEP(*(.text.find_sensor_record_by_low_byte_and_return_halfword)) }
+  .v204.func.07fcb0a8 0x07fcb0a8 : { KEEP(*(.text.prf_get_id_from_task_func)) }
   .v204.auto.07fcb0ce 0x07fcb0ce : { KEEP(*(.v204.auto.07fcb0ce)) }
-  .v204.func.07fcb0d0 0x07fcb0d0 : { KEEP(*(.text.find_sensor_marker_and_read_previous_halfword)) }
+  .v204.func.07fcb0d0 0x07fcb0d0 : { KEEP(*(.text.prf_get_task_from_id_func)) }
   .v204.auto.07fcb0f6 0x07fcb0f6 : { KEEP(*(.v204.auto.07fcb0f6)) }
-  .v204.func.07fcb0f8 0x07fcb0f8 : { KEEP(*(.text.initialize_or_release_indexed_objects)) }
+  .v204.func.07fcb0f8 0x07fcb0f8 : { KEEP(*(.text.prf_init_func)) }
   .v204.auto.07fcb166 0x07fcb166 : { KEEP(*(.v204.auto.07fcb166)) }
   .v204.auto.07fcb168 0x07fcb168 : { KEEP(*(.v204.auto.07fcb168)) }
   .v204.auto.07fcb16c 0x07fcb16c : { KEEP(*(.v204.auto.07fcb16c)) }
@@ -659,14 +648,14 @@ SECTIONS
   .v204.func.07fcb770 0x07fcb770 : { KEEP(*(.text.combine_two_six_byte_records_into_words)) }
   .v204.func.07fcb7d4 0x07fcb7d4 : { KEEP(*(.text.wait_sensor_readiness_combine_counter_words_at_b7d4)) }
   .v204.auto.07fcb81a 0x07fcb81a : { KEEP(*(.v204.auto.07fcb81a)) }
-  .v204.func.07fcb828 0x07fcb828 : { KEEP(*(.text.return_without_action_at_b828)) }
+  .v204.func.07fcb828 0x07fcb828 : { KEEP(*(.text.rf_force_agc_enable)) }
   .v204.auto.07fcb82a 0x07fcb82a : { KEEP(*(.v204.auto.07fcb82a)) }
-  .v204.func.07fcb82c 0x07fcb82c : { KEEP(*(.text.initialize_sensor_peripheral_and_sample_state)) }
+  .v204.func.07fcb82c 0x07fcb82c : { KEEP(*(.text.rf_init_func)) }
   .v204.auto.07fcb8a4 0x07fcb8a4 : { KEEP(*(.v204.auto.07fcb8a4)) }
-  .v204.func.07fcb8d0 0x07fcb8d0 : { KEEP(*(.text.return_constant_0_at_b8d0)) }
-  .v204.func.07fcb8d4 0x07fcb8d4 : { KEEP(*(.text.return_without_action_at_b8d4)) }
+  .v204.func.07fcb8d0 0x07fcb8d0 : { KEEP(*(.text.rf_reg_rd)) }
+  .v204.func.07fcb8d4 0x07fcb8d4 : { KEEP(*(.text.rf_reg_wr)) }
   .v204.auto.07fcb8d6 0x07fcb8d6 : { KEEP(*(.v204.auto.07fcb8d6)) }
-  .v204.func.07fcb8d8 0x07fcb8d8 : { KEEP(*(.text.initialize_ring_display_and_sensor_registers)) }
+  .v204.func.07fcb8d8 0x07fcb8d8 : { KEEP(*(.text.rf_regs)) }
   .v204.auto.07fcb906 0x07fcb906 : { KEEP(*(.v204.auto.07fcb906)) }
   .v204.auto.07fcb908 0x07fcb908 : { KEEP(*(.v204.auto.07fcb908)) }
   .v204.auto.07fcb90c 0x07fcb90c : { KEEP(*(.v204.auto.07fcb90c)) }
@@ -676,60 +665,60 @@ SECTIONS
   .v204.auto.07fcb91c 0x07fcb91c : { KEEP(*(.v204.auto.07fcb91c)) }
   .v204.auto.07fcb920 0x07fcb920 : { KEEP(*(.v204.auto.07fcb920)) }
   .v204.func.07fcb924 0x07fcb924 : { KEEP(*(.text.configure_ring_s_display_sensor_control_registers)) }
-  .v204.func.07fcb960 0x07fcb960 : { KEEP(*(.text.return_without_action_at_b960)) }
-  .v204.func.07fcb962 0x07fcb962 : { KEEP(*(.text.decode_halved_offset_minus_112)) }
+  .v204.func.07fcb960 0x07fcb960 : { KEEP(*(.text.rf_reset)) }
+  .v204.func.07fcb962 0x07fcb962 : { KEEP(*(.text.rf_rssi_convert)) }
   .v204.auto.07fcb96a 0x07fcb96a : { KEEP(*(.v204.auto.07fcb96a)) }
-  .v204.func.07fcb96c 0x07fcb96c : { KEEP(*(.text.set_shared_flags_0x07)) }
-  .v204.func.07fcb97c 0x07fcb97c : { KEEP(*(.text.return_constant_0_at_b97c)) }
-  .v204.func.07fcb980 0x07fcb980 : { KEEP(*(.text.dispatch_pending_peripheral_operations)) }
+  .v204.func.07fcb96c 0x07fcb96c : { KEEP(*(.text.rf_sleep)) }
+  .v204.func.07fcb97c 0x07fcb97c : { KEEP(*(.text.rf_txpwr_dbm_get)) }
+  .v204.func.07fcb980 0x07fcb980 : { KEEP(*(.text.rwble_isr)) }
   .v204.auto.07fcba6c 0x07fcba6c : { KEEP(*(.v204.auto.07fcba6c)) }
   .v204.func.07fcba7c 0x07fcba7c : { KEEP(*(.text.read_current_record_value_byte)) }
   .v204.auto.07fcba96 0x07fcba96 : { KEEP(*(.v204.auto.07fcba96)) }
-  .v204.func.07fcba98 0x07fcba98 : { KEEP(*(.text.transfer_flash_controller_word)) }
-  .v204.func.07fcbad0 0x07fcbad0 : { KEEP(*(.text.map_record_flag_to_status_mask)) }
+  .v204.func.07fcba98 0x07fcba98 : { KEEP(*(.text.spi_access)) }
+  .v204.func.07fcbad0 0x07fcbad0 : { KEEP(*(.text.spi_flash_is_busy)) }
   .v204.func.07fcbae2 0x07fcbae2 : { KEEP(*(.text.initialize_shared_state_when_status_clear)) }
-  .v204.func.07fcbafc 0x07fcbafc : { KEEP(*(.text.initialize_output_state_for_mode_five_hundred)) }
-  .v204.func.07fcbb10 0x07fcbb10 : { KEEP(*(.text.poll_output_state_table_and_report_count_advance)) }
+  .v204.func.07fcbafc 0x07fcbafc : { KEEP(*(.text.spi_flash_read_status_reg)) }
+  .v204.func.07fcbb10 0x07fcbb10 : { KEEP(*(.text.spi_flash_wait_till_ready)) }
   .v204.auto.07fcbb32 0x07fcbb32 : { KEEP(*(.v204.auto.07fcbb32)) }
   .v204.func.07fcbb38 0x07fcbb38 : { KEEP(*(.text.drive_ring_s_output_state_machine)) }
   .v204.auto.07fcbb6a 0x07fcbb6a : { KEEP(*(.v204.auto.07fcbb6a)) }
-  .v204.func.07fcbb6c 0x07fcbb6c : { KEEP(*(.text.set_ring_s_output_mode_and_enable)) }
+  .v204.func.07fcbb6c 0x07fcbb6c : { KEEP(*(.text.spi_set_bitmode)) }
   .v204.func.07fcbb94 0x07fcbb94 : { KEEP(*(.text.update_mode_dependent_output_state_during_flash_transfer)) }
   .v204.auto.07fcbbba 0x07fcbbba : { KEEP(*(.v204.auto.07fcbbba)) }
   .v204.func.07fcbbc4 0x07fcbbc4 : { KEEP(*(.text.clear_shared_flag_and_switch_to_state_zero)) }
   .v204.func.07fcbbdc 0x07fcbbdc : { KEEP(*(.text.switch_to_state_zero_unless_flag_is_one)) }
   .v204.auto.07fcbbf0 0x07fcbbf0 : { KEEP(*(.v204.auto.07fcbbf0)) }
-  .v204.func.07fcbbf4 0x07fcbbf4 : { KEEP(*(.text.clear_attribute_record_field_validate_or_halt)) }
+  .v204.func.07fcbbf4 0x07fcbbf4 : { KEEP(*(.text.suotar_cleanup)) }
   .v204.auto.07fcbc20 0x07fcbc20 : { KEEP(*(.v204.auto.07fcbc20)) }
   .v204.func.07fcbc28 0x07fcbc28 : { KEEP(*(.text.return_without_action_at_bc28)) }
   .v204.func.07fcbc2a 0x07fcbc2a : { KEEP(*(.text.release_and_clear_secondary_handle)) }
-  .v204.func.07fcbc3a 0x07fcbc3a : { KEEP(*(.text.return_constant_0_at_bc3a)) }
+  .v204.func.07fcbc3a 0x07fcbc3a : { KEEP(*(.text.suotar_gpio_map_ind_handler)) }
   .v204.auto.07fcbc3e 0x07fcbc3e : { KEEP(*(.v204.auto.07fcbc3e)) }
   .v204.func.07fcbc40 0x07fcbc40 : { KEEP(*(.text.register_custom_gatt_service_and_initialize_state)) }
   .v204.auto.07fcbfca 0x07fcbfca : { KEEP(*(.v204.auto.07fcbfca)) }
   .v204.auto.07fcbfdc 0x07fcbfdc : { KEEP(*(.v204.auto.07fcbfdc)) }
   .v204.auto.07fcbfe0 0x07fcbfe0 : { KEEP(*(.v204.auto.07fcbfe0)) }
   .v204.auto.07fcc114 0x07fcc114 : { KEEP(*(.v204.auto.07fcc114)) }
-  .v204.func.07fcc118 0x07fcc118 : { KEEP(*(.text.set_attribute_value_and_halt_on_failure)) }
-  .v204.func.07fcc148 0x07fcc148 : { KEEP(*(.text.receive_transfer_chunk_and_program_flash)) }
+  .v204.func.07fcc118 0x07fcc118 : { KEEP(*(.text.suotar_mem_info_update_req_handler)) }
+  .v204.func.07fcc148 0x07fcc148 : { KEEP(*(.text.suotar_patch_data_ind_handler)) }
   .v204.auto.07fcc2ea 0x07fcc2ea : { KEEP(*(.v204.auto.07fcc2ea)) }
-  .v204.func.07fcc2f0 0x07fcc2f0 : { KEEP(*(.text.check_status_record_range_and_publish_code)) }
+  .v204.func.07fcc2f0 0x07fcc2f0 : { KEEP(*(.text.suotar_patch_len_ind_handler)) }
   .v204.auto.07fcc318 0x07fcc318 : { KEEP(*(.v204.auto.07fcc318)) }
-  .v204.func.07fcc31c 0x07fcc31c : { KEEP(*(.text.handle_service_control_command_and_publish_status)) }
+  .v204.func.07fcc31c 0x07fcc31c : { KEEP(*(.text.suotar_patch_mem_dev_ind_handler)) }
   .v204.auto.07fcc3c4 0x07fcc3c4 : { KEEP(*(.v204.auto.07fcc3c4)) }
-  .v204.func.07fcc3cc 0x07fcc3cc : { KEEP(*(.text.publish_transfer_progress)) }
-  .v204.func.07fcc3f0 0x07fcc3f0 : { KEEP(*(.text.publish_transfer_status_code)) }
-  .v204.func.07fcc414 0x07fcc414 : { KEEP(*(.text.store_attribute_value_and_send_update_event)) }
+  .v204.func.07fcc3cc 0x07fcc3cc : { KEEP(*(.text.suotar_send_mem_info_update_req)) }
+  .v204.func.07fcc3f0 0x07fcc3f0 : { KEEP(*(.text.suotar_send_status_update_req)) }
+  .v204.func.07fcc414 0x07fcc414 : { KEEP(*(.text.suotar_status_update_req_handler)) }
   .v204.auto.07fcc48c 0x07fcc48c : { KEEP(*(.v204.auto.07fcc48c)) }
   .v204.func.07fcc494 0x07fcc494 : { KEEP(*(.text.read_record_flag_bit_zero)) }
-  .v204.func.07fcc4ac 0x07fcc4ac : { KEEP(*(.text.return_without_action_at_c4ac)) }
-  .v204.func.07fcc4ae 0x07fcc4ae : { KEEP(*(.text.return_without_action_at_c4ae)) }
+  .v204.func.07fcc4ac 0x07fcc4ac : { KEEP(*(.text.timer_canceled_handler)) }
+  .v204.func.07fcc4ae 0x07fcc4ae : { KEEP(*(.text.timer_modified_handler)) }
   .v204.func.07fcc4b0 0x07fcc4b0 : { KEEP(*(.text.quiesce_irq_source_wait_pending_bit_at_c4b0)) }
   .v204.auto.07fcc516 0x07fcc516 : { KEEP(*(.v204.auto.07fcc516)) }
-  .v204.func.07fcc528 0x07fcc528 : { KEEP(*(.text.clear_shared_control_bit_zero)) }
-  .v204.func.07fcc538 0x07fcc538 : { KEEP(*(.text.initialize_measurement_state_unless_record_already_at_c538)) }
+  .v204.func.07fcc528 0x07fcc528 : { KEEP(*(.text.uart_rx_isr)) }
+  .v204.func.07fcc538 0x07fcc538 : { KEEP(*(.text.user_app_adv_start)) }
   .v204.auto.07fcc56c 0x07fcc56c : { KEEP(*(.v204.auto.07fcc56c)) }
-  .v204.func.07fcc578 0x07fcc578 : { KEEP(*(.text.dispatch_service_event_and_update_shared_state)) }
+  .v204.func.07fcc578 0x07fcc578 : { KEEP(*(.text.user_catch_rest_hndl)) }
   .v204.auto.07fcc6e0 0x07fcc6e0 : { KEEP(*(.v204.auto.07fcc6e0)) }
   .v204.func.07fcc728 0x07fcc728 : { KEEP(*(.text.process_sensor_sample_and_maybe_save_record)) }
   .v204.auto.07fcc872 0x07fcc872 : { KEEP(*(.v204.auto.07fcc872)) }
@@ -798,7 +787,7 @@ SECTIONS
   .v204.auto.07fcf010 0x07fcf010 : { KEEP(*(.v204.auto.07fcf010)) }
   .v204.func.07fcf014 0x07fcf014 : { KEEP(*(.text.compute_fixed_point_normalized_cross_correlation)) }
   .v204.auto.07fcf11a 0x07fcf11a : { KEEP(*(.v204.auto.07fcf11a)) }
-  .v204.func.07fcf11c 0x07fcf11c : { KEEP(*(.text.initialize_control_registers_and_enable_irqs)) }
+  .v204.func.07fcf11c 0x07fcf11c : { KEEP(*(.text.SystemInit)) }
   .v204.auto.07fcf15c 0x07fcf15c : { KEEP(*(.v204.auto.07fcf15c)) }
   .v204.data.07fcf23c 0x07fcf23c : { KEEP(*(.v204.data.07fcf23c)) }
   .v204.auto.07fcf254 0x07fcf254 : { KEEP(*(.v204.auto.07fcf254)) }
@@ -806,6 +795,10 @@ SECTIONS
   .v204.auto.07fcf320 0x07fcf320 : { KEEP(*(.v204.auto.07fcf320)) }
   .v204.auto.07fcf6da 0x07fcf6da : { KEEP(*(.v204.auto.07fcf6da)) }
   .v204.auto.07fcf6e2 0x07fcf6e2 : { KEEP(*(.v204.auto.07fcf6e2)) }
+  .v204.auto.07fcf9f4 0x07fcf9f4 : { KEEP(*(.v204.auto.07fcf9f4)) }
+  .v204.auto.07fcf9fb 0x07fcf9fb : { KEEP(*(.v204.auto.07fcf9fb)) }
+  .v204.auto.07fcf9fc 0x07fcf9fc : { KEEP(*(.v204.auto.07fcf9fc)) }
+  .v204.auto.07fcfa74 0x07fcfa74 : { KEEP(*(.v204.auto.07fcfa74)) }
   .v204.data.07fcfacc 0x07fcfacc : { KEEP(*(.v204.data.07fcfacc)) }
   .v204.auto.07fcfad2 0x07fcfad2 : { KEEP(*(.v204.auto.07fcfad2)) }
   .v204.auto.07fd0310 0x07fd0310 : { KEEP(*(.v204.auto.07fd0310)) }

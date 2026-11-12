@@ -1,6 +1,8 @@
 #ifndef SR08_CLOCK_LITERAL_POOL_H
 #define SR08_CLOCK_LITERAL_POOL_H
 
+#include "firmware/reconstructed/include/sr08_static_assert.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -61,32 +63,32 @@ union sr08_clock_literal_pool {
     struct sr08_clock_literal_pool_view view;
 } __attribute__((packed));
 
-_Static_assert(sizeof(struct sr08_clock_literal_pool_view) == 82, "clock routine literal pool must remain 82 bytes");
-_Static_assert(offsetof(struct sr08_clock_timekeeping_state, hardware_tick_baseline) == 16,
+SR08_STATIC_ASSERT(sizeof(struct sr08_clock_literal_pool_view) == 82, "clock routine literal pool must remain 82 bytes");
+SR08_STATIC_ASSERT(offsetof(struct sr08_clock_timekeeping_state, hardware_tick_baseline) == 16,
                "clock hardware tick baseline must remain at offset 16");
-_Static_assert(offsetof(struct sr08_clock_timekeeping_state, calendar_second) == 24,
+SR08_STATIC_ASSERT(offsetof(struct sr08_clock_timekeeping_state, calendar_second) == 24,
                "calendar seconds output must remain at offset 24");
-_Static_assert(offsetof(struct sr08_clock_timekeeping_state, calendar_minute) == 28,
+SR08_STATIC_ASSERT(offsetof(struct sr08_clock_timekeeping_state, calendar_minute) == 28,
                "calendar minutes output must remain at offset 28");
-_Static_assert(offsetof(struct sr08_clock_timekeeping_state, calendar_hour) == 32,
+SR08_STATIC_ASSERT(offsetof(struct sr08_clock_timekeeping_state, calendar_hour) == 32,
                "calendar hours output must remain at offset 32");
-_Static_assert(sizeof(struct sr08_clock_timekeeping_state) == 36,
+SR08_STATIC_ASSERT(sizeof(struct sr08_clock_timekeeping_state) == 36,
                "clock timekeeping state must cover the nine observed words");
-_Static_assert(offsetof(struct sr08_clock_literal_pool_view, sensor_conversion_request_register) == 2,
+SR08_STATIC_ASSERT(offsetof(struct sr08_clock_literal_pool_view, sensor_conversion_request_register) == 2,
                "clock sensor request literal must remain at 0x07fc4858");
-_Static_assert(offsetof(struct sr08_clock_literal_pool_view, timekeeping_state) == 10,
+SR08_STATIC_ASSERT(offsetof(struct sr08_clock_literal_pool_view, timekeeping_state) == 10,
                "clock timekeeping-state literal must remain at 0x07fc4860");
-_Static_assert(offsetof(struct sr08_clock_literal_pool_view, timekeeping_state_words) == 10,
+SR08_STATIC_ASSERT(offsetof(struct sr08_clock_literal_pool_view, timekeeping_state_words) == 10,
                "clock timekeeping word alias must remain at 0x07fc4860");
-_Static_assert(offsetof(struct sr08_clock_literal_pool_view, cycle_and_schedule_state) == 26,
+SR08_STATIC_ASSERT(offsetof(struct sr08_clock_literal_pool_view, cycle_and_schedule_state) == 26,
                "clock cycle-state literal must remain at 0x07fc4870");
-_Static_assert(offsetof(struct sr08_clock_literal_pool_view, cycle_and_schedule_state_bytes) == 26,
+SR08_STATIC_ASSERT(offsetof(struct sr08_clock_literal_pool_view, cycle_and_schedule_state_bytes) == 26,
                "clock cycle-state byte alias must remain at 0x07fc4870");
-_Static_assert(offsetof(struct sr08_clock_literal_pool_view, seconds_per_day) == 50,
+SR08_STATIC_ASSERT(offsetof(struct sr08_clock_literal_pool_view, seconds_per_day) == 50,
                "seconds-per-day constant must remain at 0x07fc4888");
-_Static_assert(offsetof(struct sr08_clock_literal_pool_view, callback_function_48a0) == 74,
+SR08_STATIC_ASSERT(offsetof(struct sr08_clock_literal_pool_view, callback_function_48a0) == 74,
                "clock callback pointer alias must remain at 0x07fc48a0");
-_Static_assert(sizeof(union sr08_clock_literal_pool) == 82,
+SR08_STATIC_ASSERT(sizeof(union sr08_clock_literal_pool) == 82,
                "clock literal-pool view must preserve the original section size");
 
 #endif

@@ -1,0 +1,4 @@
+armlink failed for the LTO module (3 units):
+Error: L6291E: Cannot assign Fixed Execution Region ER_07fc4090 Load Address:0x07fc4090. Load Address must be greater than or equal to next available Load Address:0x07fc40a4.
+Finished: 0 information, 0 warning and 1 error messages.
+

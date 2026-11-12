@@ -1,0 +1,45 @@
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_calendar_time.h"
+
+extern uint32_t is_gregorian_leap_year(uint32_t year);
+static const uint8_t common_year_month_lengths[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
+
+/* V204's weekday truncates the day count to 16 bits before modulo seven.
+ * Output year is years since 1900; the final word is a one-based day of year,
+ * captured before the month scan, rather than a duplicate day of month.
+ */
+__attribute__((used,section(".text.convert_timestamp_to_calendar_fields")))
+void convert_timestamp_to_calendar_fields(uint32_t timestamp_seconds, struct sr08_calendar_time *output)
+{
+    uint32_t days = timestamp_seconds / 86400u;
+    output->weekday = (uint16_t)(days + 4u) % 7u;
+    uint32_t approximate_years = timestamp_seconds / 31536000u;
+    uint32_t year = approximate_years + 1969u;
+    uint32_t leap_days = (year >> 2) + year / 400u;
+    int32_t remaining_days = (int32_t)(days - 365u * approximate_years + year / 100u + 365u - leap_days + 112u);
+    uint32_t seconds_of_day = timestamp_seconds - days * 86400u;
+    if (remaining_days >= 0) ++year;
+    else remaining_days += 365u + is_gregorian_leap_year(year);
+    output->day_of_month_copy = remaining_days + 1;
+    output->year = year - 1900u;
+    uint32_t month = 0;
+    for (;;) {
+        if (month == 11) {
+            month = 11;
+            break;
+        }
+        uint32_t extra_day = (is_gregorian_leap_year(year) != 0) & (month == 1);
+        int32_t rest = remaining_days - (common_year_month_lengths[month] + extra_day);
+        if (rest < 0) break;
+        ++month;
+        remaining_days = rest;
+    }
+    output->day_of_month = remaining_days + 1;
+    output->month_zero_based = month;
+    uint32_t hour = seconds_of_day / 3600u;
+    output->hour = hour;
+    seconds_of_day -= hour * 3600u;
+    uint32_t minute = seconds_of_day / 60u;
+    output->second = seconds_of_day - minute * 60u;
+    output->minute = minute;
+}

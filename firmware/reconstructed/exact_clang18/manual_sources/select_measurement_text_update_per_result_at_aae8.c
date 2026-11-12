@@ -1,43 +1,20 @@
-/* Select the measurement text and update its per-result digit markers. */
-__attribute__((used, naked, section(".text.select_measurement_text_update_per_result_at_aae8"))) void
-select_measurement_text_update_per_result_at_aae8(void) {
-    __asm__ volatile("push {r7, lr}\n"
-                     "movs r0, #48\n"
-                     "ldr r1, [pc, #760]\n"
-                     "ldrb r0, [r1, r0]\n"
-                     "movs r1, #6\n"
-                     "bl __aeabi_uidiv\n"
-                     "cmp r1, #4\n"
-                     "bhi .Lover\n"
-                     "movs r2, #101\n"
-                     "b .Ltext\n"
-                     ".Lover: movs r2, #109\n"
-                     ".Ltext: movs r3, #68\n"
-                     "ldr r0, [pc, #624]\n"
-                     "strb r2, [r0, r3]\n"
-                     "ldr r2, [pc, #48]\n"
-                     "str r2, [r0, #64]\n"
-                     "cmp r1, #4\n"
-                     "bcc .Llow\n"
-                     "movs r1, #67\n"
-                     "movs r2, #73\n"
-                     "strb r2, [r0, r1]\n"
-                     "b .Ltwo\n"
-                     ".Llow: cmp r1, #3\n"
-                     "bne .Ltest\n"
-                     ".Ltwo: movs r1, #66\n"
-                     "movs r2, #73\n"
-                     "strb r2, [r0, r1]\n"
-                     ".Lone: movs r1, #65\n"
-                     "movs r2, #73\n"
-                     "strb r2, [r0, r1]\n"
-                     ".Lbracket: movs r1, #64\n"
-                     "movs r2, #91\n"
-                     "strb r2, [r0, r1]\n"
-                     ".Lret: pop {r7, pc}\n"
-                     ".Ltest: cmp r1, #2\n"
-                     "bcs .Lone\n"
-                     "cmp r1, #0\n"
-                     "bne .Lbracket\n"
-                     "b .Lret\n");
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+
+/* The low-level segment values are preserved until the glyph mapping is
+ * established. The six-phase progression replaces digits from right to left.
+ */
+__attribute__((used, section(".text.select_measurement_text_update_per_result_at_aae8")))
+void select_measurement_text_update_per_result_at_aae8(void)
+{
+    uint32_t phase = ((volatile uint8_t *)&merged_globals_5650)[0x30] % 6u;
+    volatile uint8_t *display = (volatile uint8_t *)&merged_globals_56d0;
+    /* Glyphs 101 and 109 differ only in bit 3. This expression preserves
+     * the OEM CMP #4 / BHI selection without reversing the two arms. */
+    display[0x44] = 101u | ((uint32_t)(phase > 4) << 3);
+    *(volatile uint32_t *)(display + 0x40) = 0x41414153u;
+    if (phase >= 4) display[0x43] = 73;
+    if (phase >= 3) display[0x42] = 73;
+    if (phase >= 2) display[0x41] = 73;
+    if (phase != 0) display[0x40] = 91;
 }

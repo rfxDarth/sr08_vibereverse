@@ -7,14 +7,13 @@
 
 extern void configure_radio_state_and_send_command_6a(void);
 
-__attribute__((used, section(".text.initialize_radio_scan_and_mark_state_ready"))) void
-initialize_radio_scan_and_mark_state_ready(void) {
-    volatile struct sr08_radio_configuration_state *configuration_state;
-    __asm__ volatile("ldr %[configuration_state], [pc, #556]" : [configuration_state] "=r"(configuration_state));
-    configuration_state->scan_initialization_status = 0;
-    const struct sr08_radio_command_pair *paired_bytes;
-    __asm__ volatile("ldr %[paired_bytes], [pc, #12]" : [paired_bytes] "=r"(paired_bytes));
-    ensure_radio_profile_then_scan_paired_bytes(paired_bytes);
+/* V204's radio command table at 0x07fcfb4e. */
+#define RADIO_SCAN_COMMAND_PAIRS ((const struct sr08_radio_command_pair *)0x07fcfb4eu)
+
+void initialize_radio_scan_and_mark_state_ready(void)
+{
+    device_control_state.scan_initialization_status = 0;
+    ensure_radio_profile_then_scan_paired_bytes(RADIO_SCAN_COMMAND_PAIRS);
     configure_radio_state_and_send_command_6a();
-    configuration_state->configuration_ready = 1;
+    device_control_state.configuration_ready = 1;
 }

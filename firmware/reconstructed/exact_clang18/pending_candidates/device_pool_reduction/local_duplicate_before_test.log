@@ -1,0 +1,17 @@
+test_fixed_target_reuses_local_duplicate (test_stub_local_literal.LocalLiteralTest.test_fixed_target_reuses_local_duplicate) ... ok
+test_missing_local_word_keeps_copy_retry (test_stub_local_literal.LocalLiteralTest.test_missing_local_word_keeps_copy_retry) ... ok
+test_module_target_still_reuses_local_duplicate (test_stub_local_literal.LocalLiteralTest.test_module_target_still_reuses_local_duplicate) ... FAIL
+test_sealed_local_word_is_not_reused (test_stub_local_literal.LocalLiteralTest.test_sealed_local_word_is_not_reused) ... ok
+
+======================================================================
+FAIL: test_module_target_still_reuses_local_duplicate (test_stub_local_literal.LocalLiteralTest.test_module_target_still_reuses_local_duplicate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/drath/Projects/personal/code/sr08_ai/firmware/reconstructed/exact_clang18/tests/test_stub_local_literal.py", line 35, in test_module_target_still_reuses_local_duplicate
+    self.assertIn("ldr r0, __arm_cp.7fc8500_8", source)
+AssertionError: 'ldr r0, __arm_cp.7fc8500_8' not found in '    .syntax unified\n    .thumb\n    .section .text.reader,"ax",%progbits\n    .balign 2\n    .global reader\n    .type reader,%function\n    .thumb_func\nreader:\n    ldr r0, __arm_cp.7fc8500_copy_07fd1e28\n    .inst.n 0x4770\n    .inst.n 0xbf00\n    .inst.n 0xbf00\n    .global __arm_cp.7fc8500_8\n__arm_cp.7fc8500_8:\n    .long 0x07fd1e28\n    .size __arm_cp.7fc8500_8, 4\n    .reloc reader, R_ARM_NONE, __arm_cp.7fc8500_8\n__arm_cp.7fc8500_copy_07fd1e28:\n    .long 0x07fd1e28\n    .size __arm_cp.7fc8500_copy_07fd1e28, 4\n'
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.001s
+
+FAILED (failures=1)

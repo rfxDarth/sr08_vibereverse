@@ -1,0 +1,42 @@
+/* Alice pending C: reuse the published context pointer. Native ARM5 -O2
+ * emits 136 bytes with 24 differences; original stays installed until exact.
+ */
+#include "firmware/reconstructed/include/sr08_sensor_status_record.h"
+__attribute__((used, section(".text.initialize_shared_control_state_tables"))) int
+initialize_shared_control_state_tables(void) {
+    volatile struct sr08_sensor_status_record *record = &sensor_status_record;
+    record->state = 1;
+    volatile struct sr08_sensor_status_context *state = &sensor_status_context;
+    record->context = (struct sr08_sensor_status_context *)state;
+    state->measurement_status = 0;
+    state->default_level_a = 72;
+    state->default_level_b = 72;
+    state->counter_04 = 0;
+    state->current_value = 0;
+    state->state_words_14[3] = 0;
+    state->state_words_14[4] = 0;
+    state->state_words_14[0] = 0;
+    state->state_words_14[1] = 0;
+    state->state_words_14[2] = 0;
+    state->state_words_14[5] = 0;
+    state->state_words_14[6] = 0;
+    state->state_words_14[7] = 0;
+    state->state_words_14[11] = 0;
+    state->state_words_14[10] = 0;
+    state->state_words_14[9] = 0;
+    state->state_words_14[8] = 0;
+    state->state_words_14[12] = 0;
+    state->state_words_14[14] = 0;
+    state->state_words_14[13] = 0;
+    state->flag_50 = 0;
+    for (uint16_t i = 0; i < SR08_SENSOR_STATUS_HISTORY_LENGTH; ++i) {
+        state->history_a[i] = 0;
+        state->history_b[i] = 0;
+        state->history_pairs[i].first = 0;
+        state->history_pairs[i].second = 0;
+    }
+    for (uint16_t i = 0; i < SR08_SENSOR_STATUS_SAMPLE_LENGTH; ++i)
+        state->samples[i] = 0;
+    state->ready_flag = 1;
+    return 1;
+}

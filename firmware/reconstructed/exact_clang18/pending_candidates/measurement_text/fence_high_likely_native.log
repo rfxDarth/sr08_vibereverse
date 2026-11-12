@@ -1,0 +1,111 @@
+group 0x07fcaae8-0x07fcab58 (112 bytes)
+MISMATCH: 98 differing bytes
+--- V204
++++ candidate
+@@ -1,55 +1,55 @@
+-7fcaae8:	b580      	push	{r7, lr}
++7fcaae8:	b510      	push	{r4, lr}
+ 7fcaaea:	2030      	movs	r0, #48	@ 0x30
+-7fcaaec:	49be      	ldr	r1, [pc, #760]	@ (0x7fcade8)
++7fcaaec:	4917      	ldr	r1, [pc, #92]	@ (0x7fcab4c)
+ 7fcaaee:	5c08      	ldrb	r0, [r1, r0]
+ 7fcaaf0:	2106      	movs	r1, #6
+ 7fcaaf2:	f753 fa61 	bl	0x7f1dfb8
+-7fcaaf6:	2904      	cmp	r1, #4
+-7fcaaf8:	d801      	bhi.n	0x7fcaafe
+-7fcaafa:	2265      	movs	r2, #101	@ 0x65
+-7fcaafc:	e000      	b.n	0x7fcab00
+-7fcaafe:	226d      	movs	r2, #109	@ 0x6d
+-7fcab00:	2344      	movs	r3, #68	@ 0x44
+-7fcab02:	489c      	ldr	r0, [pc, #624]	@ (0x7fcad74)
+-7fcab04:	54c2      	strb	r2, [r0, r3]
+-7fcab06:	4a0c      	ldr	r2, [pc, #48]	@ (0x7fcab38)
+-7fcab08:	6402      	str	r2, [r0, #64]	@ 0x40
+-7fcab0a:	2904      	cmp	r1, #4
+-7fcab0c:	d303      	bcc.n	0x7fcab16
+-7fcab0e:	2143      	movs	r1, #67	@ 0x43
+-7fcab10:	2249      	movs	r2, #73	@ 0x49
+-7fcab12:	5442      	strb	r2, [r0, r1]
+-7fcab14:	e001      	b.n	0x7fcab1a
+-7fcab16:	2903      	cmp	r1, #3
+-7fcab18:	d109      	bne.n	0x7fcab2e
+-7fcab1a:	2142      	movs	r1, #66	@ 0x42
+-7fcab1c:	2249      	movs	r2, #73	@ 0x49
+-7fcab1e:	5442      	strb	r2, [r0, r1]
+-7fcab20:	2141      	movs	r1, #65	@ 0x41
+-7fcab22:	2249      	movs	r2, #73	@ 0x49
+-7fcab24:	5442      	strb	r2, [r0, r1]
+-7fcab26:	2140      	movs	r1, #64	@ 0x40
+-7fcab28:	225b      	movs	r2, #91	@ 0x5b
+-7fcab2a:	5442      	strb	r2, [r0, r1]
+-7fcab2c:	bd80      	pop	{r7, pc}
+-7fcab2e:	2902      	cmp	r1, #2
+-7fcab30:	d2f6      	bcs.n	0x7fcab20
+-7fcab32:	2900      	cmp	r1, #0
+-7fcab34:	d1f7      	bne.n	0x7fcab26
+-7fcab36:	e7f9      	b.n	0x7fcab2c
+-7fcab38:	4153      	adcs	r3, r2
+-7fcab3a:	4141      	adcs	r1, r0
+-7fcab3c:	b510      	push	{r4, lr}
+-7fcab3e:	2040      	movs	r0, #64	@ 0x40
+-7fcab40:	4c8c      	ldr	r4, [pc, #560]	@ (0x7fcad74)
+-7fcab42:	490c      	ldr	r1, [pc, #48]	@ (0x7fcab74)
+-7fcab44:	5221      	strh	r1, [r4, r0]
+-7fcab46:	4620      	mov	r0, r4
+-7fcab48:	3040      	adds	r0, #64	@ 0x40
+-7fcab4a:	2152      	movs	r1, #82	@ 0x52
+-7fcab4c:	7081      	strb	r1, [r0, #2]
+-7fcab4e:	2030      	movs	r0, #48	@ 0x30
+-7fcab50:	49a5      	ldr	r1, [pc, #660]	@ (0x7fcade8)
+-7fcab52:	5c08      	ldrb	r0, [r1, r0]
+-7fcab54:	2103      	movs	r1, #3
+-7fcab56:	Address 0x7fcab56 is out of bounds.
++7fcaaf6:	4816      	ldr	r0, [pc, #88]	@ (0x7fcab50)
++7fcaaf8:	2905      	cmp	r1, #5
++7fcaafa:	d220      	bcs.n	0x7fcab3e
++7fcaafc:	2244      	movs	r2, #68	@ 0x44
++7fcaafe:	4b15      	ldr	r3, [pc, #84]	@ (0x7fcab54)
++7fcab00:	2465      	movs	r4, #101	@ 0x65
++7fcab02:	549c      	strb	r4, [r3, r2]
++7fcab04:	6418      	str	r0, [r3, #64]	@ 0x40
++7fcab06:	2007      	movs	r0, #7
++7fcab08:	4008      	ands	r0, r1
++7fcab0a:	2803      	cmp	r0, #3
++7fcab0c:	d005      	beq.n	0x7fcab1a
++7fcab0e:	2804      	cmp	r0, #4
++7fcab10:	d110      	bne.n	0x7fcab34
++7fcab12:	2043      	movs	r0, #67	@ 0x43
++7fcab14:	490f      	ldr	r1, [pc, #60]	@ (0x7fcab54)
++7fcab16:	2249      	movs	r2, #73	@ 0x49
++7fcab18:	540a      	strb	r2, [r1, r0]
++7fcab1a:	2042      	movs	r0, #66	@ 0x42
++7fcab1c:	490d      	ldr	r1, [pc, #52]	@ (0x7fcab54)
++7fcab1e:	2249      	movs	r2, #73	@ 0x49
++7fcab20:	540a      	strb	r2, [r1, r0]
++7fcab22:	2041      	movs	r0, #65	@ 0x41
++7fcab24:	490b      	ldr	r1, [pc, #44]	@ (0x7fcab54)
++7fcab26:	2249      	movs	r2, #73	@ 0x49
++7fcab28:	540a      	strb	r2, [r1, r0]
++7fcab2a:	2040      	movs	r0, #64	@ 0x40
++7fcab2c:	4909      	ldr	r1, [pc, #36]	@ (0x7fcab54)
++7fcab2e:	225b      	movs	r2, #91	@ 0x5b
++7fcab30:	540a      	strb	r2, [r1, r0]
++7fcab32:	bd10      	pop	{r4, pc}
++7fcab34:	2902      	cmp	r1, #2
++7fcab36:	d2f4      	bcs.n	0x7fcab22
++7fcab38:	2900      	cmp	r1, #0
++7fcab3a:	d1f6      	bne.n	0x7fcab2a
++7fcab3c:	e7f9      	b.n	0x7fcab32
++7fcab3e:	2144      	movs	r1, #68	@ 0x44
++7fcab40:	4a04      	ldr	r2, [pc, #16]	@ (0x7fcab54)
++7fcab42:	236d      	movs	r3, #109	@ 0x6d
++7fcab44:	5453      	strb	r3, [r2, r1]
++7fcab46:	6410      	str	r0, [r2, #64]	@ 0x40
++7fcab48:	e7e3      	b.n	0x7fcab12
++7fcab4a:	46c0      	nop			@ (mov r8, r8)
++7fcab4c:	5650      	ldrsb	r0, [r2, r1]
++7fcab4e:	07fd      	lsls	r5, r7, #31
++7fcab50:	4153      	adcs	r3, r2
++7fcab52:	4141      	adcs	r1, r0
++7fcab54:	56d0      	ldrsb	r0, [r2, r3]
++7fcab56:	07fd      	lsls	r5, r7, #31

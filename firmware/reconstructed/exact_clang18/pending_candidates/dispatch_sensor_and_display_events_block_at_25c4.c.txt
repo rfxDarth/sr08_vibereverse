@@ -1,0 +1,480 @@
+/* PARKED (2026-11-15, Jeff): 0x25c4 dispatch_sensor_and_display_events (one LTO function 0x07fc25c4-0x07fc2da8,
+ * blocks 25c4/26ac/2770/2b70/2bd8; probe with --absorb for the other four). The BLE command handler.
+ * Under the real LTO link (lt2.sh 25c4 2da8): 953 lines both, 380 register-normalized lines differ; jump table and
+ * case order match; frame 132 vs 140.
+ * Install needs RAM symbol hourly_record_bitmap 0x07fd07f0 (as 0xb1b0) and ("ac6lto", [unit]).
+ * Levers that helped: case 2 falls through into case 3; `name` declared in the loop after `reply` and case 1 as a
+ * static helper (gives V204's stack order name < reply < record < calendar); co_read32p (SDK co_utils.h) for the
+ * LE words; quarter-hour divisions before the date compare; swapped stores (0x44 before device_control[14];
+ * 0x10 before 0x2c); merged_globals_5650 byte 0x0c for case 7; days <= 6 tested first in case 16.
+ * Remaining:
+ *  - V204 reads every payload byte through one hoisted record+1 pointer ([sp,#36], unknown alignment); here the
+ *    loads are sp-relative and one byte becomes `ldr word; lsls #24`. A function-scope `data` pointer folds back.
+ *  - Block placement: the 0x12121212 key test, the case 2 rounding chain and the case 7 off-path sit far away in
+ *    V204; V204 also duplicates the reply call at 0x2b92 for cases 16/25.
+ *  - Case 2's constant phi (86/20) is materialized per predecessor in V204, hoisted here.
+ *  - Spill slots: V204 has one more spill word and a 4-byte gap below reply. */
+/* BLE command handler (custom profile writes). Each 20-byte command record queued in the secondary event ring
+ * is taken in turn; the reply starts as a copy of the command and is queued (search_queue_and_insert_limit_twenty)
+ * unless the case sends nothing or something else.
+ * 1 set time, 2 user height -> stride, 3 status records, 4 start a measurement, 7 find-ring on/off,
+ * 10 word 0x58, 11/12/32 sensor commands, 14 display-image unlock keys, 16 quarter-hour step sync for day d,
+ * 18 find-phone, 20/21 alarm and notification modes, 22 activity history sync for day d, 23 not supported,
+ * 25 do-not-disturb window, 27 flags 0x12/0x95, 29 byte 0x34, 35 display mode 12, 37 day-end stamp,
+ * 48 device name (flash 0x64000, then reset), 67 back to the clock face, 72 security request,
+ * 80 mode flags, 247 CRC of the device name. */
+#include <stdbool.h>
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_calendar_time.h"
+#include "firmware/reconstructed/include/sr08_clock_literal_pool.h"
+#include "firmware/reconstructed/include/sr08_display_state_switches.h"
+#include "firmware/reconstructed/include/sr08_event_record_queue.h"
+#include "firmware/reconstructed/include/sr08_flash_operation.h"
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+#include "firmware/reconstructed/include/sr08_mode_transition.h"
+#include "firmware/reconstructed/include/sr08_record_dispatch.h"
+#include "firmware/reconstructed/include/sr08_ring_buffer.h"
+#include "firmware/reconstructed/include/sr08_sdk_gapc.h"
+#include "firmware/reconstructed/include/sr08_sdk_kernel.h"
+#include "firmware/reconstructed/include/sr08_shared_context.h"
+
+extern struct sr08_clock_timekeeping_state clock_timekeeping_state;
+extern uint32_t hourly_record_bitmap[25];
+extern uint8_t device_control_state[];
+extern void search_queue_and_insert_limit_twenty(const void *record);
+extern void queue_computed_status_records(void);
+extern void initialize_and_dispatch_three_byte_request(uint32_t command, uint32_t a, uint32_t b);
+extern void build_sensor_command_packet_acquiring_shared_at_519c(void);
+extern void prepare_sensor_configuration_stack_record(void);
+extern void initialize_display_image_region_and_fixed_header(void);
+extern void load_and_update_persistent_measurement_state_block_at_48a8(void);
+extern void translate_rom_result_to_display_coordinates(uint32_t timestamp);
+extern void reset_mode_state_and_publish_status_records(void);
+extern void gate_periodic_record_creation_sensor_mode_at_2dc4(void);
+extern uint32_t crc32_update_buffer(uint32_t crc, const uint8_t *data, uint32_t length);
+extern uint32_t nul_terminated_string_length(const uint8_t *text);
+extern void platform_reset(uint32_t error);
+
+#define ctx_u8(o) (*(uint8_t *)((uint8_t *)&sr08_shared_context + (o)))
+#define ctx_u16(o) (*(uint16_t *)((uint8_t *)&sr08_shared_context + (o)))
+#define ctx_u32(o) (*(uint32_t *)((uint8_t *)&sr08_shared_context + (o)))
+#define g5650_u8(o) (((uint8_t *)&merged_globals_5650)[o])
+#define g56d0_u8(o) (((uint8_t *)&merged_globals_56d0)[o])
+
+/* co_utils.h (SDK 6.0.18). */
+static inline uint32_t co_read32p(void const *ptr32)
+{
+    uint16_t addr_l, addr_h;
+    addr_l = co_read16p((uint16_t *)ptr32);
+    addr_h = co_read16p((uint16_t *)ptr32 + 1);
+    return ((uint32_t)addr_l | (uint32_t)addr_h << 16);
+}
+#define PUT_LE32(p, v) \
+    do {               \
+        (p)[0] = (v);  \
+        (p)[3] = (v) >> 24; \
+        (p)[2] = (v) >> 16; \
+        (p)[1] = (v) >> 8; \
+    } while (0)
+
+/* gapc_task.h / app_easy_security.c (SDK 6.0.18). */
+struct gapc_security_cmd {
+    uint8_t operation;
+    uint8_t auth;
+};
+enum { GAPC_SECURITY_REQ = 0x0c };
+#define gapc_security_req ((struct gapc_security_cmd **)((uint8_t *)&merged_globals_5650 + 0x64))
+
+static inline struct gapc_security_cmd *app_gapc_security_request_msg_create(uint8_t conidx, uint8_t auth)
+{
+    struct gapc_security_cmd *cmd = KE_MSG_ALLOC(GAPC_SECURITY_CMD, KE_BUILD_ID(TASK_GAPC, conidx), TASK_APP,
+                                                 gapc_security_cmd);
+    cmd->operation = GAPC_SECURITY_REQ;
+    cmd->auth = auth;
+
+    return cmd;
+}
+
+static inline struct gapc_security_cmd *security_request_create_msg(uint8_t conidx)
+{
+    if (gapc_security_req[conidx] == NULL) {
+        gapc_security_req[conidx] = app_gapc_security_request_msg_create(conidx, GAP_AUTH_BOND);
+    }
+    return gapc_security_req[conidx];
+}
+
+static inline void app_easy_security_request(uint8_t conidx)
+{
+    struct gapc_security_cmd *req;
+    req = security_request_create_msg(conidx);
+    ke_msg_send(req);
+    gapc_security_req[conidx] = NULL;
+}
+
+/* BLE base time (rwble/lld): sample the clock and read BLE_BASETIMECNT_REG. */
+static inline uint32_t lld_evt_time_get(void)
+{
+    *(volatile uint32_t *)0x400000fc = 1;
+    while (*(volatile uint32_t *)0x400000fc)
+        ;
+    return *(volatile uint32_t *)0x4000001c;
+}
+
+static void set_clock_time(const uint8_t *data)
+{
+    struct sr08_calendar_time calendar;
+    uint32_t time = co_read32p(data);
+    uint32_t base_time = lld_evt_time_get();
+    uint32_t previous_minute = clock_timekeeping_state.calendar_minute;
+    uint32_t previous_hour = clock_timekeeping_state.calendar_hour;
+    uint32_t previous_time = clock_timekeeping_state.current_timestamp;
+    struct sr08_calendar_time *clock_calendar =
+        (struct sr08_calendar_time *)&clock_timekeeping_state.calendar_second;
+    uint32_t previous_quarter;
+    uint32_t quarter;
+    convert_timestamp_to_calendar_fields(time, &calendar);
+    previous_quarter = (int32_t)(previous_hour * 60 + previous_minute) / 15;
+    quarter = (int32_t)(calendar.hour * 60 + calendar.minute) / 15;
+    if (calendar.year == clock_calendar->year && calendar.month_zero_based == clock_calendar->month_zero_based &&
+        calendar.day_of_month == clock_calendar->day_of_month) {
+        if (quarter > previous_quarter)
+            load_and_update_persistent_measurement_state_block_at_48a8();
+    } else {
+        if (time - previous_time > 86400) {
+            ctx_u32(0x44) = 0;
+            device_control_state[14] = 0;
+        }
+        load_and_update_persistent_measurement_state_block_at_48a8();
+        translate_rom_result_to_display_coordinates(time);
+        reset_mode_state_and_publish_status_records();
+    }
+    clock_timekeeping_state.hardware_tick_baseline = base_time;
+    clock_timekeeping_state.rebase_state = 0;
+    clock_timekeeping_state.current_timestamp = time;
+    clock_timekeeping_state.accumulated_timestamp = time;
+    convert_timestamp_to_calendar_fields(time, clock_calendar);
+}
+
+void dispatch_sensor_and_display_events_block_at_25c4(void)
+{
+    struct sr08_ring_buffer *ring = &event_record_queue_state.secondary_ring;
+    uint32_t count = (ring->head - ring->tail) & (ring->capacity - 1);
+    uint32_t i;
+    uint8_t record[20];
+    const uint8_t *data = &record[1];
+
+    for (i = 0; i != count; i++) {
+        uint8_t reply[20];
+        uint8_t name[20];
+        uint8_t command;
+
+        if (peek_ring_buffer_entry(&event_record_queue_state.secondary_ring, record) != 0)
+            continue;
+        advance_queue_tail_if_nonempty(&event_record_queue_state.secondary_ring);
+        command = record[0];
+        reply[0] = command;
+        __builtin_memcpy(&reply[1], data, 19);
+
+        switch (command) {
+        case 1:
+            set_clock_time(data);
+            break;
+        case 2: {
+            uint8_t height = data[1];
+            uint16_t stride;
+            ctx_u8(0x89) = height;
+            ctx_u8(0x8a) = data[2];
+            if (height < 50) {
+                stride = 20;
+            } else if (height > 230) {
+                stride = 86;
+            } else {
+                uint32_t value = height;
+                uint32_t remainder = value % 10;
+                if (remainder != 0)
+                    value += 10;
+                value -= remainder;
+                if (value == 230)
+                    stride = 86;
+                else if ((uint16_t)value == 60)
+                    stride = 22;
+                else if ((uint16_t)value == 70)
+                    stride = 25;
+                else if ((uint16_t)value == 80)
+                    stride = 29;
+                else if ((uint16_t)value == 90)
+                    stride = 33;
+                else if ((uint16_t)value == 100)
+                    stride = 37;
+                else if ((uint16_t)value == 110)
+                    stride = 40;
+                else if ((uint16_t)value == 120)
+                    stride = 44;
+                else if ((uint16_t)value == 130)
+                    stride = 48;
+                else if ((uint16_t)value == 140)
+                    stride = 51;
+                else if ((uint16_t)value == 150)
+                    stride = 55;
+                else if ((uint16_t)value == 160)
+                    stride = 59;
+                else if ((uint16_t)value == 180)
+                    stride = 66;
+                else if ((uint16_t)value == 190)
+                    stride = 70;
+                else if ((uint16_t)value == 200)
+                    stride = 74;
+                else if ((uint16_t)value == 210)
+                    stride = 78;
+                else if ((uint16_t)value == 220)
+                    stride = 82;
+                else if ((uint16_t)value == 50)
+                    stride = 20;
+                else
+                    stride = 62;
+            }
+            ctx_u16(0x36) = stride;
+            search_queue_and_insert_limit_twenty(reply);
+        }
+            /* fallthrough */
+        case 3:
+            queue_computed_status_records();
+            continue;
+        case 4:
+            g5650_u8(0x35) = 1;
+            *(uint32_t *)&merged_globals_56d0 = 0;
+            *(uint16_t *)&g5650_u8(0x36) = 10240;
+            switch_display_state_and_run_hooks(6);
+            break;
+        case 7: {
+            uint8_t state = g5650_u8(0x0c);
+            if (data[0] != 0) {
+                if (state != 16)
+                    switch_display_state_and_run_hooks(16);
+            } else if (state == 16) {
+                switch_display_state_and_run_hooks(22);
+            }
+            break;
+        }
+        case 10:
+            ctx_u32(0x58) = co_read32p(data);
+            break;
+        case 11:
+            initialize_and_dispatch_three_byte_request(11, g56d0_u8(0x30), g5650_u8(0x28));
+            continue;
+        case 12:
+            build_sensor_command_packet_acquiring_shared_at_519c();
+            continue;
+        case 14: {
+            uint32_t key_a = co_read32p(data);
+            uint32_t key_b = co_read32p(&data[4]);
+            if (key_a == 0x98badcfe && key_b == 0x10325476) {
+                initialize_display_image_region_and_fixed_header();
+                if (data[8] != 0)
+                    build_mode_status_record_select_corresponding_at_43a4(1);
+                else
+                    build_mode_status_record_select_corresponding_at_43a4(0);
+            } else if (key_a == 0x34123412 && key_b == 0x34123412) {
+                initialize_display_image_region_and_fixed_header();
+                build_mode_status_record_select_corresponding_at_43a4(0);
+            } else if (key_a == 0x12121212 && key_b == 0x12121212) {
+                initialize_display_image_region_and_fixed_header();
+                if (data[8] != 0)
+                    build_mode_status_record_select_corresponding_at_43a4(2);
+            }
+            break;
+        }
+        case 16: {
+            uint8_t days = data[0];
+            uint32_t now;
+            if (days <= 6) {
+                ctx_u8(0x0c) = 0;
+                ctx_u8(0x0b) = 1;
+                now = clock_timekeeping_state.current_timestamp;
+                ctx_u32(0x28) = now - days * 86400 - now % 86400;
+                continue;
+            }
+            reply[0] = 0x90;
+            reply[1] = 0xff;
+            search_queue_and_insert_limit_twenty(reply);
+            continue;
+        }
+        case 18:
+            if (data[1] == 1 && data[3] == 0)
+                switch_display_state_and_run_hooks(14);
+            enqueue_ring_record_if_space(&event_record_queue_state.ring, reply);
+            continue;
+        case 20: {
+            uint8_t mode = data[4];
+            if (mode == 0) {
+                update_mode_flags_and_transitions(1);
+                switch_display_state_and_run_hooks(9);
+            } else {
+                uint8_t current;
+                update_mode_flags_and_transitions(8);
+                current = ctx_u8(0x10);
+                if (data[5] != 0) {
+                    ctx_u8(0x10) = current & 0x7f;
+                } else if (current != mode) {
+                    ctx_u32(0x2c) = 0;
+                    ctx_u8(0x10) = mode;
+                }
+            }
+            break;
+        }
+        case 21:
+            if (data[5] & 7) {
+                ctx_u8(0x10) |= 0x80;
+                update_mode_flags_and_transitions(1 << 19);
+            } else if (data[4] & 7) {
+                if (ctx_u8(0x10) != 0) {
+                    ctx_u8(0x10) = 0;
+                    ctx_u32(0x2c) = 0;
+                }
+                update_mode_flags_and_transitions(1 << 19);
+            } else if (ctx_u8(0x14) & 1) {
+                switch_display_state_and_run_hooks(0);
+            }
+            update_mode_flags_and_transitions(0x20010000);
+            break;
+        case 22: {
+            uint8_t days = data[0];
+            if (days <= 6) {
+                uint32_t day_mark = 0xffffffff;
+                uint32_t day_time;
+                uint32_t area;
+                __builtin_memset(hourly_record_bitmap, 0, 100);
+                day_time = clock_timekeeping_state.current_timestamp - days * 86400;
+                area = (uint16_t)(day_time / 86400) % 7 * 0x3000;
+                perform_flash_memory_operation((uint8_t *)&day_mark, area + 0x4eff0, 4, SR08_FLASH_READ);
+                day_time -= day_time % 86400;
+                if (day_time - day_mark < 86400) {
+                    uint32_t k;
+                    uint16_t runs = 0;
+                    uint32_t previous = 0;
+                    perform_flash_memory_operation((uint8_t *)hourly_record_bitmap, area + 0x4eef0, 96,
+                                                   SR08_FLASH_READ);
+                    for (k = 0; k != 24; k++)
+                        hourly_record_bitmap[k] = ~hourly_record_bitmap[k];
+                    for (k = 0; k != 24; k++) {
+                        uint32_t word = hourly_record_bitmap[k];
+                        uint32_t bit;
+                        for (bit = 0; bit != 30; bit++) {
+                            uint32_t set = word & (1u << bit);
+                            runs += set != 0 && previous == 0;
+                            previous = set;
+                        }
+                    }
+                    if (runs != 0) {
+                        PUT_LE32(&reply[2], day_time);
+                        reply[1] = 0xf0;
+                        *(uint16_t *)&reply[6] = runs;
+                        __builtin_memset(&ctx_u8(0xac), 0, 20);
+                        ctx_u8(0xac) = 1;
+                        ctx_u32(0xc0) = day_time;
+                        ctx_u8(0xad) = runs;
+                        break;
+                    }
+                }
+            }
+            reply[1] = 0xff;
+            break;
+        }
+        case 23:
+            reply[0] = 0x97;
+            break;
+        case 25: {
+            uint8_t interval = data[5];
+            ctx_u8(0x7c) = data[4];
+            if (interval == 0)
+                interval = 15;
+            ctx_u8(0x7d) = interval;
+            ctx_u32(0x80) = data[0] * 3600 + data[1] * 60;
+            ctx_u32(0x84) = data[2] * 3600 + data[3] * 60;
+            break;
+        }
+        case 27:
+            ctx_u8(0x12) = data[10];
+            if (data[10] != 0)
+                gate_periodic_record_creation_sensor_mode_at_2dc4();
+            ctx_u8(0x95) = data[12];
+            break;
+        case 29:
+            ctx_u8(0x34) = data[0];
+            break;
+        case 32:
+            prepare_sensor_configuration_stack_record();
+            continue;
+        case 34:
+        case 58:
+            continue;
+        case 35:
+            if (data[0] != 0) {
+                update_mode_flags_and_transitions(2);
+                switch_display_state_and_run_hooks(12);
+            } else if (ctx_u8(0x14) & 2) {
+                switch_display_state_and_run_hooks(0);
+            }
+            break;
+        case 37: {
+            uint32_t now;
+            uint32_t stamp;
+            reply[0] = 0x25;
+            __builtin_memset(&reply[5], 0, 15);
+            now = clock_timekeeping_state.current_timestamp;
+            stamp = now - now % 86400 - data[0] * 86400 + 86040;
+            PUT_LE32(&reply[1], stamp);
+            break;
+        }
+        case 48: {
+            uint8_t length;
+            name[0] = 0x2b;
+            __builtin_memcpy(&name[1], data, 16);
+            name[17] = 0;
+            length = nul_terminated_string_length(&name[1]);
+            name[19] = length;
+            if (length == 0 || (uint8_t)(data[0] - '0') > 74)
+                continue;
+            erase_flash_range(0x64000, 0x1000);
+            perform_flash_memory_operation(name, 0x64000, 20, SR08_FLASH_PROGRAM);
+            search_queue_and_insert_limit_twenty(reply);
+            platform_reset(0);
+            continue;
+        }
+        case 67:
+            switch_to_display_state_zero_if_fourteen();
+            enqueue_ring_record_if_space(&event_record_queue_state.ring, reply);
+            continue;
+        case 72:
+            if (data[18] == 0) {
+                ctx_u8(0x11) = 2;
+            } else {
+                ctx_u8(0x11) = 1;
+                app_easy_security_request(merged_globals_56d0.app_env[0].conidx);
+            }
+            continue;
+        case 73:
+        case 75:
+            continue;
+        case 80:
+            ctx_u8(0xc4) = data[0];
+            update_mode_flags_and_transitions(data[0] != 0 ? 1 << 13 : 1 << 29);
+            break;
+        case 247: {
+            uint32_t crc = 0;
+            if (merged_globals_574c.device_name.marker == 0x2b)
+                crc = crc32_update_buffer(0, merged_globals_574c.device_name.name,
+                                          merged_globals_574c.device_name.length);
+            reply[8] = 0;
+            reply[7] = 0;
+            reply[6] = 0;
+            reply[5] = 0;
+            PUT_LE32(&reply[1], crc);
+            break;
+        }
+        default:
+            break;
+        }
+        search_queue_and_insert_limit_twenty(reply);
+    }
+}

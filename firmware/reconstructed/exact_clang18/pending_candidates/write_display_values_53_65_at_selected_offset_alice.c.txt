@@ -1,0 +1,18 @@
+/* Alice's byte-exact native (LTO_NATIVE_UNITS) form, superseded at the fifth merge by the
+ * plain-LTO memcpy form in manual_sources/. */
+/* Write the S/e pair at the selected display slot.
+ * Compiled natively and linked in the shared module for exact literal sharing.
+ * The address annotation retains the digit-base expression; it supplies no instructions.
+ */
+#include <stdint.h>
+extern uint8_t merged_globals_5650[];
+extern uint8_t merged_globals_56d0[];
+#define VIEW(p) ((volatile uint8_t *)__builtin_annotation((uintptr_t)(p), "display digits"))
+__attribute__((used, section(".text.write_display_values_53_65_at_selected_offset"))) void
+write_display_values_53_65_at_selected_offset(void) {
+    unsigned slot = ((volatile uint8_t *)merged_globals_5650)[48] & 3;
+    volatile uint8_t *base = merged_globals_56d0 + slot;
+    base[64] = 0x53;
+    volatile uint8_t *digits = VIEW(base + 64);
+    digits[1] = 0x65;
+}

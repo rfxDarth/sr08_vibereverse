@@ -1,30 +1,13 @@
-/* Send four adjacent field updates through the callback at 0x07fc8000. */
-__attribute__((used, naked, section(".text.send_four_adjacent_field_updates_via_callback"))) void
-send_four_adjacent_field_updates_via_callback(void) {
-    __asm__ volatile("push {r3, r4, r5, r6, r7, lr}\n"
-                     "mov r5, r2\n"
-                     "mov r4, r0\n"
-                     "subs r0, #99\n"
-                     "uxtb r0, r0\n"
-                     "lsrs r1, r1, #5\n"
-                     "uxtb r1, r1\n"
-                     "ldr r7, [pc, #36]\n"
-                     "blx r7\n"
-                     "mov r0, r4\n"
-                     "subs r0, #96\n"
-                     "uxtb r0, r0\n"
-                     "movs r6, #0\n"
-                     "mov r1, r6\n"
-                     "blx r7\n"
-                     "mov r0, r4\n"
-                     "subs r0, #91\n"
-                     "uxtb r0, r0\n"
-                     "lsrs r1, r5, #5\n"
-                     "uxtb r1, r1\n"
-                     "blx r7\n"
-                     "subs r4, #88\n"
-                     "uxtb r0, r4\n"
-                     "mov r1, r6\n"
-                     "blx r7\n"
-                     "pop {r3, r4, r5, r6, r7, pc}\n");
+/* Write four adjacent device registers below base: base - 99 and base - 91
+ * get first >> 5 and second >> 5, base - 96 and base - 88 get zero.
+ */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_radio_commands.h"
+
+void send_four_adjacent_field_updates_via_callback(uint8_t base, uint16_t first, uint16_t second)
+{
+    send_device_command_pair((uint8_t)(base - 99), (uint8_t)(first >> 5));
+    send_device_command_pair((uint8_t)(base - 96), 0);
+    send_device_command_pair((uint8_t)(base - 91), (uint8_t)(second >> 5));
+    send_device_command_pair((uint8_t)(base - 88), 0);
 }

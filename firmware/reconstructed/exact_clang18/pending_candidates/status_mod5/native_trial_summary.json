@@ -1,0 +1,149 @@
+[
+  {
+    "source": "add_overflow.c.txt",
+    "result": [
+      "group 0x07fca914-0x07fca968 (84 bytes)",
+      "MISMATCH: 12 differing bytes"
+    ]
+  },
+  {
+    "source": "bit_lower.c.txt",
+    "result": [
+      "group 0x07fca914-0x07fca968 (84 bytes)",
+      "MISMATCH: 13 differing bytes"
+    ]
+  },
+  {
+    "source": "candidate.c.txt",
+    "result": [
+      "group 0x07fca914-0x07fca968 (84 bytes)",
+      "MISMATCH: 10 differing bytes"
+    ]
+  },
+  {
+    "source": "eq_lower.c.txt",
+    "result": [
+      "group 0x07fca914-0x07fca968 (84 bytes)",
+      "MISMATCH: 43 differing bytes"
+    ]
+  },
+  {
+    "source": "expect_lower0.c.txt",
+    "result": [
+      "group 0x07fca914-0x07fca968 (84 bytes)",
+      "MISMATCH: 12 differing bytes"
+    ]
+  },
+  {
+    "source": "expect_lower.c.txt",
+    "result": [
+      "group 0x07fca914-0x07fca968 (84 bytes)",
+      "MISMATCH: 34 differing bytes"
+    ]
+  },
+  {
+    "source": "first_last_plain.c.txt",
+    "result": [
+      "group 0x07fca914-0x07fca964 (80 bytes)",
+      "MISMATCH: 71 differing bytes"
+    ]
+  },
+  {
+    "source": "first_plain.c.txt",
+    "result": [
+      "group 0x07fca914-0x07fca968 (84 bytes)",
+      "MISMATCH: 70 differing bytes"
+    ]
+  },
+  {
+    "source": "last_plain.c.txt",
+    "result": [
+      "group 0x07fca914-0x07fca968 (84 bytes)",
+      "MISMATCH: 12 differing bytes"
+    ]
+  },
+  {
+    "source": "offset_annotation.c.txt",
+    "result": [
+      "group 0x07fca914-0x07fca968 (84 bytes)",
+      "MISMATCH: 22 differing bytes"
+    ]
+  },
+  {
+    "source": "opaque_lower.c.txt",
+    "result": [
+      "group 0x07fca914-0x07fca968 (84 bytes)",
+      "MISMATCH: 12 differing bytes"
+    ]
+  },
+  {
+    "source": "opaque_two.c.txt",
+    "result": [
+      "group 0x07fca914-0x07fca968 (84 bytes)",
+      "MISMATCH: 12 differing bytes"
+    ]
+  },
+  {
+    "source": "plain.c.txt",
+    "result": [
+      "group 0x07fca914-0x07fca964 (80 bytes)",
+      "MISMATCH: 71 differing bytes"
+    ]
+  },
+  {
+    "source": "range_sub.c.txt",
+    "result": [
+      "group 0x07fca914-0x07fca968 (84 bytes)",
+      "MISMATCH: 13 differing bytes"
+    ]
+  },
+  {
+    "source": "reverse_lower.c.txt",
+    "result": [
+      "group 0x07fca914-0x07fca968 (84 bytes)",
+      "MISMATCH: 12 differing bytes"
+    ]
+  },
+  {
+    "source": "signed_lower.c.txt",
+    "result": [
+      "group 0x07fca914-0x07fca968 (84 bytes)",
+      "MISMATCH: 12 differing bytes"
+    ]
+  },
+  {
+    "source": "sub_overflow.c.txt",
+    "result": [
+      "group 0x07fca914-0x07fca968 (84 bytes)",
+      "MISMATCH: 10 differing bytes"
+    ]
+  },
+  {
+    "source": "subtract_lower.c.txt",
+    "result": [
+      "group 0x07fca914-0x07fca968 (84 bytes)",
+      "MISMATCH: 12 differing bytes"
+    ]
+  },
+  {
+    "source": "switch_lower.c.txt",
+    "result": [
+      "group 0x07fca914-0x07fca968 (84 bytes)",
+      "MISMATCH: 16 differing bytes"
+    ]
+  },
+  {
+    "source": "switch_two.c.txt",
+    "result": [
+      "group 0x07fca914-0x07fca968 (84 bytes)",
+      "MISMATCH: 17 differing bytes"
+    ]
+  },
+  {
+    "source": "unsigned_signed_opaque.c.txt",
+    "result": [
+      "group 0x07fca914-0x07fca968 (84 bytes)",
+      "MISMATCH: 12 differing bytes"
+    ]
+  }
+]

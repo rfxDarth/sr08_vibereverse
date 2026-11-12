@@ -1,0 +1,17 @@
+    .syntax unified
+    .thumb
+    .section .text.fixed_target,"ax",%progbits
+    .balign 2
+    .global fixed_target
+    .type fixed_target,%function
+    .thumb_func
+fixed_target:
+    ldr r0, __arm_cp.7fc8500_8
+    .inst.n 0x4770
+    .inst.n 0xbf00
+    .inst.n 0xbf00
+    .global __arm_cp.7fc8500_8
+__arm_cp.7fc8500_8:
+    .long 0x07fd1e28
+    .size __arm_cp.7fc8500_8, 4
+    .reloc fixed_target, R_ARM_NONE, __arm_cp.7fc8500_8

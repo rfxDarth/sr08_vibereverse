@@ -1,0 +1,38 @@
+/* PARKED (Jeff, 2026-11-15): wait_shared_timer_delta_exceed_requested_at_4458 (0x07fc4458).
+ * Instructions are byte-exact (plain ac6 and ac6lto). The scheduling of `interval * 8` is fixed with an annotation,
+ * and the slots with declaration order. The only difference: V204 loads both register literals (0x400000fc,
+ * 0x4000001c) from 0x07fc4858/485c, the identical copies in update_clock_and_process_events' (0x44a8, ASM) pool,
+ * although its own copies at 0x44a0/0x44a4 exist; the LTO link uses its own. Install together with 0x44a8.
+ */
+/* Busy-wait until the BLE base time has advanced by the requested interval (milliseconds; the base time counts
+ * 625 us slots, so interval * 8 / 5 slots), handling the 0x5000000 slot wrap. */
+#include <stdint.h>
+
+#define BLE_SAMPLECLK (*(volatile uint32_t *)0x400000fcu)
+#define BLE_BASETIMECNT (*(volatile uint32_t *)0x4000001cu)
+
+void wait_shared_timer_delta_exceed_requested_at_4458(uint32_t interval)
+{
+    volatile uint32_t elapsed = 0;
+    volatile uint32_t start;
+    volatile uint32_t now;
+
+    BLE_SAMPLECLK = 1;
+    /* Keep the scaling ahead of the first wait, as V204 schedules it. */
+    uint32_t scaled = __builtin_annotation(interval * 8, "scaled interval");
+    while (BLE_SAMPLECLK != 0)
+        ;
+    start = BLE_BASETIMECNT;
+    uint32_t limit = scaled / 5;
+    do {
+        BLE_SAMPLECLK = 1;
+        while (BLE_SAMPLECLK != 0)
+            ;
+        now = BLE_BASETIMECNT;
+        uint32_t current = now;
+        uint32_t first = start;
+        if (current < first)
+            current += 0x5000000;
+        elapsed = current - first;
+    } while (elapsed <= limit);
+}

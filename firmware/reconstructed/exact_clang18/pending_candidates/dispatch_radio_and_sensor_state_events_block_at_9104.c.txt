@@ -1,0 +1,376 @@
+/* PARKED (2026-11-16, Jeff): 0x9104 dispatch_radio_and_sensor_state_events (one LTO function 0x07fc9104-0x07fc97ac,
+ * blocks 9104/91a8/9538; probe with --absorb for 91a8 and 9538 and P6_SYMS sensor_sample_tables=0x07fd0950).
+ * ac6: 816 vs 817 instruction lines, 235 register-normalized lines differ (best -mllvm -enable-gvn-sink: 229).
+ * Install needs a RAM symbol for the sample tables at 0x07fd0950 (additive) and ("ac6lto", [unit]) with the
+ * two split blocks absorbed.
+ * Levers that helped: switch on device_control_state[18] (mode 0 inline, mode 1 far, as V204); the mode-1 step
+ * switch without an outer range test (one jump table); the mode-0 phase chain written 0,1,2 (gives V204's
+ * 2,1,0 compare order); `y > 0x445c0 ? .. : 0` for the gain quotient; state 0 before state 1 in the sample loop.
+ * Remaining:
+ *  - V204 addresses cycle_control_state+0x4c..0x59 as `adds rX, #76` + small offsets: a separate C global in a
+ *    GlobalMerge block (see WORK_CLAIMS "Jeff since the sixth merge"). Not reproducible with extern views.
+ *  - Stack-slot reuse: V204 keeps the constants 64/80/38 in spill slots and reuses them as offsets.
+ *  - Block placement in the mode-1 sample loop exits and the end of mode 0.
+ *  - The lsrs #3 / cmp #24 vs cmp #199 forms of the LED >= 200 tests differ per site.
+ * Tried without gain: __builtin_expect on the loop exits (worse), struct assignment for the 16-byte record copy,
+ * table byte offsets for gain_settings, 98 -mllvm switches and three combinations. */
+/* Sensor gain/LED adaptation and sample-processing tick (0x07fc9104-0x07fc97ac, one LTO function).
+ * Part A (device_control_state[20] == 1, cycle_control_state.active_control_mode != 0) calibrates the
+ * front end from the two six-byte status records; part B (device_control_state[21] == 1) reads the sample
+ * FIFO, fills the sample tables and runs the range checks and the per-mode publishing. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_cycle_control_state.h"
+#include "firmware/reconstructed/include/sr08_device_settings.h"
+#include "firmware/reconstructed/include/sr08_event_record_queue.h"
+#include "firmware/reconstructed/include/sr08_radio_configuration.h"
+#include "firmware/reconstructed/include/sr08_sensor_field_state.h"
+
+struct sensor_sample_tables {
+    uint8_t count;
+    uint8_t reserved_01[3];
+    uint32_t items[32];
+    int32_t left[16];
+    int32_t right[16];
+    uint32_t history[64];
+    uint8_t gain_settings[3];
+};
+extern struct sensor_sample_tables sensor_sample_tables;
+
+struct status_reply { uint8_t bytes[20]; };
+struct serialized_record { uint32_t words[4]; };
+
+extern void combine_two_six_byte_records_into_words(uint32_t *output);
+extern void synchronize_callback_values_and_notify(void);
+extern uint32_t read_three_byte_samples_and_update_history(uint32_t window);
+extern int32_t apply_range_mode_validity_checks_preserving_at_8878(void);
+extern void dispatch_radio_state_action_block_at_86b8(uint32_t action);
+extern void publish_enabled_sensor_field_trigger_periodic_at_8774(void);
+extern void six_way_command_dispatch_default_branch_at_8040(uint32_t action);
+extern void dispatch_enabled_indicator_fields_for_device_status(void);
+extern void configure_radio_state_and_send_command_6a(void);
+extern uint32_t initialize_state_and_return_one(void);
+extern uint32_t apply_pending_record_operation_to_items_while_active();
+extern void build_and_copy_compact_sensor_status_reply(void *output);
+extern uint32_t dispatch_batch_item_three_sign_extended_at_ee4c(const int32_t *left, const int32_t *right,
+                                                                uint32_t setting_a, uint32_t setting_b, uint32_t count,
+                                                                const int16_t *x, const int16_t *y, const int16_t *z);
+extern void serialize_measurement_record_by_mode(void *output);
+extern void reinitialize_sensor_processing_state(void);
+extern void initialize_radio_scan_and_mark_state_ready(void);
+extern const uint8_t v204_data_07fcfacc[];
+
+#define CCS ((uint8_t *)&cycle_control_state)
+#define DCS ((uint8_t *)&device_control_state)
+#define SFS ((uint8_t *)&sensor_field_state)
+#define DS ((uint8_t *)&device_settings)
+#define ERQ ((uint32_t *)&event_record_queue_state)
+#define U16(base, off) (*(uint16_t *)((base) + (off)))
+#define U32(base, off) (*(uint32_t *)((base) + (off)))
+
+static void calibrate_gain_mode0(void)
+{
+    CCS[0x4d] = 0;
+    if (DCS[24] != 1)
+        return;
+    CCS[0x4d] = 1;
+    combine_two_six_byte_records_into_words(ERQ);
+    uint8_t phase = CCS[0x58];
+    int32_t x = (int32_t)ERQ[2];
+    if (phase == 0) {
+        CCS[0x58] = 1;
+    } else if (phase == 1) {
+        int32_t y = (int32_t)ERQ[3];
+        int32_t q = y > 0x445c0 ? (y - 0x445c0) / 10000 : 0;
+        CCS[0x53] = q;
+        if (y + 128 < x) {
+            uint16_t d = (x - y) / 64;
+            U16(CCS, 0x56) = d;
+            U16(CCS, 0x50) = (5000u * (uint8_t)q + 50000u) / d;
+            if (U16(CCS, 0x50) > CCS[0x59])
+                U16(CCS, 0x50) = CCS[0x59];
+            CCS[0x4c] = 15;
+            CCS[0x54] = 48;
+            CCS[0x52] = 5;
+            CCS[0x58] = 2;
+        } else {
+            CCS[0x4c] = 15;
+            CCS[0x54] = 48;
+            CCS[0x52] = 5;
+            CCS[0x58] = 2;
+            U16(CCS, 0x50) = CCS[0x59];
+        }
+    } else if (phase == 2) {
+        if (x > 0x55730) {
+            if (CCS[0x52] <= 120) {
+                CCS[0x52]++;
+                phase = 2;
+            } else
+                phase = 3;
+        } else {
+            phase = 3;
+            if (x < 0x249f0 && CCS[0x52] != 0) {
+                CCS[0x52]--;
+                phase = 2;
+            }
+        }
+        CCS[0x4c] = 2;
+        CCS[0x58] = phase;
+    }
+    if (phase == 3)
+        six_way_command_dispatch_default_branch_at_8040(4);
+    else
+        dispatch_enabled_indicator_fields_for_device_status();
+}
+
+static void calibrate_leds_mode1(void)
+{
+    SFS[0x21] = 0;
+    if (DCS[31] != 1)
+        return;
+    SFS[0x21] = 1;
+    combine_two_six_byte_records_into_words(ERQ + 4);
+    uint32_t step = SFS[0x3c];
+    int32_t b = (int32_t)ERQ[7];
+    int32_t a = (int32_t)ERQ[5];
+    {
+        switch (step) {
+        case 0:
+            SFS[0x3c] = 1;
+            publish_enabled_sensor_field_trigger_periodic_at_8774();
+            return;
+        case 1: {
+            if (DS[3] == 0) {
+                SFS[0x3c] = 4;
+                step = 4;
+                break;
+            }
+            int32_t base = (int32_t)ERQ[4];
+            SFS[0x27] = 0;
+            if (base + 128 < a) {
+                SFS[0x25] = 19;
+                uint32_t v = (a - base) / 4;
+                U32(SFS, 0x34) = v;
+                uint32_t g = 0x3f7a0u / v;
+                U16(SFS, 0x2a) = g > SFS[0x3e] ? SFS[0x3e] : g;
+            }
+            if (base + 128 < b) {
+                SFS[0x26] = 19;
+                uint32_t v = (b - base) / 16;
+                U32(SFS, 0x38) = v;
+                uint32_t g = 0x3f7a0u / v;
+                U16(SFS, 0x2c) = g > SFS[0x3f] ? SFS[0x3f] : g;
+            }
+            SFS[0x20] = 15;
+            SFS[0x3c] = 2;
+            SFS[0x2e] = 32;
+            publish_enabled_sensor_field_trigger_periodic_at_8774();
+            return;
+        }
+        case 2:
+            if (a > 0x6ddd0 && SFS[0x25] < 200)
+                SFS[0x25] += 2;
+            if (b > 0x6ddd0) {
+                if (SFS[0x26] >= 200) {
+                    step = 4;
+                    goto set_step;
+                }
+                SFS[0x26] += 2;
+            } else if (a <= 0x6ddd0) {
+                step = 3;
+                goto set_step;
+            }
+            step = (SFS[0x26] > 199 || SFS[0x25] >= 200) ? 4 : 2;
+            goto set_step;
+        case 3:
+            if (a > 0x55730) {
+                if (SFS[0x25] < 200)
+                    SFS[0x25]++;
+            } else if (a < 0x249f0 && SFS[0x25] != 0)
+                SFS[0x25]--;
+            if (b > 0x55730) {
+                if (SFS[0x26] < 200)
+                    SFS[0x26]++;
+            } else if (b < 0x249f0 && SFS[0x26] != 0)
+                SFS[0x26]--;
+            step = 4;
+            if ((uint32_t)(a - 0x249f1) >= 0x30d3f || (uint32_t)(b - 0x249f1) >= 0x30d3f) {
+                if (SFS[0x26] >= 200 || SFS[0x25] >= 200)
+                    step = 4;
+                else
+                    step = 3;
+            }
+        set_step:
+            SFS[0x20] = 2;
+            SFS[0x3c] = step;
+            break;
+        }
+    }
+    if (step == 4)
+        dispatch_radio_state_action_block_at_86b8(4);
+    else
+        publish_enabled_sensor_field_trigger_periodic_at_8774();
+}
+
+static void process_samples_mode0(void)
+{
+    uint32_t buffer[16];
+    __builtin_memset(buffer, 0, sizeof(buffer));
+    sensor_sample_tables.gain_settings[0] = CCS[0x50];
+    uint32_t record[4] = {0, 0, 0, 0};
+    if (DCS[23] != 1 || DCS[24] != 0)
+        return;
+    combine_two_six_byte_records_into_words(record);
+    int32_t level = (int32_t)record[2];
+    uint8_t count = read_three_byte_samples_and_update_history(2);
+    sensor_sample_tables.count = count;
+    int32_t sample = 0;
+    for (uint8_t i = 0; i < count; i++) {
+        sample = sensor_sample_tables.history[i * 2];
+        sensor_sample_tables.right[i] = sample;
+        sensor_sample_tables.items[i] = sensor_sample_tables.history[i * 2 + 1] * 2;
+        int32_t r = apply_range_mode_validity_checks_preserving_at_8878();
+        if (r < 1500) {
+            if (DCS[22] < 2) {
+                DCS[22]++;
+                if (DCS[22] == 2)
+                    DS[0] = 0;
+            } else
+                DS[0] = 0;
+        } else if (r > 3000) {
+            if (DCS[22] != 0) {
+                DCS[22]--;
+                if (DCS[22] == 0)
+                    DS[0] = 1;
+            } else
+                DS[0] = 1;
+        }
+        uint8_t state = DS[0];
+        if (DS[1] != state) {
+            DS[1] = state;
+            if (state == 0) {
+                DCS[27] = 0;
+                ensure_radio_profile_then_scan_paired_bytes(
+                    (const struct sr08_radio_command_pair *)(v204_data_07fcfacc + 0x5e));
+                U16(CCS, 0x50) = 0;
+                configure_radio_state_and_send_command_6a();
+                DCS[17] = 1;
+            } else if (state == 1) {
+                initialize_state_and_return_one();
+                six_way_command_dispatch_default_branch_at_8040(0);
+                six_way_command_dispatch_default_branch_at_8040(3);
+            }
+        }
+    }
+    uint8_t state = DS[0];
+    if (state == 0 && sample <= 0x2ed && DCS[27] != 0 &&
+        (uint32_t)(cycle_control_state.measurement_value - 376) <= 0x463)
+        U16(DCS, 0x46) = U16(DCS, 0x40);
+    if (state != 0 && (level < 100000 || level > 400000)) {
+        if (--DS[2] == 0) {
+            DS[2] = 3;
+            six_way_command_dispatch_default_branch_at_8040(5);
+            state = DS[0];
+        }
+    } else
+        DS[2] = 3;
+    if (state == 1)
+        apply_pending_record_operation_to_items_while_active(sensor_sample_tables.items, sensor_sample_tables.count,
+                                                             buffer, buffer, buffer);
+    struct status_reply reply;
+    build_and_copy_compact_sensor_status_reply(&reply);
+    __builtin_memcpy(SFS + 0x44, &reply, sizeof(reply));
+    SFS[0x40] = state;
+}
+
+static void process_samples_mode1(void)
+{
+    uint8_t led_a = SFS[0x25];
+    uint8_t led_b = SFS[0x26];
+    int16_t buffer[64];
+    __builtin_memset(buffer, 0, sizeof(buffer));
+    sensor_sample_tables.gain_settings[0] = SFS[0x28];
+    sensor_sample_tables.gain_settings[1] = SFS[0x2a];
+    sensor_sample_tables.gain_settings[2] = SFS[0x2c];
+    if (DCS[30] != 1 || DCS[31] != 0)
+        return;
+    uint8_t count = read_three_byte_samples_and_update_history(4);
+    sensor_sample_tables.count = count;
+    uint32_t out_of_range = 0;
+    for (uint8_t i = 0; i < count; i++) {
+        int32_t first = sensor_sample_tables.history[i * 4 + 1];
+        sensor_sample_tables.left[i] = first - 0x3f7a0;
+        int32_t second = sensor_sample_tables.history[i * 4 + 3];
+        sensor_sample_tables.right[i] = second - 0x3f7a0;
+        sensor_sample_tables.items[i] = 0;
+        if (DS[3] == 1) {
+            int32_t delta = second - (int32_t)sensor_sample_tables.history[i * 4];
+            int32_t r = apply_range_mode_validity_checks_preserving_at_8878();
+            if (SFS[38] * 0x222e0 + delta < 0x3d090 || r < 1500) {
+                DS[3] = 0;
+                if (DS[4] != 0) {
+                    DS[4] = 0;
+                    initialize_radio_scan_and_mark_state_ready();
+                    return;
+                }
+            }
+        } else {
+            int32_t r = apply_range_mode_validity_checks_preserving_at_8878();
+            uint8_t on = r > 3000;
+            DS[3] = on;
+            if (DS[4] != on) {
+                DS[4] = on;
+                if (r > 3000) {
+                    reinitialize_sensor_processing_state();
+                    dispatch_radio_state_action_block_at_86b8(0);
+                    dispatch_radio_state_action_block_at_86b8(3);
+                } else
+                    initialize_radio_scan_and_mark_state_ready();
+                return;
+            }
+        }
+        if (first < 100000 || first > 400000 || second < 100000 || second > 400000)
+            out_of_range = DS[3] != 0;
+    }
+    if (out_of_range) {
+        if (--DS[5] == 0) {
+            DS[5] = 3;
+            dispatch_radio_state_action_block_at_86b8(5);
+        }
+    } else
+        DS[5] = 3;
+    uint8_t state = DS[3];
+    if (state == 1)
+        dispatch_batch_item_three_sign_extended_at_ee4c(sensor_sample_tables.left, sensor_sample_tables.right, led_a,
+                                                        led_b, sensor_sample_tables.count, buffer, buffer, buffer);
+    struct serialized_record record;
+    serialize_measurement_record_by_mode(&record);
+    struct serialized_record copy = record;
+    SFS[0x41] = state;
+    __builtin_memcpy(SFS + 0x58, &copy, sizeof(copy));
+}
+
+__attribute__((used, section(".text.dispatch_radio_and_sensor_state_events_block_at_9104"))) void
+dispatch_radio_and_sensor_state_events_block_at_9104(void)
+{
+    if (DCS[20] == 1 && cycle_control_state.active_control_mode != 0) {
+        switch (DCS[18]) {
+        case 0:
+            calibrate_gain_mode0();
+            break;
+        case 1:
+            calibrate_leds_mode1();
+            break;
+        }
+    }
+    if (DCS[21] == 1 && cycle_control_state.active_control_mode != 0) {
+        synchronize_callback_values_and_notify();
+        switch (DCS[18]) {
+        case 0:
+            process_samples_mode0();
+            break;
+        case 1:
+            process_samples_mode1();
+            break;
+        }
+    }
+}

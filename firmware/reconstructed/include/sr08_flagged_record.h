@@ -1,6 +1,8 @@
 #ifndef SR08_FLAGGED_RECORD_H
 #define SR08_FLAGGED_RECORD_H
 
+#include "firmware/reconstructed/include/sr08_static_assert.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -10,7 +12,7 @@ struct sr08_flagged_record {
     uint16_t flags;
 };
 
-_Static_assert(offsetof(struct sr08_flagged_record, flags) == 10, "record flags must remain at byte offset ten");
+SR08_STATIC_ASSERT(offsetof(struct sr08_flagged_record, flags) == 10, "record flags must remain at byte offset ten");
 
 /* Return bit zero of the selected record's flags, or zero when it is absent. */
 uint8_t read_record_flag_bit_zero(void);

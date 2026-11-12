@@ -1,0 +1,221 @@
+/* SDK 6.0.18.1182.1 app_suotar_task.c suotar_patch_data_ind_handler with the
+ * vendor's app_suotar_img_hdlr and image-header check inlined. The vendor writes
+ * the image to SPI flash 0x6c000 through its own flash routine: the first block
+ * must carry a valid image header (signature, version "x.", vendor product
+ * fields), the area is erased, and the header is stored with validflag 0xff and
+ * image id 0 (not yet valid). Later blocks follow the SDK size check.
+ * suota_all_pd shares RAM 0x07fd0b58 with the vendor sensor context.
+ * See third_party/renesas_sdk_6.0.18.1182.1/dialog_license.txt. */
+#include "firmware/reconstructed/include/sr08_sdk_suotar.h"
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+#include "firmware/reconstructed/include/sr08_sensor_status_record.h"
+
+#define suota_all_pd ((uint8_t *)&sensor_status_context)
+#define ADDITINAL_CRC_SIZE          1
+#define IMAGE_HEADER_SIGNATURE1     0x70
+#define IMAGE_HEADER_SIGNATURE2     0x51
+#define IMAGE_HEADER_OK             0
+#define SUOTA_IMAGE_ADDRESS         0x6c000
+
+/* app_suotar.h */
+typedef struct
+{
+    uint8_t signature[2];
+    uint8_t validflag;
+    uint8_t imageid;
+    uint32_t code_size;
+    uint32_t CRC;
+    uint8_t version[16];
+    uint32_t timestamp;
+    uint8_t encryption;
+    uint8_t reserved[31];
+} image_header_t;
+
+/* The vendor reads and writes halfwords at odd or unknown alignment. */
+struct __attribute__((packed)) unaligned_u16 { uint16_t value; };
+#define UNALIGNED_U16(p) (((struct unaligned_u16 *)(p))->value)
+
+extern uint32_t perform_flash_memory_operation(uint8_t *buffer, uint32_t flash_address, uint32_t byte_count,
+                                               uint32_t operation);
+extern uint32_t erase_flash_range(uint32_t flash_address, uint32_t byte_count);
+extern void store_measurement_value_divided_by_1000(void);
+
+static int32_t app_flash_write_data(uint8_t *data, uint32_t address, uint32_t size)
+{
+    return (int32_t) perform_flash_memory_operation(data, address, size, 1);
+}
+
+static int app_read_image_headers(uint8_t* data, uint32_t data_len)
+{
+    image_header_t *pfwHeader;
+    image_header_t *pImageHeader;
+    uint8_t mem_data_buff[66];
+    uint16_t product_type;
+    uint16_t product_id;
+    uint32_t codesize;
+
+    ((volatile uint8_t *)mem_data_buff)[65] = 0;
+    ((volatile uint8_t *)mem_data_buff)[64] = 0;
+    if( data_len < sizeof(image_header_t) )
+    {
+        // block size should be at least image header size
+        return SUOTAR_INVAL_IMG_HDR;
+    }
+    else
+    {
+        // read header form first data block
+        pfwHeader = (image_header_t*)data;
+    }
+
+    if( (pfwHeader->signature[0] != IMAGE_HEADER_SIGNATURE1) || (pfwHeader->signature[1] != IMAGE_HEADER_SIGNATURE2) )
+    {
+        return SUOTAR_INVAL_IMG_HDR;
+    }
+    product_type = UNALIGNED_U16(&pfwHeader->reserved[4]);
+    product_id = UNALIGNED_U16(&pfwHeader->reserved[6]);
+    if( !((product_type == 1 && product_id == 23) || (product_type == 0 && product_id == 0)) )
+    {
+        return SUOTAR_INVAL_IMG_HDR;
+    }
+    if( pfwHeader->version[1] != '.' )
+    {
+        return SUOTAR_INVAL_IMG_HDR;
+    }
+
+    // Get image size
+    codesize = pfwHeader->code_size;
+    merged_globals_5650.suota_copy_pending = 1;
+    merged_globals_56d0.suota_image_len = codesize + sizeof(image_header_t);
+    if( !codesize )
+    {
+        return SUOTAR_INVAL_IMG_SIZE;
+    }
+
+    merged_globals_56d0.mem_base_add = SUOTA_IMAGE_ADDRESS;
+    if( erase_flash_range(merged_globals_56d0.mem_base_add, merged_globals_56d0.suota_image_len) != 0 )
+    {
+        return SUOTAR_EXT_MEM_WRITE_ERR;
+    }
+
+    pImageHeader = (image_header_t*)mem_data_buff;
+    pImageHeader->validflag = 0xff;
+    pImageHeader->imageid = 0;
+    pImageHeader->code_size = pfwHeader->code_size;
+    pImageHeader->CRC = pfwHeader->CRC;
+    memcpy(pImageHeader->version, pfwHeader->version, sizeof(pImageHeader->version));
+    memcpy(pImageHeader->signature, pfwHeader->signature, sizeof(pImageHeader->signature));
+    pImageHeader->encryption = pfwHeader->encryption;
+    pImageHeader->timestamp = pfwHeader->timestamp;
+    memcpy(pImageHeader->reserved, pfwHeader->reserved, sizeof(pImageHeader->reserved));
+    if( app_flash_write_data(mem_data_buff, merged_globals_56d0.mem_base_add, sizeof(image_header_t)) < 0 )
+    {
+        return SUOTAR_EXT_MEM_WRITE_ERR;
+    }
+    if( app_flash_write_data(data + sizeof(image_header_t), merged_globals_56d0.mem_base_add + sizeof(image_header_t),
+                             data_len - sizeof(image_header_t)) < 0 )
+    {
+        return SUOTAR_EXT_MEM_WRITE_ERR;
+    }
+    return IMAGE_HEADER_OK;
+}
+
+static void app_suotar_img_hdlr(void)
+{
+    uint32_t mem_info;
+    uint16_t status = SUOTAR_CMP_OK;
+    int32_t    ret;
+    uint32_t     i;
+
+    store_measurement_value_divided_by_1000();
+
+    // Update CRC
+    for(i=0;i<merged_globals_56d0.suota_block_idx;i++){
+        merged_globals_5650.crc_calc ^= suota_all_pd[i];
+    }
+
+    // When the first block is received, read image header first
+    if( merged_globals_56d0.suota_block_idx != 0 && merged_globals_56d0.suota_img_idx == 0 )
+    {
+        // Read image headers and determine active image.
+        ret = app_read_image_headers( suota_all_pd, merged_globals_56d0.suota_block_idx );
+        if( ret != IMAGE_HEADER_OK )
+        {
+            status = ret;
+        }
+        else
+        {
+            // Update block index
+            merged_globals_56d0.suota_img_idx += merged_globals_56d0.suota_block_idx;
+        }
+    }
+    else
+    {
+        //check file size
+        if (( merged_globals_56d0.suota_image_len+ADDITINAL_CRC_SIZE ) >= ( merged_globals_56d0.suota_img_idx + merged_globals_56d0.suota_block_idx ))
+        {
+            if (merged_globals_56d0.suota_image_len < (merged_globals_56d0.suota_img_idx + merged_globals_56d0.suota_block_idx))
+                merged_globals_56d0.suota_block_idx = merged_globals_56d0.suota_image_len - merged_globals_56d0.suota_img_idx;
+
+            ret = app_flash_write_data (suota_all_pd, (merged_globals_56d0.mem_base_add + merged_globals_56d0.suota_img_idx), merged_globals_56d0.suota_block_idx);
+            if(ret < 0){
+                status = SUOTAR_EXT_MEM_WRITE_ERR;
+            }
+            else
+            {
+                // Update block index
+                merged_globals_56d0.suota_img_idx += merged_globals_56d0.suota_block_idx;
+            }
+        }
+        else
+        {
+            status = SUOTAR_EXT_MEM_WRITE_ERR;
+        }
+    }
+    merged_globals_56d0.suota_block_idx = 0;
+    mem_info = merged_globals_56d0.suota_img_idx;
+    suotar_send_mem_info_update_req(mem_info);
+
+    // SUOTA finished successfully. Send Indication to initiator
+    suotar_send_status_update_req((uint8_t) status);
+}
+
+int suotar_patch_data_ind_handler(ke_msg_id_t const msgid,
+                                  struct suotar_patch_data_ind const *param,
+                                  ke_task_id_t const dest_id,
+                                  ke_task_id_t const src_id)
+{
+    if (param->char_code)
+    {
+        if( merged_globals_56d0.new_patch_len )
+        {
+            //---------------------------- Handle SUOTAR image payload -----------------------
+            if( (merged_globals_56d0.suota_block_idx + param->len) <= SUOTA_OVERALL_PD_SIZE)
+            {
+                memcpy(&suota_all_pd[merged_globals_56d0.suota_block_idx], param->pd, param->len );
+                merged_globals_56d0.suota_block_idx += param->len;
+
+                if( merged_globals_56d0.new_patch_len == merged_globals_56d0.suota_block_idx )
+                {
+                    app_suotar_img_hdlr();
+                }
+
+                if( merged_globals_56d0.suota_block_idx > merged_globals_56d0.new_patch_len  )
+                {
+                    // Received patch len not equal to PATCH_LEN char value
+                    suotar_send_status_update_req((uint8_t) SUOTAR_PATCH_LEN_ERR);
+                }
+            }
+            else
+            {
+                suotar_send_status_update_req((uint8_t) SUOTAR_INT_MEM_ERR);
+            }
+        }
+        else
+        {
+            // Inavild PATCH_LEN char value
+            suotar_send_status_update_req((uint8_t) SUOTAR_PATCH_LEN_ERR);
+        }
+    }
+
+    return (KE_MSG_CONSUMED);
+}

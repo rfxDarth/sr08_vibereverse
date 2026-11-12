@@ -1,41 +1,36 @@
-/* Build and copy the compact sensor-status reply for either record state. */
-__attribute__((used, naked, section(".text.build_and_copy_compact_sensor_status_reply"))) void
-build_and_copy_compact_sensor_status_reply(void) {
-    __asm__ volatile("push {r4, lr}\n"
-                     "sub sp, #24\n"
-                     "mov r4, r0\n"
-                     "movs r1, #20\n"
-                     "mov r0, sp\n"
-                     "bl __aeabi_memclr\n"
-                     "ldr r1, [pc, #64]\n"
-                     "mov r0, sp\n"
-                     "ldrb r2, [r1, #0]\n"
-                     "strb r2, [r0, #0]\n"
-                     "ldr r1, [r1, #4]\n"
-                     "cmp r2, #2\n"
-                     "ldr r0, [r1, #8]\n"
-                     "str r0, [sp, #4]\n"
-                     "beq .Linclude_measurement_status\n"
-                     "movs r0, #0\n"
-                     "mov r1, sp\n"
-                     "strb r0, [r1, #8]\n"
-                     "strh r0, [r1, #10]\n"
-                     ".Lcopy_compact_reply: movs r2, #20\n"
-                     "mov r1, sp\n"
-                     "mov r0, r4\n"
-                     "bl __aeabi_memcpy\n"
-                     "add sp, #24\n"
-                     "pop {r4, pc}\n"
-                     ".Linclude_measurement_status: ldrb r2, [r1, #0]\n"
-                     "mov r0, sp\n"
-                     "strb r2, [r0, #8]\n"
-                     "movs r0, #1\n"
-                     "lsls r0, r0, #10\n"
-                     "adds r0, r1, r0\n"
-                     "ldr r0, [r0, #24]\n"
-                     "lsls r0, r0, #6\n"
-                     "lsrs r1, r0, #16\n"
-                     "mov r0, sp\n"
-                     "strh r1, [r0, #10]\n"
-                     "b .Lcopy_compact_reply\n");
+/* Build and copy the compact sensor-status reply for either record state.
+ *
+ * Compiled with ARM Compiler 5 (see ARM_COMPILER_GROUPS in build_v204.py).
+ */
+#include <stdint.h>
+#include <string.h>
+#include "firmware/reconstructed/include/sr08_sensor_status_record.h"
+
+enum { SENSOR_RECORD_STATE_MEASURING = 2 };
+
+struct compact_sensor_status_reply {
+    uint8_t state;
+    uint32_t current_value;
+    uint8_t measurement_status;
+    uint16_t measurement_field;
+    uint8_t reserved[8];
+};
+
+
+void build_and_copy_compact_sensor_status_reply(void *output) {
+    struct compact_sensor_status_reply reply;
+    struct sr08_sensor_status_context *context;
+
+    memset(&reply, 0, sizeof reply);
+    reply.state = sensor_status_record.state;
+    context = sensor_status_record.context;
+    reply.current_value = context->current_value;
+    if (reply.state == SENSOR_RECORD_STATE_MEASURING) {
+        reply.measurement_status = context->measurement_status;
+        reply.measurement_field = (uint16_t)((context->packed_measurement_word << 6) >> 16);
+    } else {
+        reply.measurement_status = 0;
+        reply.measurement_field = 0;
+    }
+    memcpy(output, &reply, sizeof reply);
 }

@@ -1,45 +1,28 @@
-/* Use a supplied timing value or derive display markers from sensor mode. */
-__attribute__((used, naked, section(".text.use_supplied_timing_value_derive_display_at_a960"))) void
-use_supplied_timing_value_derive_display_at_a960(void) {
-    __asm__ volatile("push {r7, lr}\n"
-                     "ldr r0, [pc, #384]\n"
-                     "ldrh r0, [r0, #42]\n"
-                     "cmp r0, #0\n"
-                     "beq .Lmode\n"
-                     "ldr r1, [pc, #884]\n"
-                     "adds r1, #64\n"
-                     "movs r2, #3\n"
-                     "movs r3, #1\n"
-                     "bl convert_quotient_remainder_sequence_ring_s_at_3148\n"
-                     "b .Ldone_markers\n"
-                     ".Lmode: movs r0, #48\n"
-                     "ldr r1, [pc, #820]\n"
-                     "ldrb r1, [r1, r0]\n"
-                     "movs r0, #3\n"
-                     "ands r0, r1\n"
-                     "cmp r0, #3\n"
-                     "bne .Lmode_lt3\n"
-                     "movs r0, #66\n"
-                     "ldr r1, [pc, #852]\n"
-                     "movs r2, #8\n"
-                     "strb r2, [r1, r0]\n"
-                     "b .Lmarker41\n"
-                     ".Lmode_lt3: cmp r0, #2\n"
-                     "bcc .Lmode_le1\n"
-                     ".Lmarker41: movs r0, #65\n"
-                     "ldr r1, [pc, #948]\n"
-                     "movs r2, #8\n"
-                     "strb r2, [r1, r0]\n"
-                     ".Lmarker40: movs r0, #64\n"
-                     "ldr r1, [pc, #940]\n"
-                     "movs r2, #8\n"
-                     "strb r2, [r1, r0]\n"
-                     ".Ldone_markers: movs r0, #69\n"
-                     "ldr r1, [pc, #932]\n"
-                     "movs r2, #16\n"
-                     "strb r2, [r1, r0]\n"
-                     "pop {r7, pc}\n"
-                     ".Lmode_le1: cmp r0, #0\n"
-                     "bne .Lmarker40\n"
-                     "b .Ldone_markers\n");
+/* Show the timing value at device_control_state+0x2a as three digits, or when it is zero mark the
+ * mode digits (8 in display bytes 0x40..0x42 by mode), then set display byte 0x45 to 0x10. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
+#include "firmware/reconstructed/include/sr08_radio_configuration.h"
+#include "firmware/reconstructed/include/sr08_display_value_formatters.h"
+
+/* V204 reads a halfword at device_control_state+0x2a. Its physical meaning
+ * is not established; do not infer seconds or measurement units from the
+ * previous function name. A zero value selects the mode-marker display.
+ * Marker stores are ordered from digit 2 down to digit 0, and do not clear
+ * the other digits. The tag is written on every path.
+ */
+__attribute__((used,section(".text.use_supplied_timing_value_derive_display_at_a960")))
+void use_supplied_timing_value_derive_display_at_a960(void)
+{
+    volatile uint8_t *display = (volatile uint8_t *)&merged_globals_56d0;
+    uint32_t value = *(volatile uint16_t *)((volatile uint8_t *)&device_control_state + 0x2a);
+    if (value != 0) {
+        convert_quotient_remainder_sequence_ring_s_at_3148(value, display + 0x40, 3, 1);
+    } else {
+        uint32_t mode = ((volatile uint8_t *)&merged_globals_5650)[0x30] & 3u;
+        if (mode == 3) display[0x42] = 8;
+        if (mode >= 2) display[0x41] = 8;
+        if (mode != 0) display[0x40] = 8;
+    }
+    display[0x45] = 0x10;
 }

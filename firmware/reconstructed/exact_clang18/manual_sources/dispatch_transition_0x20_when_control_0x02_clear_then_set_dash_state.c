@@ -1,24 +1,22 @@
-/* Conditionally run mode transition flags 0x20, then select dash state. */
-#include <stddef.h>
+/* Run mode transition 0x20 unless display control flag 0x02 is set, then show the dash marker. */
+#include <stdint.h>
 #include "firmware/reconstructed/include/sr08_display_state.h"
+#include "firmware/reconstructed/include/sr08_merged_globals.h"
 #include "firmware/reconstructed/include/sr08_mode_transition.h"
+#include "firmware/reconstructed/include/sr08_shared_context.h"
+
+/* The display output fields are in the merged block at 0x07fd5650. */
+#define display_output ((struct sr08_display_output_state *)(void *)&merged_globals_5650)
 
 enum {
-    CONTROL_FLAG_MASK = 2,
+    CONTROL_FLAG_MASK = 0x02,
     TRANSITION_FLAG_MASK = 0x20,
-    DASH_MARKER = 45,
+    DASH_MARKER = '-',
 };
 
-__attribute__((used, section(".text.dispatch_transition_0x20_when_control_0x02_clear_then_set_dash_state"))) void
-dispatch_transition_0x20_when_control_0x02_clear_then_set_dash_state(void) {
-    register volatile struct sr08_display_control_state *flags __asm__("r0");
-    __asm__ volatile("ldr r0, [pc, #712]" : "=r"(flags));
-    if ((flags->control_flags & CONTROL_FLAG_MASK) == 0)
+void dispatch_transition_0x20_when_control_0x02_clear_then_set_dash_state(void)
+{
+    if ((sr08_shared_context.display_control_flags & CONTROL_FLAG_MASK) == 0)
         update_mode_flags_and_transitions(TRANSITION_FLAG_MASK);
-
-    /* Keep the field offset live across the literal load to preserve V204's register order. */
-    uint32_t digits_offset = offsetof(struct sr08_display_output_state, digits);
-    register volatile struct sr08_display_output_state *state __asm__("r1");
-    __asm__ volatile("ldr r1, [pc, #700]" : "=r"(state) : [offset] "r"(digits_offset));
-    *(volatile uint16_t *)(void *)state->digits = DASH_MARKER;
+    *(uint16_t *)(void *)display_output->digits = DASH_MARKER;
 }

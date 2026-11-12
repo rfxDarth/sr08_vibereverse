@@ -1,0 +1,81 @@
+{
+  "baseline_native.log": [
+    "group 0x07fc7380-0x07fc74b0 (304 bytes)",
+    "MISMATCH: 28 differing bytes",
+    "--- V204"
+  ],
+  "cached_uint32_t_late0_native.log": [
+    "group 0x07fc7380-0x07fc74b0 (304 bytes)",
+    "MISMATCH: 22 differing bytes",
+    "--- V204"
+  ],
+  "cached_uint32_t_late1_native.log": [
+    "group 0x07fc7380-0x07fc74b4 (308 bytes)",
+    "MISMATCH: 177 differing bytes",
+    "--- V204"
+  ],
+  "cached_uint32_t_late2_native.log": [
+    "group 0x07fc7380-0x07fc74b4 (308 bytes)",
+    "MISMATCH: 177 differing bytes",
+    "--- V204"
+  ],
+  "cached_uint8_t_late0_native.log": [
+    "group 0x07fc7380-0x07fc74b0 (304 bytes)",
+    "MISMATCH: 22 differing bytes",
+    "--- V204"
+  ],
+  "cached_uint8_t_late1_native.log": [
+    "group 0x07fc7380-0x07fc74b4 (308 bytes)",
+    "MISMATCH: 177 differing bytes",
+    "--- V204"
+  ],
+  "cached_uint8_t_late2_native.log": [
+    "group 0x07fc7380-0x07fc74b4 (308 bytes)",
+    "MISMATCH: 177 differing bytes",
+    "--- V204"
+  ],
+  "clean_main_lto.log": [
+    "armlink failed for the LTO module (169 units):",
+    "Error: L6291E: Cannot assign Fixed Execution Region ER_07fc87ec Load Address:0x07fc87ec. Load Address must be greater than or equal to next available Load Address:0x07fc87f0.",
+    "Finished: 0 information, 0 warning and 1 error messages."
+  ],
+  "clean_native.log": [
+    "group 0x07fc7380-0x07fc74b0 (304 bytes)",
+    "MISMATCH: 22 differing bytes",
+    "--- V204"
+  ],
+  "conditional_fence_native.log": [
+    "group 0x07fc7380-0x07fc74b4 (308 bytes)",
+    "MISMATCH: 177 differing bytes",
+    "--- V204"
+  ],
+  "fence_opaque_native.log": [
+    "group 0x07fc7380-0x07fc74b4 (308 bytes)",
+    "MISMATCH: 177 differing bytes",
+    "--- V204"
+  ],
+  "installed_native.log": [
+    "group 0x07fc7380-0x07fc74b0 (304 bytes)",
+    "MISMATCH: 22 differing bytes",
+    "--- V204"
+  ],
+  "opaque_value_native.log": [
+    "group 0x07fc7380-0x07fc74b4 (308 bytes)",
+    "MISMATCH: 177 differing bytes",
+    "--- V204"
+  ],
+  "standalone_build.log": [
+    "flat image: /tmp/sr08-alice-measurement-display-standalone.payload.bin (67136 bytes)",
+    "OTA container: /tmp/sr08-alice-measurement-display-standalone.bin (67200 bytes)",
+    "linked 506 sections, 67136 bytes (100.00% of payload; matches canonical hash); 449 source units"
+  ],
+  "typed_sensor_main_lto.log": [
+    "0x07fc7380-0x07fc74a8 update_measurement_display_and_mode_state (296 bytes)",
+    "BYTE_EXACT"
+  ],
+  "typed_sensor_native.log": [
+    "group 0x07fc7380-0x07fc74b0 (304 bytes)",
+    "MISMATCH: 22 differing bytes",
+    "--- V204"
+  ]
+}

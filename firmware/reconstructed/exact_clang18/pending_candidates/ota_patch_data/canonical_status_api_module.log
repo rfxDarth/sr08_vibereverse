@@ -1,0 +1,4 @@
+armlink failed for the LTO module (168 units):
+Error: L6224E: Could not place lto-llvm-a7b456.o(.text.app_flash_write_data) in any Execution region.
+Finished: 0 information, 0 warning and 1 error messages.
+

@@ -1,32 +1,18 @@
-/* Read three callback values between mode transitions and combine fixed-point fields. */
-__attribute__((used, naked, section(".text.read_three_callback_values_between_mode_at_85a0"))) int
-read_three_callback_values_between_mode_at_85a0(void) {
-    __asm__ volatile("push {r3, r4, r5, r6, r7, lr}\n"
-                     "mov r6, r1\n"
-                     "str r0, [sp, #0]\n"
-                     "movs r4, #53\n"
-                     "movs r1, #8\n"
-                     "mov r0, r4\n"
-                     "bl send_device_command_pair\n"
-                     "subs r0, r6, #1\n"
-                     "uxtb r0, r0\n"
-                     "ldr r5, [pc, #36]\n"
-                     "blx r5\n"
-                     "mov r7, r0\n"
-                     "mov r0, r6\n"
-                     "blx r5\n"
-                     "mov r6, r0\n"
-                     "ldr r0, [sp, #0]\n"
-                     "blx r5\n"
-                     "mov r5, r0\n"
-                     "movs r1, #0\n"
-                     "mov r0, r4\n"
-                     "bl send_device_command_pair\n"
-                     "lsrs r0, r7, #4\n"
-                     "lsls r1, r6, #4\n"
-                     "adds r0, r1, r0\n"
-                     "lsls r1, r5, #12\n"
-                     "adds r0, r0, r1\n"
-                     "sxth r0, r0\n"
-                     "pop {r3, r4, r5, r6, r7, pc}\n");
+/* Read a 20-bit sample from three I2C registers (low nibble register
+ * low_index - 1, then low_index and high_index) between sensor-mode commands
+ * 0x35 = 8 and 0x35 = 0, and return its signed top 16 bits.
+ */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_callback_samples.h"
+#include "firmware/reconstructed/include/sr08_radio_commands.h"
+#include "firmware/reconstructed/include/sr08_radio_configuration.h"
+
+int16_t read_three_callback_values_between_mode_at_85a0(uint8_t high_index, uint8_t low_index)
+{
+    send_device_command_pair(0x35, 8);
+    uint8_t low = ensure_radio_profile_then_exchange_word((uint8_t)(low_index - 1));
+    uint8_t middle = ensure_radio_profile_then_exchange_word(low_index);
+    uint8_t high = ensure_radio_profile_then_exchange_word(high_index);
+    send_device_command_pair(0x35, 0);
+    return (int16_t)((low >> 4) + (middle << 4) + (high << 12));
 }

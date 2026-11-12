@@ -1,43 +1,36 @@
-/* Serialize the current measurement record, with mode-specific extra bytes. */
-__attribute__((used, naked, section(".text.serialize_measurement_record_by_mode"))) void
-serialize_measurement_record_by_mode(void) {
-    __asm__ volatile("push {r0, r1, r2, r3, r4, r5, r6, lr}\n"
-                     "movs r2, #0\n"
-                     "ldr r1, [pc, #72]\n"
-                     "str r2, [sp, #0]\n"
-                     "str r2, [sp, #8]\n"
-                     "str r2, [sp, #12]\n"
-                     "ldr r1, [r1, #28]\n"
-                     "mov r5, sp\n"
-                     "ldrb r3, [r1, #2]\n"
-                     "strb r3, [r5, #0]\n"
-                     "ldr r4, [r1, #4]\n"
-                     "str r4, [sp, #4]\n"
-                     "movs r4, #25\n"
-                     "lsls r4, r4, #7\n"
-                     "adds r4, r1, r4\n"
-                     "ldrb r6, [r4, #21]\n"
-                     "strb r6, [r5, #10]\n"
-                     "movs r5, #101\n"
-                     "lsls r5, r5, #5\n"
-                     "adds r5, r1, r5\n"
-                     "ldrb r6, [r5, #0]\n"
-                     "mov r5, sp\n"
-                     "strb r6, [r5, #11]\n"
-                     "cmp r3, #3\n"
-                     "beq .Lserialize_mode_extras\n"
-                     "cmp r3, #4\n"
-                     "beq .Lserialize_mode_extras\n"
-                     "mov r1, r5\n"
-                     "strb r2, [r5, #8]\n"
-                     ".Lcopy_serialized_record: strb r2, [r1, #9]\n"
-                     "mov r5, sp\n"
-                     "ldmia r5!, {r1, r2, r3, r4}\n"
-                     "stmia r0!, {r1, r2, r3, r4}\n"
-                     "pop {r0, r1, r2, r3, r4, r5, r6, pc}\n"
-                     ".Lserialize_mode_extras: ldrb r2, [r1, #8]\n"
-                     "strb r2, [r5, #8]\n"
-                     "mov r1, r5\n"
-                     "ldrb r2, [r4, #8]\n"
-                     "b .Lcopy_serialized_record\n");
+/* Serialize the active measurement into a 16-byte record: mode, value, and
+ * two status bytes. Modes three and four also carry two extra bytes. */
+#include <stddef.h>
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_sensor_frame_batch_state.h"
+#include "firmware/reconstructed/include/sr08_static_assert.h"
+
+struct sr08_serialized_measurement {
+    uint8_t mode;
+    uint8_t reserved_01_to_03[3];
+    uint32_t value;
+    uint8_t extra[2];
+    uint8_t status[2];
+    uint32_t reserved_0c;
+};
+
+SR08_STATIC_ASSERT(sizeof(struct sr08_serialized_measurement) == 16, "serialized measurement is 16 bytes");
+
+void serialize_measurement_record_by_mode(struct sr08_serialized_measurement *output) {
+    struct sr08_sensor_frame_batch_state *state = &sensor_frame_batch_state;
+    struct sr08_serialized_measurement record = {0};
+    struct sr08_measurement_context *context = state->context;
+    uint8_t mode = context->mode;
+    record.mode = mode;
+    record.value = context->value;
+    record.status[0] = context->status_byte_c95;
+    record.status[1] = context->status_byte_ca0;
+    if (mode == 3 || mode == 4) {
+        record.extra[0] = context->extra_byte_008;
+        record.extra[1] = context->extra_byte_c88;
+    } else {
+        record.extra[0] = 0;
+        record.extra[1] = 0;
+    }
+    *output = record;
 }

@@ -1,6 +1,8 @@
 #ifndef SR08_REGISTRATION_SLOT_LITERALS_H
 #define SR08_REGISTRATION_SLOT_LITERALS_H
 
+#include "firmware/reconstructed/include/sr08_static_assert.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -16,13 +18,13 @@ union sr08_registration_slot_literal_view {
     struct sr08_registration_slot_literal_fields view;
 } __attribute__((packed));
 
-_Static_assert(offsetof(struct sr08_registration_slot_literal_fields, registration_slot_values) == 2,
+SR08_STATIC_ASSERT(offsetof(struct sr08_registration_slot_literal_fields, registration_slot_values) == 2,
                "registration slot table pointer must remain at offset two");
-_Static_assert(offsetof(struct sr08_registration_slot_literal_fields, registration_slot_sentinel) == 6,
+SR08_STATIC_ASSERT(offsetof(struct sr08_registration_slot_literal_fields, registration_slot_sentinel) == 6,
                "registration slot sentinel must remain at offset six");
-_Static_assert(offsetof(struct sr08_registration_slot_literal_fields, registration_event_id_base) == 10,
+SR08_STATIC_ASSERT(offsetof(struct sr08_registration_slot_literal_fields, registration_event_id_base) == 10,
                "registration event ID base must remain at offset ten");
-_Static_assert(sizeof(union sr08_registration_slot_literal_view) == 14,
+SR08_STATIC_ASSERT(sizeof(union sr08_registration_slot_literal_view) == 14,
                "registration slot literal view must remain fourteen bytes");
 
 #endif

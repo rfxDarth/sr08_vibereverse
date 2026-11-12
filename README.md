@@ -21,5 +21,9 @@ python3 firmware/reconstructed/exact_clang18/build_v204.py \
   --container-output /tmp/V204.bin
 ```
 
+The `firmware/mvp/` custom-firmware path is abandoned: one early revision
+flashed and ran, but later iterations bricked the ring. See
+[`firmware/mvp/README.md`](firmware/mvp/README.md) before using anything there.
+
 The source tree also preserves the original analysis exports and historical
 reconstruction notes for traceability; those are not inputs to this build.

@@ -1,0 +1,179 @@
+/* PARKED 2026-11-15 (Jeff): full-module LTO probe fails on size: the next unit (0x37d0) links 16 bytes late.
+ * The plain compile is 273 instructions vs V204's ~267. Main structural differences:
+ *  - LLVM merges the mode tests into a switch (0x2000 first); V204 tests mode 2, then shifts
+ *    'ready' left by one in the else block and spills it (sp8) across the calibration calls
+ *    before comparing it with 2;
+ *  - V204 loads sensor_field_state+0x61 before +0x60;
+ *  - the entry test uses bne/b to the shared 'display(1)' tail.
+ * The decoded behaviour below is believed complete. */
+/* Update the measured vital values shown on the display. When the active sensor mode has a fresh
+ * reading, take the heart rate (and in mode 2 the SpO2 value), smooth the heart rate toward the
+ * previous one over 400 s (or, in display state 2, raise it to the estimate from the queued time
+ * events), derive the SpO2 (at least 92), blood-pressure and hour-based values, and show them.
+ * Mode 0x2000 first refreshes the calibration and stores its timing differences. Without a fresh
+ * reading, mark the reading stale after 5 s and leave the mode after 11 s. */
+#include <stdint.h>
+#include "firmware/reconstructed/include/sr08_clock_literal_pool.h"
+#include "firmware/reconstructed/include/sr08_cycle_control_state.h"
+#include "firmware/reconstructed/include/sr08_mode_transition.h"
+#include "firmware/reconstructed/include/sr08_radio_configuration.h"
+#include "firmware/reconstructed/include/sr08_ring_buffer.h"
+#include "firmware/reconstructed/include/sr08_sensor_field_state.h"
+#include "firmware/reconstructed/include/sr08_time_event_queue.h"
+
+extern uint8_t sr08_shared_context[];
+extern struct sr08_clock_timekeeping_state clock_timekeeping_state;
+extern uint32_t derive_active_sensor_range_flags_notify_at_37d0(void);
+extern void clear_cached_sensor_fields_refresh_calibration_at_8f48(uint32_t mode, uint8_t calibration_setting);
+extern void wait_shared_timer_delta_exceed_requested_at_4458(uint32_t delay);
+extern void combine_two_six_byte_records_into_words(uint32_t *output);
+extern void synchronize_callback_values_and_notify(void);
+extern uint32_t get_ble_base_time_ms(void);
+extern void copy_ring_buffer_entry_if_index_available(struct sr08_ring_buffer *queue, uint32_t index, void *destination);
+extern void switch_display_state_and_run_hooks(uint32_t state);
+extern void update_measurement_display_and_mode_state(uint32_t stale);
+
+#define field_bytes ((uint8_t *)(void *)&sensor_field_state)
+#define radio_state ((uint8_t *)&device_control_state)
+#define radio_word(offset) (*(int32_t *)(void *)(radio_state + (offset)))
+#define radio_half(offset) (*(uint16_t *)(void *)(radio_state + (offset)))
+#define context_half(offset) (*(uint16_t *)(void *)(sr08_shared_context + (offset)))
+#define context_word(offset) (*(uint32_t *)(void *)(sr08_shared_context + (offset)))
+
+enum {
+    MODE_HEART_RATE = 1,
+    MODE_SPO2 = 2,
+    MODE_CALIBRATION = 0x2000,
+    SMOOTHING_MS = 400000,
+    TIME_WRAP = 0x5000000,
+};
+
+void process_sensor_mode_and_update_display(void)
+{
+    uint8_t spo2;
+    int rate;
+
+    if (!derive_active_sensor_range_flags_notify_at_37d0())
+        goto stale;
+    uint32_t mode = cycle_control_state.active_control_mode;
+    int ready = mode == MODE_HEART_RATE && field_bytes[0x40] == 1;
+    uint8_t value = field_bytes[0x44] > 1 ? field_bytes[0x4c] : 0;
+    if (!ready)
+        value = 0;
+    if (mode == MODE_SPO2) {
+        if (field_bytes[0x41] != 1)
+            goto no_reading;
+        if (field_bytes[0x58] >= 3) {
+            value = field_bytes[0x61];
+            spo2 = field_bytes[0x60];
+        } else {
+            spo2 = 0;
+        }
+    } else {
+        int state = ready * 2;
+        if (mode == MODE_CALIBRATION) {
+            uint32_t words[4];
+            clear_cached_sensor_fields_refresh_calibration_at_8f48(MODE_CALIBRATION, 7);
+            wait_shared_timer_delta_exceed_requested_at_4458(100);
+            combine_two_six_byte_records_into_words(words);
+            uint32_t base = words[0];
+            uint32_t span = (words[3] - base) >> 4;
+            uint32_t second = words[1];
+            uint32_t third = words[2];
+            synchronize_callback_values_and_notify();
+            context_half(0xca) = span;
+            context_half(0xc8) = (third - base) >> 4;
+            context_half(0xc6) = (second - base) >> 3;
+            if (radio_half(0x3e) != 0)
+                context_half(0xcc) = radio_half(0x3e);
+        }
+        if (state != 2)
+            goto no_reading;
+        spo2 = 0;
+    }
+    sr08_shared_context[10] = 1;
+    radio_word(0x60) = clock_timekeeping_state.current_timestamp;
+    if (value == 0)
+        goto show;
+    {
+        uint32_t since = radio_word(0x58);
+        rate = value;
+        if (radio_word(0x64) == 0)
+            radio_word(0x64) = rate;
+        uint32_t now = get_ble_base_time_ms();
+        if (now < since)
+            now += TIME_WRAP;
+        if (since != 0) {
+            if (radio_state[3] == 2) {
+                struct sr08_ring_buffer *queue = (struct sr08_ring_buffer *)(void *)&time_event_queue_state;
+                uint32_t queued = (queue->head - queue->tail) & (queue->capacity - 1);
+                uint32_t sum = 0;
+                for (uint32_t index = 1; index < queued; index++) {
+                    uint8_t event;
+                    copy_ring_buffer_entry_if_index_available(queue, index, &event);
+                    sum += event;
+                }
+                uint16_t total = sum;
+                int estimate;
+                if (total <= 129)
+                    estimate = total * 10 / 65 + 80;
+                else if (total <= 159)
+                    estimate = total * 2 - 160;
+                else
+                    estimate = total;
+                if (estimate >= rate)
+                    rate = estimate;
+                if (rate >= 185)
+                    rate = 185;
+            } else {
+                uint32_t elapsed = now - since;
+                if (elapsed < SMOOTHING_MS) {
+                    int previous = radio_word(0x64);
+                    if (previous > rate) {
+                        previous -= elapsed * (previous - rate) / SMOOTHING_MS;
+                        rate = previous - get_ble_base_time_ms() % 3;
+                    } else {
+                        previous += elapsed * (rate - previous) / SMOOTHING_MS;
+                        rate = previous + get_ble_base_time_ms() % 3;
+                    }
+                }
+            }
+        }
+    }
+    radio_half(0x2a) = rate;
+    radio_word(0x64) = rate;
+    sr08_shared_context[8] = rate;
+    if (spo2 <= 92)
+        spo2 = 92;
+    uint32_t jitter = get_ble_base_time_ms();
+    radio_state[11] = spo2;
+    uint8_t offset = radio_half(0x2a) >= 80 ? radio_half(0x2a) - 80 : 80 - radio_half(0x2a);
+    radio_state[9] = offset + 105;
+    radio_state[10] = jitter % 5 + offset + 63;
+    int hours = (int)clock_timekeeping_state.calendar_hour - 7;
+    if (hours < 0)
+        hours = 7 - clock_timekeeping_state.calendar_hour;
+    int8_t score = 100 - hours / 2;
+    if (score <= 0)
+        score = 0;
+    if (score >= 95)
+        score = 95;
+    radio_state[12] = 100 - score;
+show:
+    update_measurement_display_and_mode_state(0);
+    return;
+no_reading:
+    {
+        uint32_t idle = clock_timekeeping_state.current_timestamp - radio_word(0x60);
+        if (idle >= 5)
+            sr08_shared_context[10] = 2;
+        uint32_t flags = context_word(20);
+        if (!(flags & 0x7fc8) && idle >= 11) {
+            if (flags & 0x33)
+                switch_display_state_and_run_hooks(0);
+            update_mode_flags_and_transitions(0xf0000);
+        }
+    }
+stale:
+    update_measurement_display_and_mode_state(1);
+}

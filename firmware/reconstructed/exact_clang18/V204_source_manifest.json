@@ -1,5 +1,21 @@
 {
   "format": 2,
+  "function_aliases": {
+    "advance_buffer_cursor_and_publish_record": 133956860,
+    "decode_packet_into_output_record": 133956718,
+    "dispatch_radio_and_sensor_state_events": 133992708,
+    "dispatch_radio_state_action": 133990072,
+    "dispatch_sensor_and_display_events": 133965252,
+    "encode_record_with_schema": 133959192,
+    "erase_flash_range": 133971600,
+    "initialize_sensor_measurement_state": 133994708,
+    "load_and_update_persistent_measurement_state": 133974184,
+    "process_indexed_payload_state": 133960184,
+    "process_measurement_records_and_sensor_state": 134001072,
+    "process_motion_axes_and_activity_state": 134007400,
+    "process_sensor_frame_and_update_state": 134012264,
+    "run_sensor_measurement_state_cycle": 133995936
+  },
   "image_base": 133955584,
   "image_size": 67136,
   "rom_symbols": {
@@ -136,38 +152,38 @@
     {
       "address": 133955964,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/nonreturning_spin_loop_at_017c.c",
-      "symbol": "nonreturning_spin_loop_at_017c"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/SVC_Handler.c",
+      "symbol": "SVC_Handler"
     },
     {
       "address": 133955966,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/nonreturning_spin_loop_at_017e.c",
-      "symbol": "nonreturning_spin_loop_at_017e"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/PendSV_Handler.c",
+      "symbol": "PendSV_Handler"
     },
     {
       "address": 133955968,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/nonreturning_spin_loop_at_0180.c",
-      "symbol": "nonreturning_spin_loop_at_0180"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/SysTick_Handler.c",
+      "symbol": "SysTick_Handler"
     },
     {
       "address": 133955970,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/nonreturning_spin_loop_at_0182.c",
-      "symbol": "nonreturning_spin_loop_at_0182"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/Default_Handler.c",
+      "symbol": "Default_Handler"
     },
     {
       "address": 133956698,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/read_eight_bytes_from_rom_helper.c",
-      "symbol": "read_eight_bytes_from_rom_helper"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/PATCHED_llc_util_gen_skdx.c",
+      "symbol": "PATCHED_llc_util_gen_skdx"
     },
     {
       "address": 133961414,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/return_without_action_at_16c6.c",
-      "symbol": "return_without_action_at_16c6"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/patch_global_vars_init.c",
+      "symbol": "patch_global_vars_init"
     },
     {
       "address": 133961972,
@@ -190,38 +206,38 @@
     {
       "address": 133962972,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/update_selected_hot_bit_10.c",
-      "symbol": "update_selected_hot_bit_10"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/GPIO0_Handler.c",
+      "symbol": "GPIO0_Handler"
     },
     {
       "address": 133962982,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/update_selected_hot_bit_11.c",
-      "symbol": "update_selected_hot_bit_11"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/GPIO1_Handler.c",
+      "symbol": "GPIO1_Handler"
     },
     {
       "address": 133962992,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/update_selected_hot_bit_12.c",
-      "symbol": "update_selected_hot_bit_12"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/GPIO2_Handler.c",
+      "symbol": "GPIO2_Handler"
     },
     {
       "address": 133963002,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/update_selected_hot_bit_13.c",
-      "symbol": "update_selected_hot_bit_13"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/GPIO3_Handler.c",
+      "symbol": "GPIO3_Handler"
     },
     {
       "address": 133963012,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/update_selected_hot_bit_14.c",
-      "symbol": "update_selected_hot_bit_14"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/GPIO4_Handler.c",
+      "symbol": "GPIO4_Handler"
     },
     {
       "address": 133963340,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/return_without_action_at_1e4c.c",
-      "symbol": "return_without_action_at_1e4c"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/RADIOCNTL_Handler.c",
+      "symbol": "RADIOCNTL_Handler"
     },
     {
       "address": 133963688,
@@ -268,8 +284,8 @@
     {
       "address": 133967912,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/return_constant_one_at_3028.c",
-      "symbol": "return_constant_one_at_3028"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/app_custs1_process_handler.c",
+      "symbol": "app_custs1_process_handler"
     },
     {
       "address": 133968372,
@@ -280,8 +296,8 @@
     {
       "address": 133971600,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/erase_flash_range.c",
-      "symbol": "erase_flash_range"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/erase_flash_range_status.c",
+      "symbol": "erase_flash_range_status"
     },
     {
       "address": 133977748,
@@ -297,15 +313,15 @@
     },
     {
       "address": 133978732,
-      "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/lookup_measurement_value_by_index.c",
-      "symbol": "lookup_measurement_value_by_index"
+      "kind": "c",
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/custs1_profile.c",
+      "symbol": "custs1_get_att_handle"
     },
     {
       "address": 133978760,
-      "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/match_measurement_index_and_write_offset.c",
-      "symbol": "match_measurement_index_and_write_offset"
+      "kind": "c",
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/custs1_profile.c",
+      "symbol": "custs1_get_att_idx"
     },
     {
       "address": 133979728,
@@ -358,80 +374,80 @@
     {
       "address": 133981500,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/return_constant_0_at_653c.c",
-      "symbol": "return_constant_0_at_653c"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/gapc_le_pkt_size_ind_handler.c",
+      "symbol": "gapc_le_pkt_size_ind_handler"
     },
     {
       "address": 133981504,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/create_empty_measurement_record.c",
-      "symbol": "create_empty_measurement_record"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/gapc_param_update_req_ind_handler.c",
+      "symbol": "gapc_param_update_req_ind_handler"
     },
     {
       "address": 133981536,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/return_constant_0_at_6560.c",
-      "symbol": "return_constant_0_at_6560"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/gapc_peer_features_ind_handler.c",
+      "symbol": "gapc_peer_features_ind_handler"
     },
     {
       "address": 133981540,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/return_constant_0_at_6564.c",
-      "symbol": "return_constant_0_at_6564"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/gapc_security_ind_handler.c",
+      "symbol": "gapc_security_ind_handler"
     },
     {
       "address": 133981640,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/return_constant_0_at_65c8.c",
-      "symbol": "return_constant_0_at_65c8"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/gapm_addr_solved_ind_handler.c",
+      "symbol": "gapm_addr_solved_ind_handler"
     },
     {
       "address": 133981644,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/return_constant_0_at_65cc.c",
-      "symbol": "return_constant_0_at_65cc"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/gapm_adv_report_ind_handler.c",
+      "symbol": "gapm_adv_report_ind_handler"
     },
     {
       "address": 133981944,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/initialize_measurement_for_enabled_slot.c",
-      "symbol": "initialize_measurement_for_enabled_slot"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/gapm_profile_added_ind_handler.c",
+      "symbol": "gapm_profile_added_ind_handler"
     },
     {
       "address": 133981980,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/return_constant_0_at_671c.c",
-      "symbol": "return_constant_0_at_671c"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/gapm_ral_addr_ind_handler.c",
+      "symbol": "gapm_ral_addr_ind_handler"
     },
     {
       "address": 133981984,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/return_constant_0_at_6720.c",
-      "symbol": "return_constant_0_at_6720"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/gapm_ral_size_ind_handler.c",
+      "symbol": "gapm_ral_size_ind_handler"
     },
     {
       "address": 133982192,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/dispatch_measurement_record_type.c",
-      "symbol": "dispatch_measurement_record_type"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/custs1_gattc_cmp_evt_handler.c",
+      "symbol": "custs1_gattc_cmp_evt_handler"
     },
     {
       "address": 133983216,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/return_constant_0_at_6bf0.c",
-      "symbol": "return_constant_0_at_6bf0"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/gattc_svc_changed_cfg_ind_handler.c",
+      "symbol": "gattc_svc_changed_cfg_ind_handler"
     },
     {
       "address": 133985572,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/return_without_action_at_7524.c",
-      "symbol": "return_without_action_at_7524"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/hogpd_create.c",
+      "symbol": "hogpd_create"
     },
     {
       "address": 133985574,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/release_and_clear_object_handle.c",
-      "symbol": "release_and_clear_object_handle"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/hogpd_destroy.c",
+      "symbol": "hogpd_destroy"
     },
     {
       "address": 133989180,
@@ -472,20 +488,20 @@
     {
       "address": 133998492,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/return_constant_1_at_a79c.c",
-      "symbol": "return_constant_1_at_a79c"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/nvds_del_func.c",
+      "symbol": "nvds_del_func"
     },
     {
       "address": 133998660,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/return_constant_0_at_a844.c",
-      "symbol": "return_constant_0_at_a844"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/nvds_init_func.c",
+      "symbol": "nvds_init_func"
     },
     {
       "address": 133998664,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/return_constant_1_at_a848.c",
-      "symbol": "return_constant_1_at_a848"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/nvds_put_func.c",
+      "symbol": "nvds_put_func"
     },
     {
       "address": 134000504,
@@ -496,38 +512,38 @@
     {
       "address": 134002728,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/return_without_action_at_b828.c",
-      "symbol": "return_without_action_at_b828"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/rf_force_agc_enable.c",
+      "symbol": "rf_force_agc_enable"
     },
     {
       "address": 134002896,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/return_constant_0_at_b8d0.c",
-      "symbol": "return_constant_0_at_b8d0"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/rf_reg_rd.c",
+      "symbol": "rf_reg_rd"
     },
     {
       "address": 134002900,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/return_without_action_at_b8d4.c",
-      "symbol": "return_without_action_at_b8d4"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/rf_reg_wr.c",
+      "symbol": "rf_reg_wr"
     },
     {
       "address": 134003040,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/return_without_action_at_b960.c",
-      "symbol": "return_without_action_at_b960"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/rf_reset.c",
+      "symbol": "rf_reset"
     },
     {
       "address": 134003042,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/decode_halved_offset_minus_112.c",
-      "symbol": "decode_halved_offset_minus_112"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/rf_rssi_convert.c",
+      "symbol": "rf_rssi_convert"
     },
     {
       "address": 134003068,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/return_constant_0_at_b97c.c",
-      "symbol": "return_constant_0_at_b97c"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/rf_txpwr_dbm_get.c",
+      "symbol": "rf_txpwr_dbm_get"
     },
     {
       "address": 134003324,
@@ -538,8 +554,8 @@
     {
       "address": 134003408,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/map_record_flag_to_status_mask.c",
-      "symbol": "map_record_flag_to_status_mask"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/spi_flash_is_busy.c",
+      "symbol": "spi_flash_is_busy"
     },
     {
       "address": 134003426,
@@ -550,8 +566,8 @@
     {
       "address": 134003452,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/initialize_output_state_for_mode_five_hundred.c",
-      "symbol": "initialize_output_state_for_mode_five_hundred"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/spi_flash_read_status_reg.c",
+      "symbol": "spi_flash_read_status_reg"
     },
     {
       "address": 134003752,
@@ -568,8 +584,8 @@
     {
       "address": 134003770,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/return_constant_0_at_bc3a.c",
-      "symbol": "return_constant_0_at_bc3a"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/suotar_gpio_map_ind_handler.c",
+      "symbol": "suotar_gpio_map_ind_handler"
     },
     {
       "address": 134005908,
@@ -580,14 +596,14 @@
     {
       "address": 134005932,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/return_without_action_at_c4ac.c",
-      "symbol": "return_without_action_at_c4ac"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/timer_canceled_handler.c",
+      "symbol": "timer_canceled_handler"
     },
     {
       "address": 134005934,
       "kind": "direct",
-      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/return_without_action_at_c4ae.c",
-      "symbol": "return_without_action_at_c4ae"
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/timer_modified_handler.c",
+      "symbol": "timer_modified_handler"
     },
     {
       "address": 134009018,
@@ -616,26 +632,26 @@
     {
       "address": 133963144,
       "kind": "literal_scan_function",
-      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/report_hardfault_context_and_halt.c",
-      "symbol": "report_hardfault_context_and_halt"
+      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/HardFault_HandlerC.c",
+      "symbol": "HardFault_HandlerC"
     },
     {
       "address": 133963256,
       "kind": "literal_scan_function",
-      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/handle_nmi_and_report_context.c",
-      "symbol": "handle_nmi_and_report_context"
+      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/NMI_HandlerC.c",
+      "symbol": "NMI_HandlerC"
     },
     {
       "address": 133963344,
       "kind": "literal_scan_function",
-      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/apply_device_state_radio_profile.c",
-      "symbol": "apply_device_state_radio_profile"
+      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/i2c_eeprom_initialize.c",
+      "symbol": "i2c_eeprom_initialize"
     },
     {
       "address": 133963496,
       "kind": "literal_scan_function",
-      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/wait_for_any_status_bit_or_elapsed_200.c",
-      "symbol": "wait_for_any_status_bit_or_elapsed_200"
+      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/wait_i2c_rx_fifo_or_timeout.c",
+      "symbol": "wait_i2c_rx_fifo_or_timeout"
     },
     {
       "address": 133963552,
@@ -652,20 +668,20 @@
     {
       "address": 133972240,
       "kind": "literal_scan_function",
-      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/submit_display_code_status_record.c",
-      "symbol": "submit_display_code_status_record"
+      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/app_suotar_create_db.c",
+      "symbol": "app_suotar_create_db"
     },
     {
       "address": 133977708,
       "kind": "literal_scan_function",
-      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/initialize_peripheral_control_state.c",
-      "symbol": "initialize_peripheral_control_state"
+      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/calibrate_rcx20.c",
+      "symbol": "calibrate_rcx20"
     },
     {
       "address": 133985032,
       "kind": "literal_scan_function",
-      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/read_sensor_conversion_result.c",
-      "symbol": "read_sensor_conversion_result"
+      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/get_rc16m_count.c",
+      "symbol": "get_rc16m_count"
     },
     {
       "address": 133988184,
@@ -700,14 +716,14 @@
     {
       "address": 133994544,
       "kind": "literal_scan_function",
-      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/clear_shared_state_and_mmio_flag.c",
-      "symbol": "clear_shared_state_and_mmio_flag"
+      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/lld_sleep_init_func.c",
+      "symbol": "lld_sleep_init_func"
     },
     {
       "address": 134000480,
       "kind": "literal_scan_function",
-      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/set_control_bit_15_clear_bits_0_1.c",
-      "symbol": "set_control_bit_15_clear_bits_0_1"
+      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/platform_reset_func.c",
+      "symbol": "platform_reset_func"
     },
     {
       "address": 134002980,
@@ -718,38 +734,38 @@
     {
       "address": 134003052,
       "kind": "literal_scan_function",
-      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/set_shared_flags_0x07.c",
-      "symbol": "set_shared_flags_0x07"
+      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/rf_sleep.c",
+      "symbol": "rf_sleep"
     },
     {
       "address": 134003564,
       "kind": "literal_scan_function",
-      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/set_ring_s_output_mode_and_enable.c",
-      "symbol": "set_ring_s_output_mode_and_enable"
+      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/spi_set_bitmode.c",
+      "symbol": "spi_set_bitmode"
     },
     {
       "address": 134005708,
       "kind": "literal_scan_function",
-      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/publish_transfer_progress.c",
-      "symbol": "publish_transfer_progress"
+      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/suotar_send_mem_info_update_req.c",
+      "symbol": "suotar_send_mem_info_update_req"
     },
     {
       "address": 134005744,
       "kind": "literal_scan_function",
-      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/publish_transfer_status_code.c",
-      "symbol": "publish_transfer_status_code"
+      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/suotar_send_status_update_req.c",
+      "symbol": "suotar_send_status_update_req"
     },
     {
       "address": 134006056,
       "kind": "literal_scan_function",
-      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/clear_shared_control_bit_zero.c",
-      "symbol": "clear_shared_control_bit_zero"
+      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/uart_rx_isr.c",
+      "symbol": "uart_rx_isr"
     },
     {
       "address": 134017308,
       "kind": "literal_scan_function",
-      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/initialize_control_registers_and_enable_irqs.c",
-      "symbol": "initialize_control_registers_and_enable_irqs"
+      "source": "firmware/reconstructed/exact_clang18/literal_scan_functions/SystemInit.c",
+      "symbol": "SystemInit"
     },
     {
       "address": 133999180,
@@ -760,8 +776,8 @@
     {
       "address": 133968804,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/refresh_cache_then_clear_indexed_word.c",
-      "symbol": "refresh_cache_then_clear_indexed_word"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/app_easy_security_encrypt_cfm.c",
+      "symbol": "app_easy_security_encrypt_cfm"
     },
     {
       "address": 133977244,
@@ -778,8 +794,8 @@
     {
       "address": 133994624,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/call_divider_for_indexed_record.c",
-      "symbol": "call_divider_for_indexed_record"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/lld_sleep_us_2_lpcycles_rcx_func.c",
+      "symbol": "lld_sleep_us_2_lpcycles_rcx_func"
     },
     {
       "address": 134008632,
@@ -789,9 +805,9 @@
     },
     {
       "address": 133978120,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/populate_measurement_record_if_empty.c",
-      "symbol": "populate_measurement_record_if_empty"
+      "kind": "c",
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/custs1_profile.c",
+      "symbol": "custs1_att_info_rsp_handler"
     },
     {
       "address": 133963520,
@@ -808,8 +824,8 @@
     {
       "address": 133963988,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/register_thumb_handler_and_store_slot_index.c",
-      "symbol": "register_thumb_handler_and_store_slot_index"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/adv_data_update_timer_cb.c",
+      "symbol": "adv_data_update_timer_cb"
     },
     {
       "address": 133970752,
@@ -826,8 +842,8 @@
     {
       "address": 133967860,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/submit_display_code_record_for_fd.c",
-      "symbol": "submit_display_code_record_for_fd"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/app_custs1_create_db.c",
+      "symbol": "app_custs1_create_db"
     },
     {
       "address": 134011040,
@@ -946,14 +962,14 @@
     {
       "address": 133973056,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/request_sensor_sample_then_scale_result.c",
-      "symbol": "request_sensor_sample_then_scale_result"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/get_ble_base_time_ms.c",
+      "symbol": "get_ble_base_time_ms"
     },
     {
       "address": 133968832,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/clear_cached_value_and_publish_sensor_request.c",
-      "symbol": "clear_cached_value_and_publish_sensor_request"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/app_easy_security_reject_encryption.c",
+      "symbol": "app_easy_security_reject_encryption"
     },
     {
       "address": 133988376,
@@ -988,14 +1004,14 @@
     {
       "address": 133963728,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/wait_for_state_flag_bit_one_to_clear_and_read_result.c",
-      "symbol": "wait_for_state_flag_bit_one_to_clear_and_read_result"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/adc_get_sample.c",
+      "symbol": "adc_get_sample"
     },
     {
       "address": 133981248,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/store_byte_in_table_by_high_index.c",
-      "symbol": "store_byte_in_table_by_high_index"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/gapc_encrypt_ind_handler.c",
+      "symbol": "gapc_encrypt_ind_handler"
     },
     {
       "address": 134016732,
@@ -1060,14 +1076,14 @@
     {
       "address": 133982076,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/build_measurement_message_from_service_record.c",
-      "symbol": "build_measurement_message_from_service_record"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/hogpd_gattc_att_info_req_ind_handler.c",
+      "symbol": "hogpd_gattc_att_info_req_ind_handler"
     },
     {
       "address": 134003352,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/transfer_flash_controller_word.c",
-      "symbol": "transfer_flash_controller_word"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/spi_access.c",
+      "symbol": "spi_access"
     },
     {
       "address": 133988244,
@@ -1077,15 +1093,15 @@
     },
     {
       "address": 133978040,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/find_measurement_record_by_id.c",
-      "symbol": "find_measurement_record_by_id"
+      "kind": "c",
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/custs1_profile.c",
+      "symbol": "custs1_att_get_value"
     },
     {
       "address": 133981888,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/send_type_9_message_if_task_state_zero.c",
-      "symbol": "send_type_9_message_if_task_state_zero"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/gapm_device_ready_ind_handler.c",
+      "symbol": "gapm_device_ready_ind_handler"
     },
     {
       "address": 133990924,
@@ -1102,8 +1118,8 @@
     {
       "address": 134005016,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/set_attribute_value_and_halt_on_failure.c",
-      "symbol": "set_attribute_value_and_halt_on_failure"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/suotar_mem_info_update_req_handler.c",
+      "symbol": "suotar_mem_info_update_req_handler"
     },
     {
       "address": 133970456,
@@ -1114,8 +1130,8 @@
     {
       "address": 133968376,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/publish_per_slot_state_byte.c",
-      "symbol": "publish_per_slot_state_byte"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/app_easy_gap_confirm.c",
+      "symbol": "app_easy_gap_confirm"
     },
     {
       "address": 133977684,
@@ -1138,14 +1154,14 @@
     {
       "address": 133977220,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/fill_buffer_with_32_random_bytes.c",
-      "symbol": "fill_buffer_with_32_random_bytes"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/ba431_get_rand_func.c",
+      "symbol": "ba431_get_rand_func"
     },
     {
       "address": 133955988,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/c_delay_loop_v204_timing_padding_at_0194.c",
-      "symbol": "c_delay_loop_v204_timing_padding_at_0194"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/arch_asm_delay_us.c",
+      "symbol": "arch_asm_delay_us"
     },
     {
       "address": 133998828,
@@ -1192,8 +1208,8 @@
     {
       "address": 133963956,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/c_countdown_loop_v204_timing_padding_at_20b4.c",
-      "symbol": "c_countdown_loop_v204_timing_padding_at_20b4"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/adc_usDelay.c",
+      "symbol": "adc_usDelay"
     },
     {
       "address": 133962558,
@@ -1216,26 +1232,26 @@
     {
       "address": 133967820,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/copy_scaled_payload_slice_when_mask_hits.c",
-      "symbol": "copy_scaled_payload_slice_when_mask_hits"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/peek_ring_buffer_entry.c",
+      "symbol": "peek_ring_buffer_entry"
     },
     {
       "address": 133969252,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/dispatch_callback_table_profile_14.c",
-      "symbol": "dispatch_callback_table_profile_14"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/app_gap_process_handler.c",
+      "symbol": "app_gap_process_handler"
     },
     {
       "address": 133971520,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/dispatch_callback_table_profile_7.c",
-      "symbol": "dispatch_callback_table_profile_7"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/app_sec_process_handler.c",
+      "symbol": "app_sec_process_handler"
     },
     {
       "address": 133972292,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/dispatch_callback_table_profile_4.c",
-      "symbol": "dispatch_callback_table_profile_4"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/app_suotar_process_handler.c",
+      "symbol": "app_suotar_process_handler"
     },
     {
       "address": 133971552,
@@ -1246,14 +1262,14 @@
     {
       "address": 133979572,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/set_attribute_value_from_measurement_record.c",
-      "symbol": "set_attribute_value_from_measurement_record"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/custs1_val_set_req_handler.c",
+      "symbol": "custs1_val_set_req_handler"
     },
     {
       "address": 133957464,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/find_variable_record_value_by_marker.c",
-      "symbol": "find_variable_record_value_by_marker"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/PATCHED_gapm_get_ad_type_flag.c",
+      "symbol": "PATCHED_gapm_get_ad_type_flag"
     },
     {
       "address": 133963376,
@@ -1270,8 +1286,8 @@
     {
       "address": 134003472,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/poll_output_state_table_and_report_count_advance.c",
-      "symbol": "poll_output_state_table_and_report_count_advance"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/spi_flash_wait_till_ready.c",
+      "symbol": "spi_flash_wait_till_ready"
     },
     {
       "address": 134009032,
@@ -1306,8 +1322,8 @@
     {
       "address": 134000768,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/find_keyed_record_value.c",
-      "symbol": "find_keyed_record_value"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/prf_env_get.c",
+      "symbol": "prf_env_get"
     },
     {
       "address": 133967388,
@@ -1318,8 +1334,8 @@
     {
       "address": 133968416,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/build_and_publish_compact_sensor_request_record.c",
-      "symbol": "build_and_publish_compact_sensor_request_record"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/app_easy_gap_disconnect.c",
+      "symbol": "app_easy_gap_disconnect"
     },
     {
       "address": 133977336,
@@ -1354,8 +1370,8 @@
     {
       "address": 133979960,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/get_or_allocate_cached_message_buffer_for_index.c",
-      "symbol": "get_or_allocate_cached_message_buffer_for_index"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/encrypt_cfm_create_msg.c",
+      "symbol": "encrypt_cfm_create_msg"
     },
     {
       "address": 133971416,
@@ -1366,14 +1382,14 @@
     {
       "address": 133968868,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/store_item_in_first_free_registration_slot.c",
-      "symbol": "store_item_in_first_free_registration_slot"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/app_easy_timer.c",
+      "symbol": "app_easy_timer"
     },
     {
       "address": 133994584,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/scale_value_by_threshold_specific_factor.c",
-      "symbol": "scale_value_by_threshold_specific_factor"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/lld_sleep_lpcycles_2_us_rcx_func.c",
+      "symbol": "lld_sleep_lpcycles_2_us_rcx_func"
     },
     {
       "address": 133976176,
@@ -1390,8 +1406,8 @@
     {
       "address": 134005488,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/check_status_record_range_and_publish_code.c",
-      "symbol": "check_status_record_range_and_publish_code"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/suotar_patch_len_ind_handler.c",
+      "symbol": "suotar_patch_len_ind_handler"
     },
     {
       "address": 133964936,
@@ -1407,9 +1423,9 @@
     },
     {
       "address": 133978432,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/drain_linked_record_list_and_clear_head.c",
-      "symbol": "drain_linked_record_list_and_clear_head"
+      "kind": "c",
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/custs1_profile.c",
+      "symbol": "custs1_destroy"
     },
     {
       "address": 133965212,
@@ -1420,8 +1436,8 @@
     {
       "address": 133956020,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/send_local_mtu_response_and_set_negotiated_limit.c",
-      "symbol": "send_local_mtu_response_and_set_negotiated_limit"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/PATCHED_atts_mtu_exc_req.c",
+      "symbol": "PATCHED_atts_mtu_exc_req"
     },
     {
       "address": 133991484,
@@ -1438,26 +1454,26 @@
     {
       "address": 133957748,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/send_crypto_operation_result_message.c",
-      "symbol": "send_crypto_operation_result_message"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/llm_create_p256_key_func.c",
+      "symbol": "llm_create_p256_key_func"
     },
     {
       "address": 133960004,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/dispatch_l2cap_and_smp_received_pdu.c",
-      "symbol": "dispatch_l2cap_and_smp_received_pdu"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/JT_l2cc_pdu_recv_ind_handler_func.c",
+      "symbol": "JT_l2cc_pdu_recv_ind_handler_func"
     },
     {
       "address": 133978184,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/upsert_variable_length_list_record.c",
-      "symbol": "upsert_variable_length_list_record"
+      "kind": "c",
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/custs1_profile.c",
+      "symbol": "custs1_att_set_value"
     },
     {
       "address": 133963024,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/update_status_slots_for_group_bit.c",
-      "symbol": "update_status_slots_for_group_bit"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/GPIO_ConfigurePin.c",
+      "symbol": "GPIO_ConfigurePin"
     },
     {
       "address": 133962024,
@@ -1498,14 +1514,14 @@
     {
       "address": 133985748,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/compute_display_segment_position_from_mode_table.c",
-      "symbol": "compute_display_segment_position_from_mode_table"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/hogpd_get_att_handle.c",
+      "symbol": "hogpd_get_att_handle"
     },
     {
       "address": 133957502,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/sr08_block_transform_wrapper_packs_key_at_077e.c",
-      "symbol": "sr08_block_transform_wrapper_packs_key_at_077e"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/PK_PointMult_func.c",
+      "symbol": "PK_PointMult_func"
     },
     {
       "address": 134017044,
@@ -1516,8 +1532,8 @@
     {
       "address": 133976876,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/format_and_send_uart_message.c",
-      "symbol": "format_and_send_uart_message"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/arch_printf.c",
+      "symbol": "arch_printf"
     },
     {
       "address": 134008704,
@@ -1528,20 +1544,20 @@
     {
       "address": 134002904,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/initialize_ring_display_and_sensor_registers.c",
-      "symbol": "initialize_ring_display_and_sensor_registers"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/rf_regs.c",
+      "symbol": "rf_regs"
     },
     {
       "address": 134000716,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/dispatch_fixed_size_records_by_marker.c",
-      "symbol": "dispatch_fixed_size_records_by_marker"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/prf_create_func.c",
+      "symbol": "prf_create_func"
     },
     {
       "address": 134000660,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/dispatch_callback_for_record_types_26_fc_fd.c",
-      "symbol": "dispatch_callback_for_record_types_26_fc_fd"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/prf_cleanup_func.c",
+      "symbol": "prf_cleanup_func"
     },
     {
       "address": 133961988,
@@ -1552,20 +1568,20 @@
     {
       "address": 133985112,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/search_display_code_table_from_minus20_to_zero.c",
-      "symbol": "search_display_code_table_from_minus20_to_zero"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/get_user_prf_srv_perm.c",
+      "symbol": "get_user_prf_srv_perm"
     },
     {
       "address": 134000808,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/find_sensor_record_by_low_byte_and_return_halfword.c",
-      "symbol": "find_sensor_record_by_low_byte_and_return_halfword"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/prf_get_id_from_task_func.c",
+      "symbol": "prf_get_id_from_task_func"
     },
     {
       "address": 134000848,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/find_sensor_marker_and_read_previous_halfword.c",
-      "symbol": "find_sensor_marker_and_read_previous_halfword"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/prf_get_task_from_id_func.c",
+      "symbol": "prf_get_task_from_id_func"
     },
     {
       "address": 134011292,
@@ -1588,26 +1604,26 @@
     {
       "address": 133955908,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/startup_hooks_loaded_adjacent_callback_pointer_at_0144.c",
-      "symbol": "startup_hooks_loaded_adjacent_callback_pointer_at_0144"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/Reset_Handler.c",
+      "symbol": "Reset_Handler"
     },
     {
       "address": 133955916,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/dispatch_first_exception_on_selected_stack.c",
-      "symbol": "dispatch_first_exception_on_selected_stack"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/NMI_Handler.c",
+      "symbol": "NMI_Handler"
     },
     {
       "address": 133955940,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/dispatch_second_exception_on_selected_stack.c",
-      "symbol": "dispatch_second_exception_on_selected_stack"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/HardFault_Handler.c",
+      "symbol": "HardFault_Handler"
     },
     {
       "address": 133956138,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/shared_entry_shim_move_incoming_value_at_022a.c",
-      "symbol": "shared_entry_shim_move_incoming_value_at_022a"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/PATCHED_smpc_check_key_distrib.c",
+      "symbol": "PATCHED_smpc_check_key_distrib"
     },
     {
       "address": 133985448,
@@ -1624,14 +1640,14 @@
     {
       "address": 133980080,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/dispatch_indexed_message_by_id.c",
-      "symbol": "dispatch_indexed_message_by_id"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/gapc_bond_ind_handler.c",
+      "symbol": "gapc_bond_ind_handler"
     },
     {
       "address": 133994656,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/allocate_attach_per_slot_record_not_at_98a0.c",
-      "symbol": "allocate_attach_per_slot_record_not_at_98a0"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/ltk_exch_create_msg.c",
+      "symbol": "ltk_exch_create_msg"
     },
     {
       "address": 134001016,
@@ -1642,32 +1658,32 @@
     {
       "address": 134003700,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/clear_attribute_record_field_validate_or_halt.c",
-      "symbol": "clear_attribute_record_field_validate_or_halt"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/suotar_cleanup.c",
+      "symbol": "suotar_cleanup"
     },
     {
       "address": 133981648,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/discontiguous_switch_entry_default_return_blocks_at_65d0.c",
-      "symbol": "discontiguous_switch_entry_default_return_blocks_at_65d0"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/gapm_cmp_evt_handler.c",
+      "symbol": "gapm_cmp_evt_handler"
     },
     {
       "address": 133956650,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/select_six_byte_source_for_current_state.c",
-      "symbol": "select_six_byte_source_for_current_state"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/PATCHED_smpc_construct_id_addr_info_pdu.c",
+      "symbol": "PATCHED_smpc_construct_id_addr_info_pdu"
     },
     {
       "address": 133961366,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/copy_two_initialized_state_blocks_and_install_pointers.c",
-      "symbol": "copy_two_initialized_state_blocks_and_install_pointers"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/patch_func.c",
+      "symbol": "patch_func"
     },
     {
       "address": 133971464,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/clear_and_invoke_registered_callback_for_five_values.c",
-      "symbol": "clear_and_invoke_registered_callback_for_five_values"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/app_msg_utils_api_process_handler.c",
+      "symbol": "app_msg_utils_api_process_handler"
     },
     {
       "address": 133972992,
@@ -1696,14 +1712,14 @@
     {
       "address": 134006072,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/initialize_measurement_state_unless_record_already_at_c538.c",
-      "symbol": "initialize_measurement_state_unless_record_already_at_c538"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/user_app_adv_start.c",
+      "symbol": "user_app_adv_start"
     },
     {
       "address": 133961660,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/apply_fixed_point_sensor_calibration_while_at_17bc.c",
-      "symbol": "apply_fixed_point_sensor_calibration_while_at_17bc"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/rf_calibration.c",
+      "symbol": "set_gauss_modgain"
     },
     {
       "address": 133999420,
@@ -1714,8 +1730,8 @@
     {
       "address": 133994480,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/accumulate_elapsed_units_store_quotient_remainder_at_97f0.c",
-      "symbol": "accumulate_elapsed_units_store_quotient_remainder_at_97f0"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/lld_sleep_compensate_func.c",
+      "symbol": "lld_sleep_compensate_func"
     },
     {
       "address": 133991128,
@@ -1726,8 +1742,8 @@
     {
       "address": 133963076,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/update_selected_hot_bit_associated_bit_at_1d44.c",
-      "symbol": "update_selected_hot_bit_associated_bit_at_1d44"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/GPIOn_Handler.c",
+      "symbol": "GPIOn_Handler"
     },
     {
       "address": 133989792,
@@ -1738,20 +1754,20 @@
     {
       "address": 133958186,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/allocate_initialize_record_special_path_otherwise_at_0a2a.c",
-      "symbol": "allocate_initialize_record_special_path_otherwise_at_0a2a"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/PATCHED_hci_command_handler.c",
+      "symbol": "PATCHED_hci_command_handler"
     },
     {
       "address": 133963428,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/poll_state_nibble_clear_state_specific_at_1ea4.c",
-      "symbol": "poll_state_nibble_clear_state_specific_at_1ea4"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/UART2_Handler.c",
+      "symbol": "UART2_Handler"
     },
     {
       "address": 133956072,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/validate_selected_record_state_return_readiness_at_01e8.c",
-      "symbol": "validate_selected_record_state_return_readiness_at_01e8"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/PATCHED_smpc_is_sec_mode_reached.c",
+      "symbol": "PATCHED_smpc_is_sec_mode_reached"
     },
     {
       "address": 133990388,
@@ -1762,26 +1778,26 @@
     {
       "address": 133968912,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/replace_occupied_slot_newly_allocated_initialized_at_3410.c",
-      "symbol": "replace_occupied_slot_newly_allocated_initialized_at_3410"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/app_easy_timer_cancel.c",
+      "symbol": "app_easy_timer_cancel"
     },
     {
       "address": 133968992,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/dispatch_through_seven_entry_callback_table.c",
-      "symbol": "dispatch_through_seven_entry_callback_table"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/app_entry_point_handler.c",
+      "symbol": "app_entry_point_handler"
     },
     {
       "address": 133978364,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/scan_five_masked_records_and_dispatch_entries.c",
-      "symbol": "scan_five_masked_records_and_dispatch_entries"
+      "kind": "c",
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/custs1_profile.c",
+      "symbol": "custs1_create"
     },
     {
       "address": 133985492,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/clear_selected_slot_record_series.c",
-      "symbol": "clear_selected_slot_record_series"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/hogpd_cleanup.c",
+      "symbol": "hogpd_cleanup"
     },
     {
       "address": 134016588,
@@ -1810,8 +1826,8 @@
     {
       "address": 133981272,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/route_record_update_slot_state_two_at_6458.c",
-      "symbol": "route_record_update_slot_state_two_at_6458"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/gapc_encrypt_req_ind_handler.c",
+      "symbol": "gapc_encrypt_req_ind_handler"
     },
     {
       "address": 133992368,
@@ -1828,20 +1844,20 @@
     {
       "address": 133956140,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/evaluate_two_mode_dependent_record_readiness_at_022c.c",
-      "symbol": "evaluate_two_mode_dependent_record_readiness_at_022c"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/PATCHED_smpc_check_key_distrib_at_022c.c",
+      "symbol": "PATCHED_smpc_check_key_distrib_at_022c"
     },
     {
       "address": 133977948,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/select_fast_rom_write_allocate_initialize_at_575c.c",
-      "symbol": "select_fast_rom_write_allocate_initialize_at_575c"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/create_timer.c",
+      "symbol": "create_timer"
     },
     {
       "address": 133963764,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/reproduce_two_pulse_output_sequence_used_at_1ff4.c",
-      "symbol": "reproduce_two_pulse_output_sequence_used_at_1ff4"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/adc_get_p0_1_sample.c",
+      "symbol": "adc_get_p0_1_sample"
     },
     {
       "address": 133991388,
@@ -1864,26 +1880,26 @@
     {
       "address": 133981988,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/reproduce_sensor_record_allocation_out_range_at_6724.c",
-      "symbol": "reproduce_sensor_record_allocation_out_range_at_6724"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/custs1_gattc_att_info_req_ind_handler.c",
+      "symbol": "custs1_gattc_att_info_req_ind_handler"
     },
     {
       "address": 133958108,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/dispatch_three_recognized_notification_codes_forward_at_09dc.c",
-      "symbol": "dispatch_three_recognized_notification_codes_forward_at_09dc"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/PATCHED_gapm_reset_cmd_handler.c",
+      "symbol": "PATCHED_gapm_reset_cmd_handler"
     },
     {
       "address": 133968716,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/load_per_slot_record_emit_time_at_334c.c",
-      "symbol": "load_per_slot_record_emit_time_at_334c"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/app_easy_security_accept_encryption.c",
+      "symbol": "app_easy_security_accept_encryption"
     },
     {
       "address": 133978284,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/visit_selected_five_word_records_update_at_58ac.c",
-      "symbol": "visit_selected_five_word_records_update_at_58ac"
+      "kind": "c",
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/custs1_profile.c",
+      "symbol": "custs1_cleanup"
     },
     {
       "address": 134011060,
@@ -1924,8 +1940,8 @@
     {
       "address": 133961876,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/reverse_tagged_record_regions_then_start_p256.c",
-      "symbol": "reverse_tagged_record_regions_then_start_p256"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/JT_llm_p256_start_func.c",
+      "symbol": "JT_llm_p256_start_func"
     },
     {
       "address": 133968468,
@@ -1942,8 +1958,8 @@
     {
       "address": 133961464,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/temporarily_clear_hardware_flags_query_sensor_at_16f8.c",
-      "symbol": "temporarily_clear_hardware_flags_query_sensor_at_16f8"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/rf_calibration.c",
+      "symbol": "rf_calibration_585"
     },
     {
       "address": 133967300,
@@ -1978,8 +1994,8 @@
     {
       "address": 133981544,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/update_measurement_fields_emit_typed_sensor_at_6568.c",
-      "symbol": "update_measurement_fields_emit_typed_sensor_at_6568"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/gapc_set_dev_info_req_ind_handler.c",
+      "symbol": "gapc_set_dev_info_req_ind_handler"
     },
     {
       "address": 133988568,
@@ -1990,14 +2006,14 @@
     {
       "address": 133991032,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/wait_requested_status_mask_minimum_elapsed_at_8a78.c",
-      "symbol": "wait_requested_status_mask_minimum_elapsed_at_8a78"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/poll_status_until_match_or_ble_timeout.c",
+      "symbol": "poll_status_until_match_or_ble_timeout"
     },
     {
       "address": 133980644,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/decode_control_notifications_adjust_range_setting_at_61e4.c",
-      "symbol": "decode_control_notifications_adjust_range_setting_at_61e4"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/gapc_cmp_evt_handler.c",
+      "symbol": "gapc_cmp_evt_handler"
     },
     {
       "address": 133992264,
@@ -2020,8 +2036,8 @@
     {
       "address": 133963848,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/initialize_control_registers_encode_four_optional_at_2048.c",
-      "symbol": "initialize_control_registers_encode_four_optional_at_2048"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/adc_init.c",
+      "symbol": "adc_init"
     },
     {
       "address": 133967660,
@@ -2044,14 +2060,14 @@
     {
       "address": 133972128,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/search_callback_table_invoke_matching_handler_at_40a0.c",
-      "symbol": "search_callback_table_invoke_matching_handler_at_40a0"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/app_std_process_event.c",
+      "symbol": "app_std_process_event"
     },
     {
       "address": 133982212,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/decrement_pending_count_build_measurement_packet_at_6804.c",
-      "symbol": "decrement_pending_count_build_measurement_packet_at_6804"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/hogpd_gattc_cmp_evt_handler.c",
+      "symbol": "hogpd_gattc_cmp_evt_handler"
     },
     {
       "address": 133989632,
@@ -2062,8 +2078,8 @@
     {
       "address": 133963572,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/clear_interrupt_status_bits_dispatch_corresponding_at_1f34.c",
-      "symbol": "clear_interrupt_status_bits_dispatch_corresponding_at_1f34"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/WKUP_QUADEC_Handler.c",
+      "symbol": "WKUP_QUADEC_Handler"
     },
     {
       "address": 133971308,
@@ -2080,8 +2096,8 @@
     {
       "address": 133984900,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/search_next_item_decoded_marker_matches_at_7284.c",
-      "symbol": "search_next_item_decoded_marker_matches_at_7284"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/get_cfg_handle.c",
+      "symbol": "get_cfg_handle"
     },
     {
       "address": 134005936,
@@ -2097,9 +2113,9 @@
     },
     {
       "address": 133999992,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/update_sensor_freshness_request_refresh_due_at_ad78.c",
-      "symbol": "update_sensor_freshness_request_refresh_due_at_ad78"
+      "kind": "direct",
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/param_update_request_timer_cb.c",
+      "symbol": "param_update_request_timer_cb"
     },
     {
       "address": 133990260,
@@ -2116,14 +2132,14 @@
     {
       "address": 133960490,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/validate_and_copy_fixed_size_credential.c",
-      "symbol": "validate_and_copy_fixed_size_credential"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/PATCHED_smpc_recv_public_key_exchange_pdu.c",
+      "symbol": "PATCHED_smpc_recv_public_key_exchange_pdu"
     },
     {
       "address": 133979608,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/build_submit_sensor_record_incoming_sample_at_5dd8.c",
-      "symbol": "build_submit_sensor_record_incoming_sample_at_5dd8"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/custs1_value_req_rsp_handler.c",
+      "symbol": "custs1_value_req_rsp_handler"
     },
     {
       "address": 133975860,
@@ -2140,14 +2156,14 @@
     {
       "address": 133960074,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/compare_sample_timestamp_update_record_dispatch_at_118a.c",
-      "symbol": "compare_sample_timestamp_update_record_dispatch_at_118a"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/PATCHED_llc_ch_map_req_ind.c",
+      "symbol": "PATCHED_llc_ch_map_req_ind"
     },
     {
       "address": 133960596,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/route_incoming_packet_status_sample_freshness_at_1394.c",
-      "symbol": "route_incoming_packet_status_sample_freshness_at_1394"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/PATCHED_llc_data_ind_handler.c",
+      "symbol": "PATCHED_llc_data_ind_handler"
     },
     {
       "address": 133988416,
@@ -2156,94 +2172,22 @@
       "symbol": "six_way_command_dispatch_default_branch_at_8040"
     },
     {
-      "address": 133988456,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/six_way_command_dispatch_default_branch_at_8040_cases.c",
-      "symbol": "six_way_command_dispatch_default_branch_at_8040_cases"
-    },
-    {
-      "address": 133984352,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/handle_incoming_packet_case_prefix.c",
-      "symbol": "handle_incoming_packet_case_prefix"
-    },
-    {
-      "address": 133984454,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/handle_incoming_packet_case_body.c",
-      "symbol": "handle_incoming_packet_case_body"
-    },
-    {
-      "address": 133981722,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/discontiguous_switch_entry_default_return_blocks_at_65d0_cases.c",
-      "symbol": "discontiguous_switch_entry_default_return_blocks_at_65d0_cases"
-    },
-    {
       "address": 133983676,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/dispatch_attribute_request_by_opcode_entry.c",
-      "symbol": "dispatch_attribute_request_by_opcode_entry"
-    },
-    {
-      "address": 133983780,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/dispatch_attribute_request_by_opcode_switch.c",
-      "symbol": "dispatch_attribute_request_by_opcode_switch"
-    },
-    {
-      "address": 133984160,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/dispatch_attribute_request_by_opcode_exit.c",
-      "symbol": "dispatch_attribute_request_by_opcode_exit"
-    },
-    {
-      "address": 133980106,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/dispatch_indexed_message_by_id_cases_2_and_3.c",
-      "symbol": "dispatch_indexed_message_by_id_cases_2_and_3"
-    },
-    {
-      "address": 133980262,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/dispatch_indexed_message_by_id_cases_5_to_7.c",
-      "symbol": "dispatch_indexed_message_by_id_cases_5_to_7"
-    },
-    {
-      "address": 133981696,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/discontiguous_switch_entry_default_return_blocks_at_65d0_fault.c",
-      "symbol": "discontiguous_switch_entry_default_return_blocks_at_65d0_fault"
-    },
-    {
-      "address": 133987562,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/select_attribute_value_length_case_zero_at_7cea.c",
-      "symbol": "select_attribute_value_length_case_zero_at_7cea"
-    },
-    {
-      "address": 133987574,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/select_attribute_value_lengths_cases_three_to_five_at_7cf6.c",
-      "symbol": "select_attribute_value_lengths_cases_three_to_five_at_7cf6"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/suotar_gattc_write_req_ind_handler.c",
+      "symbol": "suotar_gattc_write_req_ind_handler"
     },
     {
       "address": 133985952,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/parse_variable_length_service_record.c",
-      "symbol": "parse_variable_length_service_record"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/hogpd_get_att_idx.c",
+      "symbol": "hogpd_get_att_idx"
     },
     {
       "address": 133984192,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/handle_incoming_packet_entry.c",
-      "symbol": "handle_incoming_packet_entry"
-    },
-    {
-      "address": 133984858,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/handle_incoming_packet_exit.c",
-      "symbol": "handle_incoming_packet_exit"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/hogpd_gattc_write_req_ind_handler.c",
+      "symbol": "hogpd_gattc_write_req_ind_handler"
     },
     {
       "address": 133988660,
@@ -2254,32 +2198,26 @@
     {
       "address": 133983220,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/handle_incoming_service_record.c",
-      "symbol": "handle_incoming_service_record"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/custs1_gattc_write_req_ind_handler.c",
+      "symbol": "custs1_gattc_write_req_ind_handler"
     },
     {
       "address": 133982784,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/parse_service_record_and_update_state_entry.c",
-      "symbol": "parse_service_record_and_update_state_entry"
-    },
-    {
-      "address": 133982952,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/parse_service_record_and_update_state_body.c",
-      "symbol": "parse_service_record_and_update_state_body"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/hogpd_gattc_read_req_ind_handler.c",
+      "symbol": "hogpd_gattc_read_req_ind_handler"
     },
     {
       "address": 133978800,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/build_service_information_record.c",
-      "symbol": "build_service_information_record"
+      "kind": "c",
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/custs1_profile.c",
+      "symbol": "custs1_init"
     },
     {
       "address": 133986300,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/build_measurement_packet_and_handle_reply.c",
-      "symbol": "build_measurement_packet_and_handle_reply"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/hogpd_init.c",
+      "symbol": "hogpd_init"
     },
     {
       "address": 133973160,
@@ -2452,26 +2390,26 @@
     {
       "address": 133959192,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/encode_record_with_schema_block_at_0e18.c",
-      "symbol": "encode_record_with_schema_block_at_0e18"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/JT_l2cc_pdu_unpack_func.c",
+      "symbol": "JT_l2cc_pdu_unpack_func"
     },
     {
       "address": 133959352,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/encode_record_with_schema_block_at_0eb8.c",
-      "symbol": "encode_record_with_schema_block_at_0eb8"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/JT_l2cc_pdu_unpack_func_at_0eb8.c",
+      "symbol": "JT_l2cc_pdu_unpack_func_at_0eb8"
     },
     {
       "address": 133960742,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/process_ble_connection_request.c",
-      "symbol": "process_ble_connection_request"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/PATCHED_llm_con_req_ind.c",
+      "symbol": "PATCHED_llm_con_req_ind"
     },
     {
       "address": 133958572,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/process_incoming_data_fragment.c",
-      "symbol": "process_incoming_data_fragment"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/PATCHED_hci_acl_data_rx_handler.c",
+      "symbol": "PATCHED_hci_acl_data_rx_handler"
     },
     {
       "address": 133969284,
@@ -2524,8 +2462,8 @@
     {
       "address": 134005064,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/receive_transfer_chunk_and_program_flash.c",
-      "symbol": "receive_transfer_chunk_and_program_flash"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/suotar_patch_data_ind_handler.c",
+      "symbol": "suotar_patch_data_ind_handler"
     },
     {
       "address": 133970808,
@@ -2536,8 +2474,8 @@
     {
       "address": 133987764,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/validate_and_queue_attribute_request.c",
-      "symbol": "validate_and_queue_attribute_request"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/hogpd_report_upd_req_handler.c",
+      "symbol": "hogpd_report_upd_req_handler"
     },
     {
       "address": 133989204,
@@ -2548,8 +2486,8 @@
     {
       "address": 134006136,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/dispatch_service_event_and_update_shared_state.c",
-      "symbol": "dispatch_service_event_and_update_shared_state"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/user_catch_rest_hndl.c",
+      "symbol": "user_catch_rest_hndl"
     },
     {
       "address": 134006568,
@@ -2560,14 +2498,14 @@
     {
       "address": 133956860,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/advance_buffer_cursor_and_publish_record_block_at_04fc.c",
-      "symbol": "advance_buffer_cursor_and_publish_record_block_at_04fc"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/PATCHED_lld_evt_move_to_master.c",
+      "symbol": "PATCHED_lld_evt_move_to_master"
     },
     {
       "address": 133957128,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/advance_buffer_cursor_and_publish_record_block_at_0608.c",
-      "symbol": "advance_buffer_cursor_and_publish_record_block_at_0608"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/PATCHED_lld_evt_move_to_master_at_0608.c",
+      "symbol": "PATCHED_lld_evt_move_to_master_at_0608"
     },
     {
       "address": 134000120,
@@ -2584,8 +2522,8 @@
     {
       "address": 133957818,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/process_ble_link_layer_event_payload.c",
-      "symbol": "process_ble_link_layer_event_payload"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/llm_p256_req_handler_func.c",
+      "symbol": "llm_p256_req_handler_func"
     },
     {
       "address": 133985152,
@@ -2596,8 +2534,8 @@
     {
       "address": 133958296,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/process_indexed_response_and_release_buffer.c",
-      "symbol": "process_indexed_response_and_release_buffer"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/l2cc_handle_invalid_pdu.c",
+      "symbol": "l2cc_handle_invalid_pdu"
     },
     {
       "address": 134016760,
@@ -2608,50 +2546,50 @@
     {
       "address": 133982316,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/build_and_send_measurement_item_response.c",
-      "symbol": "build_and_send_measurement_item_response"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/custs1_gattc_read_req_ind_handler.c",
+      "symbol": "custs1_gattc_read_req_ind_handler"
     },
     {
       "address": 133960184,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/process_indexed_payload_state_block_at_11f8.c",
-      "symbol": "process_indexed_payload_state_block_at_11f8"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/PATCHED_smpc_recv_pair_rand_pdu.c",
+      "symbol": "PATCHED_smpc_recv_pair_rand_pdu"
     },
     {
       "address": 133960424,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/process_indexed_payload_state_block_at_12e8.c",
-      "symbol": "process_indexed_payload_state_block_at_12e8"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/PATCHED_smpc_recv_pair_rand_pdu_at_12e8.c",
+      "symbol": "PATCHED_smpc_recv_pair_rand_pdu_at_12e8"
     },
     {
       "address": 133975404,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/dispatch_callback_table_command_and_clear_result.c",
-      "symbol": "dispatch_callback_table_command_and_clear_result"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/app_timer_api_process_handler.c",
+      "symbol": "app_timer_api_process_handler"
     },
     {
       "address": 133957220,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/validate_record_stream_fields.c",
-      "symbol": "validate_record_stream_fields"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/PATCHED_gapm_adv_sanity.c",
+      "symbol": "PATCHED_gapm_adv_sanity"
     },
     {
       "address": 133978472,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/append_or_finalize_measurement_record_chunk.c",
-      "symbol": "append_or_finalize_measurement_record_chunk"
+      "kind": "c",
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/custs1_profile.c",
+      "symbol": "custs1_exe_operation"
     },
     {
       "address": 133980396,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/handle_per_slot_ble_data_record.c",
-      "symbol": "handle_per_slot_ble_data_record"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/gapc_bond_req_ind_handler.c",
+      "symbol": "gapc_bond_req_ind_handler"
     },
     {
       "address": 134003072,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/dispatch_pending_peripheral_operations.c",
-      "symbol": "dispatch_pending_peripheral_operations"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/rwble_isr.c",
+      "symbol": "rwble_isr"
     },
     {
       "address": 134006960,
@@ -2668,44 +2606,44 @@
     {
       "address": 133956332,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/dispatch_packed_event_to_indexed_record.c",
-      "symbol": "dispatch_packed_event_to_indexed_record"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/PATCHED_llcp_length_rsp_handler.c",
+      "symbol": "PATCHED_llcp_length_rsp_handler"
     },
     {
       "address": 133956468,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/clamp_indexed_state_fields_and_sync_values.c",
-      "symbol": "clamp_indexed_state_fields_and_sync_values"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/JT_llc_le_length_effective_func.c",
+      "symbol": "JT_llc_le_length_effective_func"
     },
     {
       "address": 133961740,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/build_type_27_packet_or_set_fallback_state.c",
-      "symbol": "build_type_27_packet_or_set_fallback_state"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/PATCHED_smpc_dhkey_calc_start.c",
+      "symbol": "PATCHED_smpc_dhkey_calc_start"
     },
     {
       "address": 133962776,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/configure_peripheral_and_wait_for_status_flags.c",
-      "symbol": "configure_peripheral_and_wait_for_status_flags"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/BLE_WAKEUP_LP_Handler.c",
+      "symbol": "BLE_WAKEUP_LP_Handler"
     },
     {
       "address": 133967916,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/initialize_display_config_or_run_handler.c",
-      "symbol": "initialize_display_config_or_run_handler"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/app_db_init_next.c",
+      "symbol": "app_db_init_next"
     },
     {
       "address": 133968572,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/get_or_initialize_cached_text_record.c",
-      "symbol": "get_or_initialize_cached_text_record"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/app_easy_gap_undirected_advertise_start_create_msg.c",
+      "symbol": "app_easy_gap_undirected_advertise_start_create_msg"
     },
     {
       "address": 133969064,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/zero_prefix_and_fill_random_suffix.c",
-      "symbol": "zero_prefix_and_fill_random_suffix"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/app_fill_random_byte_array.c",
+      "symbol": "app_fill_random_byte_array"
     },
     {
       "address": 133975704,
@@ -2734,56 +2672,44 @@
     {
       "address": 133980764,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/store_indexed_measurement_status_record.c",
-      "symbol": "store_indexed_measurement_status_record"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/gapc_connection_req_ind_handler.c",
+      "symbol": "gapc_connection_req_ind_handler"
     },
     {
       "address": 133981016,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/activate_staged_firmware_image.c",
-      "symbol": "activate_staged_firmware_image"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/gapc_disconnect_ind_handler.c",
+      "symbol": "gapc_disconnect_ind_handler"
     },
     {
       "address": 133981352,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/build_and_submit_record_for_selector_type.c",
-      "symbol": "build_and_submit_record_for_selector_type"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/gapc_get_dev_info_req_ind_handler.c",
+      "symbol": "gapc_get_dev_info_req_ind_handler"
     },
     {
       "address": 133982616,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/allocate_and_send_typed_message.c",
-      "symbol": "allocate_and_send_typed_message"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/suotar_gattc_read_req_ind_handler.c",
+      "symbol": "suotar_gattc_read_req_ind_handler"
     },
     {
       "address": 133985592,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/update_profile_values_and_send_status.c",
-      "symbol": "update_profile_values_and_send_status"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/hogpd_enable_req_handler.c",
+      "symbol": "hogpd_enable_req_handler"
     },
     {
       "address": 133987276,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/complete_pending_attribute_operation.c",
-      "symbol": "complete_pending_attribute_operation"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/hogpd_proto_mode_cfm_handler.c",
+      "symbol": "hogpd_proto_mode_cfm_handler"
     },
     {
       "address": 133987464,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/handle_pending_attribute_write_request_at_7c88.c",
-      "symbol": "handle_pending_attribute_write_request_at_7c88"
-    },
-    {
-      "address": 133987566,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/handle_pending_attribute_write_cases_one_and_two_at_7cee.c",
-      "symbol": "handle_pending_attribute_write_cases_one_and_two_at_7cee"
-    },
-    {
-      "address": 133987588,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/finish_pending_attribute_write_request_at_7d04.c",
-      "symbol": "finish_pending_attribute_write_request_at_7d04"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/hogpd_report_cfm_handler.c",
+      "symbol": "hogpd_report_cfm_handler"
     },
     {
       "address": 133989040,
@@ -2802,12 +2728,6 @@
       "kind": "manual",
       "source": "firmware/reconstructed/exact_clang18/manual_sources/dispatch_radio_state_action_block_at_86b8.c",
       "symbol": "dispatch_radio_state_action_block_at_86b8"
-    },
-    {
-      "address": 133990112,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/dispatch_radio_state_action_block_at_86e0.c",
-      "symbol": "dispatch_radio_state_action_block_at_86e0"
     },
     {
       "address": 133990624,
@@ -2829,39 +2749,33 @@
     },
     {
       "address": 133998496,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/dispatch_command_response_by_id.c",
-      "symbol": "dispatch_command_response_by_id"
-    },
-    {
-      "address": 133998536,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/handle_command_response_cases_and_finalize.c",
-      "symbol": "handle_command_response_cases_and_finalize"
+      "kind": "direct",
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/nvds_get_func.c",
+      "symbol": "nvds_get_func"
     },
     {
       "address": 134000540,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/lookup_or_register_request_handler.c",
-      "symbol": "lookup_or_register_request_handler"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/prf_add_profile_func.c",
+      "symbol": "prf_add_profile_func"
     },
     {
       "address": 134002732,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/initialize_sensor_peripheral_and_sample_state.c",
-      "symbol": "initialize_sensor_peripheral_and_sample_state"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/rf_init_func.c",
+      "symbol": "rf_init_func"
     },
     {
       "address": 134005532,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/handle_service_control_command_and_publish_status.c",
-      "symbol": "handle_service_control_command_and_publish_status"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/suotar_patch_mem_dev_ind_handler.c",
+      "symbol": "suotar_patch_mem_dev_ind_handler"
     },
     {
       "address": 134005780,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/store_attribute_value_and_send_update_event.c",
-      "symbol": "store_attribute_value_and_send_update_event"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/suotar_status_update_req_handler.c",
+      "symbol": "suotar_status_update_req_handler"
     },
     {
       "address": 134011144,
@@ -2872,26 +2786,26 @@
     {
       "address": 133956212,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/update_slot_event_state_and_dispatch.c",
-      "symbol": "update_slot_event_state_and_dispatch"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/PATCHED_llcp_length_req_handler.c",
+      "symbol": "PATCHED_llcp_length_req_handler"
     },
     {
       "address": 133956718,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/decode_packet_into_output_record_entry.c",
-      "symbol": "decode_packet_into_output_record_entry"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/PATCHED_llm_adv_report_set.c",
+      "symbol": "PATCHED_llm_adv_report_set"
     },
     {
       "address": 133956796,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/decode_packet_into_output_record_continuation.c",
-      "symbol": "decode_packet_into_output_record_continuation"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/PATCHED_llm_adv_report_set_at_04bc.c",
+      "symbol": "PATCHED_llm_adv_report_set_at_04bc"
     },
     {
       "address": 133961548,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/configure_interrupt_registers_and_optional_mode.c",
-      "symbol": "configure_interrupt_registers_and_optional_mode"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/rf_calibration.c",
+      "symbol": "enable_rf_diag_irq"
     },
     {
       "address": 133970488,
@@ -2907,47 +2821,27 @@
     },
     {
       "address": 133979204,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/replace_byte_in_variable_length_record_at_index.c",
-      "symbol": "replace_byte_in_variable_length_record_at_index"
+      "kind": "c",
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/custs1_profile.c",
+      "symbol": "custs1_set_ccc_value"
     },
     {
       "address": 133979324,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/prepare_measurement_record_append_at_5cbc.c",
-      "symbol": "prepare_measurement_record_append_at_5cbc"
+      "kind": "c",
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/custs1_profile.c",
+      "symbol": "custs1_val_ind_req_handler"
     },
     {
       "address": 133979444,
-      "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/prepare_measurement_record_append_at_5d34.c",
-      "symbol": "prepare_measurement_record_append_at_5d34"
+      "kind": "c",
+      "source": "firmware/reconstructed/exact_clang18/decompiled_sources/custs1_profile.c",
+      "symbol": "custs1_val_ntf_req_handler"
     },
     {
       "address": 134000888,
       "kind": "manual",
-      "source": "firmware/reconstructed/exact_clang18/manual_sources/initialize_or_release_indexed_objects.c",
-      "symbol": "initialize_or_release_indexed_objects"
+      "source": "firmware/reconstructed/exact_clang18/manual_sources/prf_init_func.c",
+      "symbol": "prf_init_func"
     }
-  ],
-  "function_aliases": {
-    "advance_buffer_cursor_and_publish_record": 133956860,
-    "build_command_response_from_status": 133998496,
-    "decode_packet_into_output_record": 133956718,
-    "dispatch_attribute_request_by_opcode": 133983676,
-    "dispatch_radio_and_sensor_state_events": 133992708,
-    "dispatch_radio_state_action": 133990072,
-    "dispatch_sensor_and_display_events": 133965252,
-    "encode_record_with_schema": 133959192,
-    "handle_incoming_packet": 133984192,
-    "handle_pending_attribute_write_entry_at_7c88": 133987464,
-    "initialize_sensor_measurement_state": 133994708,
-    "load_and_update_persistent_measurement_state": 133974184,
-    "parse_service_record_and_update_state": 133982784,
-    "process_indexed_payload_state": 133960184,
-    "process_measurement_records_and_sensor_state": 134001072,
-    "process_motion_axes_and_activity_state": 134007400,
-    "process_sensor_frame_and_update_state": 134012264,
-    "run_sensor_measurement_state_cycle": 133995936
-  }
+  ]
 }

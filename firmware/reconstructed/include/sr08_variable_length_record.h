@@ -1,6 +1,8 @@
 #ifndef SR08_VARIABLE_LENGTH_RECORD_H
 #define SR08_VARIABLE_LENGTH_RECORD_H
 
+#include "firmware/reconstructed/include/sr08_static_assert.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -12,13 +14,13 @@ struct sr08_variable_length_record {
     uint8_t values[];
 };
 
-_Static_assert(offsetof(struct sr08_variable_length_record, next_record) == 0,
+SR08_STATIC_ASSERT(offsetof(struct sr08_variable_length_record, next_record) == 0,
                "variable-record next pointer must remain at offset zero");
-_Static_assert(offsetof(struct sr08_variable_length_record, record_id) == 4,
+SR08_STATIC_ASSERT(offsetof(struct sr08_variable_length_record, record_id) == 4,
                "variable-record ID must remain at offset four");
-_Static_assert(offsetof(struct sr08_variable_length_record, value_length) == 5,
+SR08_STATIC_ASSERT(offsetof(struct sr08_variable_length_record, value_length) == 5,
                "variable-record length must remain at offset five");
-_Static_assert(offsetof(struct sr08_variable_length_record, values) == 6,
+SR08_STATIC_ASSERT(offsetof(struct sr08_variable_length_record, values) == 6,
                "variable-record payload must begin at offset six");
 
 #endif
